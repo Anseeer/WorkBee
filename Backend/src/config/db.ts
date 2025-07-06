@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const ConfigDB = ()=>{
+    console.log('Trying to Conect...')
     try {
         mongoose.connect(process.env.MONGODB_URI as string)
         .then(()=>{
@@ -10,7 +11,7 @@ const ConfigDB = ()=>{
             console.log("DB Connection Faild ",err)
         })
     } catch (error) {
-        console.log(error);
+        console.log("Faild To Connect",error);
     }
 }
 
