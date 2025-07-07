@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@layer base {
+  html,
+  :host {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%; /* ✅ Add this line */
+  }
+}
+
+.merienda-text {
+  font-family: 'Merienda', cursive;
+  font-weight: 700;
+}

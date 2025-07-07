@@ -15,4 +15,12 @@ export class UserRepository{
         return await UserModel.findOne({email});
     }
 
+    async resetPassword(email: string, hashedPass: string): Promise<void> {
+    await UserModel.updateOne(
+        { email },
+        { $set: { password: hashedPass } }
+    );
+    }
+
+
 }

@@ -2,6 +2,9 @@ import { UserRepository } from "../repositories/user.repository";
 import { Iuser } from "../model/userSchema";
 import bcrypt from "bcrypt";
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
+import { generateOTP } from "../utilities/generateOtp";
+import { sendOtpMail } from "../utilities/sendMail";
+import { deleteOtp, getOtp, saveOtp } from "../utilities/otpStore";
 
 
 export class UserService{
@@ -35,24 +38,39 @@ export class UserService{
         return {newUser,token};
     }
 
-    async loginUser(email:string,password:string):Promise<{user:Iuser,token:string}>{
-        let user = await this.userRepository.findByEmail(email);
-        if(!user){
-            throw new Error ('User Not Found');
+    async loginUser(email: string, password: string): Promise<{ user: Iuser; token: string }> {
+        const user = await this.userRepository.findByEmail(email);
+        if (!user) {
+            throw new Error('User not found');
         }
-        let isMatch = bcrypt.compare(password,user.password);
-        if(!isMatch){
-            throw new Error ('Invalid credentials')
+
+        const isMatch = await bcrypt.compare(password, user.password); // ✅ MUST await
+        if (!isMatch) {
+            throw new Error('Invalid credentials');
         }
 
         const secret: Secret = process.env.JWT_SECRET as string;
         const expiresIn = (process.env.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn']) || '1d';
+
         const token = jwt.sign(
-        { id: user._id, role: user.role },
-        secret,
-        { expiresIn }
+            { id: user._id, role: user.role },
+            secret,
+            { expiresIn }
         );
-        return {user,token};
+
+        return { user, token };
+        }
+
+    async forgotPass(email:string):Promise<string>{
+        const otp = generateOTP()
+        await sendOtpMail(email,otp);
+        saveOtp(email,otp);
+        return otp;
+    }
+
+    async resendOtp(email:string):Promise<string>{
+        deleteOtp(email)
+        return this.forgotPass(email);
     }
 
     async getUserById(id:string):Promise<Iuser|null>{
@@ -64,5 +82,30 @@ export class UserService{
         let user = this.userRepository.findByEmail(email);
         return user
     }
+
+    async verifyOtp(email:string,otp:string):Promise<boolean>{
+    const record = getOtp(email);
+
+    if (!record) throw new Error("No OTP found for this email");
+    if (Date.now() > record.expiresAt) {
+        deleteOtp(email); 
+
+        throw new Error("OTP expired");
+    }
+
+    if (record.otp !== otp.toString()) {
+    throw new Error("Invalid OTP");
+    }
+
+
+    deleteOtp(email);
+    return true;        
+    }
+
+    async resetPass(email: string, password: string): Promise<void> {
+     const hashedPass = await bcrypt.hash(password, 10);
+     await this.userRepository.resetPassword(email, hashedPass);
+    }
+
 
 }
