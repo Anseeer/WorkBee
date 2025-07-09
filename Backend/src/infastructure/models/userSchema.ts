@@ -1,23 +1,7 @@
 import mongoose, { Document, ObjectId, Schema } from "mongoose";
 import { LocationSchema } from "./locationSchema";
+import { Iuser } from "../../domain/entities/IUser";
 
-export interface Iuser extends Document {
-    name:string,
-    email:string,
-    phone:string,
-    password:string,
-    location: {
-    address: string;
-    pincode: string;
-    lat: number;
-    lng: number;
-    },
-    profileImage:string,
-    isActive:boolean,
-    role:string,
-    createdAt:Date,
-    updatedAt:Date
-}
 
 const userSchema = new Schema<Iuser>({
     name:{

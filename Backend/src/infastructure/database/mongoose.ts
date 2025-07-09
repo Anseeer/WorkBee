@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ConfigDB = ()=>{
+const MongooseConnection = ()=>{
     console.log('Trying to Conect...')
     try {
         mongoose.connect(process.env.MONGODB_URI as string)
@@ -15,4 +15,4 @@ const ConfigDB = ()=>{
     }
 }
 
-export default ConfigDB;
+export default MongooseConnection;

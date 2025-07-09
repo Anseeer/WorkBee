@@ -1,13 +1,13 @@
-import { UserRepository } from "../repositories/user.repository";
-import { Iuser } from "../model/userSchema";
+import { UserRepository } from "../repository/user.repository";
 import bcrypt from "bcrypt";
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
-import { generateOTP } from "../utilities/generateOtp";
-import { sendOtpMail } from "../utilities/sendMail";
 import { deleteOtp, getOtp, saveOtp } from "../utilities/otpStore";
+import { Iuser } from "../domain/entities/IUser";
+import { generateOTP } from "../infastructure/services/otpService";
+import { emailService } from "../infastructure/services/emailService";
 
 
-export class UserService{
+export class userUsecase{
     private userRepository : UserRepository;
     constructor(userRepository:UserRepository){
         this.userRepository = userRepository;
@@ -44,7 +44,7 @@ export class UserService{
             throw new Error('User not found');
         }
 
-        const isMatch = await bcrypt.compare(password, user.password); // ✅ MUST await
+        const isMatch = await bcrypt.compare(password, user.password); 
         if (!isMatch) {
             throw new Error('Invalid credentials');
         }
@@ -63,7 +63,7 @@ export class UserService{
 
     async forgotPass(email:string):Promise<string>{
         const otp = generateOTP()
-        await sendOtpMail(email,otp);
+        await emailService(email,otp);
         saveOtp(email,otp);
         return otp;
     }

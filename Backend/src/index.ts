@@ -1,11 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import ConfigDB from "./config/db";
 import userRoutes from "./routes/userRoutes";
+import MongooseConnection from "./infastructure/database/mongoose";
 
 dotenv.config();
-ConfigDB();
+MongooseConnection();
 
 const app = express();
 app.use(express.json());
