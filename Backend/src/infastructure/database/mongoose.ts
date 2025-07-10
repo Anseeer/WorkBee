@@ -1,17 +1,18 @@
 import mongoose from "mongoose";
+import logger from "../../utilities/logger";
 
-const MongooseConnection = ()=>{
-    console.log('Trying to Conect...')
+const MongooseConnection = () => {
+    logger.info('Trying to Conect...')
     try {
         mongoose.connect(process.env.MONGODB_URI as string)
-        .then(()=>{
-            console.log("DB Contected Successfully...")
-        })
-        .catch((err)=>{
-            console.log("DB Connection Faild ",err)
-        })
+            .then(() => {
+                logger.info("DB Contected Successfully...")
+            })
+            .catch((err) => {
+                logger.error("DB Connection Faild ", err)
+            })
     } catch (error) {
-        console.log("Faild To Connect",error);
+        logger.error("Faild To Connect", error);
     }
 }
 

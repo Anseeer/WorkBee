@@ -1,47 +1,47 @@
-import mongoose, { Document, ObjectId, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { LocationSchema } from "./locationSchema";
 import { Iuser } from "../../domain/entities/IUser";
 
 
 const userSchema = new Schema<Iuser>({
-    name:{
-        type:String,
-        required:true
+    name: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
-    phone:{
-        type:String,
-        required:true
+    phone: {
+        type: String,
+        required: true
     },
-    password:{
-        type:String,
-        required:true
+    password: {
+        type: String,
+        required: true
     },
-    location:{
-        type:LocationSchema,
-        required:true
+    location: {
+        type: LocationSchema,
+        required: true
     },
-    profileImage:{
-        type:String
+    profileImage: {
+        type: String
     },
-    isActive:{
-        type:Boolean,
-        default:true,
+    isActive: {
+        type: Boolean,
+        default: true,
     },
-    role:{
-        type:String,
-        required:true,
-        default:'User'
+    role: {
+        type: String,
+        required: true,
+        default: 'User'
     }
 },
-{
-    timestamps:true
-}
+    {
+        timestamps: true
+    }
 );
 
-const User = mongoose.model<Iuser>("User",userSchema);
+const User = mongoose.model<Iuser>("User", userSchema);
 export default User;

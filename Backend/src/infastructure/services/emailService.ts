@@ -8,12 +8,12 @@ export const emailService = async (email: string, otp: string) => {
       pass: process.env.NODE_EMAIL_PASS,
     },
   });
- 
+
   const mailOptions = {
-  from: process.env.NODE_EMAIL,
-  to: email,
-  subject: '🔐 WorkBee - Your OTP Code for Password Reset',
-  html: `
+    from: process.env.NODE_EMAIL,
+    to: email,
+    subject: '🔐 WorkBee - Your OTP Code for Password Reset',
+    html: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
       <h2 style="color: #2e7d32;">WorkBee</h2>
       <p>Hello,</p>
@@ -27,7 +27,7 @@ export const emailService = async (email: string, otp: string) => {
       <p>Thanks,<br/>The WorkBee Team</p>
     </div>
   `
-};
+  };
 
   await transporter.sendMail(mailOptions);
 };
