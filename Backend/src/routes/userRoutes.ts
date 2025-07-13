@@ -1,5 +1,5 @@
 import express from "express";
-import { UserRepository } from "../repository/user.repository";
+import { UserRepository } from "../repository/userRepository";
 import { UserController } from "../controllers/userController";
 import { userUsecase } from "../usecase/user";
 

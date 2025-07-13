@@ -2,15 +2,15 @@ import { Model, Document } from "mongoose";
 import { Iread, Iwrite } from "../domain/interfaces/IBaseRepo";
 
 export default class BaseRepository<T extends Document> implements Iread<T>, Iwrite<T> {
-  private model: Model<T>;
+  protected model: Model<T>;
 
   constructor(model: Model<T>) {
     this.model = model;
   }
 
-  async create(user: Partial<T>): Promise<T> {
-    const newUser = new this.model(user);
-    return await newUser.save();
+  async create(item: Partial<T>): Promise<T> {
+    const newItem = new this.model(item);
+    return await newItem.save();
   }
 
   async findById(id: string): Promise<T> {

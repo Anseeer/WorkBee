@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { LocationSchema } from "./locationSchema";
+import { locationSchema } from "./locationSchema";
 import { Iuser } from "../../domain/entities/IUser";
 
 
@@ -22,7 +22,7 @@ const userSchema = new Schema<Iuser>({
         required: true
     },
     location: {
-        type: LocationSchema,
+        type: locationSchema,
         required: true
     },
     profileImage: {

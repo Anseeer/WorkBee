@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
+import workerRoutes from "./routes/workerRoutes"
 import MongooseConnection from "./infastructure/database/mongoose";
 import { errorHandler } from "./middlewares/errorHandleMiddleware";
 
@@ -18,7 +19,8 @@ app.use(cors({
 }));
 
 
-app.use('/api/users', userRoutes)
+app.use('/api/users', userRoutes);
+app.use('/api/workers',workerRoutes);
 
 app.get('/', (_, res) => {
   res.send('WorkBee API is running');

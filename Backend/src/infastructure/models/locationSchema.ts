@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-export const LocationSchema = new Schema(
+export const locationSchema = new Schema(
   {
     address: { type: String, required: true },
     pincode: { type: String, required: true },

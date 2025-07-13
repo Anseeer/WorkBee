@@ -1,4 +1,4 @@
-import { UserRepository } from "../repository/user.repository";
+import { UserRepository } from "../repository/userRepository";
 import bcrypt from "bcrypt";
 import jwt, { Secret } from 'jsonwebtoken';
 import { deleteOtp, getOtp, saveOtp } from "../utilities/otpStore";
