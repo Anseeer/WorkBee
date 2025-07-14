@@ -1,5 +1,5 @@
 import { Iuser } from "../domain/entities/IUser"
-import { IUserResponseDTO } from "../domain/interfaces/IUserResponseDTO"
+import { IUserResponseDTO } from "../domain/interfaces/IResponseDTO"
 
 
 export const mapUserToDTO = (user: Iuser): IUserResponseDTO => {

@@ -61,7 +61,7 @@ const workerSchema = new Schema<IWorker>({
     },
     govId: {
         type: String,
-        required: true
+        required: false
     },
     location: {
         type: locationSchema,

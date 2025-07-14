@@ -1,8 +1,5 @@
-import mongoose, { Document, Types } from "mongoose"
-import { ILocation } from "./ILocation"
-
-export interface IWorker extends Document {
-    _id: string | Types.ObjectId,
+export interface IWorker{
+    _id: string,
     name: string,
     email: string,
     phone: string,
@@ -16,12 +13,17 @@ export interface IWorker extends Document {
     preferredSchedule: string[],
     isVerified: boolean,
     isActive: boolean,
-    location: ILocation,
+    location: {
+        address:string,
+        pincode:string,
+        lat:number|null,
+        lng:number|null
+    },
     govId: string,
-    services: Types.ObjectId[],
-    categories: Types.ObjectId[],
+    services: string[],
+    categories: string[],
     subscription: {
-        plan: mongoose.Schema.Types.ObjectId;
+        plan: string;
         startDate: Date;
         endDate: Date;
         isActive: boolean;

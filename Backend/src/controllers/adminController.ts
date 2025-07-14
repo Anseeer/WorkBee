@@ -1,24 +1,28 @@
 import { Request, Response } from "express";
-import { successResponse, errorResponse } from "../utilities/response";
-import { userUsecase } from "../usecase/user";
+import { adminUsecase } from "../usecase/admin";
+import { errorResponse, successResponse } from "../utilities/response";
 import logger from "../utilities/logger";
 
-export class UserController {
-    private userUsecase: userUsecase;
-    constructor(userUsecase: userUsecase) {
-        this.userUsecase = userUsecase
+export class adminController {
+    private adminUsecase: adminUsecase;
+    constructor(adminUsecase: adminUsecase) {
+        this.adminUsecase = adminUsecase;
     }
 
     register = async (req: Request, res: Response) => {
         try {
-            const { user, token } = await this.userUsecase.registerUser(req.body);
-            const response = new successResponse(201, 'User Registration SuccessFull', { user, token });
+            const { name, email, password, phone } = req.body;
+            if (!name || !email || !password || !phone) {
+                throw new Error("Some fields are missing");
+            }
+            const { token, admin } = await this.adminUsecase.register(req.body);
+            const response = new successResponse(201, "Admin Registration Successfull", { token, admin });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'User Registration Faild', message);
-            logger.error("Error", response)
+            const errMsg = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Registration Faild", errMsg);
+            logger.error(response);
             res.status(response.status).json(response);
         }
     }
@@ -26,26 +30,30 @@ export class UserController {
     login = async (req: Request, res: Response) => {
         try {
             const { email, password } = req.body;
-            const { user, token } = await this.userUsecase.loginUser(email, password);
-            const response = new successResponse(201, 'SuccessFully Login', { user, token });
+            if (!email || !password) {
+                throw new Error("Email and Password are required !");
+            }
+            const { token, admin } = await this.adminUsecase.login(req.body);
+            const response = new successResponse(200, "Admin Login Successfull", { token, admin });
             logger.info(response);
             res.status(response.status).json(response);
-        } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To Login', message);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Login Faild", errMsg);
             logger.error(response);
             res.status(response.status).json(response);
         }
     }
 
+    
     forgotPass = async (req: Request, res: Response) => {
         try {
             const { email } = req.body;
-            const user = await this.userUsecase.getUserByEmail(email);
+            const user = await this.adminUsecase.getUserByEmail(email);
             if (!user) {
                 throw new Error(" Cant find the user");
             }
-            const otp = await this.userUsecase.forgotPass(email)
+            const otp = await this.adminUsecase.forgotPass(email)
             logger.info("OTP :", otp);
             const response = new successResponse(201, 'SuccessFully send otp', { otp, email });
             logger.info(response);
@@ -61,11 +69,11 @@ export class UserController {
     resendOtp = async (req: Request, res: Response) => {
         try {
             const { email } = req.body;
-            const user = await this.userUsecase.getUserByEmail(email);
+            const user = await this.adminUsecase.getUserByEmail(email);
             if (!user) {
                 throw new Error(" Cant find the user");
             }
-            const otp = await this.userUsecase.resendOtp(email);
+            const otp = await this.adminUsecase.resendOtp(email);
             const response = new successResponse(201, "Successfully resend otp", { otp });
             logger.info(response);
             res.status(response.status).json(response);
@@ -80,7 +88,7 @@ export class UserController {
     verifyOtp = async (req: Request, res: Response) => {
         try {
             const { email, otp } = req.body;
-            await this.userUsecase.verifyOtp(email, otp);
+            await this.adminUsecase.verifyOtp(email, otp);
             const response = new successResponse(201, 'Verified', {});
             logger.info(response)
             res.status(response.status).json(response);
@@ -99,11 +107,11 @@ export class UserController {
             if (!email || !password) {
                 throw new Error('Email and password are required');
             }
-            const user = await this.userUsecase.getUserByEmail(email);
+            const user = await this.adminUsecase.getUserByEmail(email);
             if (!user) {
                 throw new Error('User not found with the given email');
             }
-            await this.userUsecase.resetPass(email, password);
+            await this.adminUsecase.resetPass(email, password);
             const response = new successResponse(200, 'Password reset successfully', {});
             logger.info(response)
             res.status(response.status).json(response);
@@ -115,6 +123,5 @@ export class UserController {
         }
 
     };
-
 
 }
