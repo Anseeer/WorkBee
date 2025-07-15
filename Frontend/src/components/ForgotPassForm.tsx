@@ -2,10 +2,10 @@ import { useState } from "react";
 
 interface ForgotPasswordFormProps {
   onSubmit: (email: string) => void;
-  role?: "user" | "admin" | "worker"; 
+  role?: string;
 }
 
-const ForgotPasswordForm = ({ onSubmit, role = "user" }: ForgotPasswordFormProps) => {
+const ForgotPasswordForm = ({ onSubmit, role }: ForgotPasswordFormProps) => {
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,9 +26,9 @@ const ForgotPasswordForm = ({ onSubmit, role = "user" }: ForgotPasswordFormProps
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="absolute top-8 left-8">
-          <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
-        </div>
+      <div className="absolute top-8 left-8">
+        <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
+      </div>
       <div className="bg-white rounded-3xl border-2 w-[500px] h-[300px] border-green-600 p-6 shadow-md relative">
 
         <h2 className="text-xl font-semibold text-gray-800 text-center mb-6 pt-6">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface LoginFormProps {
@@ -7,9 +8,10 @@ interface LoginFormProps {
   role?: "user" | "admin" | "worker";
 }
 
-const LoginForm = ({ onSubmit, loading = false, role = "user" }: LoginFormProps) => {
+const LoginForm = ({ onSubmit, loading = false, role }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +78,7 @@ const LoginForm = ({ onSubmit, loading = false, role = "user" }: LoginFormProps)
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
               <span className="text-gray-600">Forgot</span>
               <span
-                onClick={() => (window.location.href = "/forgot-password")}
+                onClick={() => role == "user" ? navigate("/forgot-password") : role == "worker" ? navigate("/workers/forgot-password") : role == "admin" ? navigate("/admins/forgot-password") : null}
                 className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer"
               >
                 Password?
@@ -86,7 +88,7 @@ const LoginForm = ({ onSubmit, loading = false, role = "user" }: LoginFormProps)
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
               <span className="text-gray-600">Don't have an account?</span>
               <span
-                onClick={() => (window.location.href = "/register")}
+                onClick={() => role == "user" ? navigate("/register") : role == "worker" ? navigate("/workers/register") : role == "admin" ? navigate("/admins/register") : null}
                 className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer"
               >
                 Sign up

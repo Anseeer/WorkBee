@@ -24,7 +24,7 @@ export const registerUserThunk = createAsyncThunk("users/register",
             const response = await register(userData);
             console.log("response.data :", response.data)
             return response.data.data;
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             const errorMessage = error.response?.data?.data || "Something went wrong";
             return rejectWithValue(errorMessage);
@@ -37,7 +37,7 @@ export const loginUserThunk = createAsyncThunk("users/login",
         try {
             const response = await login(credintials);
             return response.data.data;
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             const errorMessage = error.response?.data?.data || "Something went wrong";
             return rejectWithValue(errorMessage);
@@ -51,7 +51,7 @@ export const forgotPassUserThunk = createAsyncThunk("user/forgot-password",
             const response = await forgotPassword(email);
             console.log("response :", response);
             return response.data;
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             const errorMessage = error.response?.data?.data || "Something went wrong";
             return rejectWithValue(errorMessage);
@@ -65,7 +65,7 @@ export const resendOtpUserThunk = createAsyncThunk("user/otp-resend",
             const response = await resendOtp(email);
             console.log("response :", response);
             return response.data;
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             const errorMessage = error.response?.data?.data || "Something went wrong";
             return rejectWithValue(errorMessage);
@@ -78,7 +78,7 @@ export const verifyOtpUserThunk = createAsyncThunk("user/verify-otp",
         try {
             const response = await verifyOtp(verifyData.email, verifyData.otp)
             return response.data;
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             const errorMessage = error.response?.data?.data || "Something went wrong";
             return rejectWithValue(errorMessage);
@@ -91,7 +91,7 @@ export const resetPasswordUserThunk = createAsyncThunk("users/reset-password",
         try {
             const response = await resetPass(resetData.email, resetData.password)
             return response.data;
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             const errorMessage = error.response?.data?.data || "Something went wrong";
             return rejectWithValue(errorMessage);

@@ -5,7 +5,7 @@ import { registerUserThunk } from "../../slice/userSlice";
 import { useNavigate } from "react-router-dom";
 import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import type { AxiosError } from "axios";
-import type { Action } from "../../types/actionTypes";
+import type { Action } from "../../types/ActionTypes";
 
 
 interface IState {

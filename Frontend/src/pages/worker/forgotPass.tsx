@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ForgotPasswordForm from "../../components/ForgotPassForm";
-import { forgotPassUserThunk } from "../../slice/userSlice";
+import { forgotPassUserThunk } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 
-const ForgotPasswordPage = () => {
+const WorkerForgotPasswordPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -22,14 +22,14 @@ const ForgotPasswordPage = () => {
       await dispatch(forgotPassUserThunk(email)).unwrap();
       localStorage.setItem("resetEmail", email);
       toast.success("OTP sent successfully!");
-      navigate("/verify-otp", { replace: true });
+      navigate("/workers/verify-otp", { replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       toast.error(msg || "Failed to send OTP");
     }
   };
 
-  return <ForgotPasswordForm onSubmit={handleForgotPassword} role="user" />;
+  return <ForgotPasswordForm onSubmit={handleForgotPassword} role="worker" />;
 };
 
-export default ForgotPasswordPage;
+export default WorkerForgotPasswordPage;

@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 
-interface VerifyOtpFormProps{
-    onResend:(email:string)=> void;
-    verify:(verifyData:{email:string,otp:string})=> void;
+interface VerifyOtpFormProps {
+  onResend: (email: string) => void;
+  verify: (verifyData: { email: string, otp: string }) => void;
 }
 
 const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
-  
-    const[timeLeft,setTimeLeft] = useState<number>(60)
-    const[expired,setExpired] = useState<boolean>(false)
-    const[otp,setOtp] = useState<string>('')
+
+  const [timeLeft, setTimeLeft] = useState<number>(60)
+  const [expired, setExpired] = useState<boolean>(false)
+  const [otp, setOtp] = useState<string>('')
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -24,45 +24,45 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
     }, 1000);
 
     return () => clearInterval(timer);
-    }, [timeLeft]);
+  }, [timeLeft]);
 
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, "0")}`;
-    };
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
-    const handleResend = ()=>{
-    let email = localStorage.getItem('resetEmail');
+  const handleResend = () => {
+    const email = localStorage.getItem('resetEmail');
     if (!email) {
-    toast.error("Email not found. Please try again.");
-    return;
+      toast.error("Email not found. Please try again.");
+      return;
     }
 
     setTimeLeft(60);
     setExpired(false);
     onResend(email);
+  }
+
+  const handleVerify = () => {
+
+    if (!otp || otp == " ") {
+      toast.error("OTP is required. Please try again.");
+      return;
     }
 
-    const handleVerify = ()=>{
-
-    if(!otp || otp == " "){
-    toast.error("OTP is required. Please try again.");
-    return;
-    }
-
-    let email = localStorage.getItem('resetEmail');
+    const email = localStorage.getItem('resetEmail');
 
     if (!email) {
-    toast.error("Email not found. Please try again.");
-    return;
+      toast.error("Email not found. Please try again.");
+      return;
     }
 
-    let verifyData = {email,otp};
+    const verifyData = { email, otp };
 
     verify(verifyData);
 
-    }
+  }
 
   return (
     <div className="bg-gray-50 w-full min-h-screen relative">
@@ -78,8 +78,8 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
 
           <div className="space-y-10 py-10 px-5">
             <input
-            value={otp}
-            onChange={(e)=> setOtp(e.target.value)}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
               type="text"
               placeholder="OTP"
               className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"

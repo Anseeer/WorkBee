@@ -1,12 +1,12 @@
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { resendOtpUserThunk, verifyOtpUserThunk } from "../../slice/userSlice";
+import { resendOtpUserThunk, verifyOtpUserThunk } from "../../slice/workerSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import VerifyOtpForm from "../../components/VerifyOtpForm";
 import { emailRegex, otpRegex } from "../../regexs";
 import type { AxiosError } from "axios";
 
-const OtpVerification = () => {
+const WorkerOtpVerification = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate()
 
@@ -34,7 +34,7 @@ const OtpVerification = () => {
         .unwrap()
         .then(() => {
           toast.success('Verified');
-          navigate('/reset-password', { replace: true });
+          navigate('/workers/reset-password', { replace: true });
         })
         .catch((err) => {
           toast.error(err || 'Verification failed');
@@ -56,4 +56,4 @@ const OtpVerification = () => {
   return <VerifyOtpForm onResend={handleResend} verify={handleVerify} />
 };
 
-export default OtpVerification;
+export default WorkerOtpVerification;

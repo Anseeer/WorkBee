@@ -1,28 +1,29 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import type { IWorker } from "../types/IWorker";
-import { forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
+import type { IAdmin } from "../types/IAdmin";
 import type { AxiosError } from "axios";
+import { forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/adminService";
 
 
-interface userState {
-    worker: Partial<IWorker> | null,
+interface adminState {
+    admin: IAdmin | null,
     error: string | null;
+    resetEmail: string | null;
     token: string | null;
 }
 
-const initialState: userState = {
-    worker: null,
+const initialState: adminState = {
+    admin: null,
     error: null,
+    resetEmail: null,
     token: null
 }
 
-
-export const registerWorkerThunk = createAsyncThunk(
-    "workers/register",
-    async (workerData: Partial<IWorker>, { rejectWithValue }) => {
-        console.log("WorkerData :", workerData)
+export const registerAdminThunk = createAsyncThunk(
+    "admins/register",
+    async (adminData: IAdmin, { rejectWithValue }) => {
+        console.log("AdminData :", adminData)
         try {
-            const response = await register(workerData);
+            const response = await register(adminData);
             console.log("REsponse from thunk", response.data.data)
             return response.data.data;
         } catch (error: unknown) {
@@ -33,22 +34,9 @@ export const registerWorkerThunk = createAsyncThunk(
     }
 );
 
-export const loginWorkerThunk = createAsyncThunk(
-    "workers/login",
-    async (credentials: { email: string, password: string }, { rejectWithValue }) => {
-        try {
-            const response = await login(credentials);
-            return response.data.data
-        } catch (error) {
-            const err = error as AxiosError<{ data: string }>;
-            const errMsg = err.response?.data.data || "Unknown error";
-            return rejectWithValue(errMsg);
-        }
-    }
-)
 
 
-export const forgotPassUserThunk = createAsyncThunk("workers/forgot-password",
+export const forgotPassUserThunk = createAsyncThunk("admins/forgot-password",
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await forgotPassword(email);
@@ -62,7 +50,7 @@ export const forgotPassUserThunk = createAsyncThunk("workers/forgot-password",
     }
 )
 
-export const resendOtpUserThunk = createAsyncThunk("workers/otp-resend",
+export const resendOtpUserThunk = createAsyncThunk("admins/otp-resend",
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await resendOtp(email);
@@ -76,7 +64,7 @@ export const resendOtpUserThunk = createAsyncThunk("workers/otp-resend",
     }
 )
 
-export const verifyOtpUserThunk = createAsyncThunk("workers/verify-otp",
+export const verifyOtpUserThunk = createAsyncThunk("admins/verify-otp",
     async (verifyData: { email: string, otp: string }, { rejectWithValue }) => {
         try {
             const response = await verifyOtp(verifyData.email, verifyData.otp)
@@ -89,7 +77,7 @@ export const verifyOtpUserThunk = createAsyncThunk("workers/verify-otp",
     }
 )
 
-export const resetPasswordUserThunk = createAsyncThunk("workers/reset-password",
+export const resetPasswordUserThunk = createAsyncThunk("admins/reset-password",
     async (resetData: { email: string, password: string }, { rejectWithValue }) => {
         try {
             const response = await resetPass(resetData.email, resetData.password)
@@ -104,39 +92,52 @@ export const resetPasswordUserThunk = createAsyncThunk("workers/reset-password",
 
 
 
-const workerSlice = createSlice({
-    name: "worker",
+export const loginAdminThunk = createAsyncThunk(
+    "admins/login",
+    async (credentials: { email: string, password: string }, { rejectWithValue }) => {
+        try {
+            const response = await login(credentials);
+            return response.data.data
+        } catch (error) {
+            const err = error as AxiosError<{ data: string }>;
+            const errMsg = err.response?.data.data || "Unknown error";
+            return rejectWithValue(errMsg);
+        }
+    }
+)
+
+const adminSlice = createSlice({
+    name: "admin",
     initialState,
     reducers: {
 
     },
     extraReducers: (build) => {
         build
-            .addCase(registerWorkerThunk.pending, (state) => {
+            .addCase(registerAdminThunk.pending, (state) => {
                 state.error = null;
             })
-            .addCase(registerWorkerThunk.fulfilled, (state, action) => {
-                localStorage.setItem('workerToken', action.payload.workerId);
+            .addCase(registerAdminThunk.fulfilled, (state, action) => {
                 state.error = null;
-                state.worker = action.payload?.worker;
+                state.admin = action.payload?.admin;
                 state.token = action.payload?.token;
 
             })
-            .addCase(registerWorkerThunk.rejected, (state, action) => {
+            .addCase(registerAdminThunk.rejected, (state, action) => {
                 state.error = action.payload as string
             })
-            .addCase(loginWorkerThunk.pending, (state) => {
+            .addCase(loginAdminThunk.pending, (state) => {
                 state.error = null;
             })
-            .addCase(loginWorkerThunk.fulfilled, (state, action) => {
+            .addCase(loginAdminThunk.fulfilled, (state, action) => {
                 state.error = null;
                 state.token = action.payload.token;
-                state.worker = action.payload.worker;
+                state.admin = action.payload.admin;
             })
-            .addCase(loginWorkerThunk.rejected, (state, action) => {
+            .addCase(loginAdminThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-    }
+    },
 })
 
-export default workerSlice.reducer;
+export default adminSlice.reducer;

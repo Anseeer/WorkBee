@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useReducer } from "react";
-import type { Action } from "../../types/actionTypes";
+import type { Action } from "../../types/ActionTypes";
 import { toast } from "react-toastify";
 import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -7,6 +7,7 @@ import { registerWorkerThunk } from "../../slice/workerSlice";
 import type { AxiosError } from "axios";
 import { getAllCategories } from "../../services/workerService";
 import type { ICategory } from "../../types/ICategory";
+import { useNavigate } from "react-router-dom";
 
 
 const WorkerRegistrationPage = () => {
@@ -18,15 +19,16 @@ const WorkerRegistrationPage = () => {
     const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
     const Dispatch = useAppDispatch();
     const [Loading, setLoading] = useState<boolean>(false)
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 const res = await getAllCategories();
-                setCategoriesList(res); 
-            } catch (err:unknown) {
+                setCategoriesList(res);
+            } catch (err: unknown) {
                 toast.error("Failed to fetch categories");
-                console.log(err) 
+                console.log(err)
             }
         };
         fetchCategories();
@@ -141,7 +143,7 @@ const WorkerRegistrationPage = () => {
             lat: 0,
             lng: 0
         },
-        categories: []
+        categories: [""]
     }
 
     const reducer = (state: IState, action: Action) => {
@@ -172,6 +174,8 @@ const WorkerRegistrationPage = () => {
                 };
             case "SET_CATEGORIES":
                 return { ...state, categories: action.payload }
+            case "RESET_FORM":
+                return initialState;
             default:
                 return state;
         }
@@ -208,16 +212,14 @@ const WorkerRegistrationPage = () => {
         }
         setLoading(true)
         try {
-            const res = await Dispatch(registerWorkerThunk(state)).unwrap()
+            await Dispatch(registerWorkerThunk(state))
             toast.success("Registration successful!");
-            localStorage.setItem('workerToken', res.token);
+            navigate('/workers/dashboard', { replace: true })
+            dispatch({ type: "RESET_FORM", payload: initialState });
         } catch (error: unknown) {
             const err = error as AxiosError<{ data: string }>;
-            if (err.response?.data?.data) {
-                toast.error(err.response.data.data);
-            } else {
-                toast.error("Registration failed");
-            }
+            console.log(err)
+            toast.error("Registration failed " + err);
         } finally {
             setLoading(false);
         }
@@ -241,6 +243,7 @@ const WorkerRegistrationPage = () => {
                         <form onSubmit={HandleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <input
+                                    autoComplete="new-name"
                                     value={state?.name}
                                     onChange={(e) => dispatch({ type: "SET_NAME", payload: e.target.value })}
                                     name="name"
@@ -292,9 +295,14 @@ const WorkerRegistrationPage = () => {
                                         onClick={() => setShowDropdown(!showDropdown)}
                                         className=" w-full cursor-pointer border-b-2 border-gray-300 py-2 px-1 text-gray-600 bg-transparent focus:outline-none"
                                     >
+
                                         {selectedCategories.length > 0
-                                            ? selectedCategories.join(", ")
+                                            ? categoriesList
+                                                .filter((cat) => selectedCategories.includes(cat._id))
+                                                .map((cat) => cat.name)
+                                                .join(", ")
                                             : "Choose Categories"}
+
                                     </div>
 
                                     {showDropdown && (
@@ -332,7 +340,7 @@ const WorkerRegistrationPage = () => {
                             <div className="text-center pt-2">
                                 <p className="text-gray-600 text-sm">
                                     Already have an account?{" "}
-                                    <span className="text-green-600 hover:text-green-700 font-medium cursor-pointer">
+                                    <span onClick={() => navigate("/workers/login")} className="text-green-600 hover:text-green-700 font-medium cursor-pointer">
                                         Sign in
                                     </span>
                                 </p>

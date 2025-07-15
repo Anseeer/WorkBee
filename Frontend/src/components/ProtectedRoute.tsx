@@ -8,12 +8,12 @@ import { useAppDispatch } from "../hooks/useAppDispatch";
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const dispatch = useAppDispatch()
-  useEffect(()=>{
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        dispatch(setTokenFromStorage(token));
-      }
-    }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      dispatch(setTokenFromStorage(token));
+    }
+  }, []);
   const { token } = useAppSelector((state) => state.user);
 
   if (!token) {

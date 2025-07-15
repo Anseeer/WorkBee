@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { resetPasswordUserThunk } from "../../slice/userSlice";
+import { resetPasswordUserThunk } from "../../slice/workerSlice";
 import ResetPasswordForm from "../../components/ResetPassForm";
 import type { AxiosError } from "axios";
 import { emailRegex, passRegex } from "../../regexs";
 
-const ResetPasswordPage = () => {
+const WorkerResetPasswordPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ const ResetPasswordPage = () => {
 
       await dispatch(resetPasswordUserThunk(passwordData)).unwrap();
       toast.success("Password reset successfully!");
-      navigate("/login", { replace: true });
+      navigate("/workers/login", { replace: true });
     } catch (error: unknown) {
       const err = error as AxiosError<{ data: string }>;
 
@@ -42,7 +42,7 @@ const ResetPasswordPage = () => {
     }
   };
 
-  return <ResetPasswordForm onSubmit={handleReset} role="user" />;
+  return <ResetPasswordForm onSubmit={handleReset} role="worker" />;
 };
 
-export default ResetPasswordPage;
+export default WorkerResetPasswordPage;

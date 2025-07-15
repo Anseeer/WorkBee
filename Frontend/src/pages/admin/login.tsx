@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { loginAdminThunk } from "../../slice/adminSlice";
 import LoginForm from "../../components/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
-import { loginWorkerThunk } from "../../slice/workerSlice";
 
-const WorkerLoginPage = () => {
+const AdminLoginPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -28,10 +28,10 @@ const WorkerLoginPage = () => {
                 throw new Error("Password must be at least 6 characters long and include letters, numbers, and symbols like _ . @");
             }
             setLoading(true);
-            const res = await dispatch(loginWorkerThunk(credentials)).unwrap();
+            const res = await dispatch(loginAdminThunk(credentials)).unwrap();
             toast.success("Login successful!");
-            localStorage.setItem("workerToken", res.token);
-            navigate("/workers/dashboard", { replace: true });
+            localStorage.setItem("userToken", res.token);
+            navigate("/admins/dashboard", { replace: true });
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : String(error);
             toast.error(msg || "Login failed");
@@ -40,7 +40,7 @@ const WorkerLoginPage = () => {
         }
     };
 
-    return <LoginForm onSubmit={handleLogin} loading={loading} role="worker" />;
+    return <LoginForm onSubmit={handleLogin} loading={loading} role="admin" />;
 };
 
-export default WorkerLoginPage;
+export default AdminLoginPage;

@@ -1,4 +1,4 @@
-export interface IWorker{
+export interface IWorker {
     _id: string,
     name: string,
     email: string,
@@ -14,10 +14,10 @@ export interface IWorker{
     isVerified: boolean,
     isActive: boolean,
     location: {
-        address:string,
-        pincode:string,
-        lat:number|null,
-        lng:number|null
+        address: string,
+        pincode: string,
+        lat: number | null,
+        lng: number | null
     },
     govId: string,
     services: string[],
