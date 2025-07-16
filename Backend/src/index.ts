@@ -5,9 +5,9 @@ import userRoutes from "./routes/userRoutes";
 import workerRoutes from "./routes/workerRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import categoriesRoutes from "./routes/categoriesRoutes";
-import MongooseConnection from "./infastructure/database/mongoose";
+import MongooseConnection from "./config/DB";
 import { errorHandler } from "./middlewares/errorHandleMiddleware";
-import { seed } from "./infastructure/models/categorySchema";
+import { seed } from "./model/category/category.model";
 
 dotenv.config();
 MongooseConnection();

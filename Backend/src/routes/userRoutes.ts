@@ -1,13 +1,13 @@
 import express from "express";
-import { UserRepository } from "../repository/userRepository";
-import { UserController } from "../controllers/userController";
-import { userUsecase } from "../usecase/user";
+import { UserRepository } from "../repositories/user/user.repo";
+import { UserService } from "../services/user/user.service";
+import { UserController } from "../controllers/user/user.controller";
 
 const router = express.Router();
 
 const userRepository = new UserRepository();
-const userService = new userUsecase(userRepository);
-const userController = new UserController(userService)
+const userService = new UserService(userRepository);
+const userController = new UserController(userService);
 
 router.post('/register', userController.register);
 router.post('/login', userController.login);

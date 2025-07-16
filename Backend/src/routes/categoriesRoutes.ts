@@ -1,15 +1,15 @@
-import express from "express";
-import { categoriesRepository } from "../repository/categoriesRepository";
-import { CategoriesUsecase } from "../usecase/categories";
-import { categoriesController } from "../controllers/categoriesController";
+import express from "express"; "../controllers/categoriesController";
+import { CategoryRepository } from "../repositories/category/category.repo";
+import { CategoryService } from "../services/category/category.service";
+import { CategoryController } from "../controllers/category/category.controller";
 
 const Router = express.Router();
 
-const CategoriesRepo = new categoriesRepository();
-const categoriesUsecase = new CategoriesUsecase(CategoriesRepo);
-const CategoriesController = new categoriesController(categoriesUsecase);
+const categoryRepository = new CategoryRepository();
+const categoryService = new CategoryService(categoryRepository);
+const categoryController = new CategoryController(categoryService);
 
-Router.get("/getAllCategories",CategoriesController.getAllCategories);
+Router.get("/getAllCategories", categoryController.getAllCategories);
 
 
 export default Router;

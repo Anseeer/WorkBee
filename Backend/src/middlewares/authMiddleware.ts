@@ -15,7 +15,7 @@ export const protectRoute = (req: authRequest, res: Response, next: NextFunction
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     req.user = decoded;
     next();
-  } catch (err:unknown) {
+  } catch (err: unknown) {
     console.log(err)
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
   }

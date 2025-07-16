@@ -1,20 +1,20 @@
 import express from "express";
-import { adminRepository } from "../repository/adminRepository";
-import { adminUsecase } from "../usecase/admin";
-import { adminController } from "../controllers/adminController";
+import { AdminRepository } from "../repositories/admin/admin.repo";
+import { AdminService } from "../services/admin/admin.service";
+import { AdminController } from "../controllers/admin/admin.controller";
 
-const AdminRepository = new adminRepository();
-const AdminUsecase = new adminUsecase(AdminRepository);
-const AdminController = new adminController(AdminUsecase);
+const adminRepository = new AdminRepository();
+const adminService = new AdminService(adminRepository);
+const adminController = new AdminController(adminService);
 
 const Router = express.Router();
 
-Router.post('/register',AdminController.register);
-Router.post('/login',AdminController.login);
-Router.post('/forgot-password', AdminController.forgotPass);
-Router.post('/resend-otp', AdminController.resendOtp);
-Router.post('/verify-otp', AdminController.verifyOtp);
-Router.post('/reset-password', AdminController.resetPassword);
+Router.post('/register', adminController.register);
+Router.post('/login', adminController.login);
+Router.post('/forgot-password', adminController.forgotPass);
+Router.post('/resend-otp', adminController.resendOtp);
+Router.post('/verify-otp', adminController.verifyOtp);
+Router.post('/reset-password', adminController.resetPassword);
 
 
 export default Router;
