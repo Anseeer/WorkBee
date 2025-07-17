@@ -1,13 +1,11 @@
-import express from "express"; "../controllers/categoriesController";
-import { CategoryRepository } from "../repositories/category/category.repo";
-import { CategoryService } from "../services/category/category.service";
-import { CategoryController } from "../controllers/category/category.controller";
+import express from "express"; 
+import container from "../inversify/inversify.container";
+import { ICategoryController } from "../controllers/category/category.controller.interface";
+import TYPES from "../inversify/inversify.types";
 
 const Router = express.Router();
 
-const categoryRepository = new CategoryRepository();
-const categoryService = new CategoryService(categoryRepository);
-const categoryController = new CategoryController(categoryService);
+const categoryController = container.get<ICategoryController>(TYPES.categoryController);
 
 Router.get("/getAllCategories", categoryController.getAllCategories);
 

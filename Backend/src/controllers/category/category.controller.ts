@@ -3,11 +3,14 @@ import { CategoryService } from "../../services/category/category.service";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { ICategoryController } from "./category.controller.interface";
+import { inject, injectable } from "inversify";
+import TYPES from "../../inversify/inversify.types";
 
+@injectable()
 export class CategoryController implements ICategoryController {
     private _categoryService: CategoryService;
-    constructor(_categoryService: CategoryService) {
-        this._categoryService = _categoryService;
+    constructor(@inject(TYPES.categoryService)categoryService: CategoryService) {
+        this._categoryService = categoryService;
     }
 
     getAllCategories = async (req: Request, res: Response) => {

@@ -1,8 +1,10 @@
+import { injectable } from "inversify";
 import { ICategory } from "../../model/category/category.interface";
 import Category from "../../model/category/category.model";
 import BaseRepository from "../base/base.repo";
 import { ICategoryRepository } from "./category.repo.interface";
 
+@injectable()
 export class CategoryRepository extends BaseRepository<ICategory> implements ICategoryRepository {
     constructor() {
         super(Category)

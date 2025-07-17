@@ -8,11 +8,14 @@ import { AdminRepository } from "../../repositories/admin/admin.repo";
 import bcrypt from "bcrypt";
 import { deleteOtp, getOtp, saveOtp } from "../../utilities/otpStore";
 import { IAdminService } from "./admin.services.interface";
+import { inject, injectable } from "inversify";
+import TYPES from "../../inversify/inversify.types";
 
+@injectable()
 export class AdminService implements IAdminService {
     private _adminRepository: AdminRepository;
-    constructor(_adminRepository: AdminRepository) {
-        this._adminRepository = _adminRepository;
+    constructor(@inject(TYPES.adminRepository) adminRepo: AdminRepository) {
+        this._adminRepository = adminRepo;
     }
 
     async register(adminData: IAdmin): Promise<{ token: string, admin: IAdminDTO }> {

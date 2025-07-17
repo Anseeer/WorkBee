@@ -1,13 +1,11 @@
 import express from "express";
-import { WorkerRepository } from "../repositories/worker/worker.repo";
-import { WorkerService } from "../services/worker/worker.service";
-import { WorkerController } from "../controllers/worker/worker.controller";
+import container from "../inversify/inversify.container";
+import { IWorkerController } from "../controllers/worker/worker.controller.interface";
+import TYPES from "../inversify/inversify.types";
 
 const Router = express.Router();
 
-const workerRepository = new WorkerRepository();
-const workerService = new WorkerService(workerRepository);
-const workerController = new WorkerController(workerService);
+const workerController = container.get<IWorkerController>(TYPES.workerController);
 
 Router.post("/login", workerController.login);
 Router.post("/register", workerController.register);

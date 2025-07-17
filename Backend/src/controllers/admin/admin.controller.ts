@@ -3,11 +3,14 @@ import { AdminService } from "../../services/admin/admin.service";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { IAdminController } from "./admin.controller.interface";
+import { inject, injectable } from "inversify";
+import TYPES from "../../inversify/inversify.types";
 
+@injectable()
 export class AdminController implements IAdminController {
     private _adminService: AdminService;
-    constructor(_adminService: AdminService) {
-        this._adminService = _adminService;
+    constructor(@inject(TYPES.adminService) adminService: AdminService) {
+        this._adminService = adminService;
     }
 
     register = async (req: Request, res: Response) => {

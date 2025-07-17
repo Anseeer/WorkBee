@@ -1,11 +1,9 @@
 import express from "express";
-import { AdminRepository } from "../repositories/admin/admin.repo";
-import { AdminService } from "../services/admin/admin.service";
-import { AdminController } from "../controllers/admin/admin.controller";
+import container from "../inversify/inversify.container";
+import TYPES from "../inversify/inversify.types";
+import { IUserController } from "../controllers/user/user.controller.interface";
 
-const adminRepository = new AdminRepository();
-const adminService = new AdminService(adminRepository);
-const adminController = new AdminController(adminService);
+const adminController = container.get<IUserController>(TYPES.adminController)
 
 const Router = express.Router();
 

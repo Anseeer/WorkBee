@@ -9,11 +9,14 @@ import { emailService } from "../../utilities/emailService";
 import { deleteOtp, getOtp, saveOtp } from "../../utilities/otpStore";
 import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IWorkerService } from "./worker.service.interface";
+import { inject, injectable } from "inversify";
+import TYPES from "../../inversify/inversify.types";
 
+@injectable()
 export class WorkerService implements IWorkerService {
     private _workerRepository: WorkerRepository
-    constructor(_workerRepository: WorkerRepository) {
-        this._workerRepository = _workerRepository;
+    constructor(@inject(TYPES.workerRepository)workerRepo: WorkerRepository) {
+        this._workerRepository = workerRepo;
     }
 
     async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO }> {

@@ -1,5 +1,5 @@
 import { ICategory } from "../../model/category/category.interface";
 
-export interface IAdminService {
+export interface ICategoryService {
     getAllCategories(): Promise<ICategory[]>;
 }

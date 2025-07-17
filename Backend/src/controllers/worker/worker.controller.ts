@@ -3,11 +3,14 @@ import { WorkerService } from "../../services/worker/worker.service";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { IWorkerController } from "./worker.controller.interface";
+import { inject, injectable } from "inversify";
+import TYPES from "../../inversify/inversify.types";
 
+@injectable()
 export class WorkerController implements IWorkerController {
     private _workerService: WorkerService;
-    constructor(_workerService: WorkerService) {
-        this._workerService = _workerService
+    constructor(@inject(TYPES.workerService)workerService: WorkerService) {
+        this._workerService = workerService
     }
 
     login = async (req: Request, res: Response) => {

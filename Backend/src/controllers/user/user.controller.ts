@@ -3,11 +3,14 @@ import logger from "../../utilities/logger";
 import { UserService } from "../../services/user/user.service";
 import { errorResponse, successResponse } from "../../utilities/response";
 import { IUserController } from "./user.controller.interface";
+import { inject, injectable } from "inversify";
+import TYPES from "../../inversify/inversify.types";
 
+@injectable()
 export class UserController implements IUserController {
     private _userService: UserService;
-    constructor(_userService: UserService) {
-        this._userService = _userService
+    constructor(@inject(TYPES.userService)userService: UserService) {
+        this._userService = userService
     }
 
     register = async (req: Request, res: Response) => {

@@ -8,12 +8,14 @@ import { generateOTP } from "../../utilities/generateOtp";
 import { emailService } from "../../utilities/emailService";
 import { deleteOtp, getOtp, saveOtp } from "../../utilities/otpStore";
 import { IUserService } from "./user.service.interface";
+import { inject, injectable } from "inversify";
+import TYPES from "../../inversify/inversify.types";
 
-
-export class UserService implements IUserService{
+@injectable()
+export class UserService implements IUserService {
     private _userRepository: UserRepository;
-    constructor(_userRepository: UserRepository) {
-        this._userRepository = _userRepository;
+    constructor(@inject(TYPES.userRepository)userRepo: UserRepository) {
+        this._userRepository = userRepo;
     }
 
     async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string }> {
