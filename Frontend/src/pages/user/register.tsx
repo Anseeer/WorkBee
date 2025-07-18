@@ -98,7 +98,7 @@ const RegistrationPage = () => {
   }, []);
 
   const initializeAutocomplete = () => {
-    if (!inputRef.current || !window.google) return;
+    if (!inputRef.current || !window.google) return ;
 
     autocompleteRef.current = new window.google.maps.places.Autocomplete(
       inputRef.current,

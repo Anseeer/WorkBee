@@ -1,48 +1,41 @@
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { useFormik } from "formik";
+import { passRegex } from "../regexs";
 
 interface ResetPasswordFormProps {
-  onSubmit: (passwordData: { email: string; password: string }) => void;
+  handleSubmit: (passwordData: { email: string; password: string }) => void;
   role?: "user" | "admin" | "worker";
 }
 
-const ResetPasswordForm = ({ onSubmit, role = "user" }: ResetPasswordFormProps) => {
-  const [password, setPassword] = useState("");
-  const [confirmPass, setConfirmPass] = useState("");
+const ResetPasswordForm = ({ handleSubmit, role = "user" }: ResetPasswordFormProps) => {
+  const formik = useFormik({
+    initialValues: {
+      password: "",
+      confirmPass: ""
+    },
+    onSubmit: () => {
+      const email = localStorage.getItem("resetEmail");
+      if (!email) return; 
+      const passwordData = { email, password: formik.values.password };
+      handleSubmit(passwordData);
+    },
+    validate: (values) => {
+      const errors: Partial<typeof values> = {};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+      if (!values.password) {
+        errors.password = "Password is required";
+      } else if (!passRegex.test(values.password)) {
+        errors.password = "Invalid password";
+      }
 
-    if (!password.trim()) {
-      toast.error("Please Enter Password");
-      return;
-    }
+      if (!values.confirmPass) {
+        errors.confirmPass = "Confirm password is required";
+      } else if (values.confirmPass !== values.password) {
+        errors.confirmPass = "Passwords do not match";
+      }
 
-    if (!confirmPass.trim()) {
-      toast.error("Please Enter Confirm Password");
-      return;
-    }
-
-    if (password.length < 6 || confirmPass.length < 6) {
-      toast.error("At least 6 characters required");
-      return;
-    }
-
-    if (password !== confirmPass) {
-      toast.error("Password and Confirm Password do not match");
-      return;
-    }
-
-    const email = localStorage.getItem("resetEmail");
-
-    if (!email) {
-      toast.error("Email not found. Please restart the process.");
-      return;
-    }
-
-    const passwordData = { email, password };
-    onSubmit(passwordData);
-  };
+      return errors;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -56,22 +49,36 @@ const ResetPasswordForm = ({ onSubmit, role = "user" }: ResetPasswordFormProps) 
             Set a new password for your account.
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
-            />
+          <form onSubmit={formik.handleSubmit} className="space-y-6">
+            <div>
+              {formik.touched.password && formik.errors.password && (
+                <span className="text-sm text-red-500 ">{formik.errors.password}</span>
+              )}
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
+              />
+            </div>
 
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPass}
-              onChange={(e) => setConfirmPass(e.target.value)}
-              className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
-            />
+            <div>
+              {formik.touched.confirmPass && formik.errors.confirmPass && (
+                <span className="text-sm text-red-500">{formik.errors.confirmPass}</span>
+              )}
+              <input
+                type="password"
+                name="confirmPass"
+                placeholder="Confirm Password"
+                value={formik.values.confirmPass}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
+              />
+            </div>
 
             <button
               type="submit"

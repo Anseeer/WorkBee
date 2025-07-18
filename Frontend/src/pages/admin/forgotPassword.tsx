@@ -29,7 +29,7 @@ const AdminForgotPasswordPage = () => {
         }
     };
 
-    return <ForgotPasswordForm onSubmit={handleForgotPassword} role="admin" />;
+    return <ForgotPasswordForm Submit={handleForgotPassword}  />;
 };
 
 export default AdminForgotPasswordPage;

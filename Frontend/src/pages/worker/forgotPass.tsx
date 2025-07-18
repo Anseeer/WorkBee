@@ -29,7 +29,7 @@ const WorkerForgotPasswordPage = () => {
     }
   };
 
-  return <ForgotPasswordForm onSubmit={handleForgotPassword} role="worker" />;
+  return <ForgotPasswordForm Submit={handleForgotPassword}  />;
 };
 
 export default WorkerForgotPasswordPage;

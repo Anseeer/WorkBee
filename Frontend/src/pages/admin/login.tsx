@@ -40,7 +40,7 @@ const AdminLoginPage = () => {
         }
     };
 
-    return <LoginForm onSubmit={handleLogin} loading={loading} role="admin" />;
+    return <LoginForm Submit={handleLogin} loading={loading} role="admin" />;
 };
 
 export default AdminLoginPage;

@@ -40,7 +40,7 @@ const WorkerLoginPage = () => {
         }
     };
 
-    return <LoginForm onSubmit={handleLogin} loading={loading} role="worker" />;
+    return <LoginForm Submit={handleLogin} loading={loading} role="worker" />;
 };
 
 export default WorkerLoginPage;

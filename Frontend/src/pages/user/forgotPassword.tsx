@@ -29,7 +29,7 @@ const ForgotPasswordPage = () => {
     }
   };
 
-  return <ForgotPasswordForm onSubmit={handleForgotPassword} role="user" />;
+  return <ForgotPasswordForm Submit={handleForgotPassword}  />;
 };
 
 export default ForgotPasswordPage;

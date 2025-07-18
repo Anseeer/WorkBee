@@ -1,17 +1,15 @@
+import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-
 interface VerifyOtpFormProps {
   onResend: (email: string) => void;
-  verify: (verifyData: { email: string, otp: string }) => void;
+  verify: (verifyData: { email: string; otp: string }) => void;
 }
 
 const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
-
-  const [timeLeft, setTimeLeft] = useState<number>(60)
-  const [expired, setExpired] = useState<boolean>(false)
-  const [otp, setOtp] = useState<string>('')
+  const [timeLeft, setTimeLeft] = useState<number>(60);
+  const [expired, setExpired] = useState<boolean>(false);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -26,14 +24,8 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const handleResend = () => {
-    const email = localStorage.getItem('resetEmail');
+    const email = localStorage.getItem("resetEmail");
     if (!email) {
       toast.error("Email not found. Please try again.");
       return;
@@ -42,27 +34,39 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
     setTimeLeft(60);
     setExpired(false);
     onResend(email);
-  }
+  };
 
-  const handleVerify = () => {
+  const formik = useFormik({
+    initialValues: {
+      otp: "",
+    },
+    validate: (values) => {
+      const errors: { otp?: string } = {};
 
-    if (!otp || otp == " ") {
-      toast.error("OTP is required. Please try again.");
-      return;
-    }
+      if (!values.otp || values.otp.trim().length === 0) {
+        errors.otp = "OTP is required";
+      } else if (values.otp.length !== 6 || !/^\d+$/.test(values.otp)) {
+        errors.otp = "OTP must be 6 digits";
+      }
 
-    const email = localStorage.getItem('resetEmail');
+      return errors;
+    },
+    onSubmit: (values) => {
+      const email = localStorage.getItem("resetEmail");
+      if (!email) {
+        toast.error("Email not found. Please try again.");
+        return;
+      }
 
-    if (!email) {
-      toast.error("Email not found. Please try again.");
-      return;
-    }
+      verify({ email, otp: values.otp });
+    },
+  });
 
-    const verifyData = { email, otp };
-
-    verify(verifyData);
-
-  }
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   return (
     <div className="bg-gray-50 w-full min-h-screen relative">
@@ -76,19 +80,27 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
             Enter the 6-digit OTP sent to your email to verify your identity.
           </h2>
 
-          <div className="space-y-10 py-10 px-5">
-            <input
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              type="text"
-              placeholder="OTP"
-              className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
-            />
+          <form onSubmit={formik.handleSubmit} className="space-y-10 py-10 px-5">
+            <div>
+              {formik.touched.otp && formik.errors.otp && (
+                <span className="text-sm text-red-500 mt-1">{formik.errors.otp}</span>
+              )}
+              <input
+                type="text"
+                name="otp"
+                placeholder="OTP"
+                value={formik.values.otp}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
+              />
+            </div>
 
             {expired ? (
               <div className="text-center space-y-3">
                 <p className="text-red-600 font-semibold">Time expired</p>
                 <button
+                  type="button"
                   onClick={handleResend}
                   className="text-green-700 underline font-medium"
                 >
@@ -98,13 +110,12 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
             ) : (
               <button
                 type="submit"
-                onClick={handleVerify}
                 className="w-full bg-green-900 py-1 mt-2 text-white font-semibold rounded-full"
               >
                 Verify ({formatTime(timeLeft)})
               </button>
             )}
-          </div>
+          </form>
         </div>
       </div>
     </div>

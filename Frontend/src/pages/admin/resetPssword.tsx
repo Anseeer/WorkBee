@@ -42,7 +42,7 @@ const AdminResetPasswordPage = () => {
         }
     };
 
-    return <ResetPasswordForm onSubmit={handleReset} role="admin" />;
+    return <ResetPasswordForm handleSubmit={handleReset} role="admin" />;
 };
 
 export default AdminResetPasswordPage;

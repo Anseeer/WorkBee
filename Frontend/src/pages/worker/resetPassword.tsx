@@ -42,7 +42,7 @@ const WorkerResetPasswordPage = () => {
     }
   };
 
-  return <ResetPasswordForm onSubmit={handleReset} role="worker" />;
+  return <ResetPasswordForm handleSubmit={handleReset} role="worker" />;
 };
 
 export default WorkerResetPasswordPage;
