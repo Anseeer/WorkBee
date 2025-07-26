@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import ForgotPasswordForm from "../../components/ForgotPassForm";
+import ForgotPasswordForm from "../../components/common/ForgotPassForm";
 import { forgotPassUserThunk } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 
@@ -29,7 +29,7 @@ const WorkerForgotPasswordPage = () => {
     }
   };
 
-  return <ForgotPasswordForm Submit={handleForgotPassword}  />;
+  return <ForgotPasswordForm Submit={handleForgotPassword} />;
 };
 
 export default WorkerForgotPasswordPage;

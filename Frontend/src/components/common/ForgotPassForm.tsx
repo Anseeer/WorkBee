@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { emailRegex } from "../regexs";
+import { emailRegex } from "../../regexs";
 
 interface ForgotPasswordFormProps {
   Submit: (email: string) => void;

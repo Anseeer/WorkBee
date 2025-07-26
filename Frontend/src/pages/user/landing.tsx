@@ -1,7 +1,14 @@
+import Footer from "../../components/common/Footer";
+import Header from "../../components/user/Header";
+import HeroSection from "../../components/user/LandingHeroSection";
 
 const LandingPage = () => {
     return (
-        <h1>Landing Page</h1>
+        <>
+            <Header isLogged={false} />
+            <HeroSection />
+            <Footer />
+        </>
     );
 };
 

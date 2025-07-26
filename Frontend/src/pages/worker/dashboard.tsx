@@ -1,8 +1,11 @@
+import WorkerSidebar from "../../components/worker/WorkerSidebar";
 
-const WorkerDashBoard = () => {
-    return (
-        <h1>Worker Dash Board</h1>
+const Dashboard = ()=>{
+    return(
+        <>
+        <WorkerSidebar/>
+        </>
     )
 }
 
-export default WorkerDashBoard;
+export default Dashboard;

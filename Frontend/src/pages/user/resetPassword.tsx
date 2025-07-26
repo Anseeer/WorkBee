@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { resetPasswordUserThunk } from "../../slice/userSlice";
-import ResetPasswordForm from "../../components/ResetPassForm";
+import ResetPasswordForm from "../../components/common/ResetPassForm";
 import type { AxiosError } from "axios";
 import { emailRegex, passRegex } from "../../regexs";
 

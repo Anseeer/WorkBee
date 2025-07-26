@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { passRegex } from "../regexs";
+import { passRegex } from "../../regexs";
 
 interface ResetPasswordFormProps {
   handleSubmit: (passwordData: { email: string; password: string }) => void;
@@ -14,7 +14,7 @@ const ResetPasswordForm = ({ handleSubmit, role = "user" }: ResetPasswordFormPro
     },
     onSubmit: () => {
       const email = localStorage.getItem("resetEmail");
-      if (!email) return; 
+      if (!email) return;
       const passwordData = { email, password: formik.values.password };
       handleSubmit(passwordData);
     },

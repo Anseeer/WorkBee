@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { loginUserThunk } from "../../slice/userSlice";
-import LoginForm from "../../components/LoginForm";
+import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
 
 const LoginPage = () => {
@@ -31,7 +31,7 @@ const LoginPage = () => {
       const res = await dispatch(loginUserThunk(credentials)).unwrap();
       toast.success("Login successful!");
       localStorage.setItem("userToken", res.token);
-      navigate("/dashboard", { replace: true });
+      navigate("/home", { replace: true });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
       toast.error(msg || "Login failed");

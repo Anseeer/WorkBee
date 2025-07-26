@@ -1,9 +1,9 @@
 import type { JSX } from "react/jsx-dev-runtime";
-import { useAppSelector } from "../hooks/useAppSelector";
+import { useAppSelector } from "../../hooks/useAppSelector";
 import { Navigate } from "react-router-dom";
 import { useEffect } from "react";
-import { setTokenFromStorage } from "../slice/userSlice";
-import { useAppDispatch } from "../hooks/useAppDispatch";
+import { setTokenFromStorage } from "../../slice/userSlice";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {

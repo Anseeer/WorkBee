@@ -2,7 +2,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { resendOtpUserThunk, verifyOtpUserThunk } from "../../slice/workerSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import VerifyOtpForm from "../../components/VerifyOtpForm";
+import VerifyOtpForm from "../../components/common/VerifyOtpForm";
 import { emailRegex, otpRegex } from "../../regexs";
 import type { AxiosError } from "axios";
 

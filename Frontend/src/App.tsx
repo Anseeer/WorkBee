@@ -1,17 +1,18 @@
 import "./App.css"
-import Dashboard from "./pages/user/dashboard";
+import Dashboard from "./pages/user/home";
 import RegistrationPage from "./pages/user/register";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useEffect } from "react";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { setTokenFromStorage } from "./slice/userSlice";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import LoginPage from "./pages/user/login";
 import ForgotPAss from "./pages/user/forgotPassword";
 import OtpVerification from "./pages/user/OtpVerification";
 import ResetPassword from "./pages/user/resetPassword";
 import LandingPage from "./pages/user/landing";
 import WorkerRegistrationPage from "./pages/worker/register";
+import WorkerLandingPage from "./pages/worker/landing";
 import AdminRegistrationPage from "./pages/admin/register";
 import WorkerDashBoard from "./pages/worker/dashboard";
 import WorkerLoginPage from "./pages/worker/login";
@@ -30,7 +31,7 @@ const App = () => {
     if (token) {
       dispatch(setTokenFromStorage(token));
     }
-  }, []);
+  });
 
   return (
     <>
@@ -44,7 +45,7 @@ const App = () => {
           <Route path="/verify-otp" element={<OtpVerification />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route
-            path="/dashboard"
+            path="/home"
             element={
               <ProtectedRoute>
                 <Dashboard />
@@ -53,6 +54,7 @@ const App = () => {
           />
 
           {/* worker */}
+          <Route path="/workers/landing" element={<WorkerLandingPage />} />
           <Route path="/workers/register" element={<WorkerRegistrationPage />} />
           <Route path="/workers/login" element={<WorkerLoginPage />} />
           <Route path="/workers/dashboard" element={<WorkerDashBoard />} />

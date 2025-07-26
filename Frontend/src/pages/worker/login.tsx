@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import LoginForm from "../../components/LoginForm";
+import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
 import { loginWorkerThunk } from "../../slice/workerSlice";
 

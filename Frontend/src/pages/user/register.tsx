@@ -185,7 +185,7 @@ const RegistrationPage = () => {
       const res = await Dispatch(registerUserThunk(state)).unwrap()
       toast.success("Registration successful!");
       localStorage.setItem('userToken', res.token);
-      navigate('/dashboard', { replace: true })
+      navigate('/home', { replace: true })
     } catch (error: unknown) {
       const err = error as AxiosError<{ data: string }>;
       if (err.response?.data?.data) {

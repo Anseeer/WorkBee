@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { loginAdminThunk } from "../../slice/adminSlice";
-import LoginForm from "../../components/LoginForm";
+import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
 
 const AdminLoginPage = () => {
