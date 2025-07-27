@@ -10,12 +10,26 @@ import { deleteOtp, getOtp, saveOtp } from "../../utilities/otpStore";
 import { IAdminService } from "./admin.services.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
+import { UserRepository } from "../../repositories/user/user.repo";
+import { mapUserToDTO } from "../../mappers/user/user.map.DTO";
+import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
+import { WorkerRepository } from "../../repositories/worker/worker.repo";
+import mapWorkerToDTO from "../../mappers/worker/worker.map.DTO";
+import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 
 @injectable()
 export class AdminService implements IAdminService {
     private _adminRepository: AdminRepository;
-    constructor(@inject(TYPES.adminRepository) adminRepo: AdminRepository) {
+    private _userRepository: UserRepository;
+    private _workerRepository: WorkerRepository;
+    constructor(
+        @inject(TYPES.adminRepository) adminRepo: AdminRepository,
+        @inject(TYPES.userRepository) userRepo: UserRepository,
+        @inject(TYPES.workerRepository) workerRepo: WorkerRepository
+    ) {
         this._adminRepository = adminRepo;
+        this._userRepository = userRepo;
+        this._workerRepository = workerRepo;
     }
 
     async register(adminData: IAdmin): Promise<{ token: string, admin: IAdminDTO }> {
@@ -94,6 +108,31 @@ export class AdminService implements IAdminService {
     async resetPass(email: string, password: string): Promise<void> {
         const hashedPass = await bcrypt.hash(password, 10);
         await this._adminRepository.resetPassword(email, hashedPass);
+    }
+
+    async fetchUsers(): Promise<IUserDTO[] | undefined> {
+        const allUsers = await this._userRepository.getAllUsers();
+        const users = allUsers?.map((item) => mapUserToDTO(item));
+        return users;
+    }
+
+    async setIsActiveUsers(id: string): Promise<boolean> {
+        if (!id) {
+            throw new Error('id not get');
+        }
+        return await this._userRepository.setIsActive(id);
+    }
+    async setIsActiveWorkers(id: string): Promise<boolean> {
+        if (!id) {
+            throw new Error('id not get');
+        }
+        return await this._workerRepository.setIsActive(id);
+    }
+
+    async fetchWorkers(): Promise<IWorkerDTO[] | undefined> {
+        const allWorkers = await this._workerRepository.getAllWorkers();
+        const workers = allWorkers.map((item) => mapWorkerToDTO(item));
+        return workers;
     }
 
 

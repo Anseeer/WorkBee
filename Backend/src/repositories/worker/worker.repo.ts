@@ -34,4 +34,20 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         );
     }
 
+    async getAllWorkers(): Promise<IWorker[]> {
+        let allWorker = await this.model.find({ role: "worker" });
+        return allWorker;
+    }
+
+    async setIsActive(id: string): Promise<boolean> {
+        let worker = await this.model.findById(id);
+        if (!worker) {
+            throw new Error("user not find in the id");
+        }
+        let newStatus = !worker.isActive;
+
+        await this.model.updateOne({ _id: id }, { $set: { isActive: newStatus } });
+        return true;
+    }
+
 }

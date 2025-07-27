@@ -128,4 +128,63 @@ export class AdminController implements IAdminController {
 
     };
 
+    fetchUsers = async (req: Request, res: Response) => {
+        try {
+            const users = await this._adminService.fetchUsers();
+            const response = new successResponse(200, "Successfully get all users", users);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed to fetch users", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    setIsActiveUsers = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = req.query.id as string;
+            await this._adminService.setIsActiveUsers(id);
+            let response = new successResponse(200, "Update status successfully", {});
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed to set status of users", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    setIsActiveWorkers = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = req.query.id as string;
+            await this._adminService.setIsActiveWorkers(id);
+            let response = new successResponse(200, "Update status successfully", {});
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed to set status of workers", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    fetchWorkers = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const workers = await this._adminService.fetchWorkers();
+            const response = new successResponse(200, "Successfully get all workers", workers);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed to fetch workers", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+
 }

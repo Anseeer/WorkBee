@@ -1,4 +1,6 @@
 import { IAdminDTO } from "../../mappers/admin/admin.map.DTO.interface";
+import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
+import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IAdmin } from "../../model/admin/admin.interface";
 
 export interface IAdminService {
@@ -8,6 +10,11 @@ export interface IAdminService {
     resendOtp(email: string): Promise<string>;
     getUserById(id: string): Promise<IAdmin | null>;
     getUserByEmail(email: string): Promise<IAdmin | null>;
+    getUserByEmail(email: string): Promise<IAdmin | null>;
     verifyOtp(email: string, otp: string): Promise<boolean>;
     resetPass(email: string, password: string): Promise<void>;
+    fetchUsers(): Promise<IUserDTO[] | undefined>;
+    setIsActiveUsers(id: string): Promise<boolean>;
+    setIsActiveWorkers(id: string): Promise<boolean>;
+    fetchWorkers(): Promise<IWorkerDTO[] | undefined>;
 }

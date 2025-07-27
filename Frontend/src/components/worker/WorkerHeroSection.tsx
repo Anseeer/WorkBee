@@ -3,8 +3,10 @@ import StepOneIcon from "../../assets/stepOne-icon.png"
 import StepTwoIcon from "../../assets/stepTwo-icon.png"
 import StepThreeIcon from "../../assets/setThree-icon.png"
 import StepFourIcon from "../../assets/stepFour-icon.png"
+import { useNavigate } from "react-router-dom"
 
 const HeroSection = () => {
+    const navigate = useNavigate();
     return (
         <section className="bg-white items-center">
             <div className="max-w-7xl mx-auto px-6 grid py-10 grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -18,7 +20,7 @@ const HeroSection = () => {
                     <p className="text-green-950 text-lg leading-relaxed">
                         Turn your skills into income. Whether you're a cleaner, plumber, technician, or just good with hands — get matched with people who need your help in your area                    </p>
 
-                    <button className="flex px-3 py-1 bg-green-700 text-white  rounded-full border overflow-hidden shadow-lg max-w-md">
+                    <button onClick={()=> navigate('/workers/register')} className="flex px-3 py-1 bg-green-700 text-white  rounded-full border overflow-hidden shadow-lg max-w-md">
                         Get started
                     </button>
                 </div>

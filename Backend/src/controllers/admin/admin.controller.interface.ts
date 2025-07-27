@@ -7,4 +7,8 @@ export interface IAdminController {
     resendOtp(req: Request, res: Response): Promise<void>;
     verifyOtp(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
+    fetchUsers(req: Request, res: Response): Promise<void>;
+    setIsActiveUsers(req: Request, res: Response): Promise<void>;
+    setIsActiveWorkers(req: Request, res: Response): Promise<void>;
+    fetchWorkers(req: Request, res: Response): Promise<void>;
 }

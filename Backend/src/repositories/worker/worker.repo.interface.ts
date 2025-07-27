@@ -12,4 +12,6 @@ export interface IWorkerRepository {
     findAvailablityByWorkerId(id: string): Promise<IAvailability | null>;
     setAvailablity(availablity: IAvailability): Promise<IAvailability>;
     updateAvailablity(id: string, availability: IAvailability): Promise<UpdateWriteOpResult>;
+    getAllWorkers(): Promise<IWorker[]>;
+    setIsActive(id: string): Promise<boolean>;
 }

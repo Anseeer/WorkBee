@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Bell, Menu, MessageSquare, User, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface prop{
     isLogged:boolean;
@@ -7,7 +8,7 @@ interface prop{
 
 export default function Header({isLogged}:prop) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+    const navigate = useNavigate();
 
     return (
         <header className="bg-white border-b border-gray-200 relative">
@@ -22,10 +23,10 @@ export default function Header({isLogged}:prop) {
                         {!isLogged ? (
                             // Before Login
                             <>
-                                <button className="text-gray-700 hover:text-green-700 font-medium transition-colors">
+                                <button onClick={()=> navigate('/register')} className="text-gray-700 hover:text-green-700 font-medium transition-colors">
                                     Sign up / Login
                                 </button>
-                                <button className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200">
+                                <button onClick={()=> navigate('/workers/landing')} className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200">
                                     Become Worker
                                 </button>
                             </>
