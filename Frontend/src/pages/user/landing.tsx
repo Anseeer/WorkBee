@@ -5,7 +5,7 @@ import HeroSection from "../../components/user/LandingHeroSection";
 const LandingPage = () => {
     return (
         <>
-            <Header isLogged={false} />
+            <Header />
             <HeroSection />
             <Footer />
         </>

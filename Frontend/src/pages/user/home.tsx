@@ -6,7 +6,7 @@ const Home = () => {
 
   return (
     <>
-      <Header isLogged={true} />
+      <Header />
       <HomeHeroSection />
       <Footer />
     </>

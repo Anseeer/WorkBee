@@ -17,7 +17,7 @@ export default function Header() {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-6">
-                        <button onClick={()=> navigate('/workers/register')} className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200 w-fit">
+                        <button onClick={() => navigate('/workers/register')} className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200 w-fit">
                             Sign up / Login
                         </button>
                     </div>
@@ -41,7 +41,7 @@ export default function Header() {
                 {isMobileMenuOpen && (
                     <div className="md:hidden absolute top-16 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 w-60">
                         <div className="flex flex-col space-y-4">
-                            <button onClick={()=> navigate('/workers/register')} className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200 w-fit">
+                            <button onClick={() => navigate('/workers/register')} className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200 w-fit">
                                 Sign up / Login
                             </button>
 

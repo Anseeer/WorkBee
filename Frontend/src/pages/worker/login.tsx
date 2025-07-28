@@ -30,7 +30,9 @@ const WorkerLoginPage = () => {
             setLoading(true);
             const res = await dispatch(loginWorkerThunk(credentials)).unwrap();
             toast.success("Login successful!");
+            localStorage.clear();
             localStorage.setItem("workerToken", res.token);
+            localStorage.setItem("role", res.worker.role);
             navigate("/workers/dashboard", { replace: true });
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : String(error);

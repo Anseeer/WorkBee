@@ -2,13 +2,16 @@ import { useEffect, useState } from 'react';
 import { fetchWorkers, setIsActiveWorkers } from '../../services/adminService';
 import { DataTable, type Column } from '../common/Table';
 import type { IWorker } from '../../types/IWorker';
+import { useWorkerDetails } from '../context/WorkerDetailContext';
 
 const WorkersTable = () => {
     const [workers, setWorkers] = useState<IWorker[]>([]);
+    const { setSelectedDetails } = useWorkerDetails()
 
     useEffect(() => {
         const fetchData = async () => {
             const res = await fetchWorkers();
+            console.log("Res Fetch Workers :", res)
             setWorkers(res.data.data);
         };
         fetchData();
@@ -45,23 +48,28 @@ const WorkersTable = () => {
             label: 'Active',
             render: (u) => (
                 <div
-                    onClick={() => handleToggle(u.id)}
+
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggle(u.id);
+                    }}
                     className={`cursor-pointer w-11 h-6 rounded-full flex items-center ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}
                 >
                     <div
                         className={`w-4 h-4 rounded-full bg-white transform transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'}`}
                     />
-                </div>
+                </div >
             )
         }
     ];
 
     return (
         <div className="p-4 max-w-7xl mx-auto">
-            <DataTable
+            <DataTable<IWorker>
                 data={workers}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
+                onRowClick={(worker) => setSelectedDetails(worker)}
             />
         </div>
     );

@@ -3,11 +3,17 @@ import AdminSidebar from "../../components/admin/AdminSidebar";
 import UserTable from "../../components/admin/UsersTable";
 import WorkersTable from "../../components/admin/WorkersTable";
 import WorkerDetails from "../../components/admin/WorkerDetails";
+import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
+
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const { selectedDetails, setSelectedDetails } = useWorkerDetails();
+    console.log("SelectedDetails :", selectedDetails)
+
     const handleTab = (tab: string) => {
         setActiveTab(tab);
+        setSelectedDetails(null)
     }
     return (
         <>
@@ -19,12 +25,17 @@ const AdminDashboard = () => {
                     {activeTab == "users" ? (
                         <UserTable />
                     ) : activeTab == "workers" ? (
-                        <WorkersTable />
+                        <>
+                            {selectedDetails ? (
+                                <WorkerDetails />
+                            ) : (
+                                <WorkersTable />
+                            )}
+                        </>
                     ) : activeTab == "dashboard" ? (
-                       <>
-                        {/* <h1>DashBoard</h1> */}
-                        <WorkerDetails/>
-                       </>
+                        <>
+                            <h1>DashBoard</h1>
+                        </>
                     ) : null}
                 </div>
             </div>

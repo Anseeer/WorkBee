@@ -19,14 +19,14 @@ const initialState: userState = {
 
 
 export const registerUserThunk = createAsyncThunk("users/register",
-    async (userData: Iuser, { rejectWithValue }) => {
+    async (userData: Partial<Iuser>, { rejectWithValue }) => {
         try {
             const response = await register(userData);
             console.log("response.data :", response.data)
             return response.data.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
-            const errorMessage = error.response?.data?.data || "Something went wrong";
+            const errorMessage = error || "Something went wrong";
             return rejectWithValue(errorMessage);
         }
     }
@@ -105,6 +105,7 @@ const userSlice = createSlice({
     reducers: {
         logout: (state: userState) => {
             state.user = null;
+            state.token = null;
             state.error = null;
         },
         setTokenFromStorage(state, action) {

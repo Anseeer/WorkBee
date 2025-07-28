@@ -7,9 +7,15 @@ import reviewIcon from "../../assets/review-icon.png";
 import walletIcon from "../../assets/wallet-icon.png";
 import logoutIcon from "../../assets/logout-icon.png";
 import { useState } from "react";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { logout } from "../../slice/workerSlice";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function WorkerSidebar() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleClick = (tab: string) => {
     setActiveTab(tab);
@@ -90,7 +96,7 @@ export default function WorkerSidebar() {
         </div>
 
         {/* Review & Ratings */}
-         <div
+        <div
           onClick={() => handleClick("review&ratings")}
           className={`flex items-center space-x-3 p-3 rounded-md cursor-pointer mt-2 transition duration-150 
                     ${activeTab === "review&ratings"
@@ -104,7 +110,7 @@ export default function WorkerSidebar() {
         </div>
 
         {/* Wallet */}
-         <div
+        <div
           onClick={() => handleClick("wallet")}
           className={`flex items-center space-x-3 p-3 rounded-md cursor-pointer mt-2 transition duration-150 
                     ${activeTab === "wallet"
@@ -120,7 +126,13 @@ export default function WorkerSidebar() {
 
       {/* Logout Section */}
       <div className="p-6">
-        <div className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-800 mt-2 transition duration-150 cursor-pointer">
+        <div
+          onClick={() => {
+            dispatch(logout());
+            localStorage.clear();
+            navigate("/workers/landing");
+            toast.success("Logout Successfully");
+          }} className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-800 mt-2 transition duration-150 cursor-pointer">
           <img src={logoutIcon} alt="Logout" className="w-5 h-5" />
           <span className="text-md text-gray-400 font-medium">Logout</span>
         </div>

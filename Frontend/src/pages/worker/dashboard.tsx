@@ -1,9 +1,9 @@
 import WorkerSidebar from "../../components/worker/WorkerSidebar";
 
-const Dashboard = ()=>{
-    return(
+const Dashboard = () => {
+    return (
         <>
-        <WorkerSidebar/>
+            <WorkerSidebar />
         </>
     )
 }

@@ -30,7 +30,9 @@ const AdminLoginPage = () => {
             setLoading(true);
             const res = await dispatch(loginAdminThunk(credentials)).unwrap();
             toast.success("Login successful!");
-            localStorage.setItem("userToken", res.token);
+            localStorage.clear();
+            localStorage.setItem("adminToken", res.token);
+            localStorage.setItem("role", res.admin.role);
             navigate("/admins/dashboard", { replace: true });
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : String(error);

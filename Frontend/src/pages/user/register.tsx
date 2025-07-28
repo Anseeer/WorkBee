@@ -1,83 +1,99 @@
-import { useReducer, useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { registerUserThunk } from "../../slice/userSlice";
 import { useNavigate } from "react-router-dom";
 import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import type { AxiosError } from "axios";
-import type { Action } from "../../types/ActionTypes";
-
-
-interface IState {
-  name: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-  location: {
-    address: string;
-    pincode: string;
-    lat: number | null;
-    lng: number | null;
-  },
-}
-
-const initialState: IState = {
-  name: "",
-  email: "",
-  phone: "",
-  password: "",
-  confirmPassword: "",
-  location: {
-    address: "",
-    pincode: "",
-    lat: null,
-    lng: null,
-  }
-};
-
-function reducer(state: IState, action: Action): IState {
-  switch (action.type) {
-    case "SET_NAME":
-      return { ...state, name: action.payload };
-    case "SET_EMAIL":
-      return { ...state, email: action.payload };
-    case "SET_PHONE":
-      return { ...state, phone: action.payload };
-    case "SET_LOCATION_ADDRESS":
-      return {
-        ...state,
-        location: {
-          ...state.location,
-          address: action.payload,
-        },
-      };
-    case "SET_LOCATION":
-      return {
-        ...state,
-        location: {
-          address: action.payload.address,
-          pincode: action.payload.pincode,
-          lat: action.payload.lat,
-          lng: action.payload.lng,
-        }
-      };
-    case "SET_PASS":
-      return { ...state, password: action.payload };
-    case "SET_CONFIRM_PASS":
-      return { ...state, confirmPassword: action.payload };
-    default:
-      return state;
-  }
-}
+import { useFormik } from "formik";
 
 const RegistrationPage = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const Dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+      location: {
+        address: "",
+        pincode: "",
+        lat: 0,
+        lng: 0,
+      },
+    },
+    onSubmit: async (values) => {
+      setLoading(true);
+      try {
+        console.log(values)
+        const res = await Dispatch(registerUserThunk(values)).unwrap()
+        toast.success("Registration successful!");
+        localStorage.clear();
+        localStorage.setItem('userToken', res.token);
+        localStorage.setItem('role', res.user.role);
+        navigate('/home', { replace: true })
+      } catch (error: unknown) {
+        const err = error as AxiosError<{ data: string }>;
+        const message = err.response?.data?.data || "Registration failed";
+        toast.error(message)
+      } finally {
+        setLoading(false);
+      }
+    },
+    validate: (values) => {
+      const errors: {
+        name?: string;
+        email?: string;
+        phone?: string;
+        password?: string;
+        confirmPassword?: string;
+        location?: {
+          address?: string;
+          pincode?: string;
+          lat?: number;
+          lng?: number;
+        };
+      } = {};
+
+      if (!values.name) errors.name = "Name is required";
+
+      if (!values.email) {
+        errors.email = "Email is required";
+      } else if (!emailRegex.test(values.email)) {
+        errors.email = "Invalid email format";
+      }
+      if (!values.phone) {
+        errors.phone = "Phone number is required";
+      } else if (!phoneRegex.test(values.phone)) {
+        errors.phone = "Invalid phone number";
+      }
+
+      if (!values.password) {
+        errors.password = "Password is required";
+      } else if (!passRegex.test(values.password)) {
+        errors.password = "Invalid password format";
+      }
+
+      if (!values.confirmPassword) {
+        errors.confirmPassword = "Password is required";
+      } else if (!passRegex.test(values.confirmPassword)) {
+        errors.confirmPassword = "Invalid password format";
+      }
+
+      if (!values.location.address) {
+        errors.location = { address: "Location is required" };
+      }
+
+
+      return errors;
+    },
+  })
 
   useEffect(() => {
     const loadGoogleMapsAPI = () => {
@@ -98,7 +114,7 @@ const RegistrationPage = () => {
   }, []);
 
   const initializeAutocomplete = () => {
-    if (!inputRef.current || !window.google) return ;
+    if (!inputRef.current || !window.google) return;
 
     autocompleteRef.current = new window.google.maps.places.Autocomplete(
       inputRef.current,
@@ -109,195 +125,213 @@ const RegistrationPage = () => {
       }
     );
 
-
-    autocompleteRef.current.addListener('place_changed', () => {
+    autocompleteRef.current.addListener("place_changed", () => {
       const place = autocompleteRef.current?.getPlace();
 
-      if (!place || !place.geometry) {
-        console.log('No place data available');
-        return;
-      }
-
+      if (!place || !place.geometry) return;
 
       const addressComponents = place.address_components || [];
-      let pincode = '';
-
+      let pincode = "";
 
       for (const component of addressComponents) {
-        if (component.types.includes('postal_code')) {
+        if (component.types.includes("postal_code")) {
           pincode = component.long_name;
           break;
         }
       }
 
+      const lat = place.geometry.location?.lat() || 0;
+      const lng = place.geometry.location?.lng() || 0;
 
-      const lat = place.geometry.location?.lat();
-      const lng = place.geometry.location?.lng();
-
-
-      dispatch({
-        type: "SET_LOCATION",
-        payload: {
-          address: place.formatted_address || '',
-          pincode: pincode,
-          lat: lat || null,
-          lng: lng || null,
-        }
+      formik.setFieldValue("location", {
+        address: place.formatted_address || "",
+        pincode,
+        lat,
+        lng,
       });
     });
-  };
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!state.name?.trim() || !state.email?.trim() || !state.phone?.trim() || !state.password?.trim() || !state.confirmPassword?.trim()) {
-      toast.error("All fields are required");
-      return;
-    }
-
-    if (!emailRegex.test(state.email)) {
-      toast.error("Invalid email format");
-      return;
-    }
-
-    if (!passRegex.test(state.password)) {
-      toast.error("Password must be at least 6 characters long and include letters, numbers, and symbols like _ . @");
-      return;
-    }
-
-    if (state.password !== state.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    if (!state.location || !state.location.address || !state.location.pincode) {
-      toast.error("Location is required");
-      return;
-    }
-
-    if (!phoneRegex.test(state.phone)) {
-      toast.error("Invalid phone number");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await Dispatch(registerUserThunk(state)).unwrap()
-      toast.success("Registration successful!");
-      localStorage.setItem('userToken', res.token);
-      navigate('/home', { replace: true })
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ data: string }>;
-      if (err.response?.data?.data) {
-        toast.error(err.response.data.data);
-      } else {
-        toast.error("Registration failed");
-      }
-    } finally {
-      setLoading(false);
-    }
 
   };
+
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 fixed w-full">
-
       <div className="absolute top-7.5 left-7.5">
-        <h1 className="merienda-text text-3xl text-green-900">
-          WorkBee
-        </h1>
+        <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
       </div>
 
-
       <div className="flex items-center justify-center m-25">
-        <div className="w-full max-w-xl   ">
+        <div className="w-full max-w-xl">
           <div className="bg-white rounded-3xl border-2 min-h-[400px] border-green-600 p-6 shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 text-center mb-6">
               Let's get you started
             </h2>
 
-            <div className="space-y-4">
-
+            {/* ✅ Registration Form */}
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
+              {/* Username + Location */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <input
-                  value={state.name}
-                  onChange={(e) => dispatch({ type: "SET_NAME", payload: e.target.value })}
-                  type="text"
-                  placeholder="username"
-                  className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
-                />
-                <input
-                  value={state.location.address}
-                  onChange={(e) => dispatch({ type: "SET_LOCATION_ADDRESS", payload: e.target.value })}
-                  type="text"
-                  ref={inputRef}
-                  placeholder="location"
-                  className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
-                />
+                {/* Username */}
+                <div>
+                  <div className="h-5">
+                    {formik.touched.name && formik.errors.name && (
+                      <span className="text-sm text-red-500">{formik.errors.name}</span>
+                    )}
+                  </div>
+                  <input
+                    name="name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="text"
+                    placeholder="Username"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                         border-0 border-b-2 border-gray-300 focus:border-green-600 
+                         focus:outline-none bg-transparent"
+                  />
+                </div>
+
+                {/* Location */}
+                <div>
+                  <div className="h-5">
+                    {formik.touched.location?.address && formik.errors.location?.address && (
+                      <span className="text-sm text-red-500">{formik.errors.location.address}</span>
+                    )}
+                  </div>
+                  <input
+                    name="location.address"
+                    value={formik.values.location.address}
+                    onChange={(e) => {
+                      formik.setFieldValue("location.address", e.target.value);
+                    }}
+                    onBlur={formik.handleBlur}
+                    ref={inputRef}
+                    type="text"
+                    placeholder="Location"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                         border-0 border-b-2 border-gray-300 focus:border-green-600 
+                         focus:outline-none bg-transparent"
+                  />
+                </div>
               </div>
 
-
+              {/* Email + Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  value={state.email}
-                  onChange={(e) => dispatch({ type: "SET_EMAIL", payload: e.target.value })}
-                  type="email"
-                  placeholder="email"
-                  className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
-                />
-                <input
-                  value={state.phone}
-                  onChange={(e) => dispatch({ type: "SET_PHONE", payload: e.target.value })}
-                  type="tel"
-                  placeholder="phone"
-                  className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
-                />
+                <div>
+                  <div className="h-5">
+                    {formik.touched.email && formik.errors.email && (
+                      <span className="text-sm text-red-500">{formik.errors.email}</span>
+                    )}
+                  </div>
+                  <input
+                    name="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="email"
+                    placeholder="Email"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                         border-0 border-b-2 border-gray-300 focus:border-green-600 
+                         focus:outline-none bg-transparent"
+                  />
+                </div>
+
+                <div>
+                  <div className="h-5">
+                    {formik.touched.phone && formik.errors.phone && (
+                      <span className="text-sm text-red-500">{formik.errors.phone}</span>
+                    )}
+                  </div>
+                  <input
+                    name="phone"
+                    value={formik.values.phone}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="tel"
+                    placeholder="Phone"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                         border-0 border-b-2 border-gray-300 focus:border-green-600 
+                         focus:outline-none bg-transparent"
+                  />
+                </div>
               </div>
 
-
+              {/* Password + Confirm Password */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  value={state.password}
-                  onChange={(e) => dispatch({ type: "SET_PASS", payload: e.target.value })}
-                  type="password"
-                  placeholder="password"
-                  className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
-                />
-                <input
-                  value={state.confirmPassword}
-                  onChange={(e) => dispatch({ type: "SET_CONFIRM_PASS", payload: e.target.value })}
-                  type="password"
-                  placeholder="confirm password"
-                  className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
-                />
+                <div>
+                  <div className="h-5">
+                    {formik.touched.password && formik.errors.password && (
+                      <span className="text-sm text-red-500">{formik.errors.password}</span>
+                    )}
+                  </div>
+                  <input
+                    name="password"
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="password"
+                    placeholder="Password"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                         border-0 border-b-2 border-gray-300 focus:border-green-600 
+                         focus:outline-none bg-transparent"
+                  />
+                </div>
+
+                <div>
+                  <div className="h-5">
+                    {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                      <span className="text-sm text-red-500">{formik.errors.confirmPassword}</span>
+                    )}
+                  </div>
+                  <input
+                    name="confirmPassword"
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    type="password"
+                    placeholder="Confirm Password"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                         border-0 border-b-2 border-gray-300 focus:border-green-600 
+                         focus:outline-none bg-transparent"
+                  />
+                </div>
               </div>
 
-
+              {/* Submit */}
               <div className="pt-4">
                 <button
-                  onClick={onSubmit}
+                  type="submit"
                   disabled={loading}
-                  className="w-full bg-green-900 h-[30px] hover:bg-green-600 text-white  font-semibold py-3 pt-1 px-4 rounded-full transition-colors duration-200"
+                  className="w-full bg-green-900 h-[30px] hover:bg-green-600 
+                       text-white font-semibold py-3 pt-1 px-4 
+                       rounded-full transition-colors duration-200"
                 >
                   {loading ? "Signing..." : "Sign up"}
                 </button>
               </div>
 
-
+              {/* Sign-in */}
               <div className="text-center pt-2">
                 <p className="text-gray-600 text-sm">
                   Already have account?{" "}
-                  <span onClick={() => navigate('/login', { replace: true })} className="text-green-600 hover:text-green-700 font-medium cursor-pointer">
+                  <span
+                    onClick={() => navigate("/login", { replace: true })}
+                    className="text-green-600 hover:text-green-700 font-medium cursor-pointer"
+                  >
                     Sign in
                   </span>
                 </p>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
-
     </div>
   );
+
 };
 
 export default RegistrationPage;
+
+

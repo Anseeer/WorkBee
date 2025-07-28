@@ -13,7 +13,6 @@ import ResetPassword from "./pages/user/resetPassword";
 import LandingPage from "./pages/user/landing";
 import WorkerRegistrationPage from "./pages/worker/register";
 import WorkerLandingPage from "./pages/worker/landing";
-import AdminRegistrationPage from "./pages/admin/register";
 import WorkerDashBoard from "./pages/worker/dashboard";
 import WorkerLoginPage from "./pages/worker/login";
 import WorkerForgotPasswordPage from "./pages/worker/forgotPass";
@@ -21,9 +20,9 @@ import WorkerOtpVerification from "./pages/worker/verifyOtp";
 import WorkerResetPasswordPage from "./pages/worker/resetPassword";
 import AdminDashboard from "./pages/admin/dashboard";
 import AdminLoginPage from "./pages/admin/login";
-import AdminForgotPasswordPage from "./pages/admin/forgotPassword";
-import AdminOtpVerification from "./pages/admin/verifyOtp";
-import AdminResetPasswordPage from "./pages/admin/resetPssword";
+import WorkerDetails from "./components/admin/WorkerDetails";
+import { WorkerDetailsProvider } from "./components/context/WorkerDetailContext";
+import GuestRoute from "./components/common/GuestRoute";
 const App = () => {
   const dispatch = useAppDispatch()
   useEffect(() => {
@@ -38,7 +37,11 @@ const App = () => {
       <Router>
         <Routes>
           {/* user */}
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={
+            <GuestRoute roleType="User" >
+              <LandingPage />
+            </GuestRoute>
+          } />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPAss />} />
@@ -47,30 +50,40 @@ const App = () => {
           <Route
             path="/home"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["User"]} >
                 <Dashboard />
               </ProtectedRoute>
             }
           />
 
           {/* worker */}
-          <Route path="/workers/landing" element={<WorkerLandingPage />} />
+          <Route path="/workers/landing" element={
+            <GuestRoute roleType="Worker" >
+              <WorkerLandingPage />
+            </GuestRoute>
+          } />
           <Route path="/workers/register" element={<WorkerRegistrationPage />} />
           <Route path="/workers/login" element={<WorkerLoginPage />} />
-          <Route path="/workers/dashboard" element={<WorkerDashBoard />} />
+          <Route path="/workers/dashboard" element={
+            <ProtectedRoute allowedRoles={["Worker"]}>
+              <WorkerDashBoard />
+            </ProtectedRoute>
+          } />
           <Route path="/workers/forgot-password" element={<WorkerForgotPasswordPage />} />
           <Route path="/workers/verify-otp" element={<WorkerOtpVerification />} />
           <Route path="/workers/reset-password" element={<WorkerResetPasswordPage />} />
 
           {/* admin */}
-          <Route path="/admins/register" element={<AdminRegistrationPage />} />
-          <Route path="/admins/dashboard" element={<AdminDashboard />} />
+          <Route path="/admins/workers-detail" element={<WorkerDetails />} />
+          <Route path="/admins/dashboard" element={
+            <WorkerDetailsProvider>
+              <ProtectedRoute allowedRoles={["Admin"]} >
+                <AdminDashboard />
+              </ProtectedRoute>
+            </WorkerDetailsProvider>
+          } />
           <Route path="/admins/login" element={<AdminLoginPage />} />
-          <Route path="/admins/forgot-password" element={<AdminForgotPasswordPage />} />
-          <Route path="/admins/verify-otp" element={<AdminOtpVerification />} />
-          <Route path="/admins/reset-password" element={<AdminResetPasswordPage />} />
-
-
+          
         </Routes>
       </Router>
     </>

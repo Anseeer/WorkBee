@@ -27,7 +27,7 @@ export const registerWorkerThunk = createAsyncThunk(
             return response.data.data;
         } catch (error: unknown) {
             const err = error as AxiosError<{ data: string }>;
-            const errMsg = err.response?.data.data || "Unknown error";
+            const errMsg = err || "Unknown error";
             return rejectWithValue(errMsg);
         }
     }
@@ -108,7 +108,11 @@ const workerSlice = createSlice({
     name: "worker",
     initialState,
     reducers: {
-
+        logout: (state) => {
+            state.error = null;
+            state.token = null;
+            state.worker = null;
+        }
     },
     extraReducers: (build) => {
         build
@@ -138,5 +142,7 @@ const workerSlice = createSlice({
             })
     }
 })
+
+export const { logout } = workerSlice.actions;
 
 export default workerSlice.reducer;

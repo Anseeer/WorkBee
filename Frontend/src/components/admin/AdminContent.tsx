@@ -1,9 +1,9 @@
 
-interface Props{
-    activeTab : string;
+interface Props {
+    activeTab: string;
 }
-const AdminContant = ({activeTab}:Props)=>{
-    switch(activeTab){
+const AdminContant = ({ activeTab }: Props) => {
+    switch (activeTab) {
         case "users":
             return <h1>Users</h1>;
         case "workers":

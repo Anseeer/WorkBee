@@ -104,31 +104,33 @@ const LoginForm = ({ Submit, loading = false, role }: LoginFormProps) => {
           </form>
 
           {/* Links */}
-          <div className="pt-6 space-y-2">
-            <div className="flex items-center text-sm">
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
-              <span className="text-gray-600">Forgot</span>
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer bg-transparent border-none"
-              >
-                Password?
-              </button>
-            </div>
+          {role !== "admin" &&
+            <div className="pt-6 space-y-2">
+              <div className="flex items-center text-sm">
+                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
+                <span className="text-gray-600">Forgot</span>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer bg-transparent border-none"
+                >
+                  Password?
+                </button>
+              </div>
 
-            <div className="flex items-center text-sm">
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
-              <span className="text-gray-600">Don't have an account?</span>
-              <button
-                type="button"
-                onClick={handleRegister}
-                className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer bg-transparent border-none"
-              >
-                Sign up
-              </button>
+              <div className="flex items-center text-sm">
+                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
+                <span className="text-gray-600">Don't have an account?</span>
+                <button
+                  type="button"
+                  onClick={handleRegister}
+                  className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer bg-transparent border-none"
+                >
+                  Sign up
+                </button>
+              </div>
             </div>
-          </div>
+          }
         </div>
       </div>
     </div>

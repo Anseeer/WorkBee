@@ -1,24 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useWorkerDetails } from '../context/WorkerDetailContext';
 
-interface WorkerDetailsProps {
-    worker?: {
-        fullName: string;
-        email: string;
-        phone: string;
-        location: string;
-        age: number;
-        minimumHoursPerDay: string;
-        workingHours: string;
-        totalWorks: number;
-        completedWorks: number;
-        description: string;
-        categories: string[];
-        services: string[];
-    };
-}
-
-const WorkerDetails: React.FC<WorkerDetailsProps> = ({ worker }) => {
+const WorkerDetails: React.FC = () => {
     const today = new Date();
     const month = today.getMonth() + 1;
     const year = today.getFullYear();
@@ -27,22 +11,11 @@ const WorkerDetails: React.FC<WorkerDetailsProps> = ({ worker }) => {
     const [showAllCategories, setShowAllCategories] = useState(false);
     const [showAllServices, setShowAllServices] = useState(false);
 
-    const defaultWorker = {
-        fullName: "AHMED ANSEER AD",
-        email: "ahmedanseer007@gmail.com",
-        phone: "91+ 7736222757",
-        location: "kasaragod , kerala",
-        age: 21,
-        minimumHoursPerDay: "2hrs",
-        workingHours: "Morning ( 9am - 1pm )",
-        totalWorks: 26,
-        completedWorks: 22,
-        description: "As a dedicated and skilled worker, I'm here to make your tasks easier and stress-free. Whether it's cleaning, fixing, moving, or assisting with daily chores, I'm committed to providing reliable, efficient, and quality service. Just let me know what you need — I'm ready to help",
-        categories: ["Outdoor", "Moving", "Cleaning", "Plumbing", "Electrical", "Painting", "Gardening"],
-        services: ["Car Wash", "House Cleaning", "Garden Maintenance", "Plumbing Repair", "Electrical Work", "Painting Service", "Moving Assistance", "Deep Cleaning"]
-    };
+    const { selectedDetails } = useWorkerDetails();
 
-    const workerData = worker || defaultWorker;
+    const workerData = selectedDetails;
+    console.log("WorkerData :", workerData)
+    if (!workerData) return <div>No worker selected</div>;
 
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -99,8 +72,8 @@ const WorkerDetails: React.FC<WorkerDetailsProps> = ({ worker }) => {
     const calendarDays = generateCalendarDays();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-            <div className="max-w-5xl mx-screen ">
+        <div className="max-h-[550PX] h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+            <div className="h-[550px] overflow-y-auto bg-gray-100 p-4">
                 {/* Main Container */}
                 <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
                     {/* Top Section */}
@@ -116,7 +89,7 @@ const WorkerDetails: React.FC<WorkerDetailsProps> = ({ worker }) => {
                                             <div className="w-20 h-10 mx-auto border-4 border-gray-800 border-t-0 rounded-b-full bg-white shadow-md"></div>
                                         </div>
                                     </div>
-                                    <h4 className="text-xl font-bold mt-6 text-gray-800">Worker Name</h4>
+                                    <h4 className="text-xl font-bold mt-6 text-gray-800">{workerData.name}</h4>
                                 </div>
                             </div>
 
@@ -226,27 +199,27 @@ const WorkerDetails: React.FC<WorkerDetailsProps> = ({ worker }) => {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Left Column */}
                             <div className="space-y-6">
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Full Name</h3>
-                                    <p className="text-lg font-bold text-gray-800">{workerData.fullName}</p>
+                                    <p className="text-lg font-bold text-gray-800">{workerData.name}</p>
                                 </div>
 
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Email</h3>
                                     <p className="text-green-600 underline hover:text-green-800 cursor-pointer font-medium">{workerData.email}</p>
                                 </div>
 
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Phone</h3>
                                     <p className="text-lg font-semibold text-gray-800">{workerData.phone}</p>
                                 </div>
 
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Location</h3>
-                                    <p className="text-lg font-semibold text-gray-800 capitalize">{workerData.location}</p>
+                                    <p className="text-lg font-semibold text-gray-800 capitalize">{workerData.location.address}</p>
                                 </div>
 
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Age</h3>
                                     <p className="text-lg font-semibold text-gray-800">{workerData.age}</p>
                                 </div>
@@ -254,20 +227,20 @@ const WorkerDetails: React.FC<WorkerDetailsProps> = ({ worker }) => {
 
                             {/* Middle Column */}
                             <div className="space-y-6">
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Minimum Hour Per Day</h3>
-                                    <p className="text-lg font-semibold text-gray-800">{workerData.minimumHoursPerDay}</p>
+                                    <p className="text-lg font-semibold text-gray-800">{workerData.minHours}</p>
                                 </div>
 
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
-                                    <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Working Hours</h3>
-                                    <p className="text-lg font-semibold text-gray-800">{workerData.workingHours}</p>
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
+                                    <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Work Type</h3>
+                                    <p className="text-lg font-semibold text-gray-800">{workerData.workType.map((item) => item + ' ')}</p>
                                 </div>
 
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-4 text-gray-600 uppercase text-sm tracking-wide">How Can I Help</h3>
                                     <p className="text-sm leading-relaxed text-gray-700 font-medium">
-                                        {workerData.description}
+                                        {workerData.bio}
                                     </p>
                                 </div>
                             </div>
@@ -276,12 +249,12 @@ const WorkerDetails: React.FC<WorkerDetailsProps> = ({ worker }) => {
                             <div className="space-y-6">
                                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Total Works</h3>
-                                    <p className="text-3xl font-bold text-green-700">{workerData.totalWorks}</p>
+                                    {/* <p className="text-3xl font-bold text-green-700">{workerData.}</p> */}
                                 </div>
 
                                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border-l-4 border-green-500">
                                     <h3 className="font-semibold mb-3 text-gray-600 uppercase text-sm tracking-wide">Completed Works</h3>
-                                    <p className="text-3xl font-bold text-green-700">{workerData.completedWorks}</p>
+                                    {/* <p className="text-3xl font-bold text-green-700">{workerData.completedWorks}</p> */}
                                 </div>
                             </div>
                         </div>
