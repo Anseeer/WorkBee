@@ -1,4 +1,4 @@
-import express from "express"; 
+import express from "express";
 import container from "../inversify/inversify.container";
 import { ICategoryController } from "../controllers/category/category.controller.interface";
 import TYPES from "../inversify/inversify.types";

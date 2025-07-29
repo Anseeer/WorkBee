@@ -9,7 +9,7 @@ import TYPES from "../../inversify/inversify.types";
 @injectable()
 export class CategoryController implements ICategoryController {
     private _categoryService: CategoryService;
-    constructor(@inject(TYPES.categoryService)categoryService: CategoryService) {
+    constructor(@inject(TYPES.categoryService) categoryService: CategoryService) {
         this._categoryService = categoryService;
     }
 

@@ -23,7 +23,9 @@ const userSchema = new Schema<Iuser>({
     },
     location: {
         type: locationSchema,
-        required: true
+        required: function () {
+            return this.role !== "Admin"; 
+        }
     },
     profileImage: {
         type: String
@@ -35,6 +37,7 @@ const userSchema = new Schema<Iuser>({
     role: {
         type: String,
         required: true,
+        enum: ["User", "Admin"],
         default: 'User'
     }
 },

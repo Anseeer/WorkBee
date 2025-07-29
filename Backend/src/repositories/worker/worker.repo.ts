@@ -35,7 +35,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     }
 
     async getAllWorkers(): Promise<IWorker[]> {
-        let allWorker = await this.model.find({ role: "worker" });
+        let allWorker = await this.model.find({ role: "Worker" });
         return allWorker;
     }
 

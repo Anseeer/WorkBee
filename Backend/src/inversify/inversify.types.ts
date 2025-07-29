@@ -12,7 +12,7 @@ const TYPES = {
     workerController: Symbol.for("workerController"),
 
     categoryRepository: Symbol.for("categoryRepository"),
-    categoryService: Symbol.for("categoryService"), 
+    categoryService: Symbol.for("categoryService"),
     categoryController: Symbol.for("categoryController"),
 };
 

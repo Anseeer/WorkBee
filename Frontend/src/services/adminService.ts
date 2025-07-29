@@ -1,9 +1,13 @@
 import axios from "./axios";
 
 export const login = async (credentials: { email: string, password: string }) => {
-    const response = await axios.post("admins/login", credentials);
+    const response = await axios.post("admins/login", credentials, { withCredentials: true });
     return response;
 }
+
+export const logoutAdmin = async () => {
+    await axios.post('/admins/logout', {}, { withCredentials: true });
+};
 
 export const fetchUsers = async () => {
     const response = await axios.get('admins/users');

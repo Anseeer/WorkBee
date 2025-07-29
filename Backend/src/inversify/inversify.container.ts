@@ -6,7 +6,6 @@ import TYPES from "./inversify.types";
 import { UserRepository } from "../repositories/user/user.repo";
 import { UserService } from "../services/user/user.service";
 import { UserController } from "../controllers/user/user.controller";
-import { AdminRepository } from "../repositories/admin/admin.repo";
 import { AdminController } from "../controllers/admin/admin.controller";
 import { AdminService } from "../services/admin/admin.service";
 import { WorkerRepository } from "../repositories/worker/worker.repo";
@@ -20,7 +19,6 @@ import { CategoryService } from "../services/category/category.service";
 import { IUserRepository } from "../repositories/user/user.repo.interface";
 import { IUserService } from "../services/user/user.service.interface";
 import { IUserController } from "../controllers/user/user.controller.interface";
-import { IAdminRepository } from "../repositories/admin/admin.repo.interface";
 import { IAdminController } from "../controllers/admin/admin.controller.interface";
 import { IAdminService } from "../services/admin/admin.services.interface";
 import { IWorkerService } from "../services/worker/worker.service.interface";
@@ -37,7 +35,6 @@ container.bind<IUserRepository>(TYPES.userRepository).to(UserRepository);
 container.bind<IUserService>(TYPES.userService).to(UserService);
 container.bind<IUserController>(TYPES.userController).to(UserController);
 
-container.bind<IAdminRepository>(TYPES.adminRepository).to(AdminRepository);
 container.bind<IAdminService>(TYPES.adminService).to(AdminService);
 container.bind<IAdminController>(TYPES.adminController).to(AdminController);
 

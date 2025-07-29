@@ -1,19 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Bell, Menu, MessageSquare, User, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { logout } from '../../slice/userSlice';
+import axios from '../../services/axios';
+import { logoutUser } from '../../services/userService';
 import { toast } from 'react-toastify';
-
-// interface prop{
-//     isLogged:boolean;
-// }
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    const isLogged = localStorage.getItem("userToken")
+
+    const [isLogged, setIsLogged] = useState(false);
+
+    useEffect(() => {
+        axios.get("/auth/verify", { withCredentials: true })
+            .then(() => setIsLogged(true))
+            .catch(() => setIsLogged(false));
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            toast.success("Logout Successfull");
+            navigate("/login", { replace: true });
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
 
     return (
         <header className="bg-white border-b border-gray-200 relative">
@@ -45,12 +57,7 @@ export default function Header() {
                                     <MessageSquare className="h-6 w-6" />
                                 </button>
                                 <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
-                                    <User className="h-6 w-6" onClick={() => {
-                                        dispatch(logout());
-                                        localStorage.clear();
-                                        navigate('/login');
-                                        toast.success("Logout Successfully");
-                                    }} />
+                                    <User className="h-6 w-6" onClick={() => handleLogout()} />
                                 </button>
                             </div>
                         )}

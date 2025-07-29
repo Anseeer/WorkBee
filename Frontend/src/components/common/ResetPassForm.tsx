@@ -6,7 +6,7 @@ interface ResetPasswordFormProps {
   role?: "user" | "admin" | "worker";
 }
 
-const ResetPasswordForm = ({ handleSubmit}: ResetPasswordFormProps) => {
+const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
   const formik = useFormik({
     initialValues: {
       password: "",

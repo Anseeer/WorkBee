@@ -5,10 +5,13 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes";
 import workerRoutes from "./routes/workerRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import auth from "./routes/authVerifyRoutes";
 import categoriesRoutes from "./routes/categoriesRoutes";
 import MongooseConnection from "./config/DB";
 import { errorHandler } from "./middlewares/errorHandleMiddleware";
 import { seed } from "./model/category/category.model";
+import nocache from "nocache";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 MongooseConnection();
@@ -16,7 +19,9 @@ MongooseConnection();
 // seed()
 
 const app = express();
+app.use(nocache());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 
 app.use(cors({
@@ -29,6 +34,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/workers',workerRoutes);
 app.use('/api/admins',adminRoutes);
 app.use('/api/categories',categoriesRoutes);
+app.use('/api/auth',auth);
 
 app.get('/', (_, res) => {
   res.send('WorkBee API is running');

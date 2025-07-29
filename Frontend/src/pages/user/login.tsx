@@ -31,9 +31,6 @@ const LoginPage = () => {
       const res = await dispatch(loginUserThunk(credentials)).unwrap();
       console.log("Res :", res)
       toast.success("Login successful!");
-      localStorage.clear();
-      localStorage.setItem("userToken", res.token);
-      localStorage.setItem("role", res.user.role);
       navigate("/home", { replace: true });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);

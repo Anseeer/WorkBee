@@ -9,7 +9,7 @@ import TYPES from "../../inversify/inversify.types";
 @injectable()
 export class WorkerController implements IWorkerController {
     private _workerService: WorkerService;
-    constructor(@inject(TYPES.workerService)workerService: WorkerService) {
+    constructor(@inject(TYPES.workerService) workerService: WorkerService) {
         this._workerService = workerService
     }
 
@@ -21,7 +21,13 @@ export class WorkerController implements IWorkerController {
             }
             const credentials = { email, password };
             const { token, worker } = await this._workerService.loginWorker(credentials);
-            const response = new successResponse(201, "Login Successfull", { token, worker });
+            const response = new successResponse(201, "Login Successfull", { worker });
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 24 * 60 * 60 * 1000,
+            })
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -35,17 +41,39 @@ export class WorkerController implements IWorkerController {
     register = async (req: Request, res: Response) => {
         try {
             console.log("Registering Worker:", req.body);
-            const { token, workerId } = await this._workerService.registerWorker(req.body);
+            const { token, workerId, role } = await this._workerService.registerWorker(req.body);
             const response = new successResponse(201, "Worker registration successful", {
-                token,
-                workerId
+                workerId,
+                role
             });
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 24 * 60 * 60 * 1000,
+            })
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(400, "Failed to register worker", errMsg);
             console.log(response)
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    };
+
+    logout = async (req: Request, res: Response): Promise<void> => {
+        try {
+            res.clearCookie('token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+            res.json({ message: 'Logged out successfully' });
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Logout Failed", errMsg);
             logger.error(response);
             res.status(response.status).json(response);
         }

@@ -7,13 +7,11 @@ import type { AxiosError } from "axios";
 interface userState {
     worker: Partial<IWorker> | null,
     error: string | null;
-    token: string | null;
 }
 
 const initialState: userState = {
     worker: null,
     error: null,
-    token: null
 }
 
 
@@ -110,7 +108,6 @@ const workerSlice = createSlice({
     reducers: {
         logout: (state) => {
             state.error = null;
-            state.token = null;
             state.worker = null;
         }
     },
@@ -123,7 +120,6 @@ const workerSlice = createSlice({
                 localStorage.setItem('workerToken', action.payload.workerId);
                 state.error = null;
                 state.worker = action.payload?.worker;
-                state.token = action.payload?.token;
 
             })
             .addCase(registerWorkerThunk.rejected, (state, action) => {
@@ -134,7 +130,6 @@ const workerSlice = createSlice({
             })
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
                 state.error = null;
-                state.token = action.payload.token;
                 state.worker = action.payload.worker;
             })
             .addCase(loginWorkerThunk.rejected, (state, action) => {

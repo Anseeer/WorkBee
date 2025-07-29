@@ -10,9 +10,7 @@ import CategoryAndServicesIcon from "../../assets/category&services.png";
 import RevenueIcon from "../../assets/reveneu.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { logout } from "../../slice/adminSlice";
-import { toast } from "react-toastify";
+import { logoutAdmin } from "../../services/adminService";
 
 interface props {
     handleTab: (tab: string) => void;
@@ -21,7 +19,6 @@ interface props {
 export default function AdminSidebar({ handleTab }: props) {
     const [activeTab, setActiveTab] = useState("dashboard");
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
         handleClick(activeTab);
@@ -31,6 +28,16 @@ export default function AdminSidebar({ handleTab }: props) {
         setActiveTab(tab);
         handleTab(activeTab);
     };
+
+    const handleLogout = async () => {
+        try {
+            await logoutAdmin();
+            navigate("/admins/login", { replace: true });
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
 
     return (
         <div className="bg-[#10451D] h-screen text-black w-[225px] flex flex-col justify-between rounded-r-2xl shadow-lg">
@@ -169,12 +176,7 @@ export default function AdminSidebar({ handleTab }: props) {
             {/* Logout Section */}
             <div className="px-6 pb-2">
                 <div
-                    onClick={() => {
-                        dispatch(logout());
-                        localStorage.clear();
-                        toast.success("Logout Successfully");
-                        navigate("/admins/login");
-                    }}
+                    onClick={() => handleLogout()}
                     className="flex items-center space-x-3 p-2 rounded-md hover:bg-[#8FC39D] hover:bg-opacity-50 text-gray-800 mt-2 transition duration-150 cursor-pointer">
                     <img src={logoutIcon} alt="Logout" className="w-5 h-5" />
                     <span className="text-md text-gray-400 font-medium">Logout</span>

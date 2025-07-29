@@ -1,22 +1,25 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
-import { Response, Request, NextFunction } from 'express'
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Response, Request, NextFunction } from 'express';
 
-interface authRequest extends Request {
+interface AuthRequest extends Request {
   user?: JwtPayload | string;
 }
 
-export const protectRoute = (req: authRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Unauthorized: No token provided' });
+export const auth = (req: AuthRequest, res: Response, next: NextFunction): void => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    res.status(401).json({ message: 'Unauthorized: No token provided' });
+    return;
   }
-  const token = authHeader.split(' ')[1];
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     req.user = decoded;
     next();
-  } catch (err: unknown) {
-    console.log(err)
-    return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ message: 'Unauthorized: Invalid token' });
+    return;
   }
-}
+};

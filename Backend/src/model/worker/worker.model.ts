@@ -35,7 +35,7 @@ const workerSchema = new Schema<IWorker>({
     role: {
         type: String,
         required: false,
-        default: "worker"
+        default: "Worker"
     },
     minHours: {
         type: String,

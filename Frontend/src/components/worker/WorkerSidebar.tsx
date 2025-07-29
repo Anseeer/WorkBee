@@ -7,19 +7,29 @@ import reviewIcon from "../../assets/review-icon.png";
 import walletIcon from "../../assets/wallet-icon.png";
 import logoutIcon from "../../assets/logout-icon.png";
 import { useState } from "react";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { logout } from "../../slice/workerSlice";
 import { useNavigate } from "react-router-dom";
+import { logoutWorker } from "../../services/workerService";
 import { toast } from "react-toastify";
 
 export default function WorkerSidebar() {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleClick = (tab: string) => {
     setActiveTab(tab);
-  }; return (
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutWorker();
+      toast.success("Logout Successfully");
+      navigate("/workers/login", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  return (
     <div className="bg-[#10451D] text-black w-[225px] h-screen flex flex-col justify-between rounded-r-2xl shadow-lg">
       {/* Logo Section */}
       <div className="p-6">
@@ -127,12 +137,7 @@ export default function WorkerSidebar() {
       {/* Logout Section */}
       <div className="p-6">
         <div
-          onClick={() => {
-            dispatch(logout());
-            localStorage.clear();
-            navigate("/workers/landing");
-            toast.success("Logout Successfully");
-          }} className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-800 mt-2 transition duration-150 cursor-pointer">
+          onClick={() => handleLogout()} className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-800 mt-2 transition duration-150 cursor-pointer">
           <img src={logoutIcon} alt="Logout" className="w-5 h-5" />
           <span className="text-md text-gray-400 font-medium">Logout</span>
         </div>

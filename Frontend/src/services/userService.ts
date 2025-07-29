@@ -3,15 +3,20 @@ import type { Iuser } from "../types/IUser";
 
 
 export const register = async (userData: Partial<Iuser>) => {
-    const response = await axios.post('users/register', userData);
+    const response = await axios.post('users/register', userData, { withCredentials: true });
     console.log("Response from the axios :", response)
     return response;
 }
 
 export const login = async (credintials: { email: string, password: string }) => {
-    const response = await axios.post('users/login', credintials);
+    const response = await axios.post('users/login', credintials, { withCredentials: true });
     return response;
 }
+
+
+export const logoutUser = async () => {
+    await axios.post('users/logout', {}, { withCredentials: true });
+};
 
 export const forgotPassword = async (email: string) => {
     const response = await axios.post('users/forgot-password', { email });

@@ -3,14 +3,18 @@ import type { IWorker } from "../types/IWorker";
 import axios from "./axios";
 
 export const register = async (workerData: Partial<IWorker>) => {
-  const response = await axios.post("workers/register", workerData);
+  const response = await axios.post("workers/register", workerData, { withCredentials: true });
   return response;
 };
 
 export const login = async (credentials: { email: string, password: string }) => {
-  const response = await axios.post("workers/login", credentials);
+  const response = await axios.post("workers/login", credentials, { withCredentials: true });
   return response;
 }
+
+export const logoutWorker = async () => {
+  await axios.post('workers/logout', {}, { withCredentials: true });
+};
 
 export const getAllCategories = async (): Promise<ICategory[]> => {
   const res = await axios.get("/categories/getAllCategories");

@@ -15,7 +15,7 @@ import TYPES from "../../inversify/inversify.types";
 @injectable()
 export class WorkerService implements IWorkerService {
     private _workerRepository: WorkerRepository
-    constructor(@inject(TYPES.workerRepository)workerRepo: WorkerRepository) {
+    constructor(@inject(TYPES.workerRepository) workerRepo: WorkerRepository) {
         this._workerRepository = workerRepo;
     }
 
@@ -40,7 +40,7 @@ export class WorkerService implements IWorkerService {
         return { token, worker }
     }
 
-    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, workerId: string }> {
+    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, workerId: string, role: string }> {
 
         if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
             throw new Error("All fields are required");
@@ -57,7 +57,7 @@ export class WorkerService implements IWorkerService {
 
         const token = generateToken(newWorker._id.toString(), newWorker.role);
 
-        return { token, workerId: newWorker._id as string };
+        return { token, workerId: newWorker._id as string, role: newWorker.role };
 
     }
 

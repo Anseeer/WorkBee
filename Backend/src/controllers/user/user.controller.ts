@@ -9,14 +9,20 @@ import TYPES from "../../inversify/inversify.types";
 @injectable()
 export class UserController implements IUserController {
     private _userService: UserService;
-    constructor(@inject(TYPES.userService)userService: UserService) {
+    constructor(@inject(TYPES.userService) userService: UserService) {
         this._userService = userService
     }
 
     register = async (req: Request, res: Response) => {
         try {
             const { user, token } = await this._userService.registerUser(req.body);
-            const response = new successResponse(201, 'User Registration SuccessFull', { user, token });
+            const response = new successResponse(201, 'User Registration SuccessFull', { user });
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 24 * 60 * 60 * 1000,
+            })
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -31,7 +37,13 @@ export class UserController implements IUserController {
         try {
             const { email, password } = req.body;
             const { user, token } = await this._userService.loginUser(email, password);
-            const response = new successResponse(201, 'SuccessFully Login', { user, token });
+            const response = new successResponse(201, 'SuccessFully Login', { user });
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 24 * 60 * 60 * 1000,
+            })
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -41,6 +53,22 @@ export class UserController implements IUserController {
             res.status(response.status).json(response);
         }
     }
+
+    logout = async (req: Request, res: Response): Promise<void> => {
+        try {
+            res.clearCookie('token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+            res.json({ message: 'Logged out successfully' });
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Logout Failed", errMsg);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    };
 
     forgotPass = async (req: Request, res: Response) => {
         try {

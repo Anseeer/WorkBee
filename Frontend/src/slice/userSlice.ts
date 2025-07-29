@@ -7,14 +7,12 @@ interface userState {
     user: Iuser | null,
     error: string | null;
     resetEmail: string | null;
-    token: string | null;
 }
 
 const initialState: userState = {
     user: null,
     error: null,
     resetEmail: null,
-    token: null
 }
 
 
@@ -105,12 +103,9 @@ const userSlice = createSlice({
     reducers: {
         logout: (state: userState) => {
             state.user = null;
-            state.token = null;
             state.error = null;
         },
-        setTokenFromStorage(state, action) {
-            state.token = action.payload
-        },
+
     },
     extraReducers: (builder) => {
         builder
@@ -119,7 +114,6 @@ const userSlice = createSlice({
             })
             .addCase(registerUserThunk.fulfilled, (state, action) => {
                 state.user = action.payload.newUser;
-                state.token = action.payload.token;
                 state.error = null;
                 console.log("Updated state:", JSON.parse(JSON.stringify(state)));
             })
@@ -133,7 +127,6 @@ const userSlice = createSlice({
             .addCase(loginUserThunk.fulfilled, (state, action) => {
                 state.error = null;
                 state.user = action.payload.user;
-                state.token = action.payload.token;
                 console.log("Updated state:", JSON.parse(JSON.stringify(state)));
             })
             .addCase(loginUserThunk.rejected, (state, action) => {
@@ -142,5 +135,5 @@ const userSlice = createSlice({
     }
 })
 
-export const { logout, setTokenFromStorage } = userSlice.actions;
+export const { logout } = userSlice.actions;
 export default userSlice.reducer;

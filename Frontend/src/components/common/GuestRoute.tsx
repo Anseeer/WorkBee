@@ -1,28 +1,37 @@
 import type { JSX } from "react/jsx-runtime";
 import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "../../services/axios";
 
 interface GuestRouteProps {
   children: JSX.Element;
-  roleType: "User" | "Worker" | "Admin";
+  role: "User" | "Worker" | "Admin";
 }
 
-const GuestRoute = ({ children, roleType }: GuestRouteProps) => {
-  const currentRole = localStorage.getItem("role");
+const GuestRoute = ({ children, role }: GuestRouteProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const userToken = localStorage.getItem("userToken");
-  const workerToken = localStorage.getItem("workerToken");
-  const adminToken = localStorage.getItem("adminToken");
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        await axios.get("/auth/verify", { withCredentials: true });
+        setIsAuthenticated(true);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
 
-  if (roleType === "User" && currentRole === "User" && userToken) {
-    return <Navigate to="/home" replace />;
-  }
+    verifyAuth();
+  }, []);
 
-  if (roleType === "Worker" && currentRole === "Worker" && workerToken) {
-    return <Navigate to="/workers/dashboard" replace />;
-  }
-
-  if (roleType === "Admin" && currentRole === "Admin" && adminToken) {
-    return <Navigate to="/admins/dashboard" replace />;
+  if (isAuthenticated) {
+    if (role == "User") {
+      return <Navigate to="/home" replace />;
+    } else if (role == "Admin") {
+      return <Navigate to="/admins/dashboard" replace />;
+    } else if (role == "Worker") {
+      return <Navigate to="/workers/dashboard" replace />;
+    }
   }
 
   return children;

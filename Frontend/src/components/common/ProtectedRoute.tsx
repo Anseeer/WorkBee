@@ -1,33 +1,39 @@
-import type { JSX } from "react/jsx-runtime";
+import { useEffect, useState, type JSX } from "react";
 import { Navigate } from "react-router-dom";
+import axios from "../../services/axios";
 
 interface ProtectedRouteProps {
   children: JSX.Element;
-  allowedRoles: ("User" | "Worker" | "Admin")[];
+  role: string;
 }
 
-const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const role = localStorage.getItem("role");
+const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const token =
-    role === "User"
-      ? localStorage.getItem("userToken")
-      : role === "Worker"
-        ? localStorage.getItem("workerToken")
-        : role === "Admin"
-          ? localStorage.getItem("adminToken")
-          : null;
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        await axios.get("/auth/verify", { withCredentials: true });
+        setIsAuthenticated(true);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (!token || !role || !allowedRoles.includes(role as any)) {
-    if (allowedRoles.includes("Worker")) {
-      return <Navigate to="/workers/login" replace />;
-    } else if (allowedRoles.includes("Admin")) {
-      return <Navigate to="/admins/login" replace />;
-    } else if (allowedRoles.includes("User")) {
+    verifyAuth();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    if (role == "User") {
       return <Navigate to="/login" replace />;
-    } else {
-      return <Navigate to="/" replace />;
+    } else if (role == "Worker") {
+      return <Navigate to="/workers/login" replace />;
+    } else if (role == "Admin") {
+      return <Navigate to="/admins/login" replace />;
     }
   }
 

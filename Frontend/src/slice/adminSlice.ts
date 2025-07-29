@@ -8,14 +8,12 @@ interface adminState {
     admin: Iuser | null,
     error: string | null;
     resetEmail: string | null;
-    token: string | null;
 }
 
 const initialState: adminState = {
     admin: null,
     error: null,
     resetEmail: null,
-    token: null
 }
 
 export const loginAdminThunk = createAsyncThunk(
@@ -36,11 +34,7 @@ const adminSlice = createSlice({
     name: "admin",
     initialState,
     reducers: {
-        logout: (state) => {
-            state.admin = null;
-            state.error = null;
-            state.token = null;
-        }
+
     },
     extraReducers: (build) => {
         build
@@ -49,7 +43,6 @@ const adminSlice = createSlice({
             })
             .addCase(loginAdminThunk.fulfilled, (state, action) => {
                 state.error = null;
-                state.token = action.payload.token;
                 state.admin = action.payload.admin;
             })
             .addCase(loginAdminThunk.rejected, (state, action) => {
@@ -57,5 +50,4 @@ const adminSlice = createSlice({
             })
     },
 })
-export const { logout } = adminSlice.actions;
 export default adminSlice.reducer;

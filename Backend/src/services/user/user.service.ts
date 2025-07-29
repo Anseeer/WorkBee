@@ -14,7 +14,7 @@ import TYPES from "../../inversify/inversify.types";
 @injectable()
 export class UserService implements IUserService {
     private _userRepository: UserRepository;
-    constructor(@inject(TYPES.userRepository)userRepo: UserRepository) {
+    constructor(@inject(TYPES.userRepository) userRepo: UserRepository) {
         this._userRepository = userRepo;
     }
 

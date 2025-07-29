@@ -32,11 +32,8 @@ const RegistrationPage = () => {
       setLoading(true);
       try {
         console.log(values)
-        const res = await Dispatch(registerUserThunk(values)).unwrap()
+        await Dispatch(registerUserThunk(values)).unwrap()
         toast.success("Registration successful!");
-        localStorage.clear();
-        localStorage.setItem('userToken', res.token);
-        localStorage.setItem('role', res.user.role);
         navigate('/home', { replace: true })
       } catch (error: unknown) {
         const err = error as AxiosError<{ data: string }>;
