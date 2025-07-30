@@ -28,6 +28,7 @@ export interface IWorker {
         endDate: Date;
         isActive: boolean;
     },
+    isAccountBuilt:boolean,
     createdAt: Date,
     updatedAt: Date
 }

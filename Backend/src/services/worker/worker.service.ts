@@ -40,7 +40,7 @@ export class WorkerService implements IWorkerService {
         return { token, worker }
     }
 
-    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, workerId: string, role: string }> {
+    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker:{}}> {
 
         if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
             throw new Error("All fields are required");
@@ -57,7 +57,7 @@ export class WorkerService implements IWorkerService {
 
         const token = generateToken(newWorker._id.toString(), newWorker.role);
 
-        return { token, workerId: newWorker._id as string, role: newWorker.role };
+        return { token, worker:newWorker};
 
     }
 
@@ -80,13 +80,13 @@ export class WorkerService implements IWorkerService {
         const updatedWorker = await this._workerRepository.findByIdAndUpdate(workerId, updatedFields);
         if (!updatedWorker) throw new Error('Failed to update worker');
 
-        const existingAvailability = await this._workerRepository.findAvailablityByWorkerId(workerId);
+        const existingAvailability = await this._workerRepository.findAvailabilityByWorkerId(workerId);
 
         if (existingAvailability) {
-            const updated = await this._workerRepository.updateAvailablity(workerId, availability);
+            const updated = await this._workerRepository.updateAvailability(workerId, availability);
             if (!updated) throw new Error('Failed to update availability');
         } else {
-            const created = await this._workerRepository.setAvailablity(availability);
+            const created = await this._workerRepository.setAvailability(availability);
             if (!created) throw new Error('Failed to create availability');
         }
 

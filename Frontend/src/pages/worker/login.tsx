@@ -28,11 +28,8 @@ const WorkerLoginPage = () => {
                 throw new Error("Password must be at least 6 characters long and include letters, numbers, and symbols like _ . @");
             }
             setLoading(true);
-            const res = await dispatch(loginWorkerThunk(credentials)).unwrap();
+            await dispatch(loginWorkerThunk(credentials)).unwrap();
             toast.success("Login successful!");
-            localStorage.clear();
-            localStorage.setItem("workerToken", res.token);
-            localStorage.setItem("role", res.worker.role);
             navigate("/workers/dashboard", { replace: true });
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : String(error);

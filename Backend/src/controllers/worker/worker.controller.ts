@@ -41,11 +41,8 @@ export class WorkerController implements IWorkerController {
     register = async (req: Request, res: Response) => {
         try {
             console.log("Registering Worker:", req.body);
-            const { token, workerId, role } = await this._workerService.registerWorker(req.body);
-            const response = new successResponse(201, "Worker registration successful", {
-                workerId,
-                role
-            });
+            const { token, worker } = await this._workerService.registerWorker(req.body);
+            const response = new successResponse(201, "Worker registration successful", { worker });
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',

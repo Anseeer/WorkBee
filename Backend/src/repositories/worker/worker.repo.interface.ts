@@ -9,9 +9,9 @@ export interface IWorkerRepository {
     resetPassword(email: string, hashedPass: string): Promise<boolean>;
     delete(id: string): Promise<boolean>;
     findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null>;
-    findAvailablityByWorkerId(id: string): Promise<IAvailability | null>;
-    setAvailablity(availablity: IAvailability): Promise<IAvailability>;
-    updateAvailablity(id: string, availability: IAvailability): Promise<UpdateWriteOpResult>;
+    findAvailabilityByWorkerId(id: string): Promise<IAvailability | null>;
+    setAvailability(availability: IAvailability): Promise<IAvailability>;
+    updateAvailability(id: string, availability: IAvailability): Promise<UpdateWriteOpResult>;
     getAllWorkers(): Promise<IWorker[]>;
     setIsActive(id: string): Promise<boolean>;
 }

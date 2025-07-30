@@ -117,7 +117,6 @@ const workerSlice = createSlice({
                 state.error = null;
             })
             .addCase(registerWorkerThunk.fulfilled, (state, action) => {
-                localStorage.setItem('workerToken', action.payload.workerId);
                 state.error = null;
                 state.worker = action.payload?.worker;
 

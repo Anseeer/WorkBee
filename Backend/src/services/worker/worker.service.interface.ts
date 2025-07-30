@@ -4,7 +4,7 @@ import { IWorker } from "../../model/worker/worker.interface";
 
 
 export interface IWorkerService {
-    registerWorker(workerData: Partial<IWorker>):Promise<{ token: string, workerId: string }> ;
+    registerWorker(workerData: Partial<IWorker>):Promise<{ token: string, worker:{} }> ;
     loginWorker(credentials:{email:String,password:String}): Promise<{ token: string, worker: IWorkerDTO }>;
     createWorker(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ workerId: string }>;
     forgotPass(email: string): Promise<string>;

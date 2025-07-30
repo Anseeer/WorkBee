@@ -157,9 +157,6 @@ const WorkerRegistrationPage = () => {
                 const res = await Dispatch(registerWorkerThunk(values)).unwrap();
                 console.log("res :", res);
                 toast.success("Registration successful!");
-                localStorage.clear();
-                localStorage.setItem("workerToken", res.token);
-                localStorage.setItem("role", res.role);
                 navigate("/workers/dashboard", { replace: true });
             } catch (error: unknown) {
                 const err = error as AxiosError<{ data: string }>;

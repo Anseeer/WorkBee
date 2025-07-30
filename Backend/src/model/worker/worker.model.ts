@@ -4,6 +4,7 @@ import { locationSchema } from "../location/location.model";
 
 
 const workerSchema = new Schema<IWorker>({
+    // registration
     name: {
         type: String,
         required: true
@@ -20,22 +21,28 @@ const workerSchema = new Schema<IWorker>({
         type: String,
         required: true
     },
-    age: {
-        type: Number,
+    location: {
+        type: locationSchema,
+        required: true
+    },
+    categories: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Category',
+        required: true
+    },
+    // account building
+    profileImage: {
+        type: String,
+        required: false
+    },
+    services: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Services',
         required: false
     },
     bio: {
         type: String,
         required: false
-    },
-    profileImage: {
-        type: String,
-        required: false
-    },
-    role: {
-        type: String,
-        required: false,
-        default: "Worker"
     },
     minHours: {
         type: String,
@@ -51,9 +58,18 @@ const workerSchema = new Schema<IWorker>({
         enum: ['morning', 'afternoon', 'evening', 'night', 'flexible'],
         required: false
     },
+    age: {
+        type: Number,
+        required: false
+    },
+    role: {
+        type: String,
+        required: false,
+        default: "Worker"
+    },
     isActive: {
         type: Boolean,
-        default: false
+        default: true
     },
     isVerified: {
         type: Boolean,
@@ -63,26 +79,13 @@ const workerSchema = new Schema<IWorker>({
         type: String,
         required: false
     },
-    location: {
-        type: locationSchema,
-        required: true
-    },
-    services: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Services',
-        required: false
-    },
-    categories: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Category',
-        required: true
-    },
     subscription: {
         plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', required: false },
         startDate: { type: Date, required: false },
         endDate: { type: Date, required: false },
         isActive: { type: Boolean, default: false }
-    }
+    },
+    isAccountBuilt: { type: Boolean, default: false }
 }, { timestamps: true });
 
 const Worker = mongoose.model<IWorker>('Worker', workerSchema);

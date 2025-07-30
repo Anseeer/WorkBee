@@ -11,7 +11,7 @@ const workerController = container.get<IWorkerController>(TYPES.workerController
 Router.post("/login", workerController.login);
 Router.post("/logout", auth, workerController.logout);
 Router.post("/register", workerController.register);
-Router.patch("/create-account", auth, workerController.createAccount);
+Router.patch("/create-account", workerController.createAccount);
 Router.post("/forgot-password", workerController.forgotPass);
 Router.post("/resend-otp", workerController.resendOtp);
 Router.post("/verify-otp", workerController.verifyOtp);

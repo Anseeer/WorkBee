@@ -28,4 +28,5 @@ export interface IWorker extends Document {
     },
     createdAt: Date,
     updatedAt: Date
-}
+    isAccountBuilt:boolean
+    }
