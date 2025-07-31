@@ -3,12 +3,19 @@ import type { IWorker } from "../types/IWorker";
 import axios from "./axios";
 
 export const register = async (workerData: Partial<IWorker>) => {
-  const response = await axios.post("workers/register", workerData, { withCredentials: true });
+  const response = await axios.post("/workers/register", workerData, { withCredentials: true });
   return response;
 };
 
 export const login = async (credentials: { email: string, password: string }) => {
-  const response = await axios.post("workers/login", credentials, { withCredentials: true });
+  const response = await axios.post("/workers/login", credentials, { withCredentials: true });
+  return response;
+}
+
+export const buildAccount = async (workerId:string|undefined,accountData:Partial<IWorker>)=>{
+  console.log("Build account service to backedn")
+  console.log("Worker id :",workerId)
+  const response = await axios.post(`workers/build-account?workerId=${workerId}`,accountData,{withCredentials:true});
   return response;
 }
 

@@ -17,7 +17,7 @@ export interface IWorker extends Document {
     isVerified: boolean,
     isActive: boolean,
     location: ILocation,
-    govId: string,
+    govId: string[],
     services: Types.ObjectId[],
     categories: Types.ObjectId[],
     subscription: {

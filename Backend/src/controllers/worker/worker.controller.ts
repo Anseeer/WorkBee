@@ -77,26 +77,37 @@ export class WorkerController implements IWorkerController {
     };
 
 
-    createAccount = async (req: Request, res: Response) => {
+    buildAccount = async (req: Request, res: Response) => {
         const { workerId } = req.query;
+        console.log("Vomes To Build acount")
+        console.log("workerID:",workerId)
+
         try {
             if (!workerId || typeof workerId !== "string") {
                 throw new Error("Worker ID is missing or invalid");
             }
+
             const { availability, ...workerData } = req.body;
-            const result = await this._workerService.createWorker(workerId, availability, workerData);
-            const response = new successResponse(201, "Worker Account Build Successfully", {
-                workerId: result.workerId
+
+            const result = await this._workerService.buildAccount(workerId, availability, workerData);
+
+            const response = new successResponse(201, "Worker Account Built Successfully", {
+                worker: result.updatedWorker,
+                availability: result.updatedAvailability
             });
+
             logger.info(response);
             res.status(response.status).json(response);
+
         } catch (error: unknown) {
             const err = error instanceof Error ? error.message : String(error);
+            console.log(err)
             const response = new errorResponse(400, "Failed To Build Account", err);
-            logger.error(response)
+            logger.error(response);
             res.status(response.status).json(response);
         }
-    }
+    };
+
 
     forgotPass = async (req: Request, res: Response) => {
         try {

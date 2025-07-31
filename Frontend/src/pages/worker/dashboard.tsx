@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WorkerSidebar from "../../components/worker/WorkerSidebar";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Store";
 import BuildAccount from "../../components/worker/BuildAccountForm";
+import WorkerDetails from "../../components/common/WorkerDetails";
+import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
-    const workerData = useSelector((state: RootState) => state.worker.worker);
+    const workerData = useSelector((state: RootState) => state.worker);
+    const { setSelectedDetails } = useWorkerDetails();
+
+    useEffect(() => {
+        setSelectedDetails(workerData);
+    }, [workerData])
+
 
     const handleTab = (tab: string) => {
         setActiveTab(tab);
@@ -23,16 +31,16 @@ const Dashboard = () => {
                 <hr className="border border-green-900" />
 
                 {activeTab === "dashboard" ? (
-                    workerData?.isAccountBuilt ? (
+                    workerData.worker?.isAccountBuilt ? (
                         <h1>Dashboard</h1>
                     ) : (
                         <button>Build Account</button>
                     )
                 ) : activeTab === "account" ? (
-                    workerData?.isAccountBuilt ? (
-                    <h1>Account</h1>
+                    workerData.worker?.isAccountBuilt ? (
+                        <WorkerDetails />
                     ) : (
-                        <BuildAccount/>
+                        <BuildAccount />
                     )
                 ) : null}
 

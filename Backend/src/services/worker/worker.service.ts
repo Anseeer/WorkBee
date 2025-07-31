@@ -40,7 +40,7 @@ export class WorkerService implements IWorkerService {
         return { token, worker }
     }
 
-    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker:{}}> {
+    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {} }> {
 
         if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
             throw new Error("All fields are required");
@@ -57,11 +57,11 @@ export class WorkerService implements IWorkerService {
 
         const token = generateToken(newWorker._id.toString(), newWorker.role);
 
-        return { token, worker:newWorker};
+        return { token, worker: newWorker };
 
     }
 
-    async createWorker(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ workerId: string }> {
+    async buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailability }> {
 
         const existingWorker = await this._workerRepository.findById(workerId);
         if (!existingWorker) throw new Error("Can't find the worker, please register");
@@ -74,24 +74,29 @@ export class WorkerService implements IWorkerService {
             workType: workerData.workType,
             minHours: workerData.minHours,
             preferredSchedule: workerData.preferredSchedule,
-            govId: workerData.govId
+            govId: workerData.govId,
+            isAccountBuilt: true
         };
 
-        const updatedWorker = await this._workerRepository.findByIdAndUpdate(workerId, updatedFields);
-        if (!updatedWorker) throw new Error('Failed to update worker');
+        const updatedWorkerEntity = await this._workerRepository.findByIdAndUpdate(workerId, updatedFields);
+        if (!updatedWorkerEntity) throw new Error("Failed to update worker");
 
+        let updatedAvailability: IAvailability | null;
         const existingAvailability = await this._workerRepository.findAvailabilityByWorkerId(workerId);
 
         if (existingAvailability) {
-            const updated = await this._workerRepository.updateAvailability(workerId, availability);
-            if (!updated) throw new Error('Failed to update availability');
+            updatedAvailability = await this._workerRepository.updateAvailability(workerId, availability);
+            if (!updatedAvailability) throw new Error("Failed to update availability");
         } else {
-            const created = await this._workerRepository.setAvailability(availability);
-            if (!created) throw new Error('Failed to create availability');
+            updatedAvailability = await this._workerRepository.setAvailability(availability);
+            if (!updatedAvailability) throw new Error("Failed to create availability");
         }
 
-        return { workerId };
+        const updatedWorker: IWorkerDTO = mapWorkerToDTO(updatedWorkerEntity);
+
+        return { updatedWorker, updatedAvailability };
     }
+
 
     async forgotPass(email: string): Promise<string> {
         const otp = generateOTP()

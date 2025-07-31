@@ -17,7 +17,7 @@ import WorkerOtpVerification from "./pages/worker/verifyOtp";
 import WorkerResetPasswordPage from "./pages/worker/resetPassword";
 import AdminDashboard from "./pages/admin/dashboard";
 import AdminLoginPage from "./pages/admin/login";
-import WorkerDetails from "./components/admin/WorkerDetails";
+import WorkerDetails from "./components/common/WorkerDetails";
 import { WorkerDetailsProvider } from "./components/context/WorkerDetailContext";
 import GuestRoute from "./components/common/GuestRoute";
 const App = () => {
@@ -62,9 +62,11 @@ const App = () => {
             </GuestRoute>
           } />
           <Route path="/workers/dashboard" element={
-            <ProtectedRoute role="Worker">
-              <WorkerDashBoard />
-            </ProtectedRoute>
+            <WorkerDetailsProvider>
+              <ProtectedRoute role="Worker">
+                <WorkerDashBoard />
+              </ProtectedRoute>
+            </WorkerDetailsProvider>
           } />
           <Route path="/workers/forgot-password" element={<WorkerForgotPasswordPage />} />
           <Route path="/workers/verify-otp" element={<WorkerOtpVerification />} />

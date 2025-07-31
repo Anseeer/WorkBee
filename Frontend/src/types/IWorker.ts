@@ -1,3 +1,4 @@
+
 export interface IWorker {
     id: string,
     name: string,
@@ -6,9 +7,9 @@ export interface IWorker {
     password: string,
     age: number,
     bio: string,
-    profileImage: string,
+    profileImage: string | File,
     role: string,
-    minHours: string,
+    minHours: number,
     workType: string[],
     preferredSchedule: string[],
     isVerified: boolean,
@@ -19,7 +20,7 @@ export interface IWorker {
         lat: number | null,
         lng: number | null
     },
-    govId: string,
+    govId: string | string[],
     services: string[],
     categories: string[],
     subscription: {

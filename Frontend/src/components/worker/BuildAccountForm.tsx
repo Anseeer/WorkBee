@@ -2,19 +2,27 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./workerStyle.css"
+import "./workerStyle.css";
+import { getProfileImage } from "../../utilities/getProfile";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../Store";
+import { FaCamera, FaTrash } from "react-icons/fa";
+import { uploadToCloud } from "../../utilities/uploadToCloud";
+import { buildAccountWorkerThunk } from "../../slice/workerSlice";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { toast } from "react-toastify";
 
 const servicesFromDB = [
-  { id: "car-wash", name: "Car Wash", price: 350 },
-  { id: "house-cleaning", name: "House Cleaning", price: 500 },
-  { id: "water-tank-wash", name: "Water Tank Wash", price: 450 },
+  { id: "64e8d60b2efb5c01bcf3a567", name: "Car Wash", price: 350 },
+  { id: "64e8d60b2efb5c01bcf3a568", name: "House Cleaning", price: 500 },
+  { id: "64e8d60b2efb5c01bcf3a569", name: "Water Tank Wash", price: 450 },
 ];
 
 const workingHours = [
   { id: "morning", label: "Morning (9am - 1pm)" },
   { id: "afternoon", label: "Afternoon (1pm - 5pm)" },
   { id: "evening", label: "Evening (5pm - 9pm)" },
-  { id: "full-day", label: "Evening (9am - 5pm)" },
+  { id: "full-day", label: "Full Day (9am - 5pm)" },
 ];
 
 const jobTypes = [
@@ -24,11 +32,16 @@ const jobTypes = [
 ];
 
 export default function BuildAccount() {
+  const worker = useSelector((state: RootState) => state?.worker.worker);
+  console.log("Worker from the useSelector:", worker)
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [selectedImg, setSelectedImg] = useState<File | null>(null);
+  const Profile = getProfileImage(worker?.name, selectedImg);
+  const dispatch = useAppDispatch();
 
   const formik = useFormik({
     initialValues: {
-      profileImage: null,
+      profileImage: null as File | null,
       age: "",
       gender: "",
       govId: [] as File[],
@@ -54,16 +67,56 @@ export default function BuildAccount() {
         errors.selectedServices = "Select at least one service";
       if (selectedDates.length === 0)
         errors.availableDates = "Select at least one available date";
-      if (values.govId.length < 2)
+      if (values.govId.length < 2) {
         errors.govId = "Upload 2 government IDs";
+      } else if (values.govId.length > 2) {
+        errors.govId = "Only 2 government IDs allowed";
+      }
       return errors;
     },
-    onSubmit: (values) => {
-      const availableDates = selectedDates.map((date) =>
-        date.toISOString().split("T")[0]
-      );
-      console.log("Form Data", { ...values, availableDates });
-      alert("Form submitted successfully!");
+    onSubmit: async (values) => {
+      try {
+        const profileUrl = values.profileImage
+          ? await uploadToCloud(values.profileImage)
+          : "";
+
+        const govUrls = await Promise.all(
+          values.govId.map(async (file) => await uploadToCloud(file))
+        );
+
+        const availability = {
+          workerId: worker?.id,
+          availableDates: selectedDates.map((date) => ({
+            date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
+            bookedSlots: [],
+          })),
+        };
+
+
+        const payload = {
+          id: worker?.id,
+          profileImage: profileUrl,
+          bio: values.bio,
+          age: Number(values.age),
+          services: values.selectedServices,
+          workType: values.jobTypes,
+          minHours: Number(values.minHours),
+          preferredSchedule: values.workingHours,
+          govId: govUrls.length === 1 ? govUrls[0] : govUrls,
+          availability,
+        };
+
+        console.log("Final Payload", payload);
+
+
+        await dispatch(buildAccountWorkerThunk(payload)).unwrap()
+        toast.success("Build Account Successfully");
+      } catch (error) {
+        const err = error instanceof Error ? error.message : String(error);
+        console.error("Upload failed", err);
+        toast.error(`Error: ${err}`);
+      }
+
     },
   });
 
@@ -88,26 +141,24 @@ export default function BuildAccount() {
     }
   };
 
-  // const handleMonthChange = () => {
-  //   setSelectedDates([]);
-  // };
-
   const handleGovIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.files) {
       const newFiles = Array.from(e.currentTarget.files);
-      const existingFiles = formik.values.govId || [];
-
-      const updatedFiles = [...existingFiles, ...newFiles];
+      const updatedFiles = [...formik.values.govId, ...newFiles];
 
       if (updatedFiles.length > 2) {
-        alert("You can only upload 2 government IDs");
-        return;
+        formik.setFieldError("govId", "Only 2 government IDs allowed");
+      } else {
+        formik.setFieldValue("govId", updatedFiles);
       }
-
-      formik.setFieldValue("govId", updatedFiles);
     }
   };
 
+  const handleRemoveGovId = (index: number) => {
+    const updated = [...formik.values.govId];
+    updated.splice(index, 1);
+    formik.setFieldValue("govId", updated);
+  };
 
   return (
     <div className="max-w-5xl mx-auto h-[560px] overflow-y-auto m-3 p-6 bg-gray-50 rounded-3xl border-2 border-green-600">
@@ -115,29 +166,33 @@ export default function BuildAccount() {
 
       <form
         onSubmit={formik.handleSubmit}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-8 "
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
       >
         {/* Left Column */}
         <div className="space-y-6 pr-6 border-r border-gray-300">
           {/* Profile Image */}
           <div className="flex items-center gap-4">
-            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center">
-              <span className="text-gray-500">Photo</span>
-            </div>
-            <label className="bg-green-800 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-green-700">
-              Upload
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) =>
-                  formik.setFieldValue(
-                    "profileImage",
-                    e.currentTarget.files?.[0]
-                  )
-                }
-              />
+            <img
+              src={selectedImg ? URL.createObjectURL(selectedImg) : Profile}
+              alt="Profile"
+              className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center"
+            />
+            <label htmlFor="profile-upload" className="edit-icon cursor-pointer">
+              <FaCamera />
             </label>
+            <input
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setSelectedImg(file);
+                  formik.setFieldValue("profileImage", file);
+                }
+              }}
+              type="file"
+              id="profile-upload"
+              accept="image/*"
+              hidden
+            />
           </div>
 
           {/* Age & Gender */}
@@ -170,9 +225,7 @@ export default function BuildAccount() {
                 <option value="other">Other</option>
               </select>
               {formik.errors.gender && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.gender}
-                </div>
+                <div className="text-red-500 text-sm">{formik.errors.gender}</div>
               )}
             </div>
           </div>
@@ -180,21 +233,48 @@ export default function BuildAccount() {
           {/* Government IDs */}
           <div>
             <label className="block text-sm mb-2">Government IDs (Upload 2)</label>
-            <input
-              type="file"
-              name="govId"
-              multiple
-              onChange={handleGovIdChange}
-              className="w-full p-3 border rounded-lg"
-            />
-            {Array.isArray(formik.errors.govId) &&
-              formik.errors.govId.map((error, index) => (
-                <div key={index} className="text-red-500 text-sm">
-                  {typeof error === "string" ? error : "Invalid file"}
+            <div className="relative flex items-center">
+              <input
+                type="file"
+                name="govId"
+                multiple
+                onChange={handleGovIdChange}
+                className="w-full p-3 pr-10 border rounded-lg focus:ring-2 focus:ring-green-500"
+              />
+              <button
+                type="button"
+                className="absolute right-3 text-green-600 hover:text-green-800"
+                onClick={() => document.querySelector<HTMLInputElement>('input[name="govId"]')?.click()}
+              >
+                +
+              </button>
+            </div>
+
+            {/* Show error */}
+            {typeof formik.errors.govId === "string" && (
+              <div className="text-red-500 text-sm mt-1">{formik.errors.govId}</div>
+            )}
+
+            {/* Selected Files Styled as Tags */}
+            <div className="flex flex-wrap gap-2 mt-3">
+              {formik.values.govId.map((file, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full shadow"
+                >
+                  <span className="text-sm font-medium">{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveGovId(index)}
+                    className="text-red-500 hover:text-red-700 text-xs"
+                  >
+                    <FaTrash />
+                  </button>
                 </div>
               ))}
-
+            </div>
           </div>
+
 
           {/* Bio */}
           <div>
@@ -231,15 +311,10 @@ export default function BuildAccount() {
                 const isSelected = selectedDates.some(
                   (d) => d.toDateString() === date.toDateString()
                 );
-                return isSelected
-                  ? "selected-date"
-                  : "";
+                return isSelected ? "selected-date" : "";
               }}
               className="custom-calendar"
             />
-
-
-
             {formik.errors.availableDates && (
               <div className="text-red-500 text-sm">
                 {formik.errors.availableDates}
@@ -334,9 +409,7 @@ export default function BuildAccount() {
               </label>
             ))}
             {formik.errors.jobTypes && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.jobTypes}
-              </div>
+              <div className="text-red-500 text-sm">{formik.errors.jobTypes}</div>
             )}
           </div>
 

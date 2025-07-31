@@ -8,5 +8,5 @@ export interface IWorkerController {
     resendOtp(req: Request, res: Response): Promise<void>;
     verifyOtp(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
-    createAccount(req: Request, res: Response): Promise<void>;
+    buildAccount(req: Request, res: Response): Promise<void>;
 }

@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { fetchWorkers, setIsActiveWorkers } from '../../services/adminService';
 import { DataTable, type Column } from '../common/Table';
 import type { IWorker } from '../../types/IWorker';
-import { useWorkerDetails } from '../context/WorkerDetailContext';
+// import { useWorkerDetails } from '../context/WorkerDetailContext';
 
 const WorkersTable = () => {
     const [workers, setWorkers] = useState<IWorker[]>([]);
-    const { setSelectedDetails } = useWorkerDetails()
+    // const { setSelectedDetails } = useWorkerDetails()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,7 +69,7 @@ const WorkersTable = () => {
                 data={workers}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
-                onRowClick={(worker) => setSelectedDetails(worker)}
+            // onRowClick={(worker) => setSelectedDetails(worker)}
             />
         </div>
     );

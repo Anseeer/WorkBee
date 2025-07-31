@@ -76,7 +76,7 @@ const workerSchema = new Schema<IWorker>({
         default: false
     },
     govId: {
-        type: String,
+        type: [String],
         required: false
     },
     subscription: {

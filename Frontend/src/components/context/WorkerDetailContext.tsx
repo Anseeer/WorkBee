@@ -1,5 +1,5 @@
-import type { IWorker } from "../../types/IWorker";
+import type { WorkerState } from "../../slice/workerSlice";
 import { createDetailsContext } from "./DetailContext";
 
 export const { DetailsProvider: WorkerDetailsProvider, useDetails: useWorkerDetails } =
-  createDetailsContext<IWorker>();
+  createDetailsContext<WorkerState>();

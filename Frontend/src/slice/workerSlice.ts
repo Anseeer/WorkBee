@@ -1,106 +1,118 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import type { IWorker } from "../types/IWorker";
-import { forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
 import type { AxiosError } from "axios";
+import { buildAccount, forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
+import type { IWorker } from "../types/IWorker";
+import type { IAvailability } from "../types/IAvailability";
+
+interface BuildAccountResponse {
+    worker: IWorker;
+    availability: IAvailability;
+}
 
 
-interface userState {
-    worker: Partial<IWorker> | null,
+export interface WorkerState {
+    worker: IWorker | null;
+    availability: IAvailability | null;
     error: string | null;
 }
 
-const initialState: userState = {
+const initialState: WorkerState = {
     worker: null,
+    availability: null,
     error: null,
-}
-
+};
 
 export const registerWorkerThunk = createAsyncThunk(
     "workers/register",
     async (workerData: Partial<IWorker>, { rejectWithValue }) => {
-        console.log("WorkerData :", workerData)
         try {
             const response = await register(workerData);
-            console.log("REsponse from thunk", response.data.data)
-            return response.data.data;
+            return response.data.data
         } catch (error: unknown) {
             const err = error as AxiosError<{ data: string }>;
-            const errMsg = err || "Unknown error";
-            return rejectWithValue(errMsg);
+            return rejectWithValue(err.response?.data?.data || "Registration failed");
         }
     }
 );
 
 export const loginWorkerThunk = createAsyncThunk(
     "workers/login",
-    async (credentials: { email: string, password: string }, { rejectWithValue }) => {
+    async (credentials: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await login(credentials);
             return response.data.data
-        } catch (error) {
+        } catch (error: unknown) {
             const err = error as AxiosError<{ data: string }>;
-            const errMsg = err.response?.data.data || "Unknown error";
-            return rejectWithValue(errMsg);
+            return rejectWithValue(err.response?.data?.data || "Login failed");
         }
     }
-)
+);
 
-
-export const forgotPassUserThunk = createAsyncThunk("workers/forgot-password",
+export const forgotPassUserThunk = createAsyncThunk(
+    "workers/forgot-password",
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await forgotPassword(email);
-            console.log("response :", response);
             return response.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
-            const errorMessage = error.response?.data?.data || "Something went wrong";
-            return rejectWithValue(errorMessage);
+            return rejectWithValue(error.response?.data?.data || "Something went wrong");
         }
     }
-)
+);
 
-export const resendOtpUserThunk = createAsyncThunk("workers/otp-resend",
+export const resendOtpUserThunk = createAsyncThunk(
+    "workers/otp-resend",
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await resendOtp(email);
-            console.log("response :", response);
             return response.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
-            const errorMessage = error.response?.data?.data || "Something went wrong";
-            return rejectWithValue(errorMessage);
+            return rejectWithValue(error.response?.data?.data || "Something went wrong");
         }
     }
-)
+);
 
-export const verifyOtpUserThunk = createAsyncThunk("workers/verify-otp",
-    async (verifyData: { email: string, otp: string }, { rejectWithValue }) => {
+export const verifyOtpUserThunk = createAsyncThunk(
+    "workers/verify-otp",
+    async (verifyData: { email: string; otp: string }, { rejectWithValue }) => {
         try {
-            const response = await verifyOtp(verifyData.email, verifyData.otp)
+            const response = await verifyOtp(verifyData.email, verifyData.otp);
             return response.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
-            const errorMessage = error.response?.data?.data || "Something went wrong";
-            return rejectWithValue(errorMessage);
+            return rejectWithValue(error.response?.data?.data || "Something went wrong");
         }
     }
-)
+);
 
-export const resetPasswordUserThunk = createAsyncThunk("workers/reset-password",
-    async (resetData: { email: string, password: string }, { rejectWithValue }) => {
+export const resetPasswordUserThunk = createAsyncThunk(
+    "workers/reset-password",
+    async (resetData: { email: string; password: string }, { rejectWithValue }) => {
         try {
-            const response = await resetPass(resetData.email, resetData.password)
+            const response = await resetPass(resetData.email, resetData.password);
             return response.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
-            const errorMessage = error.response?.data?.data || "Something went wrong";
-            return rejectWithValue(errorMessage);
+            return rejectWithValue(error.response?.data?.data || "Something went wrong");
         }
     }
-)
+);
 
-
+export const buildAccountWorkerThunk = createAsyncThunk(
+    "workers/build-account",
+    async (accountData: Partial<IWorker>, { rejectWithValue }) => {
+        try {
+            console.log("WorkerId :", accountData.id)
+            const response = await buildAccount(accountData.id, accountData);
+            return response.data.data as BuildAccountResponse;
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ data: string }>;
+            return rejectWithValue(error);
+        }
+    }
+);
 
 const workerSlice = createSlice({
     name: "worker",
@@ -109,34 +121,52 @@ const workerSlice = createSlice({
         logout: (state) => {
             state.error = null;
             state.worker = null;
-        }
+        },
     },
-    extraReducers: (build) => {
-        build
-            .addCase(registerWorkerThunk.pending, (state) => {
-                state.error = null;
-            })
+    extraReducers: (builder) => {
+        builder
+            // Register
             .addCase(registerWorkerThunk.fulfilled, (state, action) => {
-                state.error = null;
-                state.worker = action.payload?.worker;
+                const worker = action.payload.worker;
 
+                state.worker = {
+                    ...worker,
+                    id: worker._id || worker.id
+                };
+                state.error = null;
             })
+
             .addCase(registerWorkerThunk.rejected, (state, action) => {
-                state.error = action.payload as string
+                state.error = action.payload as string;
             })
-            .addCase(loginWorkerThunk.pending, (state) => {
-                state.error = null;
-            })
+            // Login
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
+                const worker = action.payload.worker;
+
+                state.worker = {
+                    ...worker,
+                    id: worker.id || worker._id
+                };
                 state.error = null;
-                state.worker = action.payload.worker;
             })
+
             .addCase(loginWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-    }
-})
+            // Build Account
+            .addCase(buildAccountWorkerThunk.fulfilled, (state, action) => {
+                console.log("Build Account payload :",action.payload)
+                console.log("Build Account worker :",action.payload.worker)
+                console.log("Build Account availalblity :",action.payload.availability)
+                state.worker = action.payload.worker;
+                state.availability = action.payload.availability
+                state.error = null;
+            })
+            .addCase(buildAccountWorkerThunk.rejected, (state, action) => {
+                state.error = action.payload as string;
+            });
+    },
+});
 
 export const { logout } = workerSlice.actions;
-
 export default workerSlice.reducer;

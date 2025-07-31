@@ -5,7 +5,6 @@ import Worker from "../../model/worker/worker.model";
 import BaseRepository from "../base/base.repo";
 import { IWorkerRepository } from "./worker.repo.interface";
 import { Availability } from "../../model/availablity/availablity.model";
-import { UpdateResult } from "mongoose";
 
 @injectable()
 export class WorkerRepository extends BaseRepository<IWorker> implements IWorkerRepository {
@@ -13,14 +12,15 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         super(Worker);
     }
 
-    async findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>) {
+    async findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null> {
         return await this.model.findByIdAndUpdate(
             id,
             { $set: updatedFields },
+            { new: true } 
         );
     }
 
-    async findAvailabilityByWorkerId(id: string) {
+    async findAvailabilityByWorkerId(id: string): Promise<IAvailability | null> {
         return await Availability.findOne({ workerId: id });
     }
 
@@ -28,10 +28,11 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         return await Availability.create(availability);
     }
 
-    async updateAvailability(id: string, availability: IAvailability): Promise<UpdateResult> {
-        return await Availability.updateOne(
-            { workerId: id },
-            { $set: { availableDates: availability.availableDates } }  // ✅ Updated field
+    async updateAvailability(workerId: string, availability: IAvailability): Promise<IAvailability | null> {
+        return await Availability.findOneAndUpdate(
+            { workerId },
+            { $set: availability },
+            { new: true }
         );
     }
 

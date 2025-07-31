@@ -2,8 +2,8 @@ import { useState } from "react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import UserTable from "../../components/admin/UsersTable";
 import WorkersTable from "../../components/admin/WorkersTable";
-import WorkerDetails from "../../components/admin/WorkerDetails";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
+import WorkerDetails from "../../components/common/WorkerDetails";
 
 
 const AdminDashboard = () => {
