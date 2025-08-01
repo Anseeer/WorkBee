@@ -32,6 +32,12 @@ import { ICategoryRepository } from "../repositories/category/category.repo.inte
 import { ICategoryService } from "../services/category/category.service.interface";
 import { IAvailabilityService } from "../services/availability/availability.service.interface";
 import { IAvailabilityRepository } from "../repositories/availability/availability.repo.interface";
+import { IServiceRepository } from "../repositories/services/service.repo.interface";
+import { ServiceRepository } from "../repositories/services/service.repo";
+import { ServiceService } from "../services/service/service.service";
+import { IServiceService } from "../services/service/service.service.interface";
+import { IServiceController } from "../controllers/services/services.controller.interface";
+import { ServiceController } from "../controllers/services/services.controller";
 
 const container = new Container();
 
@@ -47,8 +53,12 @@ container.bind<IWorkerService>(TYPES.workerService).to(WorkerService);
 container.bind<IWorkerController>(TYPES.workerController).to(WorkerController);
 
 container.bind<ICategoryRepository>(TYPES.categoryRepository).to(CategoryRepository);
-container.bind<ICategoryController>(TYPES.categoryController).to(CategoryController);
 container.bind<ICategoryService>(TYPES.categoryService).to(CategoryService);
+container.bind<ICategoryController>(TYPES.categoryController).to(CategoryController);
+
+container.bind<IServiceRepository>(TYPES.serviceRepository).to(ServiceRepository);
+container.bind<IServiceService>(TYPES.serviceService).to(ServiceService);
+container.bind<IServiceController>(TYPES.serviceController).to(ServiceController);
 
 container.bind<IAvailabilityRepository>(TYPES.availabilityRepository).to(AvailabilityRepository);
 container.bind<IAvailabilityService>(TYPES.availabilityService).to(AvailabilityService);

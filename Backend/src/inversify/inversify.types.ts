@@ -15,6 +15,10 @@ const TYPES = {
     categoryService: Symbol.for("categoryService"),
     categoryController: Symbol.for("categoryController"),
 
+    serviceRepository: Symbol.for("serviceRepository"),
+    serviceService: Symbol.for("serviceService"),
+    serviceController: Symbol.for("serviceController"),
+
     availabilityRepository: Symbol.for("availabilityRepository"),
     availabilityService: Symbol.for("availabilityService"),
     availabilityController: Symbol.for("availabilityController"),

@@ -22,6 +22,7 @@ export const serviceSchema = new Schema<IServices>({
     isActive: {
         type: Boolean,
         required: true,
+        default:true
     }
 });
 

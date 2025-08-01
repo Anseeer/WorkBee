@@ -56,6 +56,7 @@ export class AdminService implements IAdminService {
         }
         return await this._userRepository.setIsActive(id);
     }
+    
     async setIsActiveWorkers(id: string): Promise<boolean> {
         if (!id) {
             throw new Error('id not get');
