@@ -14,6 +14,10 @@ const TYPES = {
     categoryRepository: Symbol.for("categoryRepository"),
     categoryService: Symbol.for("categoryService"),
     categoryController: Symbol.for("categoryController"),
+
+    availabilityRepository: Symbol.for("availabilityRepository"),
+    availabilityService: Symbol.for("availabilityService"),
+    availabilityController: Symbol.for("availabilityController"),
 };
 
 export default TYPES;

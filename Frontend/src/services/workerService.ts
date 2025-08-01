@@ -12,12 +12,16 @@ export const login = async (credentials: { email: string, password: string }) =>
   return response;
 }
 
-export const buildAccount = async (workerId:string|undefined,accountData:Partial<IWorker>)=>{
+export const buildAccount = async (workerId: string | undefined, accountData: Partial<IWorker>) => {
   console.log("Build account service to backedn")
-  console.log("Worker id :",workerId)
-  const response = await axios.post(`workers/build-account?workerId=${workerId}`,accountData,{withCredentials:true});
+  console.log("Worker id :", workerId)
+  const response = await axios.post(`workers/build-account?workerId=${workerId}`, accountData, { withCredentials: true });
   return response;
 }
+
+export const getWorkerDetails = async (workerId: string) => {
+  return axios.get(`/workers/fetch-details?workerId=${workerId}`);
+};
 
 export const logoutWorker = async () => {
   await axios.post('workers/logout', {}, { withCredentials: true });

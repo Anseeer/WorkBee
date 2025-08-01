@@ -9,4 +9,5 @@ export interface IWorkerController {
     verifyOtp(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
     buildAccount(req: Request, res: Response): Promise<void>;
+    fetchDetails(req: Request, res: Response): Promise<void>;
 }

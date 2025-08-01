@@ -2,7 +2,7 @@ import mongoose, { Document, Types } from "mongoose"
 import { ILocation } from "../location/location.interface"
 
 export interface IWorker extends Document {
-    _id: string | Types.ObjectId,
+    // _id: string | Types.ObjectId,
     name: string,
     email: string,
     phone: string,

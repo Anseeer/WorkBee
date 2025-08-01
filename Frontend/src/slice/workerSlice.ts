@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AxiosError } from "axios";
-import { buildAccount, forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
+import { buildAccount, forgotPassword, getWorkerDetails, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
 import type { IWorker } from "../types/IWorker";
 import type { IAvailability } from "../types/IAvailability";
 
@@ -104,14 +104,29 @@ export const buildAccountWorkerThunk = createAsyncThunk(
     "workers/build-account",
     async (accountData: Partial<IWorker>, { rejectWithValue }) => {
         try {
-            console.log("WorkerId :", accountData.id)
-            const response = await buildAccount(accountData.id, accountData);
+            console.log("WorkerId :", accountData._id)
+            const response = await buildAccount(accountData._id, accountData);
             return response.data.data as BuildAccountResponse;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             return rejectWithValue(error);
         }
     }
+);
+
+
+export const fetchWorkerDetails = createAsyncThunk(
+  "workers/fetch-details",
+  async (workerId: string, { rejectWithValue }) => {
+    try {
+      console.log("Getting the worker id from localStorage:", workerId);
+      const response = await getWorkerDetails(workerId);
+      return response.data.data as BuildAccountResponse;
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ data: string }>;
+      return rejectWithValue(err.response?.data?.data || "Failed to fetch worker");
+    }
+  }
 );
 
 const workerSlice = createSlice({
@@ -134,6 +149,7 @@ const workerSlice = createSlice({
                     id: worker._id || worker.id
                 };
                 state.error = null;
+                localStorage.setItem("workerId", state.worker?.id as string);
             })
 
             .addCase(registerWorkerThunk.rejected, (state, action) => {
@@ -142,12 +158,13 @@ const workerSlice = createSlice({
             // Login
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
                 const worker = action.payload.worker;
-
+                console.log("Worker :",worker)
                 state.worker = {
                     ...worker,
                     id: worker.id || worker._id
                 };
                 state.error = null;
+                localStorage.setItem("workerId", state.worker?.id as string);
             })
 
             .addCase(loginWorkerThunk.rejected, (state, action) => {
@@ -155,16 +172,23 @@ const workerSlice = createSlice({
             })
             // Build Account
             .addCase(buildAccountWorkerThunk.fulfilled, (state, action) => {
-                console.log("Build Account payload :",action.payload)
-                console.log("Build Account worker :",action.payload.worker)
-                console.log("Build Account availalblity :",action.payload.availability)
+                console.log("Build Account payload :", action.payload)
+                console.log("Build Account worker :", action.payload.worker)
+                console.log("Build Account availalblity :", action.payload.availability)
                 state.worker = action.payload.worker;
                 state.availability = action.payload.availability
                 state.error = null;
             })
             .addCase(buildAccountWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
-            });
+            })
+            .addCase(fetchWorkerDetails.fulfilled,(state,action)=>{
+                console.log("PAyload in the fetchWorker :",action.payload)
+                console.log("PAyload.worker in the fetchWorker :",action.payload.worker)
+                console.log("PAyload.availability in the fetchWorker :",action.payload.availability)
+                state.worker = action.payload.worker;
+                state.availability = action.payload.availability;
+            })
     },
 });
 

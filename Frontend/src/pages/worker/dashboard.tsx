@@ -5,16 +5,26 @@ import type { RootState } from "../../Store";
 import BuildAccount from "../../components/worker/BuildAccountForm";
 import WorkerDetails from "../../components/common/WorkerDetails";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
+import { fetchWorkerDetails } from "../../slice/workerSlice";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
-    const workerData = useSelector((state: RootState) => state.worker);
+    const Dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
+    const workerData = useSelector((state: RootState) => state.worker);
+
+    useEffect(() => {
+        const workerID = localStorage.getItem("workerId");
+        console.log("WrokerId in localStorage :",workerID)
+        if (workerID) {
+            Dispatch(fetchWorkerDetails(workerID));
+        }
+    }, [Dispatch]);
 
     useEffect(() => {
         setSelectedDetails(workerData);
-    }, [workerData])
-
+    }, [workerData, setSelectedDetails]);
 
     const handleTab = (tab: string) => {
         setActiveTab(tab);

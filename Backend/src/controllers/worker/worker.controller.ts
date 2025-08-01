@@ -5,12 +5,18 @@ import logger from "../../utilities/logger";
 import { IWorkerController } from "./worker.controller.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
+import { AvailabilityService } from "../../services/availability/availability.service";
 
 @injectable()
 export class WorkerController implements IWorkerController {
     private _workerService: WorkerService;
-    constructor(@inject(TYPES.workerService) workerService: WorkerService) {
+    private _availabilityService: AvailabilityService;
+    constructor(
+        @inject(TYPES.workerService) workerService: WorkerService,
+        @inject(TYPES.availabilityService) availabilityService: AvailabilityService
+    ) {
         this._workerService = workerService
+        this._availabilityService = availabilityService
     }
 
     login = async (req: Request, res: Response) => {
@@ -80,7 +86,7 @@ export class WorkerController implements IWorkerController {
     buildAccount = async (req: Request, res: Response) => {
         const { workerId } = req.query;
         console.log("Vomes To Build acount")
-        console.log("workerID:",workerId)
+        console.log("workerID:", workerId)
 
         try {
             if (!workerId || typeof workerId !== "string") {
@@ -101,7 +107,7 @@ export class WorkerController implements IWorkerController {
 
         } catch (error: unknown) {
             const err = error instanceof Error ? error.message : String(error);
-            console.log(err)
+            console.log("Error :",err);
             const response = new errorResponse(400, "Failed To Build Account", err);
             logger.error(response);
             res.status(response.status).json(response);
@@ -187,8 +193,33 @@ export class WorkerController implements IWorkerController {
 
     };
 
+    fetchDetails = async (req: Request, res: Response): Promise<void> => {
+        const { workerId } = req.query;
+        try {
+            console.log("Requested to fetch details of worker")
+            if (!workerId || typeof workerId !== "string") {
+                throw new Error("Worker ID is missing or invalid");
+            }
 
+            const worker = await this._workerService.getUserById(workerId);
+            const availability = await this._availabilityService.getWorkerById(workerId);
 
+            const response = new successResponse(201, "Worker Details Fetch Successfully", {
+                worker,
+                availability
+            });
+
+            logger.info(response);
+            res.status(response.status).json(response);
+
+        } catch (error: unknown) {
+            const err = error instanceof Error ? error.message : String(error);
+            console.log(err)
+            const response = new errorResponse(400, "Failed To Build Account", err);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
 
 }
 

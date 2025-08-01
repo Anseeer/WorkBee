@@ -37,6 +37,7 @@ export default function BuildAccount() {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [selectedImg, setSelectedImg] = useState<File | null>(null);
   const Profile = getProfileImage(worker?.name, selectedImg);
+  const [isLoding, setIsLoding] = useState(false)
   const dispatch = useAppDispatch();
 
   const formik = useFormik({
@@ -75,6 +76,7 @@ export default function BuildAccount() {
       return errors;
     },
     onSubmit: async (values) => {
+      setIsLoding(true);
       try {
         const profileUrl = values.profileImage
           ? await uploadToCloud(values.profileImage)
@@ -85,7 +87,7 @@ export default function BuildAccount() {
         );
 
         const availability = {
-          workerId: worker?.id,
+          workerId: worker?._id,
           availableDates: selectedDates.map((date) => ({
             date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
             bookedSlots: [],
@@ -94,8 +96,8 @@ export default function BuildAccount() {
 
 
         const payload = {
-          id: worker?.id,
-          profileImage: profileUrl,
+          _id: worker?._id,
+          profileImage: profileUrl ? profileUrl : Profile,
           bio: values.bio,
           age: Number(values.age),
           services: values.selectedServices,
@@ -111,6 +113,7 @@ export default function BuildAccount() {
 
         await dispatch(buildAccountWorkerThunk(payload)).unwrap()
         toast.success("Build Account Successfully");
+        setIsLoding(false)
       } catch (error) {
         const err = error instanceof Error ? error.message : String(error);
         console.error("Upload failed", err);
@@ -300,10 +303,19 @@ export default function BuildAccount() {
               tileDisabled={({ date, view }) => {
                 if (view === "month") {
                   const today = new Date();
-                  return (
+                  const todayMidnight = new Date(today.setHours(0, 0, 0, 0));
+
+
+                  if (date.getTime() < todayMidnight.getTime()) {
+                    return true;
+                  }
+
+                  if (
                     date.getMonth() !== today.getMonth() ||
                     date.getFullYear() !== today.getFullYear()
-                  );
+                  ) {
+                    return true;
+                  }
                 }
                 return false;
               }}
@@ -316,11 +328,10 @@ export default function BuildAccount() {
               className="custom-calendar"
             />
             {formik.errors.availableDates && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.availableDates}
-              </div>
+              <div className="text-red-500 text-sm">{formik.errors.availableDates}</div>
             )}
           </div>
+
         </div>
 
         {/* Right Column */}
@@ -419,7 +430,7 @@ export default function BuildAccount() {
               type="submit"
               className="bg-green-800 text-white px-6 py-3 rounded-lg hover:bg-green-700"
             >
-              Submit
+              {isLoding ? `Submiting....` : `Submit`}
             </button>
           </div>
         </div>

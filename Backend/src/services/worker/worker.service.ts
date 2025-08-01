@@ -22,6 +22,7 @@ export class WorkerService implements IWorkerService {
     async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO }> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
+        console.log("DB Query Result:", existingWorker);
 
         if (!existingWorker) {
             throw new Error("Cant find the worker in this email , please signup !");

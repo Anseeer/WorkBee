@@ -14,6 +14,9 @@ import { WorkerService } from "../services/worker/worker.service";
 import { CategoryController } from "../controllers/category/category.controller";
 import { CategoryRepository } from "../repositories/category/category.repo";
 import { CategoryService } from "../services/category/category.service";
+import { AvailabilityRepository } from "../repositories/availability/availability.repo";
+import { AvailabilityService } from "../services/availability/availability.service";
+
 
 // Interfaces
 import { IUserRepository } from "../repositories/user/user.repo.interface";
@@ -27,7 +30,8 @@ import { IWorkerController } from "../controllers/worker/worker.controller.inter
 import { ICategoryController } from "../controllers/category/category.controller.interface";
 import { ICategoryRepository } from "../repositories/category/category.repo.interface";
 import { ICategoryService } from "../services/category/category.service.interface";
-
+import { IAvailabilityService } from "../services/availability/availability.service.interface";
+import { IAvailabilityRepository } from "../repositories/availability/availability.repo.interface";
 
 const container = new Container();
 
@@ -45,5 +49,9 @@ container.bind<IWorkerController>(TYPES.workerController).to(WorkerController);
 container.bind<ICategoryRepository>(TYPES.categoryRepository).to(CategoryRepository);
 container.bind<ICategoryController>(TYPES.categoryController).to(CategoryController);
 container.bind<ICategoryService>(TYPES.categoryService).to(CategoryService);
+
+container.bind<IAvailabilityRepository>(TYPES.availabilityRepository).to(AvailabilityRepository);
+container.bind<IAvailabilityService>(TYPES.availabilityService).to(AvailabilityService);
+
 
 export default container;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import UserTable from "../../components/admin/UsersTable";
 import WorkersTable from "../../components/admin/WorkersTable";
@@ -10,6 +10,8 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const { selectedDetails, setSelectedDetails } = useWorkerDetails();
     console.log("SelectedDetails :", selectedDetails)
+
+  
 
     const handleTab = (tab: string) => {
         setActiveTab(tab);

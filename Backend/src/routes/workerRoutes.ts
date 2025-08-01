@@ -12,6 +12,7 @@ Router.post("/login", workerController.login);
 Router.post("/logout", auth, workerController.logout);
 Router.post("/register", workerController.register);
 Router.post("/build-account", workerController.buildAccount);
+Router.get("/fetch-details", workerController.fetchDetails);
 Router.post("/forgot-password", workerController.forgotPass);
 Router.post("/resend-otp", workerController.resendOtp);
 Router.post("/verify-otp", workerController.verifyOtp);
