@@ -16,8 +16,8 @@ export class ServiceController implements IServiceController {
 
     createService = async (req: Request, res: Response) => {
         try {
-            const catgeory = req.body;
-            const result = await this._serviceService.create(catgeory);
+            const service = req.body;
+            const result = await this._serviceService.create(service);
             const response = new successResponse(201, "Successfully Create Service", result);
             logger.info(response);
             res.status(response.status).json(response);
@@ -32,8 +32,8 @@ export class ServiceController implements IServiceController {
 
     getAllservices = async (req: Request, res: Response) => {
         try {
-            const categories = await this._serviceService.getAllServices();
-            const response = new successResponse(201, 'SuccessFully GetAllServices', { categories });
+            const service = await this._serviceService.getAllServices();
+            const response = new successResponse(201, 'SuccessFully GetAllServices', { service });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -61,8 +61,9 @@ export class ServiceController implements IServiceController {
 
     update = async (req: Request, res: Response): Promise<void> => {
         try {
+            const {serviceId} = req.query;
             const service = req.body;
-            let result = await this._serviceService.update(service);
+            let result = await this._serviceService.update(service,serviceId as string);
             let response = new successResponse(201, "SuccessFully Updated", result);
             logger.info(response);
             res.status(response.status).json(response);

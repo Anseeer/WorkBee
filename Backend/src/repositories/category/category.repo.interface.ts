@@ -6,5 +6,7 @@ export interface ICategoryRepository {
     findByName(name: string): Promise<ICategory | null>;
     delete(id: string): Promise<boolean>;
     setIsActive(id: string): Promise<boolean>;
-    update(category:ICategory):Promise<boolean>;
+    update(category:ICategory,categoryId:string):Promise<boolean>;
+    getAllCategories():Promise<ICategory[]>;
+    getAll():Promise<ICategory[]>;
 }

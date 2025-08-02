@@ -111,5 +111,20 @@ export class AdminController implements IAdminController {
         }
     }
 
+    fetchAvailability = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const {workerId} = req.query;
+            const availability = await this._adminService.fetchAvailability(workerId as string);
+            const response = new successResponse(200, "Successfully get availability", availability);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed to fetch availability", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
 
+    
 }

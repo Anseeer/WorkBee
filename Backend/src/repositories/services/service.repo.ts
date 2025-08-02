@@ -20,8 +20,9 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
     }
 
     async getAllService(): Promise<IServices[]> {
-        return await this.model.find({ isActive: true });
+        return await this.model.find().sort({ createdAt: 1 }); 
     }
+
 
     async setIsActive(id: string): Promise<boolean> {
         const service = await this.model.findById(id);
@@ -34,10 +35,10 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         return true;
     }
 
-    update = async (service: IServices): Promise<boolean> => {
+    update = async (service: IServices, serviceId: string): Promise<boolean> => {
         const result = await this.model.updateOne(
-            { _id: service._id },
-            { $set: { name: service.name, description: service.description } }
+            { _id: serviceId },
+            { $set: { name: service.name, wage: service.wage, category: service.category } }
         );
         return result.modifiedCount > 0;
     };

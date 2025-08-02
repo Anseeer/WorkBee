@@ -157,8 +157,11 @@ const workerSlice = createSlice({
             })
             // Login
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
+                console.log("Action.Payload :",action.payload)
                 const worker = action.payload.worker;
+                const availability = action.payload.availability;
                 console.log("Worker :",worker)
+                console.log("Availability :",availability)
                 state.worker = {
                     ...worker,
                     id: worker.id || worker._id

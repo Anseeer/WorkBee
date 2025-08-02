@@ -19,6 +19,10 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         return await this.model.find({ isActive: true });
     }
 
+    async getAll(): Promise<ICategory[]> {
+        return await this.model.find();
+    }
+
     async findByName(name: string): Promise<ICategory | null> {
         return await this.model.findOne({ name })
     }
@@ -34,9 +38,9 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         return true;
     }
 
-    update = async (category: ICategory): Promise<boolean> => {
+    update = async (category: ICategory,categoryId:string): Promise<boolean> => {
         const result = await this.model.updateOne(
-            { _id: category._id },
+            { _id: categoryId },
             { $set: { name: category.name, description: category.description } }
         );
         return result.modifiedCount > 0;

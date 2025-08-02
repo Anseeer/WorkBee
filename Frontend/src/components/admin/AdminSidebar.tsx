@@ -118,14 +118,14 @@ export default function AdminSidebar({ handleTab }: props) {
 
                 {/* Category & Services*/}
                 <div
-                    onClick={() => handleClick("category & services")}
+                    onClick={() => handleClick("category & Services")}
                     className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "category&services"
+                    ${activeTab === "category & Services"
                             ? "bg-[#8FC39D] bg-opacity-70 text-black"
                             : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
                     <img src={CategoryAndServicesIcon} alt="category&services" className="w-5 h-5" />
                     <span className={`text-md font-medium 
-                    ${activeTab === "category&services" ? "text-black" : "text-gray-400"}`}>
+                    ${activeTab === "category & Services" ? "text-black" : "text-gray-400"}`}>
                         Category & Services
                     </span>
                 </div>
@@ -133,14 +133,14 @@ export default function AdminSidebar({ handleTab }: props) {
 
                 {/* Review & Ratings */}
                 <div
-                    onClick={() => handleClick("review & ratings")}
+                    onClick={() => handleClick("review & Ratings")}
                     className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "review&ratings"
+                    ${activeTab === "review & Ratings"
                             ? "bg-[#8FC39D] bg-opacity-70 text-black"
                             : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
                     <img src={reviewIcon} alt="review&ratings" className="w-5 h-5" />
                     <span className={`text-md font-medium 
-                    ${activeTab === "review&ratings" ? "text-black" : "text-gray-400"}`}>
+                    ${activeTab === "review & Ratings" ? "text-black" : "text-gray-400"}`}>
                         Review & Ratings
                     </span>
                 </div>

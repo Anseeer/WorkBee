@@ -5,9 +5,12 @@ import { useWorkerDetails } from '../context/WorkerDetailContext';
 
 const WorkerDetails = () => {
     const { selectedDetails } = useWorkerDetails();
+    console.log("selectedDetails :",selectedDetails)
 
     const worker = selectedDetails?.worker;
     const availability = selectedDetails?.availability;
+    console.log("Availability :",availability);
+    console.log("Worker :",worker);
 
 
     if (!worker || !availability) return <div>No worker selected</div>;

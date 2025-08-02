@@ -20,8 +20,7 @@ export class ServiceService implements IServiceService {
     }
 
     getAllServices = async (): Promise<IServices[]> => {
-        const categories = await this._serviceRepository.getAllService();
-        return categories;
+        return await this._serviceRepository.getAllService();
     };
 
     setIsActive = async (serviceId: string): Promise<boolean> => {
@@ -29,8 +28,8 @@ export class ServiceService implements IServiceService {
         return true;
     }
 
-    update = async (service: IServices): Promise<boolean> => {
-        await this._serviceRepository.update(service);
+    update = async (service: IServices,serviceId:string): Promise<boolean> => {
+        await this._serviceRepository.update(service,serviceId);
         return true;
     }
 

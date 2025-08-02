@@ -17,7 +17,13 @@ export class CategoryService implements ICategoryService{
         return categories;
     };
 
+    getAll = async (): Promise<ICategory[]> => {
+        const categories = await this._categoryRepository.getAll();
+        return categories;
+    };
+
     createCategory  = async (category:ICategory):Promise<ICategory>=>{
+        console.log("Category Constains:",category)
         const existingCategory = await this._categoryRepository.findByName(category.name);
         if(existingCategory){
             throw new Error("Already Exist The Category");
@@ -30,8 +36,8 @@ export class CategoryService implements ICategoryService{
         return true;
     }
 
-    update = async (category:ICategory):Promise<boolean>=>{
-        await this._categoryRepository.update(category);
+    update = async (category:ICategory,categoryId:string):Promise<boolean>=>{
+        await this._categoryRepository.update(category,categoryId);
         return true;
     }
 

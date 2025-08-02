@@ -18,12 +18,73 @@ export const setIsActiveUsers = async (id: string) => {
     const response = await axios.get(`admins/users/set-status?id=${id}`);
     return response;
 }
+
 export const fetchWorkers = async () => {
     const response = await axios.get('admins/workers');
     return response;
 }
 
+export const fetchCategory = async () => {
+    const response = await axios.get('categories/categories');
+    return response;
+}
+
+export const fetchService = async () => {
+    const response = await axios.get('services/getAll-services');
+    return response;
+}
+
+export const fetchAvailability = async (id: string | null) => {
+    if (!id) {
+        throw new Error("Worker Id Not Get")
+    }
+    const response = await axios.get(`admins/fetch-availability?workerId=${id}`);
+    return response;
+}
+
 export const setIsActiveWorkers = async (id: string) => {
     const response = await axios.get(`admins/workers/set-status?id=${id}`);
+    return response;
+}
+
+export const setIsActiveCategory = async (id: string) => {
+    const response = await axios.get(`categories/set-active?categoryId=${id}`);
+    return response;
+}
+
+export const addCategory = async (category: { name: string, description: string }) => {
+    const response = await axios.post('categories/create-category', category);
+    return response;
+}
+
+export const deleteCategory = async (id: string) => {
+    const response = await axios.delete(`categories/delete?categoryId=${id}`);
+    return response;
+}
+
+
+export const updateCategory = async (id:string,category: { name: string, description: string }) => {
+    const response = await axios.post(`categories/update?serviceId=${id}`, category);
+    return response;
+}
+
+export const setIsActiveService = async (id: string) => {
+    const response = await axios.get(`services/set-active?serviceId=${id}`);
+    return response;
+}
+
+export const addService = async (service: { name: string, wage: string, category:string }) => {
+    const response = await axios.post('services/create-service', service);
+    return response;
+}
+
+export const deleteService = async (id: string) => {
+    const response = await axios.delete(`services/delete?serviceId=${id}`);
+    return response;
+}
+
+
+export const updateService = async (id:string,service: { name: string, wage: string, category:string }) => {
+    const response = await axios.post(`services/update?serviceId=${id}`, service);
     return response;
 }

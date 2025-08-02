@@ -26,8 +26,8 @@ export class WorkerController implements IWorkerController {
                 throw new Error("Email and Password are required");
             }
             const credentials = { email, password };
-            const { token, worker } = await this._workerService.loginWorker(credentials);
-            const response = new successResponse(201, "Login Successfull", { worker });
+            const { token, worker ,availability} = await this._workerService.loginWorker(credentials);
+            const response = new successResponse(201, "Login Successfull", { worker ,availability });
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
@@ -202,7 +202,7 @@ export class WorkerController implements IWorkerController {
             }
 
             const worker = await this._workerService.getUserById(workerId);
-            const availability = await this._availabilityService.getWorkerById(workerId);
+            const availability = await this._availabilityService.getAvailabilityByworkerId(workerId)
 
             const response = new successResponse(201, "Worker Details Fetch Successfully", {
                 worker,

@@ -1,18 +1,29 @@
 import { useEffect, useState } from 'react';
-import { fetchWorkers, setIsActiveWorkers } from '../../services/adminService';
+import { fetchAvailability, fetchWorkers, setIsActiveWorkers } from '../../services/adminService';
 import { DataTable, type Column } from '../common/Table';
 import type { IWorker } from '../../types/IWorker';
-// import { useWorkerDetails } from '../context/WorkerDetailContext';
+import { useWorkerDetails } from '../context/WorkerDetailContext';
+import type { IAvailability } from '../../types/IAvailability';
 
 const WorkersTable = () => {
     const [workers, setWorkers] = useState<IWorker[]>([]);
-    // const { setSelectedDetails } = useWorkerDetails()
+    const { setSelectedDetails } = useWorkerDetails()
+
+    const FetchAvailability = async (id: string): Promise<IAvailability> => {
+        try {
+            const response = await fetchAvailability(id);
+            return response.data.data as IAvailability;
+        } catch (error) {
+            console.error("Failed to fetch availability:", error);
+            throw error;
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             const res = await fetchWorkers();
-            console.log("Res Fetch Workers :", res)
             setWorkers(res.data.data);
+
         };
         fetchData();
     }, []);
@@ -69,7 +80,21 @@ const WorkersTable = () => {
                 data={workers}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
-            // onRowClick={(worker) => setSelectedDetails(worker)}
+                onRowClick={async (worker) => {
+                    try {
+                        const availabilityData = await FetchAvailability(worker.id);
+                        setSelectedDetails({
+                            worker,
+                            availability: availabilityData,
+                            error: null
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }}
+
+
+
             />
         </div>
     );

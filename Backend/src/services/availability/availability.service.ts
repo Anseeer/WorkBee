@@ -12,7 +12,7 @@ export class AvailabilityService implements IAvailabilityService{
         this._availabilityRepository = availabilityRepo;
     }
 
-    getWorkerById = async (id:string): Promise<IAvailability[]> => {
+    getAvailabilityByworkerId = async (id:string): Promise<IAvailability[]> => {
         const availability = await this._availabilityRepository.findByWorkerId(id);
         return availability as IAvailability[];
     };

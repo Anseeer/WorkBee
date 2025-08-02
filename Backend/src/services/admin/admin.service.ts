@@ -10,17 +10,22 @@ import { WorkerRepository } from "../../repositories/worker/worker.repo";
 import mapWorkerToDTO from "../../mappers/worker/worker.map.DTO";
 import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { Iuser } from "../../model/user/user.interface";
+import { IAvailability } from "../../model/availablity/availablity.interface";
+import { AvailabilityRepository } from "../../repositories/availability/availability.repo";
 
 @injectable()
 export class AdminService implements IAdminService {
     private _userRepository: UserRepository;
     private _workerRepository: WorkerRepository;
+    private _availabilityRepository: AvailabilityRepository;
     constructor(
         @inject(TYPES.userRepository) userRepo: UserRepository,
-        @inject(TYPES.workerRepository) workerRepo: WorkerRepository
+        @inject(TYPES.workerRepository) workerRepo: WorkerRepository,
+        @inject(TYPES.availabilityRepository) availabilityRepo: AvailabilityRepository
     ) {
         this._userRepository = userRepo;
         this._workerRepository = workerRepo;
+        this._availabilityRepository = availabilityRepo;
     }
 
     async login(adminData: Partial<Iuser>): Promise<{ token: string, admin: IUserDTO }> {
@@ -56,7 +61,7 @@ export class AdminService implements IAdminService {
         }
         return await this._userRepository.setIsActive(id);
     }
-    
+
     async setIsActiveWorkers(id: string): Promise<boolean> {
         if (!id) {
             throw new Error('id not get');
@@ -70,5 +75,9 @@ export class AdminService implements IAdminService {
         return workers;
     }
 
+    async fetchAvailability(id: string): Promise<IAvailability[] | null> {
+        const availability = await this._availabilityRepository.findByWorkerId(id);
+        return availability;
+    }
 
 }

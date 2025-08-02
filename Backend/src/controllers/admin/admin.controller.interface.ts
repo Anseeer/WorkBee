@@ -7,4 +7,5 @@ export interface IAdminController {
     setIsActiveUsers(req: Request, res: Response): Promise<void>;
     setIsActiveWorkers(req: Request, res: Response): Promise<void>;
     fetchWorkers(req: Request, res: Response): Promise<void>;
+    fetchAvailability(req: Request, res: Response): Promise<void>;
 }

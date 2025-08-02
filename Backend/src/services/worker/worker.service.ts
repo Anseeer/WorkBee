@@ -11,21 +11,33 @@ import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IWorkerService } from "./worker.service.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
+import { AvailabilityRepository } from "../../repositories/availability/availability.repo";
 
 @injectable()
 export class WorkerService implements IWorkerService {
     private _workerRepository: WorkerRepository
-    constructor(@inject(TYPES.workerRepository) workerRepo: WorkerRepository) {
-        this._workerRepository = workerRepo;
+    private _availabilityRepository: AvailabilityRepository
+    constructor(
+        @inject(TYPES.workerRepository) workerRepo: WorkerRepository,
+        @inject(TYPES.availabilityRepository) availibilityRepo : AvailabilityRepository
+    ) {
+        this._workerRepository = workerRepo;    
+        this._availabilityRepository = availibilityRepo;    
     }
 
-    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO }> {
+    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO ,availability:IAvailability[]}> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
         console.log("DB Query Result:", existingWorker);
 
+        const existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
+
         if (!existingWorker) {
             throw new Error("Cant find the worker in this email , please signup !");
+        }
+
+        if (!existingAvailability) {
+            throw new Error("Cant find the availabilty in this worker");
         }
 
         const matchPass = await bcrypt.compare(credentials.password, existingWorker.password);
@@ -33,12 +45,12 @@ export class WorkerService implements IWorkerService {
             throw new Error("Password not match !");
         }
 
-        const token = generateToken(existingWorker._id.toString(), existingWorker.role);
+        const token = generateToken(existingWorker.id.toString(), existingWorker.role);
         console.log("ExistingWorker :", existingWorker);
 
         const worker = mapWorkerToDTO(existingWorker);
 
-        return { token, worker }
+        return { token, worker ,availability:existingAvailability}
     }
 
     async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {} }> {
@@ -56,7 +68,7 @@ export class WorkerService implements IWorkerService {
         workerData.password = hashedPass;
         const newWorker = await this._workerRepository.create(workerData);
 
-        const token = generateToken(newWorker._id.toString(), newWorker.role);
+        const token = generateToken(newWorker.id.toString(), newWorker.role);
 
         return { token, worker: newWorker };
 

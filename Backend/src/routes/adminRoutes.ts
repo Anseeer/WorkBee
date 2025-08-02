@@ -14,6 +14,7 @@ Router.get('/users', auth, adminController.fetchUsers)
 Router.get('/users/set-status', auth, adminController.setIsActiveUsers);
 Router.get('/workers/set-status', auth, adminController.setIsActiveWorkers);
 Router.get('/workers', auth, adminController.fetchWorkers)
+Router.get('/fetch-availability', auth, adminController.fetchAvailability)
 
 
 export default Router;
