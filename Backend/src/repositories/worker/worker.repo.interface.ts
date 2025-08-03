@@ -1,4 +1,6 @@
 import { IAvailability } from "../../model/availablity/availablity.interface";
+import { ICategory } from "../../model/category/category.interface";
+import { IServices } from "../../model/service/service.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 export interface IWorkerRepository {
@@ -13,4 +15,6 @@ export interface IWorkerRepository {
     updateAvailability(id: string, availability: IAvailability):  Promise<IAvailability | null>;
     getAllWorkers(): Promise<IWorker[]>;
     setIsActive(id: string): Promise<boolean>;
+    approveWorker(id:string):Promise<boolean>;
+    rejectedWorker(id:string):Promise<boolean>;
 }

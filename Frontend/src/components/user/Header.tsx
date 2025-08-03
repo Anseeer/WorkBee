@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../../services/axios';
 import { logoutUser } from '../../services/userService';
 import { toast } from 'react-toastify';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { logout } from '../../slice/userSlice';
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useAppDispatch()
 
     const [isLogged, setIsLogged] = useState(false);
 
@@ -21,6 +24,7 @@ export default function Header() {
         try {
             await logoutUser();
             toast.success("Logout Successfull");
+            dispatch(logout());
             navigate("/login", { replace: true });
         } catch (error) {
             console.error("Logout failed:", error);

@@ -87,7 +87,7 @@ const CategoryTable = () => {
             if (!editData?.id) return;
             try {
                 console.log(values)
-                await updateCategory(editData.id, values);
+                await updateCategory(editData._id, values);
                 toast.success("Category updated successfully");
                 setAdded(true);
                 handleEditClose();

@@ -24,6 +24,11 @@ export const fetchWorkers = async () => {
     return response;
 }
 
+export const fetchWorkersNonVerified = async () => {
+    const response = await axios.get('admins/workers-nonVerify');
+    return response;
+}
+
 export const fetchCategory = async () => {
     const response = await axios.get('categories/categories');
     return response;
@@ -62,9 +67,9 @@ export const deleteCategory = async (id: string) => {
     return response;
 }
 
-
 export const updateCategory = async (id:string,category: { name: string, description: string }) => {
-    const response = await axios.post(`categories/update?serviceId=${id}`, category);
+    console.log("Helo update category")
+    const response = await axios.post(`categories/update?categoryId=${id}`, category);
     return response;
 }
 
@@ -88,3 +93,15 @@ export const updateService = async (id:string,service: { name: string, wage: str
     const response = await axios.post(`services/update?serviceId=${id}`, service);
     return response;
 }
+
+export const approveWorker = async (id:string) => {
+    const response = await axios.get(`admins/approve-worker?workerId=${id}`);
+    return response;
+}
+
+export const rejectedWorker = async (id:string) => {
+    const response = await axios.get(`admins/reject-worker?workerId=${id}`);
+    return response;
+}
+
+

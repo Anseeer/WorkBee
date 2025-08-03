@@ -4,37 +4,38 @@ import axios from "../../services/axios";
 
 interface ProtectedRouteProps {
   children: JSX.Element;
-  role: string;
+  role: "User" | "Worker" | "Admin";
 }
 
 const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [authInfo, setAuthInfo] = useState<{ isAuthenticated: boolean; userRole: string | null }>({
+    isAuthenticated: false,
+    userRole: null,
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        await axios.get("/auth/verify", { withCredentials: true });
-        setIsAuthenticated(true);
+        const res = await axios.get("/auth/verify", { withCredentials: true });
+        setAuthInfo({ isAuthenticated: true, userRole: res.data.role });
       } catch {
-        setIsAuthenticated(false);
+        setAuthInfo({ isAuthenticated: false, userRole: null });
+      } finally {
+        setLoading(false);
       }
     };
 
     verifyAuth();
   }, []);
 
-  if (isAuthenticated === null) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
-  if (!isAuthenticated) {
-    if (role == "User") {
-      return <Navigate to="/login" replace />;
-    } else if (role == "Worker") {
-      return <Navigate to="/workers/login" replace />;
-    } else if (role == "Admin") {
-      return <Navigate to="/admins/login" replace />;
-    }
+  // Not authenticated or role mismatch
+  if (!authInfo.isAuthenticated || authInfo.userRole?.toLowerCase() !== role.toLowerCase()) {
+    if (role === "User") return <Navigate to="/login" replace />;
+    if (role === "Worker") return <Navigate to="/workers/login" replace />;
+    if (role === "Admin") return <Navigate to="/admins/login" replace />;
   }
 
   return children;

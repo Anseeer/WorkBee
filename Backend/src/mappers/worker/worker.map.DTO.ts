@@ -12,6 +12,7 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
         preferredSchedule: worker.preferredSchedule || [],
         isActive: worker.isActive ?? false,
         isVerified: worker.isVerified ?? false,
+        status: worker.status,
         isAccountBuilt: worker.isAccountBuilt ?? false,
         location: worker.location
             ? {
@@ -31,7 +32,7 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
         bio: worker.bio || "",
         minHours: worker.minHours || "",
         profileImage: worker.profileImage || "",
-        govId: worker.govId || "",
+        govId: worker.govId,
         subscription: worker.subscription
             ? {
                 plan: worker.subscription.plan
@@ -42,6 +43,7 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
                 isActive: worker.subscription.isActive,
             }
             : null,
+        createdAt: worker.createdAt
     };
 }
 

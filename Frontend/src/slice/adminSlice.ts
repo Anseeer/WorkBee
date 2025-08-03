@@ -34,7 +34,11 @@ const adminSlice = createSlice({
     name: "admin",
     initialState,
     reducers: {
-
+        logout:(state)=>{
+            state.admin = null;
+            state.error = null;
+            state.resetEmail = null;
+        }
     },
     extraReducers: (build) => {
         build
@@ -51,3 +55,4 @@ const adminSlice = createSlice({
     },
 })
 export default adminSlice.reducer;
+export const { logout } = adminSlice.actions;

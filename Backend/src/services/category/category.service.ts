@@ -12,11 +12,6 @@ export class CategoryService implements ICategoryService{
         this._categoryRepository = categoryRepo;
     }
 
-    getAllCategories = async (): Promise<ICategory[]> => {
-        const categories = await this._categoryRepository.getAllCategories();
-        return categories;
-    };
-
     getAll = async (): Promise<ICategory[]> => {
         const categories = await this._categoryRepository.getAll();
         return categories;
@@ -48,6 +43,10 @@ export class CategoryService implements ICategoryService{
         }
         await this._categoryRepository.delete(categoryId);
         return true;
+    }
+
+    getByWorker = async(categoryIds: string[]): Promise<ICategory[]> =>{
+        return await this._categoryRepository.getByWorker(categoryIds);
     }
 
 }

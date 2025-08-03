@@ -9,8 +9,10 @@ const Router = express.Router();
 
 Router.post('/create-service', serviceController.createService);
 Router.get("/getAll-services", serviceController.getAllservices);
+Router.post("/by-categories", serviceController.getByCategories);
 Router.get("/set-active", serviceController.setIsActive);
 Router.post("/update", serviceController.update);
 Router.delete("/delete", serviceController.delete);
+Router.post("/by-worker", serviceController.getByWorker);
 
 export default Router;

@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutWorker } from "../../services/workerService";
 import { toast } from "react-toastify";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { logout } from "../../slice/workerSlice";
 
 interface prop{
   handleTab:(tab:string)=> void;
@@ -18,6 +20,7 @@ interface prop{
 export default function WorkerSidebar({handleTab}:prop) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
    useEffect(() => {
           handleClick(activeTab);
@@ -31,6 +34,7 @@ export default function WorkerSidebar({handleTab}:prop) {
   const handleLogout = async () => {
     try {
       await logoutWorker();
+      dispatch(logout())
       toast.success("Logout Successfully");
       navigate("/workers/login", { replace: true });
     } catch (error) {

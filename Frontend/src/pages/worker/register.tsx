@@ -23,16 +23,16 @@ const WorkerRegistrationPage = () => {
     // ✅ Fetch categories
     useEffect(() => {
         const fetchCategories = async () => {
-            try {
-                const res = await getAllCategories();
-                setCategoriesList(res);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (error: unknown) {
-                toast.error("Failed to fetch categories");
-            }
+            const res = await getAllCategories();
+            const formatted = res.map((cat: ICategory) => ({
+                ...cat,
+                id: cat._id, 
+            }));
+            setCategoriesList(formatted);
         };
         fetchCategories();
     }, []);
+
 
     // ✅ Load Google Maps API
     useEffect(() => {
@@ -311,7 +311,7 @@ const WorkerRegistrationPage = () => {
                                         <span>
                                             {formik.values.categories.length > 0
                                                 ? categoriesList
-                                                    .filter((cat) => formik.values.categories.includes(cat._id))
+                                                    .filter((cat) => formik.values.categories.includes(cat.id))
                                                     .map((cat) => cat.name)
                                                     .join(", ")
                                                 : "Choose Categories"}
@@ -325,14 +325,14 @@ const WorkerRegistrationPage = () => {
                                        rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                                             {categoriesList.map((cat) => (
                                                 <div
-                                                    key={cat._id}
-                                                    onClick={() => handleCategorySelect(cat._id)}
+                                                    key={cat.id}
+                                                    onClick={() => handleCategorySelect(cat.id)}
                                                     className={`px-4 py-2 flex justify-between items-center cursor-pointer
                                                     hover:bg-green-100 transition-colors duration-150
-                                                  ${formik.values.categories.includes(cat._id) ? "bg-green-50" : ""}`}
+                                                  ${formik.values.categories.includes(cat.id) ? "bg-green-50" : ""}`}
                                                 >
                                                     <span>{cat.name}</span>
-                                                    {formik.values.categories.includes(cat._id) && (
+                                                    {formik.values.categories.includes(cat.id) && (
                                                         <span className="text-green-600 font-bold">✓</span>
                                                     )}
                                                 </div>

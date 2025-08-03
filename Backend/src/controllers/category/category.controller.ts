@@ -13,20 +13,6 @@ export class CategoryController implements ICategoryController {
         this._categoryService = categoryService;
     }
 
-    getAllCategories = async (req: Request, res: Response) => {
-        try {
-            const categories = await this._categoryService.getAllCategories();
-            const response = new successResponse(201, 'SuccessFully GetAllCategories', { categories });
-            logger.info(response);
-            res.status(response.status).json(response);
-        } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To GetAllCategories', message);
-            logger.error(response);
-            res.status(response.status).json(response);
-        }
-    }
-
     getAll = async (req: Request, res: Response) => {
         try {
             const categories = await this._categoryService.getAll();
@@ -102,5 +88,22 @@ export class CategoryController implements ICategoryController {
             res.status(response.status).json(response);
         }
     }
+
+    getByWorker = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { categoryIds } = req.body;
+            let result = await this._categoryService.getByWorker(categoryIds);
+            let response = new successResponse(201, "SuccessFully GetByWorker", result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, 'Faild To GetByWorker', message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    
 
 }

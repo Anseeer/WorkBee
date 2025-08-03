@@ -1,19 +1,43 @@
 import { MapPin, Clock, Phone, Mail, Calendar, User, CheckCircle } from 'lucide-react';
 import { useWorkerDetails } from '../context/WorkerDetailContext';
+import { useEffect, useState } from 'react';
+import { fetchWorkerCategory, fetchWorkerService } from '../../services/workerService';
+import type { ICategory } from '../../types/ICategory';
+import type { IService } from '../../types/IServiceTypes';
 
 
 
 const WorkerDetails = () => {
     const { selectedDetails } = useWorkerDetails();
-    console.log("selectedDetails :",selectedDetails)
+    console.log("selectedDetails :", selectedDetails)
 
     const worker = selectedDetails?.worker;
     const availability = selectedDetails?.availability;
-    console.log("Availability :",availability);
-    console.log("Worker :",worker);
+
+    const [categories, setCategories] = useState<ICategory[]>([]);
+    const [services, setServices] = useState<IService[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!worker) return;
+
+            try {
+                const catRes = await fetchWorkerCategory(worker.categories || []);
+                const servRes = await fetchWorkerService(worker.services || []);
+
+                setCategories(catRes.data.data || []);
+                setServices(servRes.data.data || []);
+            } catch (error) {
+                console.error("Failed to fetch worker data:", error);
+            }
+        };
+
+        fetchData();
+    }, [worker]);
 
 
     if (!worker || !availability) return <div>No worker selected</div>;
+
 
     // Extract all available dates
     const availableDates = availability.availableDates.map(dateObj => new Date(dateObj.date));
@@ -99,12 +123,22 @@ const WorkerDetails = () => {
                             <div>
                                 <div className="flex items-center space-x-3 mb-1">
                                     <h1 className="text-xl font-bold text-gray-900">{worker.name}</h1>
-                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.isVerified
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-orange-100 text-orange-800'
-                                        }`}>
-                                        {worker.isVerified ? 'Verified' : 'Pending Approval'}
+                                    <span
+                                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                              ${worker.status === "Approved"
+                                                ? "bg-green-100 text-green-800"
+                                                : worker.status === "Rejected"
+                                                    ? "bg-red-100 text-red-800"
+                                                    : "bg-yellow-100 text-yellow-800"
+                                            }`}
+                                    >
+                                        {worker.status === "Approved"
+                                            ? "Verified"
+                                            : worker.status === "Rejected"
+                                                ? "Rejected"
+                                                : "Pending Approval"}
                                     </span>
+
                                 </div>
 
                                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
@@ -118,7 +152,7 @@ const WorkerDetails = () => {
                                     </div>
                                     <div className="flex items-center space-x-1">
                                         <Clock className="w-3 h-3" />
-                                        <span>Min {worker.minHours}/day</span>
+                                        <span>Min {worker.minHours}/hrs</span>
                                     </div>
                                 </div>
                             </div>
@@ -192,29 +226,47 @@ const WorkerDetails = () => {
 
                             {/* Categories & Services */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Categories */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
                                     <div className="space-y-3">
-                                        {worker.categories.map((category, index) => (
-                                            <div key={index} className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                                <span className="text-gray-800 font-medium">{category}</span>
-                                            </div>
-                                        ))}
+                                        {categories.length > 0 ? (
+                                            categories.map((category, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg"
+                                                >
+                                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                                    <span className="text-gray-800 font-medium">{category.name}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 text-sm">No categories found</p>
+                                        )}
                                     </div>
                                 </div>
+
+                                {/* Services */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Services</h3>
                                     <div className="space-y-3">
-                                        {worker.services.map((service, index) => (
-                                            <div key={index} className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                                <span className="text-gray-800 font-medium">{service}</span>
-                                            </div>
-                                        ))}
+                                        {services.length > 0 ? (
+                                            services.map((service, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg"
+                                                >
+                                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                    <span className="text-gray-800 font-medium">{service.name}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 text-sm">No services found</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
                         {/* Right Column - Calendar */}

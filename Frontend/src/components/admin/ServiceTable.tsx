@@ -21,12 +21,15 @@ const ServicesTable = () => {
     useEffect(() => {
         const fetchAllData = async () => {
             try {
+                setCategories([])
                 // Fetch categories first
                 const categoryRes = await fetchCategory();
                 const formattedCategories = categoryRes.data.data.categories.map((cat: any) => ({
                     ...cat,
-                    id: cat._id,
+                    id: cat._id, // you can keep this for later use
                 }));
+
+                console.log("REsult :", formattedCategories)
                 setCategories(formattedCategories);
 
                 // Fetch services
@@ -36,7 +39,7 @@ const ServicesTable = () => {
                     id: srv._id,
                 }));
 
-                
+
                 // Map category name correctly
                 const servicesWithNames = servicesRaw.map((srv: any) => {
                     const categoryObj = formattedCategories.find((cat: ICategory) => cat.id === srv.category);
@@ -261,19 +264,15 @@ const ServicesTable = () => {
                                     value={formik.values.category}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.category &&
-                                        formik.errors.category
-                                        ? 'border-red-500'
-                                        : 'border-gray-300'
-                                        }`}
                                 >
                                     <option value="">Select Category</option>
                                     {categories.map(cat => (
-                                        <option key={cat.id} value={cat.id}>
+                                        <option key={cat._id} value={cat._id}>
                                             {cat.name}
                                         </option>
                                     ))}
                                 </select>
+
                                 {formik.touched.category &&
                                     formik.errors.category && (
                                         <span className="text-red-500 text-xs">

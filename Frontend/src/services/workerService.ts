@@ -28,8 +28,7 @@ export const logoutWorker = async () => {
 };
 
 export const getAllCategories = async (): Promise<ICategory[]> => {
-  const res = await axios.get("/categories/getAllCategories");
-  console.log(res.data.data)
+  const res = await axios.get("/categories/categories");
   return res.data.data.categories;
 };
 
@@ -52,3 +51,19 @@ export const resetPass = async (email: string, password: string) => {
   const response = await axios.post('workers/reset-password', { email, password });
   return response;
 }
+
+export const getServiceByCategory = async (categoryIds:string[]) => {
+  const response = await axios.post('services/by-categories', {categoryIds});
+  return response;
+}
+
+export const fetchWorkerCategory = async (categoryIds:string[]) => {
+  const response = await axios.post('categories/by-worker', {categoryIds});
+  return response;
+}
+
+export const fetchWorkerService = async (serviceIds:string[]) => {
+  const response = await axios.post('services/by-worker', {serviceIds});
+  return response;
+}
+

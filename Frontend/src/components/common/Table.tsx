@@ -70,16 +70,53 @@ export function DataTable<T extends { id: string }>({
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {currentItems.map((item, i) => (
-                                <tr onClick={() => onRowClick?.(item)} key={item.id + '-' + i} className="hover:bg-gray-50">
-                                    {columns.map((col) => (
-                                        <td key={String(col.key)} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {col.render ? col.render(item) : String(item[col.key])}
-                                        </td>
-                                    ))}
+                            {currentItems.length > 0 ? (
+                                currentItems.map((item, i) => (
+                                    <tr
+                                        onClick={() => onRowClick?.(item)}
+                                        key={item.id + '-' + i}
+                                        className="hover:bg-gray-50"
+                                    >
+                                        {columns.map((col) => (
+                                            <td
+                                                key={String(col.key)}
+                                                className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                                            >
+                                                {col.render ? col.render(item) : String(item[col.key])}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan={columns.length}
+                                        className="px-6 py-10 text-center text-gray-500"
+                                    >
+                                        <div className="flex flex-col items-center justify-center">
+                                            <svg
+                                                className="w-12 h-12 text-gray-300 mb-3"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M12 8v4l3 3m6 1a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                />
+                                            </svg>
+                                            <span className="text-lg font-medium">No data found</span>
+                                            <p className="text-sm text-gray-400 mt-1">
+                                                There are currently no records to display.
+                                            </p>
+                                        </div>
+                                    </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
+
                     </table>
                 </div>
 

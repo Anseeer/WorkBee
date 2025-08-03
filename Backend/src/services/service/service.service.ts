@@ -42,4 +42,12 @@ export class ServiceService implements IServiceService {
         return true;
     }
 
+    getByCategories = async (categoryIds: string[]): Promise<IServices[]>=>{
+        return await this._serviceRepository.getByCategories(categoryIds);
+    }
+
+    getByWorker = async (serviceIds: string[]): Promise<IServices[]>=>{
+        return await this._serviceRepository.getByWorker(serviceIds);
+    }
+
 } 

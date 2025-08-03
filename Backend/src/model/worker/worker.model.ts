@@ -75,6 +75,12 @@ const workerSchema = new Schema<IWorker>({
         type: Boolean,
         default: false
     },
+    status: {
+        type: String,
+        required: true,
+        enum: ["Pending Approval", "Approved", "Rejected"], 
+        default: "Pending Approval",
+    },
     govId: {
         type: [String],
         required: false

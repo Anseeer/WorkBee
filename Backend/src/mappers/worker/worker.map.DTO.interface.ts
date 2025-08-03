@@ -10,6 +10,7 @@ export interface IWorkerDTO {
     preferredSchedule: string[];
     isActive: boolean;
     isVerified: boolean;
+    status: string;
     isAccountBuilt: boolean;
     location: {
         address: string;
@@ -23,11 +24,12 @@ export interface IWorkerDTO {
     bio: string;
     minHours: string; 
     profileImage: string;
-    govId: string;
+    govId: string[];
     subscription: {
         plan: string;
         startDate: Date;
         endDate: Date;
         isActive: boolean;
     } | null; 
+    createdAt:Date|string;
 }

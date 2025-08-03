@@ -1,8 +1,8 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Response, Request, NextFunction } from 'express';
 
-interface AuthRequest extends Request {
-  user?: JwtPayload | string;
+export interface AuthRequest extends Request {
+  user?: JwtPayload & { role?: string };
 }
 
 export const auth = (req: AuthRequest, res: Response, next: NextFunction): void => {
@@ -14,12 +14,11 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction): void 
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload & { role: string };
     req.user = decoded;
     next();
   } catch (err) {
-    console.error(err);
+    console.error("Auth Error:", err);
     res.status(401).json({ message: 'Unauthorized: Invalid token' });
-    return;
   }
 };

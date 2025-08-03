@@ -18,7 +18,9 @@ const AddingServiceSection = ({ setAdded }: Props) => {
         const fetchData = async () => {
             try {
                 const res = await fetchCategory();
-                const formatted = res.data.data.categories.map((cat: any) => ({
+                const formatted = res.data.data.categories
+                .filter((cat:ICategory)=> cat.isActive == true)
+                .map((cat: any) => ({
                     id: cat._id,
                     name: cat.name,
                 }));

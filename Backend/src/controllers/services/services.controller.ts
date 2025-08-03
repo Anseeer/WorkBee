@@ -5,6 +5,7 @@ import { IServiceController } from "./services.controller.interface";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { Request, Response } from "express";
+import { IServices } from "../../model/service/service.interface";
 
 @injectable()
 export class ServiceController implements IServiceController {
@@ -61,9 +62,9 @@ export class ServiceController implements IServiceController {
 
     update = async (req: Request, res: Response): Promise<void> => {
         try {
-            const {serviceId} = req.query;
+            const { serviceId } = req.query;
             const service = req.body;
-            let result = await this._serviceService.update(service,serviceId as string);
+            let result = await this._serviceService.update(service, serviceId as string);
             let response = new successResponse(201, "SuccessFully Updated", result);
             logger.info(response);
             res.status(response.status).json(response);
@@ -90,6 +91,42 @@ export class ServiceController implements IServiceController {
         }
     }
 
+    getByCategories = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { categoryIds } = req.body;
+            if (!Array.isArray(categoryIds) || categoryIds.length === 0) {
+                throw new Error("Empty or invalid categoryId");
+            }
+            let result = await this._serviceService.getByCategories(categoryIds);
+            let response = new successResponse(201, "SuccessFully GetByCategories", result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, 'Faild To GetByCategories', message);
+            logger.error(response);
+            console.log("Error :", response)
+            res.status(response.status).json(response);
+        }
+    }
 
+    getByWorker = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { serviceIds } = req.body;
+            if (!Array.isArray(serviceIds) || serviceIds.length === 0) {
+                throw new Error("Empty or invalid serviceIds");
+            }
+            let result = await this._serviceService.getByWorker(serviceIds);
+            let response = new successResponse(201, "SuccessFully GetByworker", result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, 'Faild To GetByWorker', message);
+            logger.error(response);
+            console.log("Error :", response)
+            res.status(response.status).json(response);
+        }
+    }
 
 }

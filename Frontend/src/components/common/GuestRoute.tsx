@@ -7,31 +7,34 @@ interface GuestRouteProps {
   children: JSX.Element;
   role: "User" | "Worker" | "Admin";
 }
-
 const GuestRoute = ({ children, role }: GuestRouteProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [authInfo, setAuthInfo] = useState<{ isAuthenticated: boolean; userRole: string | null }>({
+    isAuthenticated: false,
+    userRole: null,
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        await axios.get("/auth/verify", { withCredentials: true });
-        setIsAuthenticated(true);
+        const res = await axios.get("/auth/verify", { withCredentials: true });
+        setAuthInfo({ isAuthenticated: true, userRole: res.data.role });
       } catch {
-        setIsAuthenticated(false);
+        setAuthInfo({ isAuthenticated: false, userRole: null });
+      } finally {
+        setLoading(false);
       }
     };
 
     verifyAuth();
   }, []);
 
-  if (isAuthenticated) {
-    if (role == "User") {
-      return <Navigate to="/home" replace />;
-    } else if (role == "Admin") {
-      return <Navigate to="/admins/dashboard" replace />;
-    } else if (role == "Worker") {
-      return <Navigate to="/workers/dashboard" replace />;
-    }
+  if (loading) return <div>Loading...</div>;
+
+  if (authInfo.isAuthenticated && authInfo.userRole?.toLowerCase() === role.toLowerCase()) {
+    if (role === "User") return <Navigate to="/home" replace />;
+    if (role === "Worker") return <Navigate to="/workers/dashboard" replace />;
+    if (role === "Admin") return <Navigate to="/admins/dashboard" replace />;
   }
 
   return children;

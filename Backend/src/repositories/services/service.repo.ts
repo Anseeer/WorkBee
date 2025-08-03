@@ -48,5 +48,14 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         return result.deletedCount > 0;
     };
 
+    getByCategories = async (categoryIds:string[]): Promise<IServices[]> =>{
+        const services = await this.model.find({category:{$in:categoryIds}});
+        return services;
+    }
+
+    getByWorker = async (serviceIds:string[]): Promise<IServices[]> =>{
+        const services = await this.model.find({_id:{$in:serviceIds}});
+        return services;
+    }
 
 }

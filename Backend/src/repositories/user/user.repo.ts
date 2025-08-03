@@ -10,7 +10,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         super(User);
     }
     getAllUsers(): Promise<Iuser[] | null> {
-        let users = User.find({ role: "User" });
+        let users = User.find({ role: "User" }).sort({createdAt:-1});
         return users;
     }
 

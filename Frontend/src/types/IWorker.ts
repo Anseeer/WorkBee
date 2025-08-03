@@ -14,6 +14,7 @@ export interface IWorker {
     workType: string[],
     preferredSchedule: string[],
     isVerified: boolean,
+    status: string,
     isActive: boolean,
     location: {
         address: string,
@@ -31,6 +32,6 @@ export interface IWorker {
         isActive: boolean;
     },
     isAccountBuilt:boolean,
-    createdAt: Date,
+    createdAt: Date|string,
     updatedAt: Date
 }

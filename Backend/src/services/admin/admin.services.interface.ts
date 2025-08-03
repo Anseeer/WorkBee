@@ -9,5 +9,8 @@ export interface IAdminService {
     setIsActiveUsers(id: string): Promise<boolean>;
     setIsActiveWorkers(id: string): Promise<boolean>;
     fetchWorkers(): Promise<IWorkerDTO[] | undefined>;
+    fetchWorkersNonVerified(): Promise<IWorkerDTO[] | undefined>;
     fetchAvailability(id: string): Promise<IAvailability[]| null>;
+    approveWorker(id: string): Promise<void>;
+    rejectedWorker(id: string): Promise<void>;
 }

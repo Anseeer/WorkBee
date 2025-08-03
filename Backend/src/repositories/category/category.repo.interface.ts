@@ -7,6 +7,6 @@ export interface ICategoryRepository {
     delete(id: string): Promise<boolean>;
     setIsActive(id: string): Promise<boolean>;
     update(category:ICategory,categoryId:string):Promise<boolean>;
-    getAllCategories():Promise<ICategory[]>;
     getAll():Promise<ICategory[]>;
+    getByWorker(categoryIds:string[]):Promise<ICategory[]>;
 }

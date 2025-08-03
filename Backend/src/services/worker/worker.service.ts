@@ -28,13 +28,11 @@ export class WorkerService implements IWorkerService {
     async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO ,availability:IAvailability[]}> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
-        console.log("DB Query Result:", existingWorker);
-
-        const existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
-
         if (!existingWorker) {
             throw new Error("Cant find the worker in this email , please signup !");
         }
+
+        const existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
 
         if (!existingAvailability) {
             throw new Error("Cant find the availabilty in this worker");
@@ -156,4 +154,5 @@ export class WorkerService implements IWorkerService {
         const hashedPass = await bcrypt.hash(password, 10);
         await this._workerRepository.resetPassword(email, hashedPass);
     }
+
 }

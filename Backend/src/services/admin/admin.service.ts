@@ -75,9 +75,23 @@ export class AdminService implements IAdminService {
         return workers;
     }
 
+    async fetchWorkersNonVerified(): Promise<IWorkerDTO[] | undefined> {
+        const allWorkers = await this._workerRepository.getAllNonVerifiedWorkers();
+        const workers = allWorkers.map((item) => mapWorkerToDTO(item));
+        return workers;
+    }
+
     async fetchAvailability(id: string): Promise<IAvailability[] | null> {
         const availability = await this._availabilityRepository.findByWorkerId(id);
         return availability;
+    }
+    
+    async approveWorker(id: string): Promise<void> {
+        await this._workerRepository.approveWorker(id);
+    }
+
+    async rejectedWorker(id: string): Promise<void> {
+        await this._workerRepository.rejectedWorker(id);
     }
 
 }

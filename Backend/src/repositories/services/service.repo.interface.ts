@@ -8,4 +8,6 @@ export interface IServiceRepository {
     setIsActive(id: string): Promise<boolean>;
     update(category:IServices,serviceId:string):Promise<boolean>;
     getAllService():Promise<IServices[]>
+    getByCategories(categoryIds:string[]):Promise<IServices[]>
+    getByWorker(serviceIds:string[]):Promise<IServices[]>
 }

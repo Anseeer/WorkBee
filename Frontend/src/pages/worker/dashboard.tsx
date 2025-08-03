@@ -16,7 +16,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         const workerID = localStorage.getItem("workerId");
-        console.log("WrokerId in localStorage :",workerID)
         if (workerID) {
             Dispatch(fetchWorkerDetails(workerID));
         }

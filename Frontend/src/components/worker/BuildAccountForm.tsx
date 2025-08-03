@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -11,12 +12,7 @@ import { uploadToCloud } from "../../utilities/uploadToCloud";
 import { buildAccountWorkerThunk } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { toast } from "react-toastify";
-
-const servicesFromDB = [
-  { id: "64e8d60b2efb5c01bcf3a567", name: "Car Wash", price: 350 },
-  { id: "64e8d60b2efb5c01bcf3a568", name: "House Cleaning", price: 500 },
-  { id: "64e8d60b2efb5c01bcf3a569", name: "Water Tank Wash", price: 450 },
-];
+import { getServiceByCategory } from "../../services/workerService";
 
 const workingHours = [
   { id: "morning", label: "Morning (9am - 1pm)" },
@@ -31,6 +27,12 @@ const jobTypes = [
   { id: "monthly", label: "Monthly" },
 ];
 
+interface IServiceOption {
+  id: string;
+  name: string;
+  price: string;
+}
+
 export default function BuildAccount() {
   const worker = useSelector((state: RootState) => state?.worker.worker);
   console.log("Worker from the useSelector:", worker)
@@ -38,7 +40,23 @@ export default function BuildAccount() {
   const [selectedImg, setSelectedImg] = useState<File | null>(null);
   const Profile = getProfileImage(worker?.name, selectedImg);
   const [isLoding, setIsLoding] = useState(false)
+  const [service, setService] = useState<IServiceOption[]>([]);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const categories = worker?.categories;
+      const servicesByCategory = await getServiceByCategory(categories as string[]);
+      const formattedServices = servicesByCategory.data.data.map((srv: any) => ({
+        id: srv._id,
+        name: srv.name,
+        price: srv.wage,
+      }));
+
+      setService(formattedServices);
+    }
+    fetchData();
+  })
 
   const formik = useFormik({
     initialValues: {
@@ -340,7 +358,7 @@ export default function BuildAccount() {
           <div>
             <h3 className="text-lg font-semibold mb-3">Services Offered</h3>
             <div className="space-y-2">
-              {servicesFromDB.map((service) => (
+              {service.map((service:IServiceOption) => (
                 <label
                   key={service.id}
                   className="flex items-center gap-3 relative group"
@@ -348,9 +366,7 @@ export default function BuildAccount() {
                   <input
                     type="checkbox"
                     checked={formik.values.selectedServices.includes(service.id)}
-                    onChange={() =>
-                      handleCheckbox("selectedServices", service.id)
-                    }
+                    onChange={() => handleCheckbox("selectedServices", service.id)}
                     className="w-4 h-4"
                   />
                   <span>{service.name}</span>
@@ -359,6 +375,7 @@ export default function BuildAccount() {
                   </span>
                 </label>
               ))}
+
             </div>
             {formik.errors.selectedServices && (
               <div className="text-red-500 text-sm">

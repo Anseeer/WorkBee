@@ -111,9 +111,23 @@ export class AdminController implements IAdminController {
         }
     }
 
+    fetchWorkersNonVerified = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const workers = await this._adminService.fetchWorkersNonVerified();
+            const response = new successResponse(200, "Successfully get all workers", workers);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed to fetch workers", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
     fetchAvailability = async (req: Request, res: Response): Promise<void> => {
         try {
-            const {workerId} = req.query;
+            const { workerId } = req.query;
             const availability = await this._adminService.fetchAvailability(workerId as string);
             const response = new successResponse(200, "Successfully get availability", availability);
             logger.info(response);
@@ -126,5 +140,34 @@ export class AdminController implements IAdminController {
         }
     }
 
-    
+    approveWorker = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { workerId } = req.query;
+            const approved = await this._adminService.approveWorker(workerId as string);
+            const response = new successResponse(200, "Successfully Approved", approved);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed To Approve", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    rejectedWorker = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { workerId } = req.query;
+            const rejected = await this._adminService.rejectedWorker(workerId as string);
+            const response = new successResponse(200, "Successfully Rejected", rejected)
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, "Failed Rejected", message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
 }

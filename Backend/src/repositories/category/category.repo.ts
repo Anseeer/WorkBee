@@ -15,12 +15,8 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         return await newItem.save();
     }
 
-    async getAllCategories(): Promise<ICategory[]> {
-        return await this.model.find({ isActive: true });
-    }
-
     async getAll(): Promise<ICategory[]> {
-        return await this.model.find();
+        return await this.model.find().sort({createdAt:-1});
     }
 
     async findByName(name: string): Promise<ICategory | null> {
@@ -50,5 +46,9 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         const result = await this.model.deleteOne({ _id: id });
         return result.deletedCount > 0;
     };
+
+    getByWorker = async (categoryIds: string[]): Promise<ICategory[]> =>{
+        return await this.model.find({_id:{$in:categoryIds}})
+    }
 
 }
