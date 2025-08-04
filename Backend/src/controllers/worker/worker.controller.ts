@@ -26,8 +26,8 @@ export class WorkerController implements IWorkerController {
                 throw new Error("Email and Password are required");
             }
             const credentials = { email, password };
-            const { token, worker ,availability} = await this._workerService.loginWorker(credentials);
-            const response = new successResponse(201, "Login Successfull", { worker ,availability });
+            const { token, worker, availability } = await this._workerService.loginWorker(credentials);
+            const response = new successResponse(201, "Login Successfull", { worker, availability });
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
@@ -107,7 +107,7 @@ export class WorkerController implements IWorkerController {
 
         } catch (error: unknown) {
             const err = error instanceof Error ? error.message : String(error);
-            console.log("Error :",err);
+            console.log("Error :", err);
             const response = new errorResponse(400, "Failed To Build Account", err);
             logger.error(response);
             res.status(response.status).json(response);
@@ -216,6 +216,26 @@ export class WorkerController implements IWorkerController {
             const err = error instanceof Error ? error.message : String(error);
             console.log(err)
             const response = new errorResponse(400, "Failed To Build Account", err);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    updateWorker = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const workerData = req.body;
+            console.log("WorkerData :",workerData);
+            if (!workerData || !workerData._id) {
+                throw new Error("WorkerData or WorkerID Not Get");
+            }
+            await this._workerService.updateWorker(workerData);
+            const response = new successResponse(201, 'Updated', {});
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const err = error instanceof Error ? error.message : String(error);
+            console.log(err)
+            const response = new errorResponse(400, "Failed To Update Account", err);
             logger.error(response);
             res.status(response.status).json(response);
         }

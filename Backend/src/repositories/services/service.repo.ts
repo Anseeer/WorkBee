@@ -20,7 +20,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
     }
 
     async getAllService(): Promise<IServices[]> {
-        return await this.model.find().sort({ createdAt: 1 }); 
+        return await this.model.find().sort({ createdAt: 1 });
     }
 
 
@@ -48,14 +48,63 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         return result.deletedCount > 0;
     };
 
-    getByCategories = async (categoryIds:string[]): Promise<IServices[]> =>{
-        const services = await this.model.find({category:{$in:categoryIds}});
+    getByCategories = async (categoryIds: string[]): Promise<IServices[]> => {
+        const services = await this.model.find({ category: { $in: categoryIds } });
         return services;
     }
 
-    getByWorker = async (serviceIds:string[]): Promise<IServices[]> =>{
-        const services = await this.model.find({_id:{$in:serviceIds}});
+    getByWorker = async (serviceIds: string[]): Promise<IServices[]> => {
+        const services = await this.model.find({ _id: { $in: serviceIds } });
         return services;
     }
+
+    getBySearch = async (searchKey: string): Promise<IServices[]> => {
+        const terms = searchKey.trim().split(/\s+/);
+        const regexArray = terms.map(term => new RegExp(term, "i"));
+
+        return await this.model.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { name: { $in: regexArray } },
+                        { description: { $in: regexArray } }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    matchScore: {
+                        $add: [
+                            {
+                                $size: {
+                                    $filter: {
+                                        input: regexArray,
+                                        as: "term",
+                                        cond: { $regexMatch: { input: "$name", regex: "$$term" } }
+                                    }
+                                }
+                            },
+                            {
+                                $size: {
+                                    $filter: {
+                                        input: regexArray,
+                                        as: "term",
+                                        cond: { $regexMatch: { input: "$description", regex: "$$term" } }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            { $sort: { matchScore: -1 } },
+            { $limit: 12 }
+        ]);
+    };
+
+
+
+
+
 
 }

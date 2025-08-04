@@ -1,6 +1,4 @@
 import { IAvailability } from "../../model/availablity/availablity.interface";
-import { ICategory } from "../../model/category/category.interface";
-import { IServices } from "../../model/service/service.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 export interface IWorkerRepository {
@@ -8,7 +6,6 @@ export interface IWorkerRepository {
     findById(id: string): Promise<IWorker | null>;
     findByEmail(email: string): Promise<IWorker | null>;
     resetPassword(email: string, hashedPass: string): Promise<boolean>;
-    delete(id: string): Promise<boolean>;
     findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null>;
     findAvailabilityByWorkerId(id: string): Promise<IAvailability | null>;
     setAvailability(availability: IAvailability):  Promise<IAvailability | null>;
@@ -17,4 +14,5 @@ export interface IWorkerRepository {
     setIsActive(id: string): Promise<boolean>;
     approveWorker(id:string):Promise<boolean>;
     rejectedWorker(id:string):Promise<boolean>;
+    update(worker:Partial<IWorker>):Promise<boolean>;
 }

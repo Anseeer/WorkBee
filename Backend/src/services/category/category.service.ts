@@ -5,7 +5,7 @@ import TYPES from "../../inversify/inversify.types";
 import { ICategoryService } from "./category.service.interface";
 
 @injectable()
-export class CategoryService implements ICategoryService{
+export class CategoryService implements ICategoryService {
     private _categoryRepository: CategoryRepository;
 
     constructor(@inject(TYPES.categoryRepository) categoryRepo: CategoryRepository) {
@@ -17,35 +17,34 @@ export class CategoryService implements ICategoryService{
         return categories;
     };
 
-    createCategory  = async (category:ICategory):Promise<ICategory>=>{
-        console.log("Category Constains:",category)
+    createCategory = async (category: ICategory): Promise<ICategory> => {
         const existingCategory = await this._categoryRepository.findByName(category.name);
-        if(existingCategory){
-            throw new Error("Already Exist The Category");
+        if (existingCategory) {
+            throw new Error("Category already exists");
         }
         return await this._categoryRepository.create(category);
-    }
+    };
 
-    setIsActive = async (categoryId:string):Promise<boolean>=>{
+    update = async (category: ICategory, categoryId: string): Promise<boolean> => {
+        await this._categoryRepository.update(category, categoryId);
+        return true;
+    };
+
+    setIsActive = async (categoryId: string): Promise<boolean> => {
         await this._categoryRepository.setIsActive(categoryId);
         return true;
     }
 
-    update = async (category:ICategory,categoryId:string):Promise<boolean>=>{
-        await this._categoryRepository.update(category,categoryId);
-        return true;
-    }
-
-    delete = async (categoryId:string):Promise<boolean>=>{
+    delete = async (categoryId: string): Promise<boolean> => {
         const existingCategory = await this._categoryRepository.findById(categoryId);
-        if(!existingCategory){
+        if (!existingCategory) {
             throw new Error("Category Not Exist");
         }
         await this._categoryRepository.delete(categoryId);
         return true;
     }
 
-    getByWorker = async(categoryIds: string[]): Promise<ICategory[]> =>{
+    getByWorker = async (categoryIds: string[]): Promise<ICategory[]> => {
         return await this._categoryRepository.getByWorker(categoryIds);
     }
 

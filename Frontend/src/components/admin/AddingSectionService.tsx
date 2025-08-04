@@ -13,17 +13,16 @@ const AddingServiceSection = ({ setAdded }: Props) => {
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState<ICategory[]>([]);
 
-    // Fetch categories for dropdown
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await fetchCategory();
                 const formatted = res.data.data.categories
-                .filter((cat:ICategory)=> cat.isActive == true)
-                .map((cat: any) => ({
-                    id: cat._id,
-                    name: cat.name,
-                }));
+                    .filter((cat: ICategory) => cat.isActive == true)
+                    .map((cat: any) => ({
+                        id: cat._id,
+                        name: cat.name,
+                    }));
                 setCategories(formatted);
             } catch (err) {
                 console.log(err)
@@ -77,11 +76,10 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                     <div className="flex items-center gap-1">
                         <label className="text-sm w-15">Service</label>
                         <input
-                            className={`px-3 border rounded w-48 focus:outline-none focus:ring ${
-                                formik.touched.name && formik.errors.name
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                            }`}
+                            className={`px-3 border rounded w-48 focus:outline-none focus:ring ${formik.touched.name && formik.errors.name
+                                ? "border-red-500"
+                                : "border-gray-300"
+                                }`}
                             type="text"
                             name="name"
                             value={formik.values.name}
@@ -102,11 +100,10 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                     <div className="flex items-center gap-2">
                         <label className="text-sm w-15">Wage</label>
                         <input
-                            className={`px-3 border rounded w-48 focus:outline-none focus:ring ${
-                                formik.touched.wage && formik.errors.wage
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                            }`}
+                            className={`px-3 border rounded w-48 focus:outline-none focus:ring ${formik.touched.wage && formik.errors.wage
+                                ? "border-red-500"
+                                : "border-gray-300"
+                                }`}
                             type="text"
                             name="wage"
                             value={formik.values.wage}
@@ -127,11 +124,10 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                     <div className="flex items-center gap-2">
                         <label className="text-sm w-20">Category</label>
                         <select
-                            className={`px-3 border rounded w-48 focus:outline-none focus:ring ${
-                                formik.touched.category && formik.errors.category
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                            }`}
+                            className={`px-3 border rounded w-48 focus:outline-none focus:ring ${formik.touched.category && formik.errors.category
+                                ? "border-red-500"
+                                : "border-gray-300"
+                                }`}
                             name="category"
                             value={formik.values.category}
                             onChange={formik.handleChange}

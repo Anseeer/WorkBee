@@ -39,12 +39,12 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
 
     async getAllWorkers(): Promise<IWorker[]> {
-        let allWorker = await this.model.find({ role: "Worker", isVerified: true }).sort({createdAt:-1});
+        let allWorker = await this.model.find({ role: "Worker", isVerified: true }).sort({ createdAt: -1 });
         return allWorker;
     }
 
     async getAllNonVerifiedWorkers(): Promise<IWorker[]> {
-        let allWorker = await this.model.find({ role: "Worker", isVerified: false }).sort({createdAt:-1});
+        let allWorker = await this.model.find({ role: "Worker", isVerified: false }).sort({ createdAt: -1 });
         return allWorker;
     }
 
@@ -78,4 +78,36 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         await this.model.updateOne({ _id: id }, { $set: { isVerified: false, status: "Rejected" } });
         return true;
     }
+
+    async update(workerData: Partial<IWorker>): Promise<boolean> {
+        const worker = await this.model.findById(workerData._id);
+        if (!worker) {
+            throw new Error("Can't get the worker");
+        }
+
+        const updatedFields = {
+            name:workerData.name,
+            phone: workerData.phone,
+            age: workerData.age,
+            bio: workerData.bio,
+            profileImage: workerData.profileImage,
+            minHours: workerData.minHours,
+            workType: workerData.workType,
+            preferredSchedule: workerData.preferredSchedule,
+            location: workerData.location,
+            govId: workerData.govId,
+            services: workerData.services,
+            categories: workerData.categories,
+            updatedAt: new Date(),
+        };
+
+        const result = await this.model.updateOne(
+            { _id: workerData._id },
+            { $set: updatedFields }
+        );
+
+        return result.modifiedCount > 0;
+    }
+
+
 }

@@ -1,6 +1,49 @@
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
+import type { IService } from "../../types/IServiceTypes";
+import { fetchService, fetchServiceBySearchTerm } from "../../services/userService";
 
 const HomeHeroSection = () => {
+    const [services, setServices] = useState<IService[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [notFound, setNotFound] = useState(false);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await fetchService();
+                setServices(response.data.data.service);
+                setNotFound(false);
+            } catch (error) {
+                console.error("Failed to fetch services:", error);
+            }
+        };
+        fetchServices();
+    }, []);
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(async () => {
+            if (searchTerm.trim() === "") {
+                // If search is cleared, show all
+                const response = await fetchService();
+                setServices(response.data.data.service);
+                setNotFound(false);
+            } else {
+                try {
+                    const response = await fetchServiceBySearchTerm(searchTerm);
+                    const results = response.data.data;
+                    setServices(results);
+                    setNotFound(results.length === 0);
+                } catch (error) {
+                    console.error("Search failed:", error);
+                    setNotFound(true);
+                }
+            }
+        }, 400);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchTerm]);
+
     return (
         <div className="w-full h-[500px] flex flex-col items-center justify-center py-12 px-4">
             {/* Title */}
@@ -13,6 +56,8 @@ const HomeHeroSection = () => {
                 <input
                     type="text"
                     placeholder="What do you need help with?"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="flex-1 text-base md:text-lg px-6 py-4 focus:outline-none bg-[#F5FAF5] text-black placeholder-gray-500"
                 />
                 <div className="bg-green-900 px-6 flex items-center justify-center">
@@ -20,16 +65,22 @@ const HomeHeroSection = () => {
                 </div>
             </div>
 
-            {/* Category Buttons */}
+            {/* Service Buttons */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-10">
-                {Array(12).fill("Plumber").map((category, index) => (
-                    <button
-                        key={index}
-                        className="bg-[#F5FAF5] text-black text-lg px-6 py-2 rounded-full font-medium shadow hover:bg-green-100 transition"
-                    >
-                        {category}
-                    </button>
-                ))}
+                {!notFound ? (
+                    services.slice(0, 12).map((service) => (
+                        <button
+                            key={service.id}
+                            className="bg-[#F5FAF5] text-black text-sm px-2 py-2 rounded-full font-medium shadow hover:bg-green-100 transition"
+                        >
+                            {service.name}
+                        </button>
+                    ))
+                ) : (
+                    <p className="text-red-500 text-lg font-medium col-span-full text-center">
+                        No services found
+                    </p>
+                )}
             </div>
         </div>
     );

@@ -57,19 +57,17 @@ export const setIsActiveCategory = async (id: string) => {
     return response;
 }
 
-export const addCategory = async (category: { name: string, description: string }) => {
-    const response = await axios.post('categories/create-category', category);
-    return response;
-}
+export const addCategory = async (category: { name: string; description: string; imageUrl?: string }) => {
+    return await axios.post('categories/create-category', category);
+};
+
+export const updateCategory = async (id: string, category: { name: string; description: string; imageUrl?: string }) => {
+    return await axios.post(`categories/update?categoryId=${id}`, category);
+};
+
 
 export const deleteCategory = async (id: string) => {
     const response = await axios.delete(`categories/delete?categoryId=${id}`);
-    return response;
-}
-
-export const updateCategory = async (id:string,category: { name: string, description: string }) => {
-    console.log("Helo update category")
-    const response = await axios.post(`categories/update?categoryId=${id}`, category);
     return response;
 }
 
@@ -78,7 +76,7 @@ export const setIsActiveService = async (id: string) => {
     return response;
 }
 
-export const addService = async (service: { name: string, wage: string, category:string }) => {
+export const addService = async (service: { name: string, wage: string, category: string }) => {
     const response = await axios.post('services/create-service', service);
     return response;
 }
@@ -89,17 +87,17 @@ export const deleteService = async (id: string) => {
 }
 
 
-export const updateService = async (id:string,service: { name: string, wage: string, category:string }) => {
+export const updateService = async (id: string, service: { name: string, wage: string, category: string }) => {
     const response = await axios.post(`services/update?serviceId=${id}`, service);
     return response;
 }
 
-export const approveWorker = async (id:string) => {
+export const approveWorker = async (id: string) => {
     const response = await axios.get(`admins/approve-worker?workerId=${id}`);
     return response;
 }
 
-export const rejectedWorker = async (id:string) => {
+export const rejectedWorker = async (id: string) => {
     const response = await axios.get(`admins/reject-worker?workerId=${id}`);
     return response;
 }

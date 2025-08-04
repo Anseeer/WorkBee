@@ -19,13 +19,13 @@ export class WorkerService implements IWorkerService {
     private _availabilityRepository: AvailabilityRepository
     constructor(
         @inject(TYPES.workerRepository) workerRepo: WorkerRepository,
-        @inject(TYPES.availabilityRepository) availibilityRepo : AvailabilityRepository
+        @inject(TYPES.availabilityRepository) availibilityRepo: AvailabilityRepository
     ) {
-        this._workerRepository = workerRepo;    
-        this._availabilityRepository = availibilityRepo;    
+        this._workerRepository = workerRepo;
+        this._availabilityRepository = availibilityRepo;
     }
 
-    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO ,availability:IAvailability[]}> {
+    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, availability: IAvailability[] }> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
         if (!existingWorker) {
@@ -48,7 +48,7 @@ export class WorkerService implements IWorkerService {
 
         const worker = mapWorkerToDTO(existingWorker);
 
-        return { token, worker ,availability:existingAvailability}
+        return { token, worker, availability: existingAvailability }
     }
 
     async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {} }> {
@@ -137,15 +137,12 @@ export class WorkerService implements IWorkerService {
         if (!record) throw new Error("No OTP found for this email");
         if (Date.now() > record.expiresAt) {
             deleteOtp(email);
-
             throw new Error("OTP expired");
         }
 
         if (record.otp !== otp.toString()) {
             throw new Error("Invalid OTP");
         }
-
-
         deleteOtp(email);
         return true;
     }
@@ -153,6 +150,14 @@ export class WorkerService implements IWorkerService {
     async resetPass(email: string, password: string): Promise<void> {
         const hashedPass = await bcrypt.hash(password, 10);
         await this._workerRepository.resetPassword(email, hashedPass);
+    }
+
+    async updateWorker(workerData: IWorker): Promise<boolean> {
+        if (!workerData || !workerData._id) {
+            throw new Error("Worker data or ID not provided")
+        }
+        await this._workerRepository.update(workerData);
+        return true;
     }
 
 }

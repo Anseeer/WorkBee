@@ -22,17 +22,15 @@ const ServicesTable = () => {
         const fetchAllData = async () => {
             try {
                 setCategories([])
-                // Fetch categories first
                 const categoryRes = await fetchCategory();
                 const formattedCategories = categoryRes.data.data.categories.map((cat: any) => ({
                     ...cat,
-                    id: cat._id, // you can keep this for later use
+                    id: cat._id,
                 }));
 
                 console.log("REsult :", formattedCategories)
                 setCategories(formattedCategories);
 
-                // Fetch services
                 const serviceRes = await fetchService();
                 const servicesRaw = serviceRes.data.data.service.map((srv: any) => ({
                     ...srv,
@@ -40,7 +38,6 @@ const ServicesTable = () => {
                 }));
 
 
-                // Map category name correctly
                 const servicesWithNames = servicesRaw.map((srv: any) => {
                     const categoryObj = formattedCategories.find((cat: ICategory) => cat.id === srv.category);
                     return {
@@ -206,7 +203,7 @@ const ServicesTable = () => {
             {/* Edit Modal */}
             {isEditing && (
                 <div className="fixed inset-0 bg-transparant bg-blur-50 bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
-                    <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+                    <div className="bg-white rounded-lg p-6 border border-green-900 border-2 w-96 shadow-lg">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold text-green-700">
                                 Edit Service

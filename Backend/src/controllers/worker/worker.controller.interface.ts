@@ -10,4 +10,5 @@ export interface IWorkerController {
     resetPassword(req: Request, res: Response): Promise<void>;
     buildAccount(req: Request, res: Response): Promise<void>;
     fetchDetails(req: Request, res: Response): Promise<void>;
+    updateWorker(req: Request, res: Response): Promise<void>;
 }

@@ -5,7 +5,6 @@ import { IServiceController } from "./services.controller.interface";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { Request, Response } from "express";
-import { IServices } from "../../model/service/service.interface";
 
 @injectable()
 export class ServiceController implements IServiceController {
@@ -128,5 +127,25 @@ export class ServiceController implements IServiceController {
             res.status(response.status).json(response);
         }
     }
+
+    getBySearch = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { search } = req.body;
+            if (!search || typeof search !== "string") {
+                throw new Error("Invalid or empty search key");
+            }
+
+            const result = await this._serviceService.getBySearch(search);
+            const response = new successResponse(201, "Successfully GetBySearch", result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, 'Failed To GetBySearch', message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    };
+
 
 }

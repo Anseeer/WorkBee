@@ -10,4 +10,5 @@ export interface IServiceRepository {
     getAllService():Promise<IServices[]>
     getByCategories(categoryIds:string[]):Promise<IServices[]>
     getByWorker(serviceIds:string[]):Promise<IServices[]>
+    getBySearch(searchKey:string):Promise<IServices[]>
 }

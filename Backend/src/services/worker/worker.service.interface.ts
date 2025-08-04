@@ -13,4 +13,5 @@ export interface IWorkerService {
     getUserByEmail(email: string): Promise<IWorker | null>;
     verifyOtp(email: string, otp: string): Promise<boolean>;
     resetPass(email: string, password: string): Promise<void>;
+    updateWorker(workerData:IWorker): Promise<boolean>;
 }

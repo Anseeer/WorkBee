@@ -1,3 +1,65 @@
+// import { useEffect, useState } from "react";
+// import WorkerSidebar from "../../components/worker/WorkerSidebar";
+// import { useSelector } from "react-redux";
+// import type { RootState } from "../../Store";
+// import BuildAccount from "../../components/worker/BuildAccountForm";
+// import WorkerDetails from "../../components/common/WorkerDetails";
+// import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
+// import { fetchWorkerDetails } from "../../slice/workerSlice";
+// import { useAppDispatch } from "../../hooks/useAppDispatch";
+
+// const Dashboard = () => {
+//     const [activeTab, setActiveTab] = useState("dashboard");
+//     const Dispatch = useAppDispatch();
+//     const { setSelectedDetails } = useWorkerDetails();
+//     const workerData = useSelector((state: RootState) => state.worker);
+
+//     useEffect(() => {
+//         const workerID = localStorage.getItem("workerId");
+//         if (workerID) {
+//             Dispatch(fetchWorkerDetails(workerID));
+//         }
+//     }, [Dispatch]);
+
+//     useEffect(() => {
+//         setSelectedDetails(workerData);
+//     }, [workerData, setSelectedDetails]);
+
+//     const handleTab = (tab: string) => {
+//         setActiveTab(tab);
+//     };
+
+//     return (
+//         <div className="w-full flex">
+//             <WorkerSidebar handleTab={handleTab} />
+
+//             <div className="w-full">
+//                 <h3 className="py-2 px-2 text-2xl font-semibold">
+//                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1) }
+//                 </h3>
+//                 <hr className="border border-green-900" />
+
+//                 {activeTab === "dashboard" ? (
+//                     workerData.worker?.isAccountBuilt ? (
+//                         <h1>Dashboard</h1>
+//                     ) : (
+//                         <button>Build Account</button>
+//                     )
+//                 ) : activeTab === "account" ? (
+//                     workerData.worker?.isAccountBuilt ? (
+//                         <WorkerDetails />
+//                     ) : (
+//                         <BuildAccount />
+//                     )
+//                 ) : null}
+
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default Dashboard;
+
 import { useEffect, useState } from "react";
 import WorkerSidebar from "../../components/worker/WorkerSidebar";
 import { useSelector } from "react-redux";
@@ -7,19 +69,20 @@ import WorkerDetails from "../../components/common/WorkerDetails";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import { fetchWorkerDetails } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+// import WorkerEditForm from "../../components/worker/WokerEditForm";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
-    const Dispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
 
     useEffect(() => {
         const workerID = localStorage.getItem("workerId");
         if (workerID) {
-            Dispatch(fetchWorkerDetails(workerID));
+            dispatch(fetchWorkerDetails(workerID));
         }
-    }, [Dispatch]);
+    }, [dispatch]);
 
     useEffect(() => {
         setSelectedDetails(workerData);
@@ -34,9 +97,21 @@ const Dashboard = () => {
             <WorkerSidebar handleTab={handleTab} />
 
             <div className="w-full">
-                <h3 className="py-2 px-2 text-2xl font-semibold">
-                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                </h3>
+                <div className="flex items-center justify-between py-2 px-2">
+                    <h3 className="text-2xl font-semibold">
+                        {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                    </h3>
+
+                    {/* {activeTab === "account" && workerData.worker?.isAccountBuilt && (
+                        <button
+                            className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
+                            onClick={() => console.log("Edit clicked")}
+                        >
+                            Edit
+                        </button>
+                    )} */}
+                </div>
+
                 <hr className="border border-green-900" />
 
                 {activeTab === "dashboard" ? (
@@ -47,12 +122,14 @@ const Dashboard = () => {
                     )
                 ) : activeTab === "account" ? (
                     workerData.worker?.isAccountBuilt ? (
+                        <>
                         <WorkerDetails />
+                        {/* <WorkerEditForm/> */}
+                        </>
                     ) : (
                         <BuildAccount />
                     )
                 ) : null}
-
             </div>
         </div>
     );

@@ -16,7 +16,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
     }
 
     async getAll(): Promise<ICategory[]> {
-        return await this.model.find().sort({createdAt:-1});
+        return await this.model.find().sort({ createdAt: -1 });
     }
 
     async findByName(name: string): Promise<ICategory | null> {
@@ -34,21 +34,29 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         return true;
     }
 
-    update = async (category: ICategory,categoryId:string): Promise<boolean> => {
+    update = async (category: ICategory, categoryId: string): Promise<boolean> => {
         const result = await this.model.updateOne(
             { _id: categoryId },
-            { $set: { name: category.name, description: category.description } }
+            {
+                $set: {
+                    name: category.name,
+                    description: category.description,
+                    imageUrl: category.imageUrl
+                }
+            }
         );
         return result.modifiedCount > 0;
     };
+
+
 
     delete = async (id: string): Promise<boolean> => {
         const result = await this.model.deleteOne({ _id: id });
         return result.deletedCount > 0;
     };
 
-    getByWorker = async (categoryIds: string[]): Promise<ICategory[]> =>{
-        return await this.model.find({_id:{$in:categoryIds}})
+    getByWorker = async (categoryIds: string[]): Promise<ICategory[]> => {
+        return await this.model.find({ _id: { $in: categoryIds } })
     }
 
 }

@@ -14,5 +14,6 @@ Router.get("/set-active", serviceController.setIsActive);
 Router.post("/update", serviceController.update);
 Router.delete("/delete", serviceController.delete);
 Router.post("/by-worker", serviceController.getByWorker);
+Router.post("/by-search", serviceController.getBySearch);
 
 export default Router;

@@ -37,3 +37,12 @@ export const resetPass = async (email: string, password: string) => {
     const response = await axios.post('users/reset-password', { email, password });
     return response;
 }
+
+export const fetchService = async () => {
+    const response = await axios.get('services/getAll-services');
+    return response;
+}
+
+export const fetchServiceBySearchTerm = async (searchKey: string) => {
+    return await axios.post('services/by-search', { search: searchKey });
+};

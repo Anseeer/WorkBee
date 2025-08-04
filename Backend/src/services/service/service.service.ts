@@ -28,8 +28,8 @@ export class ServiceService implements IServiceService {
         return true;
     }
 
-    update = async (service: IServices,serviceId:string): Promise<boolean> => {
-        await this._serviceRepository.update(service,serviceId);
+    update = async (service: IServices, serviceId: string): Promise<boolean> => {
+        await this._serviceRepository.update(service, serviceId);
         return true;
     }
 
@@ -42,12 +42,17 @@ export class ServiceService implements IServiceService {
         return true;
     }
 
-    getByCategories = async (categoryIds: string[]): Promise<IServices[]>=>{
+    getByCategories = async (categoryIds: string[]): Promise<IServices[]> => {
         return await this._serviceRepository.getByCategories(categoryIds);
     }
 
-    getByWorker = async (serviceIds: string[]): Promise<IServices[]>=>{
+    getByWorker = async (serviceIds: string[]): Promise<IServices[]> => {
         return await this._serviceRepository.getByWorker(serviceIds);
     }
+
+    getBySearch = async (searchKey: string): Promise<IServices[]> => {
+        return await this._serviceRepository.getBySearch(searchKey);
+    };
+
 
 } 

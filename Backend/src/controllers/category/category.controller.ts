@@ -5,6 +5,7 @@ import logger from "../../utilities/logger";
 import { ICategoryController } from "./category.controller.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
+import { ICategory } from "../../model/category/category.interface";
 
 @injectable()
 export class CategoryController implements ICategoryController {
@@ -29,19 +30,50 @@ export class CategoryController implements ICategoryController {
 
     createCategory = async (req: Request, res: Response) => {
         try {
-            const category = req.body;
-            const result = await this._categoryService.createCategory(category);
-            const response = new successResponse(201, "Successfully Create Category", result);
+            const { name, description, imageUrl } = req.body;
+
+            const categoryData: Partial<ICategory> = {
+                name,
+                description,
+                imageUrl,
+                isActive: true,
+            };
+
+            const result = await this._categoryService.createCategory(categoryData as ICategory);
+            const response = new successResponse(201, "Successfully Created Category", result);
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
-            console.log("Error :",message)
-            const response = new errorResponse(400, 'Faild To Create Category', message);
+            const response = new errorResponse(400, 'Failed To Create Category', message);
             logger.error(response);
             res.status(response.status).json(response);
         }
-    }
+    };
+
+
+    update = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { categoryId } = req.query;
+            const { name, description, imageUrl } = req.body;
+
+            const updateData: Partial<ICategory> = {
+                name,
+                description,
+                imageUrl,
+            };
+
+            const result = await this._categoryService.update(updateData as ICategory, categoryId as string);
+            const response = new successResponse(201, "Successfully Updated", result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, 'Failed To Update', message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    };
 
     setIsActive = async (req: Request, res: Response): Promise<void> => {
         try {
@@ -53,22 +85,6 @@ export class CategoryController implements ICategoryController {
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(400, 'Faild To SetIsActive', message);
-            logger.error(response);
-            res.status(response.status).json(response);
-        }
-    }
-
-    update = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const {categoryId} = req.query;
-            const category = req.body;
-            let result = await this._categoryService.update(category,categoryId as string);
-            let response = new successResponse(201, "SuccessFully Updated", result);
-            logger.info(response);
-            res.status(response.status).json(response);
-        } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To Updated', message);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -103,7 +119,5 @@ export class CategoryController implements ICategoryController {
             res.status(response.status).json(response);
         }
     }
-
-    
 
 }

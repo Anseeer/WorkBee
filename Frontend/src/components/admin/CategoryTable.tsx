@@ -7,6 +7,7 @@ import { Edit, Trash2, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import AddingCategorySection from './AddingSectionCategory';
+import { uploadToCloud } from '../../utilities/uploadToCloud';
 
 const CategoryTable = () => {
     const [category, setCategory] = useState<ICategory[]>([]);
@@ -14,6 +15,7 @@ const CategoryTable = () => {
     const [deleted, setDeleted] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<ICategory | null>(null);
+    const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,34 +62,56 @@ const CategoryTable = () => {
     const handleEditOpen = (cat: ICategory) => {
         setEditData(cat);
         setIsEditing(true);
+        setExistingImageUrl(cat.imageUrl || null); // ✅ store old image for preview
         formik.setValues({
             name: cat.name,
-            description: cat.description as string
+            description: cat.description || '',
+            imageFile: null
         });
     };
 
     const handleEditClose = () => {
         setIsEditing(false);
         setEditData(null);
+        setExistingImageUrl(null);
     };
 
     const formik = useFormik({
         initialValues: {
             name: '',
-            description: ''
+            description: '',
+            imageFile: null as File | null,
         },
         enableReinitialize: true,
         validate: (values) => {
             const errors: { name?: string; description?: string } = {};
             if (!values.name) errors.name = "Category name is required";
-            if (!values.description) errors.description = "Description is required";
-            return errors;
+            if (!values.description) {
+                errors.description = "Description is required";
+            } else {
+                const wordCount = values.description.trim().split(/\s+/).length;
+                if (wordCount < 2) {
+                    errors.description = "Description must be at least 2 words";
+                } else if (wordCount > 10) {
+                    errors.description = "Description cannot exceed 10 words";
+                }
+            } return errors;
         },
         onSubmit: async (values) => {
             if (!editData?.id) return;
             try {
-                console.log(values)
-                await updateCategory(editData._id, values);
+                let imageUrl = existingImageUrl;
+
+                if (values.imageFile) {
+                    imageUrl = await uploadToCloud(values.imageFile);
+                }
+
+                await updateCategory(editData._id, {
+                    name: values.name,
+                    description: values.description,
+                    imageUrl: imageUrl as string,
+                });
+
                 toast.success("Category updated successfully");
                 setAdded(true);
                 handleEditClose();
@@ -102,6 +126,17 @@ const CategoryTable = () => {
         { key: 'id', label: 'ID', render: (u) => u.id.slice(0, 10) },
         { key: 'name', label: 'Name' },
         { key: 'description', label: 'Description' },
+        {
+            key: 'imageUrl',
+            label: 'Icon',
+            render: (u) => (
+                <img
+                    src={u.imageUrl}
+                    alt={u.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                />
+            )
+        },
         {
             key: 'isActive',
             label: 'Active',
@@ -153,14 +188,17 @@ const CategoryTable = () => {
             {/* Edit Modal */}
             {isEditing && (
                 <div className="fixed inset-0 bg-transparant bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
-                    <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+                    <div className="bg-white rounded-lg border border-green-900 border-2 p-6 w-[420px] shadow-lg">
+                        {/* Header */}
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold text-green-700">Edit Category</h2>
                             <button onClick={handleEditClose}>
                                 <X className="w-5 h-5 text-gray-600 hover:text-gray-800" />
                             </button>
                         </div>
+
                         <form onSubmit={formik.handleSubmit} className="space-y-4">
+                            {/* Category Name */}
                             <div>
                                 <label className="block text-sm mb-1">Category Name</label>
                                 <input
@@ -178,6 +216,8 @@ const CategoryTable = () => {
                                     <span className="text-red-500 text-xs">{formik.errors.name}</span>
                                 )}
                             </div>
+
+                            {/* Description */}
                             <div>
                                 <label className="block text-sm mb-1">Description</label>
                                 <input
@@ -195,7 +235,45 @@ const CategoryTable = () => {
                                     <span className="text-red-500 text-xs">{formik.errors.description}</span>
                                 )}
                             </div>
-                            <div className="flex justify-end gap-3">
+
+                            {/* Icon Section */}
+                            <div>
+                                <label className="block text-sm mb-1">Icon</label>
+                                <div className="flex items-center gap-3">
+                                    {/* Existing Icon */}
+                                    {existingImageUrl && !formik.values.imageFile && (
+                                        <img
+                                            src={existingImageUrl}
+                                            alt="Current Icon"
+                                            className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                                        />
+                                    )}
+                                    {/* Preview New Icon */}
+                                    {formik.values.imageFile && (
+                                        <img
+                                            src={URL.createObjectURL(formik.values.imageFile)}
+                                            alt="New Preview"
+                                            className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                                        />
+                                    )}
+                                    {/* Upload Button */}
+                                    <input
+                                        type="file"
+                                        name="imageFile"
+                                        accept="image/*"
+                                        onChange={(e) =>
+                                            formik.setFieldValue("imageFile", e.currentTarget.files?.[0] || null)
+                                        }
+                                        className="text-sm"
+                                    />
+                                </div>
+                                {formik.touched.imageFile && formik.errors.imageFile && (
+                                    <span className="text-red-500 text-xs">{formik.errors.imageFile}</span>
+                                )}
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex justify-end gap-3 pt-2">
                                 <button
                                     type="button"
                                     onClick={handleEditClose}
@@ -214,6 +292,7 @@ const CategoryTable = () => {
                     </div>
                 </div>
             )}
+
         </div>
     );
 };

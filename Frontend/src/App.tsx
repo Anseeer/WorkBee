@@ -20,6 +20,7 @@ import AdminLoginPage from "./pages/admin/login";
 import WorkerDetails from "./components/common/WorkerDetails";
 import { WorkerDetailsProvider } from "./components/context/WorkerDetailContext";
 import GuestRoute from "./components/common/GuestRoute";
+import NotFoundPage from "./components/common/NotFoundPAge";
 const App = () => {
   return (
     <>
@@ -86,7 +87,7 @@ const App = () => {
               <AdminLoginPage />
             </GuestRoute>
           } />
-
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </>
