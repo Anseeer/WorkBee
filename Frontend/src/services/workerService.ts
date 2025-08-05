@@ -1,3 +1,4 @@
+import type { IAvailability } from "../types/IAvailability";
 import type { ICategory } from "../types/ICategory";
 import type { IWorker } from "../types/IWorker";
 import axios from "./axios";
@@ -64,6 +65,11 @@ export const fetchWorkerCategory = async (categoryIds:string[]) => {
 
 export const fetchWorkerService = async (serviceIds:string[]) => {
   const response = await axios.post('services/by-worker', {serviceIds});
+  return response;
+}
+
+export const updateWorkerData = async (workerData:{worker:Partial<IWorker>,availability:IAvailability})=>{
+  const response = await axios.post("workers/update",{workerData});
   return response;
 }
 

@@ -95,7 +95,6 @@ const WorkerRegistrationPage = () => {
         });
     };
 
-    // ✅ Formik setup
     const formik = useFormik({
         initialValues: {
             name: "",

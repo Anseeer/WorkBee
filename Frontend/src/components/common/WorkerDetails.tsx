@@ -1,16 +1,22 @@
 import { MapPin, Clock, Phone, Mail, Calendar, User, CheckCircle } from 'lucide-react';
 import { useWorkerDetails } from '../context/WorkerDetailContext';
 import { useEffect, useState } from 'react';
-import { fetchWorkerCategory, fetchWorkerService } from '../../services/workerService';
+import { fetchWorkerCategory, fetchWorkerService, updateWorkerData } from '../../services/workerService';
 import type { ICategory } from '../../types/ICategory';
 import type { IService } from '../../types/IServiceTypes';
+import WorkerEditForm from '../worker/WokerEditForm';
+import type { IWorker } from '../../types/IWorker';
+import type { IAvailability } from '../../types/IAvailability';
+import { toast } from 'react-toastify';
 
+interface prop{
+    isEdit:boolean;
+    setEdit:()=> void;
+}
 
-
-const WorkerDetails = () => {
+const WorkerDetails = ({isEdit,setEdit}:prop) => {
     const { selectedDetails } = useWorkerDetails();
     console.log("selectedDetails :", selectedDetails)
-
     const worker = selectedDetails?.worker;
     const availability = selectedDetails?.availability;
 
@@ -89,6 +95,20 @@ const WorkerDetails = () => {
             </div>
         );
     };
+
+    const onClose = ()=>{
+        setEdit();
+    }
+
+    const onSave = async (updatedData: { worker: Partial<IWorker>; availability: IAvailability })=>{
+        try {
+            await updateWorkerData(updatedData);
+            toast.success("Updated Successfully..");
+        } catch (error) {
+            console.log(error);
+            toast.error("Faild To update");
+        }
+    }
 
     return (
         <div className="h-[560px] bg-gray-50 overflow-hidden">
@@ -332,6 +352,9 @@ const WorkerDetails = () => {
                     </div>
                 </div>
             </div>
+            {isEdit?(
+                <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose}/>
+            ):null}
         </div>
     );
 };

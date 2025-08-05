@@ -69,10 +69,10 @@ import WorkerDetails from "../../components/common/WorkerDetails";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import { fetchWorkerDetails } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-// import WorkerEditForm from "../../components/worker/WokerEditForm";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
+    const [isEdit,setIsEdit] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
@@ -92,6 +92,10 @@ const Dashboard = () => {
         setActiveTab(tab);
     };
 
+    const handleEdit = ()=>{
+        setIsEdit((prev)=> !prev);
+    }
+
     return (
         <div className="w-full flex">
             <WorkerSidebar handleTab={handleTab} />
@@ -102,14 +106,14 @@ const Dashboard = () => {
                         {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                     </h3>
 
-                    {/* {activeTab === "account" && workerData.worker?.isAccountBuilt && (
+                    {activeTab === "account" && workerData.worker?.isAccountBuilt && (
                         <button
                             className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
-                            onClick={() => console.log("Edit clicked")}
+                            onClick={() => handleEdit()}
                         >
                             Edit
                         </button>
-                    )} */}
+                    )}
                 </div>
 
                 <hr className="border border-green-900" />
@@ -123,8 +127,7 @@ const Dashboard = () => {
                 ) : activeTab === "account" ? (
                     workerData.worker?.isAccountBuilt ? (
                         <>
-                        <WorkerDetails />
-                        {/* <WorkerEditForm/> */}
+                        <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
                         </>
                     ) : (
                         <BuildAccount />

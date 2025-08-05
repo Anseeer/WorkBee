@@ -6,7 +6,7 @@ export interface IWorker {
     email: string,
     phone: string,
     password: string,
-    age: number,
+    age: number|string,
     bio: string,
     profileImage: string | File,
     role: string,

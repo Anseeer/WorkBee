@@ -47,7 +47,7 @@ const App = () => {
           />
 
           {/* worker */}
-          <Route path="/workers/landing" element={
+          <Route path="/workers" element={
             <GuestRoute role="Worker">
               <WorkerLandingPage />
             </GuestRoute>
