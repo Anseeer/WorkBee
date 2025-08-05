@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MapPin, Clock, Phone, Mail, Calendar, User, CheckCircle } from 'lucide-react';
 import { useWorkerDetails } from '../context/WorkerDetailContext';
 import { useEffect, useState } from 'react';
@@ -9,12 +10,12 @@ import type { IWorker } from '../../types/IWorker';
 import type { IAvailability } from '../../types/IAvailability';
 import { toast } from 'react-toastify';
 
-interface prop{
-    isEdit:boolean;
-    setEdit:()=> void;
+interface prop {
+    isEdit?: boolean;
+    setEdit?: () => void;
 }
 
-const WorkerDetails = ({isEdit,setEdit}:prop) => {
+const WorkerDetails = ({ isEdit, setEdit }: prop) => {
     const { selectedDetails } = useWorkerDetails();
     console.log("selectedDetails :", selectedDetails)
     const worker = selectedDetails?.worker;
@@ -45,7 +46,6 @@ const WorkerDetails = ({isEdit,setEdit}:prop) => {
     if (!worker || !availability) return <div>No worker selected</div>;
 
 
-    // Extract all available dates
     const availableDates = availability.availableDates.map(dateObj => new Date(dateObj.date));
     const month = availableDates[0].getMonth();
     const year = availableDates[0].getFullYear();
@@ -78,7 +78,6 @@ const WorkerDetails = ({isEdit,setEdit}:prop) => {
         orange: { bg: 'bg-orange-50', text: 'text-orange-600' },
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const StatCard = ({ icon: Icon, label, value, color = "blue" }: any) => {
         const colors = colorMap[color] || colorMap.blue;
         return (
@@ -96,14 +95,16 @@ const WorkerDetails = ({isEdit,setEdit}:prop) => {
         );
     };
 
-    const onClose = ()=>{
-        setEdit();
+    const onClose = () => {
+        if (setEdit) setEdit();
     }
 
-    const onSave = async (updatedData: { worker: Partial<IWorker>; availability: IAvailability })=>{
+    const onSave = async (updatedData: { worker: Partial<IWorker>; availability: IAvailability }) => {
         try {
+            console.log("Updatted :", updatedData);
             await updateWorkerData(updatedData);
             toast.success("Updated Successfully..");
+            if (setEdit) setEdit();
         } catch (error) {
             console.log(error);
             toast.error("Faild To update");
@@ -352,9 +353,9 @@ const WorkerDetails = ({isEdit,setEdit}:prop) => {
                     </div>
                 </div>
             </div>
-            {isEdit?(
-                <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose}/>
-            ):null}
+            {isEdit ? (
+                <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose} />
+            ) : null}
         </div>
     );
 };

@@ -20,13 +20,12 @@ const WorkerRegistrationPage = () => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
-    // ✅ Fetch categories
     useEffect(() => {
         const fetchCategories = async () => {
             const res = await getAllCategories();
             const formatted = res.map((cat: ICategory) => ({
                 ...cat,
-                id: cat._id, 
+                id: cat._id,
             }));
             setCategoriesList(formatted);
         };
@@ -34,7 +33,6 @@ const WorkerRegistrationPage = () => {
     }, []);
 
 
-    // ✅ Load Google Maps API
     useEffect(() => {
         const loadGoogleMapsAPI = () => {
             if (window.google && window.google.maps) {

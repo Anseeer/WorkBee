@@ -44,6 +44,8 @@ export class WorkerController implements IWorkerController {
         }
     }
 
+
+
     register = async (req: Request, res: Response) => {
         try {
             console.log("Registering Worker:", req.body);
@@ -223,12 +225,18 @@ export class WorkerController implements IWorkerController {
 
     updateWorker = async (req: Request, res: Response): Promise<void> => {
         try {
-            const workerData = req.body;
-            console.log("WorkerData :",workerData);
-            if (!workerData || !workerData._id) {
+            const { workerData } = req.body;
+            const worker = workerData.worker;
+            const availability = workerData.availability;
+            if (!worker || !worker._id) {
                 throw new Error("WorkerData or WorkerID Not Get");
             }
-            await this._workerService.updateWorker(workerData);
+
+            if (!availability || !availability.workerId) {
+                throw new Error("Availability or WorkerID In Availability Not Get")
+            }
+            await this._availabilityService.updateAvailability(availability);
+            await this._workerService.updateWorker(worker);
             const response = new successResponse(201, 'Updated', {});
             logger.info(response)
             res.status(response.status).json(response);

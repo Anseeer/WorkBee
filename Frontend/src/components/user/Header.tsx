@@ -17,11 +17,12 @@ export default function Header() {
     useEffect(() => {
         axios.get("/auth/verify", { withCredentials: true })
             .then((res) => {
-                const role = res.data?.data?.role;
-                if (role === "user") {
+                const role = res.data.role;
+                console.log("Role :", role)
+                if (role === "User") {
                     setIsLogged(true);
                 } else {
-                    setIsLogged(false); 
+                    setIsLogged(false);
                 }
             })
             .catch(() => setIsLogged(false));
@@ -68,7 +69,7 @@ export default function Header() {
                                     Sign up / Login
                                 </button>
                                 <button
-                                    onClick={() => handleNavigate('/workers/landing')}
+                                    onClick={() => handleNavigate('/workers')}
                                     className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200">
                                     Become Worker
                                 </button>

@@ -40,7 +40,7 @@ interface WorkerFormData {
     govIdBack: string;
     services: string[];
     categories: string[];
-    availability: Date[]; // ✅ Only Date[] in the form
+    availability: Date[];
 }
 
 interface WorkerEditFormProps {
@@ -61,6 +61,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     const [allCategories, setAllCategories] = useState<ICategory[]>([]);
     const [allServices, setAllServices] = useState<IService[]>([]);
     useEffect(() => {
+        console.log(showDropdown);
         const loadGoogleMapsAPI = () => {
             if (window.google && window.google.maps) {
                 initializeAutocomplete();
@@ -145,15 +146,18 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             const availabilityPayload: IAvailability = {
                 _id: workerData?.availability?._id || "",
                 workerId: workerData?.worker?._id || "",
-                availableDates: values.availability.map((date, index) => ({
-                    _id: workerData?.availability?.availableDates?.[index]?._id || "",
-                    date: date.toISOString(),
-                    bookedSlots:
-                        workerData?.availability?.availableDates?.[index]?.bookedSlots || [],
-                })),
+                availableDates: values.availability.map((date, index) => {
+                    const existingDate = workerData?.availability?.availableDates?.[index];
+                    return {
+                        ...(existingDate?._id ? { _id: existingDate._id } : {}),
+                        date: date.toISOString(),
+                        bookedSlots: existingDate?.bookedSlots || [],
+                    };
+                }),
                 createdAt: workerData?.availability?.createdAt || new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             };
+
 
             const workerPayload: Partial<IWorker> = {
                 _id: workerData?.worker?._id || "",
@@ -189,7 +193,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         },
     });
 
-    // Fetch categories once on mount
     useEffect(() => {
         const fetchCategories = async () => {
             const res = await fetchCategory();
@@ -198,7 +201,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         fetchCategories();
     }, []);
 
-    // Fetch services dynamically when categories change
     useEffect(() => {
         const fetchServices = async () => {
             if (formik.values.categories.length > 0) {

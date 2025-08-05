@@ -62,7 +62,7 @@ const CategoryTable = () => {
     const handleEditOpen = (cat: ICategory) => {
         setEditData(cat);
         setIsEditing(true);
-        setExistingImageUrl(cat.imageUrl || null); // ✅ store old image for preview
+        setExistingImageUrl(cat.imageUrl || null);
         formik.setValues({
             name: cat.name,
             description: cat.description || '',

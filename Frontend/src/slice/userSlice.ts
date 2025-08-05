@@ -15,7 +15,6 @@ const initialState: userState = {
     resetEmail: null,
 }
 
-
 export const registerUserThunk = createAsyncThunk("users/register",
     async (userData: Partial<Iuser>, { rejectWithValue }) => {
         try {
@@ -114,7 +113,6 @@ const userSlice = createSlice({
             .addCase(registerUserThunk.fulfilled, (state, action) => {
                 state.user = action.payload.newUser;
                 state.error = null;
-                console.log("Updated state:", JSON.parse(JSON.stringify(state)));
             })
             .addCase(registerUserThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
@@ -126,7 +124,6 @@ const userSlice = createSlice({
             .addCase(loginUserThunk.fulfilled, (state, action) => {
                 state.error = null;
                 state.user = action.payload.user;
-                console.log("Updated state:", JSON.parse(JSON.stringify(state)));
             })
             .addCase(loginUserThunk.rejected, (state, action) => {
                 state.error = action.payload as string

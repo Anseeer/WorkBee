@@ -53,23 +53,23 @@ export const resetPass = async (email: string, password: string) => {
   return response;
 }
 
-export const getServiceByCategory = async (categoryIds:string[]) => {
-  const response = await axios.post('services/by-categories', {categoryIds});
+export const getServiceByCategory = async (categoryIds: string[]) => {
+  const response = await axios.post('services/by-categories', { categoryIds });
   return response;
 }
 
-export const fetchWorkerCategory = async (categoryIds:string[]) => {
-  const response = await axios.post('categories/by-worker', {categoryIds});
+export const fetchWorkerCategory = async (categoryIds: string[]) => {
+  const response = await axios.post('categories/by-worker', { categoryIds });
   return response;
 }
 
-export const fetchWorkerService = async (serviceIds:string[]) => {
-  const response = await axios.post('services/by-worker', {serviceIds});
+export const fetchWorkerService = async (serviceIds: string[]) => {
+  const response = await axios.post('services/by-worker', { serviceIds });
   return response;
 }
 
-export const updateWorkerData = async (workerData:{worker:Partial<IWorker>,availability:IAvailability})=>{
-  const response = await axios.post("workers/update",{workerData});
+export const updateWorkerData = async (workerData: { worker: Partial<IWorker>, availability: IAvailability }) => {
+  const response = await axios.put("workers/update", { workerData });
   return response;
 }
 

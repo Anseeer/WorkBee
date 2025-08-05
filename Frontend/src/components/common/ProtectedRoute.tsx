@@ -20,6 +20,7 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
         const res = await axios.get("/auth/verify", { withCredentials: true });
         setAuthInfo({ isAuthenticated: true, userRole: res.data.role });
       } catch {
+        console.log("Fail auth", authInfo)
         setAuthInfo({ isAuthenticated: false, userRole: null });
       } finally {
         setLoading(false);
@@ -29,9 +30,8 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
     verifyAuth();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>
 
-  // Not authenticated or role mismatch
   if (!authInfo.isAuthenticated || authInfo.userRole?.toLowerCase() !== role.toLowerCase()) {
     if (role === "User") return <Navigate to="/login" replace />;
     if (role === "Worker") return <Navigate to="/workers/login" replace />;

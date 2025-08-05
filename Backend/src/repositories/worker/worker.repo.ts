@@ -37,14 +37,13 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         );
     }
 
-
     async getAllWorkers(): Promise<IWorker[]> {
         let allWorker = await this.model.find({ role: "Worker", isVerified: true }).sort({ createdAt: -1 });
         return allWorker;
     }
 
     async getAllNonVerifiedWorkers(): Promise<IWorker[]> {
-        let allWorker = await this.model.find({ role: "Worker", isVerified: false }).sort({ createdAt: -1 });
+        let allWorker = await this.model.find({ role: "Worker", isVerified: false, isAccountBuilt: true }).sort({ createdAt: -1 });
         return allWorker;
     }
 
@@ -86,7 +85,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
 
         const updatedFields = {
-            name:workerData.name,
+            name: workerData.name,
             phone: workerData.phone,
             age: workerData.age,
             bio: workerData.bio,
@@ -108,6 +107,5 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
         return result.modifiedCount > 0;
     }
-
 
 }

@@ -41,7 +41,7 @@ export class UserService implements IUserService {
 
     async loginUser(email: string, password: string): Promise<{ user: IUserDTO; token: string }> {
         let findUser = await this._userRepository.findByEmail(email);
-        if (!findUser) {
+        if (!findUser || findUser.role !== "User") {
             throw new Error('User not found');
         }
 
@@ -102,6 +102,5 @@ export class UserService implements IUserService {
         const hashedPass = await bcrypt.hash(password, 10);
         await this._userRepository.resetPassword(email, hashedPass);
     }
-
 
 }

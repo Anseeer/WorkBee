@@ -1,6 +1,6 @@
 export interface ISlot {
-  _id: string;
-  date: string;         
+  _id?: string;
+  date: string;
   bookedSlots: string[];
 }
 

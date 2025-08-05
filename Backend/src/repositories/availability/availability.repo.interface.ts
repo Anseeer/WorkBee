@@ -7,4 +7,5 @@ export interface IAvailabilityRepository {
     findByEmail(email: string): Promise<IAvailability | null>;
     resetPassword(email: string, hashedPass: string): Promise<boolean>;
     delete(id: string): Promise<boolean>;
+    update(availability: IAvailability): Promise<boolean>;
 }

@@ -25,31 +25,40 @@ export class WorkerService implements IWorkerService {
         this._availabilityRepository = availibilityRepo;
     }
 
-    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, availability: IAvailability[] }> {
+    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, availability?: IAvailability[] }> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
-        if (!existingWorker) {
-            throw new Error("Cant find the worker in this email , please signup !");
+        if (!existingWorker || existingWorker.role !== "Worker") {
+            throw new Error("Can't find the worker with this email, please signup!");
         }
 
-        const existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
+        let existingAvailability: IAvailability[] | undefined | null;
 
-        if (!existingAvailability) {
-            throw new Error("Cant find the availabilty in this worker");
+        if (existingWorker.isAccountBuilt) {
+            existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
+
+            if (!existingAvailability) {
+                throw new Error("Can't find the availability for this worker");
+            }
         }
 
         const matchPass = await bcrypt.compare(credentials.password, existingWorker.password);
         if (!matchPass) {
-            throw new Error("Password not match !");
+            throw new Error("Password does not match!");
         }
 
         const token = generateToken(existingWorker.id.toString(), existingWorker.role);
-        console.log("ExistingWorker :", existingWorker);
+        console.log("ExistingWorker:", existingWorker);
 
         const worker = mapWorkerToDTO(existingWorker);
 
-        return { token, worker, availability: existingAvailability }
+        return {
+            token,
+            worker,
+            availability: existingAvailability ?? undefined
+        };
     }
+
 
     async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {} }> {
 
@@ -152,7 +161,7 @@ export class WorkerService implements IWorkerService {
         await this._workerRepository.resetPassword(email, hashedPass);
     }
 
-    async updateWorker(workerData: IWorker): Promise<boolean> {
+    async updateWorker(workerData: Partial<IWorker>): Promise<boolean> {
         if (!workerData || !workerData._id) {
             throw new Error("Worker data or ID not provided")
         }

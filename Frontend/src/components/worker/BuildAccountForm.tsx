@@ -56,7 +56,7 @@ export default function BuildAccount() {
       setService(formattedServices);
     }
     fetchData();
-  })
+  }, [])
 
   const formik = useFormik({
     initialValues: {
@@ -358,7 +358,7 @@ export default function BuildAccount() {
           <div>
             <h3 className="text-lg font-semibold mb-3">Services Offered</h3>
             <div className="space-y-2">
-              {service.map((service:IServiceOption) => (
+              {service.map((service: IServiceOption) => (
                 <label
                   key={service.id}
                   className="flex items-center gap-3 relative group"
