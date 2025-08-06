@@ -224,19 +224,21 @@ export default function BuildAccount() {
                 type="number"
                 name="age"
                 min="18"
+                onBlur={formik.handleBlur}
                 value={formik.values.age}
                 onChange={formik.handleChange}
                 className="w-full p-3 border rounded-lg"
               />
-              {formik.errors.age && (
+              {formik.errors.age && formik.touched.age ? (
                 <div className="text-red-500 text-sm">{formik.errors.age}</div>
-              )}
+              ) : null}
             </div>
             <div>
               <label className="block text-sm mb-2">Gender</label>
               <select
                 name="gender"
                 value={formik.values.gender}
+                onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
                 className="w-full p-3 border rounded-lg"
               >
@@ -245,20 +247,21 @@ export default function BuildAccount() {
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
-              {formik.errors.gender && (
+              {formik.errors.gender && formik.touched.gender ? (
                 <div className="text-red-500 text-sm">{formik.errors.gender}</div>
-              )}
+              ) : null}
             </div>
           </div>
 
           {/* Government IDs */}
           <div>
-            <label className="block text-sm mb-2">Government IDs (Upload 2)</label>
+            <label className="block text-sm mb-2">Upload Government ID (Front and Back Images Required)</label>
             <div className="relative flex items-center">
               <input
                 type="file"
                 name="govId"
                 multiple
+                onBlur={formik.handleBlur}
                 onChange={handleGovIdChange}
                 className="w-full p-3 pr-10 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
@@ -272,9 +275,9 @@ export default function BuildAccount() {
             </div>
 
             {/* Show error */}
-            {typeof formik.errors.govId === "string" && (
+            {typeof formik.errors.govId === "string" && formik.touched.govId ? (
               <div className="text-red-500 text-sm mt-1">{formik.errors.govId}</div>
-            )}
+            ) : null}
 
             {/* Selected Files Styled as Tags */}
             <div className="flex flex-wrap gap-2 mt-3">
@@ -303,26 +306,32 @@ export default function BuildAccount() {
             <textarea
               name="bio"
               rows={3}
+              onBlur={formik.handleBlur}
               value={formik.values.bio}
               onChange={formik.handleChange}
               className="w-full p-3 border-b-2 border-gray-300 focus:border-green-500"
             />
-            {formik.errors.bio && (
+            {formik.errors.bio && formik.touched.bio ? (
               <div className="text-red-500 text-sm">{formik.errors.bio}</div>
-            )}
+            ) : null}
           </div>
 
           {/* Availability Calendar */}
-          <div>
+          <div
+            onBlur={() => formik.setFieldTouched("availableDates", true)} // 👈 Handles blur
+            tabIndex={0} // Needed to make div focusable
+          >
             <h3 className="text-lg font-semibold mb-3">Availability</h3>
             <Calendar
-              onClickDay={handleDateClick}
+              onClickDay={(date) => {
+                handleDateClick(date);
+                formik.setFieldTouched("availableDates", true); // 👈 Mark touched on date click
+              }}
               value={null}
               tileDisabled={({ date, view }) => {
                 if (view === "month") {
                   const today = new Date();
                   const todayMidnight = new Date(today.setHours(0, 0, 0, 0));
-
 
                   if (date.getTime() < todayMidnight.getTime()) {
                     return true;
@@ -345,10 +354,13 @@ export default function BuildAccount() {
               }}
               className="custom-calendar"
             />
-            {formik.errors.availableDates && (
-              <div className="text-red-500 text-sm">{formik.errors.availableDates}</div>
+            {formik.errors.availableDates && formik.touched.availableDates && (
+              <div className="text-red-500 text-sm">
+                {formik.errors.availableDates}
+              </div>
             )}
           </div>
+
 
         </div>
 
@@ -367,6 +379,7 @@ export default function BuildAccount() {
                     type="checkbox"
                     checked={formik.values.selectedServices.includes(service.id)}
                     onChange={() => handleCheckbox("selectedServices", service.id)}
+                    onBlur={formik.handleBlur}
                     className="w-4 h-4"
                   />
                   <span>{service.name}</span>
@@ -377,11 +390,11 @@ export default function BuildAccount() {
               ))}
 
             </div>
-            {formik.errors.selectedServices && (
+            {formik.errors.selectedServices && formik.touched.selectedServices ? (
               <div className="text-red-500 text-sm">
                 {formik.errors.selectedServices}
               </div>
-            )}
+            ):null}
           </div>
 
           {/* Minimum Work Hours */}
@@ -390,6 +403,7 @@ export default function BuildAccount() {
             <select
               name="minHours"
               value={formik.values.minHours}
+              onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               className="w-24 p-2 border rounded focus:ring-2 focus:ring-green-500"
             >
@@ -410,16 +424,17 @@ export default function BuildAccount() {
                   type="checkbox"
                   checked={formik.values.workingHours.includes(hour.id)}
                   onChange={() => handleCheckbox("workingHours", hour.id)}
+                  onBlur={formik.handleBlur}
                   className="w-4 h-4"
                 />
                 <span>{hour.label}</span>
               </label>
             ))}
-            {formik.errors.workingHours && (
+            {formik.errors.workingHours && formik.touched.workingHours ? (
               <div className="text-red-500 text-sm">
                 {formik.errors.workingHours}
               </div>
-            )}
+            ):null}
           </div>
 
           {/* Job Types */}
@@ -431,14 +446,15 @@ export default function BuildAccount() {
                   type="checkbox"
                   checked={formik.values.jobTypes.includes(type.id)}
                   onChange={() => handleCheckbox("jobTypes", type.id)}
+                  onBlur={formik.handleBlur}
                   className="w-4 h-4"
                 />
                 <span>{type.label}</span>
               </label>
             ))}
-            {formik.errors.jobTypes && (
+            {formik.errors.jobTypes && formik.touched.jobTypes ? (
               <div className="text-red-500 text-sm">{formik.errors.jobTypes}</div>
-            )}
+            ):null}
           </div>
 
           {/* Submit */}

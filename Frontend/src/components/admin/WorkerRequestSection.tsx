@@ -15,13 +15,13 @@ const ImageModal: React.FC<{
 
     return (
         <div className="fixed inset-0 bg-transparant bg-blur-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-auto">
+            <div className="bg-white border-2 border-dashed rounded-2xl max-w-4xl max-h-[90vh] overflow-auto">
                 <div className="p-6 border-b border-gray-200">
                     <div className="flex justify-between items-center">
                         <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-2 hover:bg-gray-300 rounded-lg transition-colors"
                         >
                             <X className="w-5 h-5 text-gray-600" />
                         </button>

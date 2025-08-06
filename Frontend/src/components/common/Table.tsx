@@ -42,9 +42,9 @@ export function DataTable<T extends { id: string }>({
     const currentItems = filteredData.slice(startIndex, endIndex);
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-2">
+        <div className="w-full max-w-6xl mx-auto p-2">
 
-            <div className="border-2 border-green-700 rounded-2xl m-5  p-5 ">
+            <div className="border-2 border-green-700  rounded-2xl m-5  p-5 ">
                 {/* Search */}
                 <div className="mb-4 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -58,12 +58,12 @@ export function DataTable<T extends { id: string }>({
                 </div>
 
                 {/* Table */}
-                <div className="overflow-hidden rounded-lg border border-gray-200">
+                <div className="overflow-hidden rounded-lg overflow-x-scroll  border border-gray-200">
                     <table className="w-full">
                         <thead className="bg-[#8FC39D]">
                             <tr>
                                 {columns.map((col) => (
-                                    <th key={String(col.key)} className="px-6 py-3 text-left text-sm font-medium text-gray-900">
+                                    <th key={String(col.key)} className="px-6 py-2 text-left text-sm font-medium text-gray-900">
                                         {col.label}
                                     </th>
                                 ))}
