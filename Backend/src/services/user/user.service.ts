@@ -10,12 +10,16 @@ import { deleteOtp, getOtp, saveOtp } from "../../utilities/otpStore";
 import { IUserService } from "./user.service.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
+import { OAuth2Client } from "google-auth-library";
+
 
 @injectable()
 export class UserService implements IUserService {
     private _userRepository: UserRepository;
+    private googleClient: OAuth2Client;
     constructor(@inject(TYPES.userRepository) userRepo: UserRepository) {
         this._userRepository = userRepo;
+        this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
     async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string }> {
@@ -101,6 +105,26 @@ export class UserService implements IUserService {
     async resetPass(email: string, password: string): Promise<void> {
         const hashedPass = await bcrypt.hash(password, 10);
         await this._userRepository.resetPassword(email, hashedPass);
+    }
+
+    async googleLogin(token: string): Promise<{ token: string; user: IUserDTO }> {
+        const ticket = await this.googleClient.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        if (!payload?.email) throw new Error("Google login failed");
+
+        let user = await this._userRepository.findByEmail(payload.email);
+        if (!user) {
+            throw new Error("Cannot find user, please sign up");
+        }
+
+        const jwtToken = generateToken(user._id, user.role);
+        const userDTO: IUserDTO = mapUserToDTO(user);
+
+        return { token: jwtToken, user: userDTO };
     }
 
 }

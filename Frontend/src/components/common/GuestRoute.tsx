@@ -31,8 +31,7 @@ const GuestRoute = ({ children, role }: GuestRouteProps) => {
     verifyAuth();
   }, []);
 
-  // if (loading) return <div>Loading...</div>
-    if (loading) return <Loader />;
+  if (loading) return <Loader />;
 
 
   if (authInfo.isAuthenticated && authInfo.userRole?.toLowerCase() === role.toLowerCase()) {

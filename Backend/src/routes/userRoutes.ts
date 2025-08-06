@@ -11,6 +11,7 @@ const userController = container.get<IUserController>(TYPES.userController);
 
 router.post('/register', userController.register);
 router.post('/login', userController.login);
+router.post('/google-login', userController.googleLogin);
 router.post('/logout',auth, authorize(["User"]), userController.logout);
 router.post('/forgot-password', userController.forgotPass);
 router.post('/resend-otp', userController.resendOtp);

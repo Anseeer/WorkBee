@@ -148,4 +148,21 @@ export class UserController implements IUserController {
 
     };
 
+    googleLogin = async (req: Request, res: Response) => {
+        try {
+            const { token } = req.body;
+            const result = await this._userService.googleLogin(token);
+
+            const response = new successResponse(200, 'Login successfully', { result });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error)
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(400, 'Failed Login', message);
+            logger.error(response)
+            res.status(response.status).json(response);
+        }
+    }
+
 }

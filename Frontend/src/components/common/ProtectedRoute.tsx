@@ -31,7 +31,6 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
     verifyAuth();
   }, []);
 
-  // if (loading) return <div>Loading...</div>
   if (loading) return <Loader />;
 
 

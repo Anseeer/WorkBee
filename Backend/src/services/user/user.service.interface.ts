@@ -10,4 +10,5 @@ export interface IUserService {
     getUserByEmail(email: string): Promise<Iuser | null>;
     verifyOtp(email: string, otp: string): Promise<boolean>;
     resetPass(email: string, password: string): Promise<void>;
+    googleLogin(token: string): Promise<{user: IUserDTO, token: string }>;
 }
