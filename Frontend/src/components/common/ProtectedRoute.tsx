@@ -1,6 +1,7 @@
 import { useEffect, useState, type JSX } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "../../services/axios";
+import Loader from "./Loader";
 
 interface ProtectedRouteProps {
   children: JSX.Element;
@@ -30,7 +31,9 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
     verifyAuth();
   }, []);
 
-  if (loading) return <div>Loading...</div>
+  // if (loading) return <div>Loading...</div>
+  if (loading) return <Loader />;
+
 
   if (!authInfo.isAuthenticated || authInfo.userRole?.toLowerCase() !== role.toLowerCase()) {
     if (role === "User") return <Navigate to="/login" replace />;

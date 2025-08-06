@@ -2,6 +2,7 @@ import type { JSX } from "react/jsx-runtime";
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "../../services/axios";
+import Loader from "./Loader";
 // import Loader from "./Loader";
 
 interface GuestRouteProps {
@@ -30,7 +31,9 @@ const GuestRoute = ({ children, role }: GuestRouteProps) => {
     verifyAuth();
   }, []);
 
-  if (loading) return <div>Loading...</div>
+  // if (loading) return <div>Loading...</div>
+    if (loading) return <Loader />;
+
 
   if (authInfo.isAuthenticated && authInfo.userRole?.toLowerCase() === role.toLowerCase()) {
     if (role === "User") return <Navigate to="/home" replace />;
