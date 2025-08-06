@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import type { AxiosError } from "axios";
 import { useFormik } from "formik";
+import { Eye, EyeOff } from "lucide-react";
+
 
 const RegistrationPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -13,6 +15,8 @@ const RegistrationPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const Dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(true);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -256,7 +260,8 @@ const RegistrationPage = () => {
 
               {/* Password + Confirm Password */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                {/* Password */}
+                <div className="relative">
                   <div className="h-5">
                     {formik.touched.password && formik.errors.password && (
                       <span className="text-sm text-red-500">{formik.errors.password}</span>
@@ -267,15 +272,23 @@ const RegistrationPage = () => {
                     value={formik.values.password}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    type="password"
+                    type={showPassword ? "password" : "text"}
                     placeholder="Password"
                     className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                         border-0 border-b-2 border-gray-300 focus:border-green-600 
-                         focus:outline-none bg-transparent"
+               border-0 border-b-2 border-gray-300 focus:border-green-600 
+               focus:outline-none bg-transparent pr-8"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-7 text-gray-500"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
 
-                <div>
+                {/* Confirm Password */}
+                <div className="relative">
                   <div className="h-5">
                     {formik.touched.confirmPassword && formik.errors.confirmPassword && (
                       <span className="text-sm text-red-500">{formik.errors.confirmPassword}</span>
@@ -286,12 +299,19 @@ const RegistrationPage = () => {
                     value={formik.values.confirmPassword}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm Password"
                     className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                         border-0 border-b-2 border-gray-300 focus:border-green-600 
-                         focus:outline-none bg-transparent"
+               border-0 border-b-2 border-gray-300 focus:border-green-600 
+               focus:outline-none bg-transparent pr-8"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-7 text-gray-500"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
 

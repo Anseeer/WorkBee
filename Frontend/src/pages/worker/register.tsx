@@ -8,6 +8,8 @@ import type { ICategory } from "../../types/ICategory";
 import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import { useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
+import { Eye, EyeOff } from "lucide-react";
+
 
 const WorkerRegistrationPage = () => {
     const Dispatch = useAppDispatch();
@@ -19,6 +21,8 @@ const WorkerRegistrationPage = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState(true);
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -270,10 +274,12 @@ const WorkerRegistrationPage = () => {
                             {/* Password + Categories */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Password Field */}
-                                <div>
+                                <div className="relative">
                                     <div className="h-5">
                                         {formik.touched.password && formik.errors.password && (
-                                            <span className="text-sm text-red-500">{formik.errors.password}</span>
+                                            <span className="text-sm text-red-500">
+                                                {formik.errors.password}
+                                            </span>
                                         )}
                                     </div>
                                     <input
@@ -281,12 +287,19 @@ const WorkerRegistrationPage = () => {
                                         value={formik.values.password}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        type="password"
+                                        type={showPassword ? "password" : "text"}
                                         placeholder="Password"
                                         className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                 border-0 border-b-2 border-gray-300 focus:border-green-600 
-                 focus:outline-none bg-transparent"
+          border-0 border-b-2 border-gray-300 focus:border-green-600 
+          focus:outline-none bg-transparent pr-8"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        className="absolute right-2 top-7 text-gray-500"
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
                                 </div>
 
                                 {/* Category Dropdown */}

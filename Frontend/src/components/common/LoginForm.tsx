@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { emailRegex, passRegex } from "../../regexs";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+
 
 interface LoginFormProps {
   Submit: (credentials: { email: string; password: string }) => void;
@@ -10,6 +13,8 @@ interface LoginFormProps {
 
 const LoginForm = ({ Submit, loading = false, role }: LoginFormProps) => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(true);
+
 
   const formik = useFormik({
     initialValues: {
@@ -79,19 +84,28 @@ const LoginForm = ({ Submit, loading = false, role }: LoginFormProps) => {
               />
             </div>
 
-            <div>
+            <div className="relative">
               {formik.touched.password && formik.errors.password && (
-                <span className="text-sm text-red-500 mt-1">{formik.errors.password}</span>
+                <span className="text-sm text-red-500 mt-1">
+                  {formik.errors.password}
+                </span>
               )}
               <input
                 name="password"
-                type="password"
+                type={showPassword ? "password" : "text"}
                 placeholder="Password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
+                className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none pr-8"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-2 top-3 text-gray-500"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
             <button
