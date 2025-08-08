@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { emailRegex, passRegex } from "../../regexs";
 import { Eye, EyeOff } from "lucide-react";
@@ -7,12 +6,13 @@ import { useState } from "react";
 
 interface LoginFormProps {
   Submit: (credentials: { email: string; password: string }) => void;
+  HandleForgotPass: () => void;
+  HandleRegister: () => void;
   loading?: boolean;
-  role?: "user" | "admin" | "worker";
+  role?: "User" | "Admin" | "Worker";
 }
 
-const LoginForm = ({ Submit, loading = false, role }: LoginFormProps) => {
-  const navigate = useNavigate();
+const LoginForm = ({ Submit, HandleForgotPass, HandleRegister, loading = false, role }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(true);
 
 
@@ -43,18 +43,6 @@ const LoginForm = ({ Submit, loading = false, role }: LoginFormProps) => {
       return errors;
     },
   });
-
-  const handleForgotPassword = () => {
-    if (role === "user") navigate("/forgot-password");
-    else if (role === "worker") navigate("/workers/forgot-password");
-    else if (role === "admin") navigate("/admins/forgot-password");
-  };
-
-  const handleRegister = () => {
-    if (role === "user") navigate("/register");
-    else if (role === "worker") navigate("/workers/register");
-    else if (role === "admin") navigate("/admins/register");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -118,14 +106,14 @@ const LoginForm = ({ Submit, loading = false, role }: LoginFormProps) => {
           </form>
 
           {/* Links */}
-          {role !== "admin" &&
+          {role !== "Admin" &&
             <div className="pt-6 space-y-2">
               <div className="flex items-center text-sm">
                 <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
                 <span className="text-gray-600">Forgot</span>
                 <button
                   type="button"
-                  onClick={handleForgotPassword}
+                  onClick={HandleForgotPass}
                   className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer bg-transparent border-none"
                 >
                   Password?
@@ -137,7 +125,7 @@ const LoginForm = ({ Submit, loading = false, role }: LoginFormProps) => {
                 <span className="text-gray-600">Don't have an account?</span>
                 <button
                   type="button"
-                  onClick={handleRegister}
+                  onClick={HandleRegister}
                   className="text-green-600 hover:text-green-700 underline ml-1 cursor-pointer bg-transparent border-none"
                 >
                   Sign up

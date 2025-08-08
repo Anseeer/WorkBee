@@ -1,14 +1,15 @@
 import { inject, injectable } from "inversify";
 import { ICategory } from "../../model/category/category.interface";
-import { CategoryRepository } from "../../repositories/category/category.repo";
 import TYPES from "../../inversify/inversify.types";
 import { ICategoryService } from "./category.service.interface";
+import { ICategoryRepository } from "../../repositories/category/category.repo.interface";
+import { CATEGORY_MESSAGE } from "../../constants/messages";
 
 @injectable()
 export class CategoryService implements ICategoryService {
-    private _categoryRepository: CategoryRepository;
+    private _categoryRepository: ICategoryRepository;
 
-    constructor(@inject(TYPES.categoryRepository) categoryRepo: CategoryRepository) {
+    constructor(@inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository) {
         this._categoryRepository = categoryRepo;
     }
 
@@ -20,7 +21,7 @@ export class CategoryService implements ICategoryService {
     createCategory = async (category: ICategory): Promise<ICategory> => {
         const existingCategory = await this._categoryRepository.findByName(category.name);
         if (existingCategory) {
-            throw new Error("Category already exists");
+            throw new Error(CATEGORY_MESSAGE.CATEGORY_ALREADY_EXISTS);
         }
         return await this._categoryRepository.create(category);
     };
@@ -38,7 +39,7 @@ export class CategoryService implements ICategoryService {
     delete = async (categoryId: string): Promise<boolean> => {
         const existingCategory = await this._categoryRepository.findById(categoryId);
         if (!existingCategory) {
-            throw new Error("Category Not Exist");
+            throw new Error(CATEGORY_MESSAGE.CATEGORY_NOT_EXIST);
         }
         await this._categoryRepository.delete(categoryId);
         return true;

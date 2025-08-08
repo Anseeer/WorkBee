@@ -1,5 +1,7 @@
 import { useFormik } from "formik";
 import { passRegex } from "../../regexs";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 interface ResetPasswordFormProps {
   handleSubmit: (passwordData: { email: string; password: string }) => void;
@@ -37,6 +39,13 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
     },
   });
 
+  const [showPassword, setShowPassword] = useState(true);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(true);
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -50,35 +59,48 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
           </h2>
 
           <form onSubmit={formik.handleSubmit} className="space-y-6">
-            <div>
+            <div className="relative">
               {formik.touched.password && formik.errors.password && (
-                <span className="text-sm text-red-500 ">{formik.errors.password}</span>
+                <span className="text-sm text-red-500">{formik.errors.password}</span>
               )}
               <input
-                type="password"
+                type={showPassword ? "password" : "text"}
                 name="password"
                 placeholder="Password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
+                className="w-full px-0 py-3 pr-10 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
               />
+              <span
+                onClick={togglePasswordVisibility}
+                className="absolute right-2 top-3 cursor-pointer text-gray-500"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </span>
             </div>
 
-            <div>
+            <div className="relative">
               {formik.touched.confirmPass && formik.errors.confirmPass && (
                 <span className="text-sm text-red-500">{formik.errors.confirmPass}</span>
               )}
               <input
-                type="password"
+                type={showConfirmPassword ? "password" : "text"}
                 name="confirmPass"
                 placeholder="Confirm Password"
                 value={formik.values.confirmPass}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full px-0 py-3 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
+                className="w-full px-0 py-3 pr-10 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
               />
+              <span
+                onClick={toggleConfirmPasswordVisibility}
+                className="absolute right-2 top-3 cursor-pointer text-gray-500"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </span>
             </div>
+
 
             <button
               type="submit"

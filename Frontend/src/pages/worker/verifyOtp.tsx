@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import VerifyOtpForm from "../../components/common/VerifyOtpForm";
 import { emailRegex, otpRegex } from "../../regexs";
 import type { AxiosError } from "axios";
+import { API_ROUTES } from "../../constant/api.routes";
 
 const WorkerOtpVerification = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +35,7 @@ const WorkerOtpVerification = () => {
         .unwrap()
         .then(() => {
           toast.success('Verified');
-          navigate('/workers/reset-password', { replace: true });
+          navigate(API_ROUTES.WORKER.RESET_PASS, { replace: true });
         })
         .catch((err) => {
           toast.error(err || 'Verification failed');

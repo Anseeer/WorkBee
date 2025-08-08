@@ -7,6 +7,7 @@ import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import type { AxiosError } from "axios";
 import { useFormik } from "formik";
 import { Eye, EyeOff } from "lucide-react";
+import { API_ROUTES } from "../../constant/api.routes";
 
 
 const RegistrationPage = () => {
@@ -38,7 +39,7 @@ const RegistrationPage = () => {
         console.log(values)
         await Dispatch(registerUserThunk(values)).unwrap()
         toast.success("Registration successful!");
-        navigate('/home', { replace: true })
+        navigate(API_ROUTES.USER.HOME, { replace: true })
       } catch (error: unknown) {
         const err = error as AxiosError<{ data: string }>;
         const message = err.response?.data?.data || "Registration failed";
@@ -169,11 +170,8 @@ const RegistrationPage = () => {
               Let's get you started
             </h2>
 
-            {/* ✅ Registration Form */}
             <form onSubmit={formik.handleSubmit} className="space-y-4">
-              {/* Username + Location */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Username */}
                 <div>
                   <div className="h-5">
                     {formik.touched.name && formik.errors.name && (
@@ -193,7 +191,6 @@ const RegistrationPage = () => {
                   />
                 </div>
 
-                {/* Location */}
                 <div>
                   <div className="h-5">
                     {formik.touched.location?.address && formik.errors.location?.address && (
@@ -217,7 +214,6 @@ const RegistrationPage = () => {
                 </div>
               </div>
 
-              {/* Email + Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="h-5">
@@ -258,9 +254,7 @@ const RegistrationPage = () => {
                 </div>
               </div>
 
-              {/* Password + Confirm Password */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Password */}
                 <div className="relative">
                   <div className="h-5">
                     {formik.touched.password && formik.errors.password && (
@@ -287,7 +281,6 @@ const RegistrationPage = () => {
                   </button>
                 </div>
 
-                {/* Confirm Password */}
                 <div className="relative">
                   <div className="h-5">
                     {formik.touched.confirmPassword && formik.errors.confirmPassword && (
@@ -299,7 +292,7 @@ const RegistrationPage = () => {
                     value={formik.values.confirmPassword}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={showConfirmPassword ? "password" : "text"}
                     placeholder="Confirm Password"
                     className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
                border-0 border-b-2 border-gray-300 focus:border-green-600 
@@ -315,7 +308,6 @@ const RegistrationPage = () => {
                 </div>
               </div>
 
-              {/* Submit */}
               <div className="pt-4">
                 <button
                   type="submit"
@@ -328,7 +320,6 @@ const RegistrationPage = () => {
                 </button>
               </div>
 
-              {/* Sign-in */}
               <div className="text-center pt-2">
                 <p className="text-gray-600 text-sm">
                   Already have account?{" "}

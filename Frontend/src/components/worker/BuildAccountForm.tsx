@@ -189,9 +189,7 @@ export default function BuildAccount() {
         onSubmit={formik.handleSubmit}
         className="grid grid-cols-1 lg:grid-cols-2 gap-8"
       >
-        {/* Left Column */}
         <div className="space-y-6 pr-6 border-r border-gray-300">
-          {/* Profile Image */}
           <div className="flex items-center gap-4">
             <img
               src={selectedImg ? URL.createObjectURL(selectedImg) : Profile}
@@ -216,7 +214,6 @@ export default function BuildAccount() {
             />
           </div>
 
-          {/* Age & Gender */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm mb-2">Age</label>
@@ -253,7 +250,6 @@ export default function BuildAccount() {
             </div>
           </div>
 
-          {/* Government IDs */}
           <div>
             <label className="block text-sm mb-2">Upload Government ID (Front and Back Images Required)</label>
             <div className="relative flex items-center">
@@ -274,12 +270,10 @@ export default function BuildAccount() {
               </button>
             </div>
 
-            {/* Show error */}
             {typeof formik.errors.govId === "string" && formik.touched.govId ? (
               <div className="text-red-500 text-sm mt-1">{formik.errors.govId}</div>
             ) : null}
 
-            {/* Selected Files Styled as Tags */}
             <div className="flex flex-wrap gap-2 mt-3">
               {formik.values.govId.map((file, index) => (
                 <div
@@ -300,7 +294,6 @@ export default function BuildAccount() {
           </div>
 
 
-          {/* Bio */}
           <div>
             <label className="block text-lg mb-3">Bio</label>
             <textarea
@@ -316,16 +309,15 @@ export default function BuildAccount() {
             ) : null}
           </div>
 
-          {/* Availability Calendar */}
           <div
-            onBlur={() => formik.setFieldTouched("availableDates", true)} // 👈 Handles blur
-            tabIndex={0} // Needed to make div focusable
+            onBlur={() => formik.setFieldTouched("availableDates", true)} 
+            tabIndex={0} 
           >
             <h3 className="text-lg font-semibold mb-3">Availability</h3>
             <Calendar
               onClickDay={(date) => {
                 handleDateClick(date);
-                formik.setFieldTouched("availableDates", true); // 👈 Mark touched on date click
+                formik.setFieldTouched("availableDates", true); 
               }}
               value={null}
               tileDisabled={({ date, view }) => {
@@ -336,16 +328,10 @@ export default function BuildAccount() {
                   if (date.getTime() < todayMidnight.getTime()) {
                     return true;
                   }
-
-                  if (
-                    date.getMonth() !== today.getMonth() ||
-                    date.getFullYear() !== today.getFullYear()
-                  ) {
-                    return true;
-                  }
                 }
                 return false;
               }}
+
               tileClassName={({ date }) => {
                 const isSelected = selectedDates.some(
                   (d) => d.toDateString() === date.toDateString()
@@ -364,9 +350,7 @@ export default function BuildAccount() {
 
         </div>
 
-        {/* Right Column */}
         <div className="space-y-6 pl-6">
-          {/* Services */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Services Offered</h3>
             <div className="space-y-2">
@@ -394,10 +378,9 @@ export default function BuildAccount() {
               <div className="text-red-500 text-sm">
                 {formik.errors.selectedServices}
               </div>
-            ):null}
+            ) : null}
           </div>
 
-          {/* Minimum Work Hours */}
           <div>
             <label className="block text-sm mb-2">Minimum Work Hours</label>
             <select
@@ -415,7 +398,6 @@ export default function BuildAccount() {
             </select>
           </div>
 
-          {/* Working Hours */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Working Hours</h3>
             {workingHours.map((hour) => (
@@ -434,10 +416,9 @@ export default function BuildAccount() {
               <div className="text-red-500 text-sm">
                 {formik.errors.workingHours}
               </div>
-            ):null}
+            ) : null}
           </div>
 
-          {/* Job Types */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Job Types</h3>
             {jobTypes.map((type) => (
@@ -454,10 +435,9 @@ export default function BuildAccount() {
             ))}
             {formik.errors.jobTypes && formik.touched.jobTypes ? (
               <div className="text-red-500 text-sm">{formik.errors.jobTypes}</div>
-            ):null}
+            ) : null}
           </div>
 
-          {/* Submit */}
           <div>
             <button
               type="submit"

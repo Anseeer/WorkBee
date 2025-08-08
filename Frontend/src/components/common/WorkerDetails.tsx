@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MapPin, Clock, Phone, Mail, Calendar, User, CheckCircle } from 'lucide-react';
+import { MapPin, Clock, Phone, Mail, User, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 import { useWorkerDetails } from '../context/WorkerDetailContext';
-import { useEffect, useState } from 'react';
 import { fetchWorkerCategory, fetchWorkerService, updateWorkerData } from '../../services/workerService';
 import type { ICategory } from '../../types/ICategory';
 import type { IService } from '../../types/IServiceTypes';
@@ -10,14 +11,142 @@ import type { IWorker } from '../../types/IWorker';
 import type { IAvailability } from '../../types/IAvailability';
 import { toast } from 'react-toastify';
 
-interface prop {
+interface Prop {
     isEdit?: boolean;
     setEdit?: () => void;
 }
 
-const WorkerDetails = ({ isEdit, setEdit }: prop) => {
+interface CalendarProps {
+    availability: IAvailability;
+}
+
+const Calendar = ({ availability }: CalendarProps) => {
+    const [currentDate, setCurrentDate] = useState(dayjs());
+    const [calendarDays, setCalendarDays] = useState<(number | null)[]>([]);
+
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const getAvailableDaysForMonth = (date: dayjs.Dayjs): number[] => {
+        const month = date.month();
+        const year = date.year();
+        return (availability?.availableDates || [])
+            .filter(d => dayjs(d.date).year() === year && dayjs(d.date).month() === month)
+            .map(d => dayjs(d.date).date());
+    };
+
+    useEffect(() => {
+        const generateCalendar = (date: dayjs.Dayjs) => {
+            const startOfMonth = date.startOf("month");
+            const startDay = startOfMonth.day(); // Sunday = 0
+
+            const daysInMonth = date.daysInMonth();
+            const days: (number | null)[] = [];
+
+            for (let i = 0; i < startDay; i++) {
+                days.push(null); // blank days before start
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                days.push(i);
+            }
+            setCalendarDays(days);
+        };
+        generateCalendar(currentDate);
+    }, [currentDate, availability]);
+
+    const goToPreviousMonth = () => {
+        setCurrentDate(currentDate.subtract(1, "month"));
+    };
+
+    const goToNextMonth = () => {
+        setCurrentDate(currentDate.add(1, "month"));
+    };
+
+    const month = currentDate.format("MMMM");
+    const year = currentDate.format("YYYY");
+    const availableDays = getAvailableDaysForMonth(currentDate);
+
+    // Corrected the return statement for the Calendar component
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6  top-6">
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Availability</h3>
+                <div className="flex gap-2">
+                    <button
+                        onClick={goToPreviousMonth}
+                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={goToNextMonth}
+                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+                    >
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+
+            <div className="border border-gray-200 rounded-lg p-4">
+                <div className="text-center mb-4">
+                    <h4 className="font-semibold text-gray-900">{month} {year}</h4>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1 mb-2">
+                    {daysOfWeek.map((day) => (
+                        <div
+                            key={day}
+                            className="text-center text-xs font-medium p-2 text-gray-600"
+                        >
+                            {day}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-7 gap-1">
+                    {calendarDays.map((day, index) => (
+                        <div
+                            key={index}
+                            className={`text-center p-2 text-sm font-medium rounded-lg transition-colors ${day === null
+                                ? ""
+                                : availableDays.includes(day)
+                                    ? "bg-blue-500 text-white shadow-sm"
+                                    : "text-gray-400"
+                                }`}
+                        >
+                            {day !== null ? day : ""}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const StatCard = ({ icon: Icon, label, value, color = "blue" }: any) => {
+    const colorMap: Record<string, { bg: string; text: string }> = {
+        blue: { bg: 'bg-blue-50', text: 'text-blue-600' },
+        green: { bg: 'bg-green-50', text: 'text-green-600' },
+        orange: { bg: 'bg-orange-50', text: 'text-orange-600' },
+    };
+    const colors = colorMap[color] || colorMap.blue;
+    return (
+        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-lg ${colors.bg}`}>
+                    <Icon className={`w-5 h-5 ${colors.text}`} />
+                </div>
+                <div>
+                    <p className="text-sm text-gray-600">{label}</p>
+                    <p className="font-semibold text-gray-900">{value}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     const { selectedDetails } = useWorkerDetails();
-    console.log("selectedDetails :", selectedDetails)
     const worker = selectedDetails?.worker;
     const availability = selectedDetails?.availability;
 
@@ -42,58 +171,7 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
         fetchData();
     }, [worker]);
 
-
     if (!worker || !availability) return <div>No worker selected</div>;
-
-
-    const availableDates = availability.availableDates.map(dateObj => new Date(dateObj.date));
-    const month = availableDates[0].getMonth();
-    const year = availableDates[0].getFullYear();
-
-    const daysOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-
-    const getDaysInMonth = (month: number, year: number) => new Date(year, month + 1, 0).getDate();
-    const getFirstDayOfMonth = (month: number, year: number) => {
-        const firstDay = new Date(year, month, 1).getDay();
-        return firstDay === 0 ? 6 : firstDay - 1;
-    };
-
-    const generateCalendarDays = () => {
-        const daysInMonth = getDaysInMonth(month, year);
-        const firstDay = getFirstDayOfMonth(month, year);
-        const days = [];
-
-        for (let i = 0; i < firstDay; i++) days.push(null);
-        for (let day = 1; day <= daysInMonth; day++) days.push(day);
-
-        return days;
-    };
-
-    const availableDays = availableDates.map(d => d.getDate());
-    const calendarDays = generateCalendarDays();
-
-    const colorMap: Record<string, { bg: string; text: string }> = {
-        blue: { bg: 'bg-blue-50', text: 'text-blue-600' },
-        green: { bg: 'bg-green-50', text: 'text-green-600' },
-        orange: { bg: 'bg-orange-50', text: 'text-orange-600' },
-    };
-
-    const StatCard = ({ icon: Icon, label, value, color = "blue" }: any) => {
-        const colors = colorMap[color] || colorMap.blue;
-        return (
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-lg ${colors.bg}`}>
-                        <Icon className={`w-5 h-5 ${colors.text}`} />
-                    </div>
-                    <div>
-                        <p className="text-sm text-gray-600">{label}</p>
-                        <p className="font-semibold text-gray-900">{value}</p>
-                    </div>
-                </div>
-            </div>
-        );
-    };
 
     const onClose = () => {
         if (setEdit) setEdit();
@@ -101,24 +179,21 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
 
     const onSave = async (updatedData: { worker: Partial<IWorker>; availability: IAvailability }) => {
         try {
-            console.log("Updatted :", updatedData);
+            console.log("Updated :", updatedData);
             await updateWorkerData(updatedData);
-            toast.success("Updated Successfully..");
+            toast.success("Updated Successfully.");
             if (setEdit) setEdit();
         } catch (error) {
             console.log(error);
-            toast.error("Faild To update");
+            toast.error("Failed To update");
         }
     }
 
     return (
         <div className="h-[560px] bg-gray-50 overflow-hidden">
-            {/* Header Section */}
             <div className="bg-white border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-
-                        {/* Profile Section */}
                         <div className="flex items-center space-x-4">
                             <div className="relative">
                                 <img
@@ -127,26 +202,23 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
                                             ? worker.profileImage
                                             : worker.profileImage instanceof File
                                                 ? URL.createObjectURL(worker.profileImage)
-                                                : "/default-avatar.png" // fallback
+                                                : "/default-avatar.png"
                                     }
                                     alt="Worker Profile"
                                     className="w-16 h-16 rounded-full object-cover shadow-lg border-4 border-white"
                                 />
-
-
                                 {worker.isVerified && (
                                     <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
                                         <CheckCircle className="w-3 h-3 text-white" />
                                     </div>
                                 )}
                             </div>
-
                             <div>
                                 <div className="flex items-center space-x-3 mb-1">
                                     <h1 className="text-xl font-bold text-gray-900">{worker.name}</h1>
                                     <span
                                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                              ${worker.status === "Approved"
+                                            ${worker.status === "Approved"
                                                 ? "bg-green-100 text-green-800"
                                                 : worker.status === "Rejected"
                                                     ? "bg-red-100 text-red-800"
@@ -159,9 +231,7 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
                                                 ? "Rejected"
                                                 : "Pending Approval"}
                                     </span>
-
                                 </div>
-
                                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
                                     <div className="flex items-center space-x-1">
                                         <MapPin className="w-3 h-3" />
@@ -179,23 +249,19 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
                             </div>
                         </div>
 
-                        {/* Stats Section */}
                         <div className="flex space-x-4">
-                            <StatCard icon={Calendar} label="Total Works" value="26" color="blue" />
+                            <StatCard icon={Clock} label="Total Works" value="26" color="blue" />
                             <StatCard icon={CheckCircle} label="Completed" value="22" color="green" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="h-100 overflow-y-auto">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                        {/* Left Column */}
                         <div className="lg:col-span-2 space-y-8">
-                            {/* Contact Information */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Contact Information</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -220,13 +286,11 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
                                 </div>
                             </div>
 
-                            {/* About Section */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 className="text-xl font-semibold text-gray-900 mb-4">How Can I Help</h2>
                                 <p className="text-gray-700 leading-relaxed">{worker.bio}</p>
                             </div>
 
-                            {/* Work Details */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Work Details</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -245,9 +309,7 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
                                 </div>
                             </div>
 
-                            {/* Categories & Services */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Categories */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
                                     <div className="space-y-3">
@@ -267,7 +329,6 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
                                     </div>
                                 </div>
 
-                                {/* Services */}
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Services</h3>
                                     <div className="space-y-3">
@@ -287,76 +348,44 @@ const WorkerDetails = ({ isEdit, setEdit }: prop) => {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
-                        {/* Right Column - Calendar */}
                         <div className="lg:col-span-1">
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-lg font-semibold text-gray-900">Availability</h3>
-                                </div>
+                            <Calendar availability={availability} />
 
-                                <div className="border border-gray-200 rounded-lg p-4">
-                                    <div className="text-center mb-4">
-                                        <h4 className="font-semibold text-gray-900">{month} {year}</h4>
+                            <div className="mt-6 pt-6 bg-white border p-5 rounded-xl shadow-sm border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Status</h3>
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-gray-600">Subscription</span>
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.subscription.isActive
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
+                                            }`}>
+                                            {worker.subscription.isActive ? 'Active' : 'Inactive'}
+                                        </span>
                                     </div>
-                                    <div className="grid grid-cols-7 gap-1 mb-2">
-                                        {daysOfWeek.map((day) => (
-                                            <div key={day} className="text-center text-xs font-medium p-2 text-gray-600">
-                                                {day}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="grid grid-cols-7 gap-1">
-                                        {calendarDays.map((day, index) => (
-                                            <div
-                                                key={index}
-                                                className={`text-center p-2 text-sm font-medium rounded-lg transition-colors ${day === null
-                                                    ? ''
-                                                    : availableDays.includes(day)
-                                                        ? 'bg-orange-500 text-white shadow-sm hover:bg-orange-600'
-                                                        : 'text-gray-400 hover:bg-gray-100'
-                                                    }`}
-                                            >
-                                                {day}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Account Status */}
-                                <div className="mt-6 pt-6 border-t border-gray-200">
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Subscription</span>
-                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.subscription.isActive
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                {worker.subscription.isActive ? 'Active' : 'Inactive'}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Account Status</span>
-                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.isAccountBuilt
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-orange-100 text-orange-800'
-                                                }`}>
-                                                {worker.isAccountBuilt ? 'Complete' : 'Incomplete'}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-gray-600">Account Status</span>
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.isAccountBuilt
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-orange-100 text-orange-800'
+                                            }`}>
+                                            {worker.isAccountBuilt ? 'Complete' : 'Incomplete'}
+                                        </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {isEdit ? (
-                <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose} />
-            ) : null}
         </div>
+            {
+        isEdit ? (
+            <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose} />
+        ) : null
+    }
+        </div >
     );
 };
 

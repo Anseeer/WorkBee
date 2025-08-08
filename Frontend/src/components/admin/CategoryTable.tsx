@@ -125,7 +125,7 @@ const CategoryTable = () => {
     const columns: Column<ICategory>[] = [
         { key: 'id', label: 'ID', render: (u) => u.id.slice(0, 10) },
         { key: 'name', label: 'Name' },
-        { key: 'description', label: 'Description' },
+        { key: 'description', label: 'Description', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
         {
             key: 'imageUrl',
             label: 'Icon',

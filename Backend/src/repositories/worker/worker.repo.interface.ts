@@ -8,11 +8,12 @@ export interface IWorkerRepository {
     resetPassword(email: string, hashedPass: string): Promise<boolean>;
     findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null>;
     findAvailabilityByWorkerId(id: string): Promise<IAvailability | null>;
-    setAvailability(availability: IAvailability):  Promise<IAvailability | null>;
-    updateAvailability(id: string, availability: IAvailability):  Promise<IAvailability | null>;
+    setAvailability(availability: IAvailability): Promise<IAvailability | null>;
+    updateAvailability(id: string, availability: IAvailability): Promise<IAvailability | null>;
     getAllWorkers(): Promise<IWorker[]>;
+    getAllNonVerifiedWorkers(): Promise<IWorker[]>;
     setIsActive(id: string): Promise<boolean>;
-    approveWorker(id:string):Promise<boolean>;
-    rejectedWorker(id:string):Promise<boolean>;
-    update(worker:Partial<IWorker>):Promise<boolean>;
+    approveWorker(id: string): Promise<boolean>;
+    rejectedWorker(id: string): Promise<boolean>;
+    update(worker: Partial<IWorker>): Promise<boolean>;
 }

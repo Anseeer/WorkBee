@@ -14,6 +14,7 @@ import { logoutAdmin } from "../../services/adminService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { logout } from "../../slice/adminSlice";
 import { toast } from "react-toastify";
+import { API_ROUTES } from "../../constant/api.routes";
 
 interface props {
     handleTab: (tab: string) => void;
@@ -38,7 +39,7 @@ export default function AdminSidebar({ handleTab }: props) {
             await logoutAdmin();
             dispatch(logout())
             toast.success("Successfully logout");
-            navigate("/admins/login", { replace: true });
+            navigate(API_ROUTES.ADMIN.LOGIN, { replace: true });
         } catch (error) {
             console.error("Logout failed:", error);
         }

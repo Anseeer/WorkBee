@@ -5,6 +5,7 @@ import { resetPasswordUserThunk } from "../../slice/workerSlice";
 import ResetPasswordForm from "../../components/common/ResetPassForm";
 import type { AxiosError } from "axios";
 import { emailRegex, passRegex } from "../../regexs";
+import { API_ROUTES } from "../../constant/api.routes";
 
 const WorkerResetPasswordPage = () => {
   const dispatch = useAppDispatch();
@@ -30,7 +31,7 @@ const WorkerResetPasswordPage = () => {
 
       await dispatch(resetPasswordUserThunk(passwordData)).unwrap();
       toast.success("Password reset successfully!");
-      navigate("/workers/login", { replace: true });
+      navigate(API_ROUTES.WORKER.LOGIN, { replace: true });
     } catch (error: unknown) {
       const err = error as AxiosError<{ data: string }>;
 

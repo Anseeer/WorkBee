@@ -1,19 +1,22 @@
 import { Request, Response } from "express";
-import { WorkerService } from "../../services/worker/worker.service";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { IWorkerController } from "./worker.controller.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
-import { AvailabilityService } from "../../services/availability/availability.service";
+import { IWorkerService } from "../../services/worker/worker.service.interface";
+import { IAvailabilityService } from "../../services/availability/availability.service.interface";
+import { WORKER_MESSAGE } from "../../constants/messages";
+import { StatusCode } from "../../constants/status.code";
+import { COOKIE_CONFIG } from "../../config/Cookie";
 
 @injectable()
 export class WorkerController implements IWorkerController {
-    private _workerService: WorkerService;
-    private _availabilityService: AvailabilityService;
+    private _workerService: IWorkerService;
+    private _availabilityService: IAvailabilityService;
     constructor(
-        @inject(TYPES.workerService) workerService: WorkerService,
-        @inject(TYPES.availabilityService) availabilityService: AvailabilityService
+        @inject(TYPES.workerService) workerService: IWorkerService,
+        @inject(TYPES.availabilityService) availabilityService: IAvailabilityService
     ) {
         this._workerService = workerService
         this._availabilityService = availabilityService
@@ -23,22 +26,22 @@ export class WorkerController implements IWorkerController {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
-                throw new Error("Email and Password are required");
+                throw new Error(WORKER_MESSAGE.EMAIL_AND_PASS_REQUIRED);
             }
             const credentials = { email, password };
             const { token, worker, availability } = await this._workerService.loginWorker(credentials);
-            const response = new successResponse(201, "Login Successfull", { worker, availability });
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.LOGIN_SUCCESS, { worker, availability });
             res.cookie("token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 24 * 60 * 60 * 1000,
-            })
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, "Login Faild", errMsg);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.LOGIN_FAILD, errMsg);
             logger.error(response)
             res.status(response.status).json(response);
         }
@@ -48,21 +51,19 @@ export class WorkerController implements IWorkerController {
 
     register = async (req: Request, res: Response) => {
         try {
-            console.log("Registering Worker:", req.body);
             const { token, worker } = await this._workerService.registerWorker(req.body);
-            const response = new successResponse(201, "Worker registration successful", { worker });
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.REGISTRATION_SUCCESS, { worker });
             res.cookie("token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 24 * 60 * 60 * 1000,
-            })
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, "Failed to register worker", errMsg);
-            console.log(response)
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -75,10 +76,10 @@ export class WorkerController implements IWorkerController {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
-            res.json({ message: 'Logged out successfully' });
+            res.json({ message: WORKER_MESSAGE.LOGOUT_SUCCESs });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, "Logout Failed", errMsg);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.LOGOUT_FAILD, errMsg);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -87,19 +88,17 @@ export class WorkerController implements IWorkerController {
 
     buildAccount = async (req: Request, res: Response) => {
         const { workerId } = req.query;
-        console.log("Vomes To Build acount")
-        console.log("workerID:", workerId)
 
         try {
             if (!workerId || typeof workerId !== "string") {
-                throw new Error("Worker ID is missing or invalid");
+                throw new Error(WORKER_MESSAGE.Availability_or_WorkerID_In_Availability_Not_Get);
             }
 
             const { availability, ...workerData } = req.body;
 
             const result = await this._workerService.buildAccount(workerId, availability, workerData);
 
-            const response = new successResponse(201, "Worker Account Built Successfully", {
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.WORKER_ACCOUNT_BUILD_SUCCESSFULLY, {
                 worker: result.updatedWorker,
                 availability: result.updatedAvailability
             });
@@ -109,8 +108,7 @@ export class WorkerController implements IWorkerController {
 
         } catch (error: unknown) {
             const err = error instanceof Error ? error.message : String(error);
-            console.log("Error :", err);
-            const response = new errorResponse(400, "Failed To Build Account", err);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_ACCOUNT_BUILD_FAILD, err);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -122,16 +120,16 @@ export class WorkerController implements IWorkerController {
             const { email } = req.body;
             const user = await this._workerService.getUserByEmail(email);
             if (!user) {
-                throw new Error(" Cant find the user");
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             }
             const otp = await this._workerService.forgotPass(email)
             logger.info("OTP :", otp);
-            const response = new successResponse(201, 'SuccessFully send otp', { otp, email });
+            const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.SUCCESSFULLUY_SEND_OTP, { otp, email });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To Send OTP', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_SEND_OTP, message);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -142,15 +140,15 @@ export class WorkerController implements IWorkerController {
             const { email } = req.body;
             const user = await this._workerService.getUserByEmail(email);
             if (!user) {
-                throw new Error(" Cant find the user");
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             }
             const otp = await this._workerService.resendOtp(email);
-            const response = new successResponse(201, "Successfully resend otp", { otp });
+            const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.SUCCESSFULLUY_RESEND_OTP, { otp });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To Resend', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_RESEND_OTP, message);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -160,12 +158,12 @@ export class WorkerController implements IWorkerController {
         try {
             const { email, otp } = req.body;
             await this._workerService.verifyOtp(email, otp);
-            const response = new successResponse(201, 'Verified', {});
+            const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.VERIFY_OTP, {});
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Failed to verify otp', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_VERIFY_OTP, message);
             logger.error(response)
             res.status(response.status).json(response);
         }
@@ -176,19 +174,19 @@ export class WorkerController implements IWorkerController {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
-                throw new Error('Email and password are required');
+                throw new Error(WORKER_MESSAGE.EMAIL_AND_PASS_REQUIRED);
             }
             const user = await this._workerService.getUserByEmail(email);
             if (!user) {
-                throw new Error('User not found with the given email');
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             }
             await this._workerService.resetPass(email, password);
-            const response = new successResponse(200, 'Password reset successfully', {});
+            const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.PASSWORD_RESET_SUCCESSFULLY, {});
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Failed to reset password', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.PASSWORD_RESET_FAILD, message);
             logger.error(response)
             res.status(response.status).json(response);
         }
@@ -198,15 +196,14 @@ export class WorkerController implements IWorkerController {
     fetchDetails = async (req: Request, res: Response): Promise<void> => {
         const { workerId } = req.query;
         try {
-            console.log("Requested to fetch details of worker")
             if (!workerId || typeof workerId !== "string") {
-                throw new Error("Worker ID is missing or invalid");
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
             }
 
             const worker = await this._workerService.getUserById(workerId);
             const availability = await this._availabilityService.getAvailabilityByworkerId(workerId)
 
-            const response = new successResponse(201, "Worker Details Fetch Successfully", {
+            const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.WORKER_DETAILS_FETCH_SUCCESSFULLY, {
                 worker,
                 availability
             });
@@ -216,8 +213,7 @@ export class WorkerController implements IWorkerController {
 
         } catch (error: unknown) {
             const err = error instanceof Error ? error.message : String(error);
-            console.log(err)
-            const response = new errorResponse(400, "Failed To Build Account", err);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD, err);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -229,21 +225,20 @@ export class WorkerController implements IWorkerController {
             const worker = workerData.worker;
             const availability = workerData.availability;
             if (!worker || !worker._id) {
-                throw new Error("WorkerData or WorkerID Not Get");
+                throw new Error(WORKER_MESSAGE.WORKER_DATA_OR_ID_NOT_GET);
             }
 
             if (!availability || !availability.workerId) {
-                throw new Error("Availability or WorkerID In Availability Not Get")
+                throw new Error(WORKER_MESSAGE.Availability_or_WorkerID_In_Availability_Not_Get)
             }
             await this._availabilityService.updateAvailability(availability);
             await this._workerService.updateWorker(worker);
-            const response = new successResponse(201, 'Updated', {});
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.UPDATE_WORKER_SUCCESSFULLY, {});
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
             const err = error instanceof Error ? error.message : String(error);
-            console.log(err)
-            const response = new errorResponse(400, "Failed To Update Account", err);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.UPDATE_WORKER_FAILD, err);
             logger.error(response);
             res.status(response.status).json(response);
         }

@@ -3,25 +3,26 @@ import bcrypt from "bcrypt";
 import { IAdminService } from "./admin.services.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
-import { UserRepository } from "../../repositories/user/user.repo";
 import { mapUserToDTO } from "../../mappers/user/user.map.DTO";
 import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
-import { WorkerRepository } from "../../repositories/worker/worker.repo";
 import mapWorkerToDTO from "../../mappers/worker/worker.map.DTO";
 import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { Iuser } from "../../model/user/user.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
-import { AvailabilityRepository } from "../../repositories/availability/availability.repo";
+import { IUserRepository } from "../../repositories/user/user.repo.interface";
+import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
+import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
+import { ADMIN_MESSAGES } from "../../constants/messages";
 
 @injectable()
 export class AdminService implements IAdminService {
-    private _userRepository: UserRepository;
-    private _workerRepository: WorkerRepository;
-    private _availabilityRepository: AvailabilityRepository;
+    private _userRepository: IUserRepository;
+    private _workerRepository: IWorkerRepository;
+    private _availabilityRepository: IAvailabilityRepository;
     constructor(
-        @inject(TYPES.userRepository) userRepo: UserRepository,
-        @inject(TYPES.workerRepository) workerRepo: WorkerRepository,
-        @inject(TYPES.availabilityRepository) availabilityRepo: AvailabilityRepository
+        @inject(TYPES.userRepository) userRepo: IUserRepository,
+        @inject(TYPES.workerRepository) workerRepo: IWorkerRepository,
+        @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository
     ) {
         this._userRepository = userRepo;
         this._workerRepository = workerRepo;
@@ -31,16 +32,16 @@ export class AdminService implements IAdminService {
     async login(adminData: Partial<Iuser>): Promise<{ token: string, admin: IUserDTO }> {
         const existingAdmin = await this._userRepository.findByEmail(adminData.email!);
         if (!existingAdmin) {
-            throw new Error("Can't find the admin with this email.");
+            throw new Error(ADMIN_MESSAGES.CANT_FIND_ADMIN);
         }
 
         if (existingAdmin.role !== "Admin") {
-            throw new Error("Can't role admin with this email.");
+            throw new Error(ADMIN_MESSAGES.CANT_FIND_ADMIN);
         }
 
         const matchPass = await bcrypt.compare(adminData.password!, existingAdmin.password);
         if (!matchPass) {
-            throw new Error("Invalid Password");
+            throw new Error(ADMIN_MESSAGES.INVALID_PASSWORD);
         }
 
         const token = await generateToken(existingAdmin._id.toString(), existingAdmin.role);
@@ -57,14 +58,14 @@ export class AdminService implements IAdminService {
 
     async setIsActiveUsers(id: string): Promise<boolean> {
         if (!id) {
-            throw new Error('id not get');
+            throw new Error(ADMIN_MESSAGES.ID_NOT_RECEIVED);
         }
         return await this._userRepository.setIsActive(id);
     }
 
     async setIsActiveWorkers(id: string): Promise<boolean> {
         if (!id) {
-            throw new Error('id not get');
+            throw new Error(ADMIN_MESSAGES.ID_NOT_RECEIVED);
         }
         return await this._workerRepository.setIsActive(id);
     }
@@ -85,7 +86,7 @@ export class AdminService implements IAdminService {
         const availability = await this._availabilityRepository.findByWorkerId(id);
         return availability;
     }
-    
+
     async approveWorker(id: string): Promise<void> {
         await this._workerRepository.approveWorker(id);
     }

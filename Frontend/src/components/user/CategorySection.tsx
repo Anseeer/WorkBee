@@ -3,12 +3,6 @@ import PaintingBanner from "../../assets/painting-banner.png";
 import CleaningBanner from "../../assets/cleaning-banner.png";
 import OutdoorBanner from "../../assets/outdoor-banner.png";
 import MovingBanner from "../../assets/moving-banner.png";
-
-// import HomeRepairIcon from "../../assets/home-repair-icon.png";
-// import PaintingIcon from "../../assets/paint-icon.png";
-// import CleaningIcon from "../../assets/cleaning-icon.png";
-// import OutdoorIcon from "../../assets/outdoor-icon.png";
-// import MovingIcon from "../../assets/moving-icon.png";
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchCategory } from "../../services/adminService";
@@ -23,14 +17,6 @@ const backgroundMap: Record<string, string> = {
     "Outdoor": OutdoorBanner,
     "Moving": MovingBanner,
 };
-
-// const iconMap: Record<string, JSX.Element> = {
-//     "Home Repair": <img src={HomeRepairIcon} alt="Home Repair" className="w-15 h-15" />,
-//     "Painting": <img src={PaintingIcon} alt="Painting" className="w-15 h-15" />,
-//     "Cleaning": <img src={CleaningIcon} alt="Cleaning" className="w-15 h-15" />,
-//     "Outdoor": <img src={OutdoorIcon} alt="Outdoor" className="w-15 h-15" />,
-//     "Moving": <img src={MovingIcon} alt="Moving" className="w-15 h-15" />,
-// };
 
 const CategorySection: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
@@ -107,9 +93,7 @@ const CategorySection: React.FC = () => {
 
     return (
         <div className="w-full max-w-7xl mx-auto p-6 my-5 min-h-screen">
-            {/* Category Icons with Navigation */}
             <div className="mb-8 relative">
-                {/* Left Button */}
                 <button
                     onClick={scrollLeft}
                     disabled={!canScrollLeft}
@@ -121,7 +105,6 @@ const CategorySection: React.FC = () => {
                     <ChevronLeft className="w-6 h-6" />
                 </button>
 
-                {/* Scrollable Container */}
                 <div
                     ref={scrollRef}
                     className="flex flex-nowrap overflow-x-auto w-full gap-20 justify-center mb-2 px-8 scrollbar-hide"
@@ -143,8 +126,6 @@ const CategorySection: React.FC = () => {
                                 }`}
                         >
                             <div className="mb-2">
-                                {/* {iconMap[category.name]} */}
-                                {/* {category.imageUrl} */}
                                 <img
                                     src={category.imageUrl}
                                     alt=""
@@ -156,7 +137,6 @@ const CategorySection: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Right Button */}
                 <button
                     onClick={scrollRight}
                     disabled={!canScrollRight}
@@ -171,7 +151,6 @@ const CategorySection: React.FC = () => {
                 <div className="h-1 bg-green-900 w-full rounded"></div>
             </div>
 
-            {/* Service Buttons */}
             {currentCategory && (
                 <div className="mb-8">
                     <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
@@ -196,18 +175,15 @@ const CategorySection: React.FC = () => {
                 </div>
             )}
 
-            {/* Content Display */}
             {currentCategory && (
                 <div className="relative rounded-2xl p-8 h-[600px] shadow-xl transition-all duration-500 flex items-center justify-between">
 
-                    {/* Background Image */}
                     <img
                         src={backgroundMap[currentCategory.name] || HomeRepairBanner} // fallback
                         alt={`${currentCategory.name} background`}
                         className="absolute inset-0 w-full h-full object-cover rounded-2xl"
                     />
 
-                    {/* Floating Yellow Card */}
                     <div className="relative bg-white rounded-lg p-6 shadow-2xl min-h-[250px] w-[350px] ml-8 flex flex-col justify-center">
                         <h2 className="text-3xl font-bold text-gray-900 mb-4">
                             {currentCategory.name}

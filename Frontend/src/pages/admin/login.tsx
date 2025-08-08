@@ -5,6 +5,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { loginAdminThunk } from "../../slice/adminSlice";
 import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
+import { API_ROUTES } from "../../constant/api.routes";
 
 const AdminLoginPage = () => {
     const dispatch = useAppDispatch();
@@ -30,7 +31,7 @@ const AdminLoginPage = () => {
             setLoading(true);
             await dispatch(loginAdminThunk(credentials)).unwrap();
             toast.success("Login successful!");
-            navigate("/admins/dashboard", { replace: true });
+            navigate(API_ROUTES.ADMIN.DASHBOARD, { replace: true });
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : String(error);
             toast.error(msg || "Login failed");
@@ -39,7 +40,15 @@ const AdminLoginPage = () => {
         }
     };
 
-    return <LoginForm Submit={handleLogin} loading={loading} role="admin" />;
+    const HandleForgotPass = () => {
+        navigate(API_ROUTES.ADMIN.FORGOT_PASS)
+    }
+
+    const HandleRegister = () => {
+        navigate(API_ROUTES.ADMIN.REGISTER);
+    }
+
+    return <LoginForm Submit={handleLogin} loading={loading} role="Admin" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
 };
 
 export default AdminLoginPage;

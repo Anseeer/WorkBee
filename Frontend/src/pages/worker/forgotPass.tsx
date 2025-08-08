@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import ForgotPasswordForm from "../../components/common/ForgotPassForm";
 import { forgotPassUserThunk } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { API_ROUTES } from "../../constant/api.routes";
 
 const WorkerForgotPasswordPage = () => {
   const dispatch = useAppDispatch();
@@ -22,7 +23,7 @@ const WorkerForgotPasswordPage = () => {
       await dispatch(forgotPassUserThunk(email)).unwrap();
       localStorage.setItem("resetEmail", email);
       toast.success("OTP sent successfully!");
-      navigate("/workers/verify-otp", { replace: true });
+      navigate(API_ROUTES.WORKER.VERIFY_OTP, { replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       toast.error(msg || "Failed to send OTP");

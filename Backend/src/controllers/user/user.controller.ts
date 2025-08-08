@@ -1,33 +1,36 @@
 import { Request, Response } from "express";
 import logger from "../../utilities/logger";
-import { UserService } from "../../services/user/user.service";
 import { errorResponse, successResponse } from "../../utilities/response";
 import { IUserController } from "./user.controller.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
+import { IUserService } from "../../services/user/user.service.interface";
+import { USERS_MESSAGE } from "../../constants/messages";
+import { StatusCode } from "../../constants/status.code";
+import { COOKIE_CONFIG } from "../../config/Cookie";
 
 @injectable()
 export class UserController implements IUserController {
-    private _userService: UserService;
-    constructor(@inject(TYPES.userService) userService: UserService) {
+    private _userService: IUserService;
+    constructor(@inject(TYPES.userService) userService: IUserService) {
         this._userService = userService
     }
 
     register = async (req: Request, res: Response) => {
         try {
             const { user, token } = await this._userService.registerUser(req.body);
-            const response = new successResponse(201, 'User Registration SuccessFull', { user });
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.REGISTRATION_SUCCESS, { user });
             res.cookie("token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 24 * 60 * 60 * 1000,
-            })
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'User Registration Faild', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.REGISTRATION_FAILED, message);
             logger.error("Error", response)
             res.status(response.status).json(response);
         }
@@ -37,18 +40,18 @@ export class UserController implements IUserController {
         try {
             const { email, password } = req.body;
             const { user, token } = await this._userService.loginUser(email, password);
-            const response = new successResponse(201, 'SuccessFully Login', { user });
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.LOGIN_SUCCESS, { user });
             res.cookie("token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 24 * 60 * 60 * 1000,
-            })
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To Login', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.LOGIN_FAILED, message);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -61,10 +64,10 @@ export class UserController implements IUserController {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
-            res.json({ message: 'Logged out successfully' });
+            res.json({ message: USERS_MESSAGE.LOGOUT_SUCCESS });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, "Logout Failed", errMsg);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.LOGOUT_FAILED, errMsg);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -75,16 +78,16 @@ export class UserController implements IUserController {
             const { email } = req.body;
             const user = await this._userService.getUserByEmail(email);
             if (!user) {
-                throw new Error(" Cant find the user");
+                throw new Error(USERS_MESSAGE.CAT_FIND_USER);
             }
             const otp = await this._userService.forgotPass(email)
             logger.info("OTP :", otp);
-            const response = new successResponse(201, 'SuccessFully send otp', { otp, email });
+            const response = new successResponse(StatusCode.OK, USERS_MESSAGE.SUCCESSFULLY_SEND_OTP, { otp, email });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To Send OTP', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_SEND_OTP, message);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -95,15 +98,15 @@ export class UserController implements IUserController {
             const { email } = req.body;
             const user = await this._userService.getUserByEmail(email);
             if (!user) {
-                throw new Error(" Cant find the user");
+                throw new Error(USERS_MESSAGE.CAT_FIND_USER);
             }
             const otp = await this._userService.resendOtp(email);
-            const response = new successResponse(201, "Successfully resend otp", { otp });
+            const response = new successResponse(StatusCode.OK, USERS_MESSAGE.SUCCESSFULLY_RESEND_OTP, { otp });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Faild To Resend', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_RESEND_OTP, message);
             logger.error(response);
             res.status(response.status).json(response);
         }
@@ -113,12 +116,12 @@ export class UserController implements IUserController {
         try {
             const { email, otp } = req.body;
             await this._userService.verifyOtp(email, otp);
-            const response = new successResponse(201, 'Verified', {});
+            const response = new successResponse(StatusCode.OK, USERS_MESSAGE.VERIFY_OTP, {});
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Failed to verify otp', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILED_VERIFY_OTP, message);
             logger.error(response)
             res.status(response.status).json(response);
         }
@@ -129,19 +132,19 @@ export class UserController implements IUserController {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
-                throw new Error('Email and password are required');
+                throw new Error(USERS_MESSAGE.CREDENTIALS_ARE_REQUIRED);
             }
             const user = await this._userService.getUserByEmail(email);
             if (!user) {
-                throw new Error('User not found with the given email');
+                throw new Error(USERS_MESSAGE.CAT_FIND_USER);
             }
             await this._userService.resetPass(email, password);
-            const response = new successResponse(200, 'Password reset successfully', {});
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.PASSWORD_RESET_SUCCESSFULLY, {});
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Failed to reset password', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.PASSWORD_RESET_FAILED, message);
             logger.error(response)
             res.status(response.status).json(response);
         }
@@ -153,13 +156,12 @@ export class UserController implements IUserController {
             const { token } = req.body;
             const result = await this._userService.googleLogin(token);
 
-            const response = new successResponse(200, 'Login successfully', { result });
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.GOOGLE_LOGIN_SUCCESS, { result });
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error)
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, 'Failed Login', message);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.GOOGLE_LOGIN_FAILED, message);
             logger.error(response)
             res.status(response.status).json(response);
         }

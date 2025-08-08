@@ -12,6 +12,7 @@ import { IWorkerService } from "./worker.service.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { AvailabilityRepository } from "../../repositories/availability/availability.repo";
+import { WORKER_MESSAGE } from "../../constants/messages";
 
 @injectable()
 export class WorkerService implements IWorkerService {
@@ -29,7 +30,7 @@ export class WorkerService implements IWorkerService {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
         if (!existingWorker || existingWorker.role !== "Worker") {
-            throw new Error("Can't find the worker with this email, please signup!");
+            throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
         }
 
         let existingAvailability: IAvailability[] | undefined | null;
@@ -38,17 +39,16 @@ export class WorkerService implements IWorkerService {
             existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
 
             if (!existingAvailability) {
-                throw new Error("Can't find the availability for this worker");
+                throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
             }
         }
 
         const matchPass = await bcrypt.compare(credentials.password, existingWorker.password);
         if (!matchPass) {
-            throw new Error("Password does not match!");
+            throw new Error(WORKER_MESSAGE.INVALID_PASS);
         }
 
         const token = generateToken(existingWorker.id.toString(), existingWorker.role);
-        console.log("ExistingWorker:", existingWorker);
 
         const worker = mapWorkerToDTO(existingWorker);
 
@@ -63,12 +63,12 @@ export class WorkerService implements IWorkerService {
     async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {} }> {
 
         if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
-            throw new Error("All fields are required");
+            throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
         }
 
         const existingWorker = await this._workerRepository.findByEmail(workerData.email);
         if (existingWorker) {
-            throw new Error("Worker already existing in the email");
+            throw new Error(WORKER_MESSAGE.WORKER_ALREADY_EXIST);
         }
 
         const hashedPass = await bcrypt.hash(workerData.password, 10);
@@ -84,7 +84,7 @@ export class WorkerService implements IWorkerService {
     async buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailability }> {
 
         const existingWorker = await this._workerRepository.findById(workerId);
-        if (!existingWorker) throw new Error("Can't find the worker, please register");
+        if (!existingWorker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
 
         const updatedFields: Partial<IWorker> = {
             profileImage: workerData.profileImage,
@@ -99,17 +99,17 @@ export class WorkerService implements IWorkerService {
         };
 
         const updatedWorkerEntity = await this._workerRepository.findByIdAndUpdate(workerId, updatedFields);
-        if (!updatedWorkerEntity) throw new Error("Failed to update worker");
+        if (!updatedWorkerEntity) throw new Error(WORKER_MESSAGE.UPDATE_WORKER_SUCCESSFULLY);
 
         let updatedAvailability: IAvailability | null;
         const existingAvailability = await this._workerRepository.findAvailabilityByWorkerId(workerId);
 
         if (existingAvailability) {
             updatedAvailability = await this._workerRepository.updateAvailability(workerId, availability);
-            if (!updatedAvailability) throw new Error("Failed to update availability");
+            if (!updatedAvailability) throw new Error(WORKER_MESSAGE.FAILDTO_UPDATE_AVAILABILITY);
         } else {
             updatedAvailability = await this._workerRepository.setAvailability(availability);
-            if (!updatedAvailability) throw new Error("Failed to create availability");
+            if (!updatedAvailability) throw new Error(WORKER_MESSAGE.FAILDTO_CREATE_AVAILABILITY);
         }
 
         const updatedWorker: IWorkerDTO = mapWorkerToDTO(updatedWorkerEntity);
@@ -143,14 +143,14 @@ export class WorkerService implements IWorkerService {
     async verifyOtp(email: string, otp: string): Promise<boolean> {
         const record = getOtp(email);
 
-        if (!record) throw new Error("No OTP found for this email");
+        if (!record) throw new Error(WORKER_MESSAGE.NO_OTP_FOUND);
         if (Date.now() > record.expiresAt) {
             deleteOtp(email);
-            throw new Error("OTP expired");
+            throw new Error(WORKER_MESSAGE.OTP_EXPIRED);
         }
 
         if (record.otp !== otp.toString()) {
-            throw new Error("Invalid OTP");
+            throw new Error(WORKER_MESSAGE.INVALID_OTP);
         }
         deleteOtp(email);
         return true;
@@ -163,7 +163,7 @@ export class WorkerService implements IWorkerService {
 
     async updateWorker(workerData: Partial<IWorker>): Promise<boolean> {
         if (!workerData || !workerData._id) {
-            throw new Error("Worker data or ID not provided")
+            throw new Error(WORKER_MESSAGE.WORKER_DATA_OR_ID_NOT_GET)
         }
         await this._workerRepository.update(workerData);
         return true;

@@ -24,7 +24,32 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log("Error in Response:", error.response);
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message || "Something went wrong!";
+
+    console.error("Response Error:", message);
+
+    switch (status) {
+      case 400:
+        console.error(message || "Bad request.");
+        break;
+      case 401:
+        console.log("Session expired. Please log in again.");
+        break;
+      case 403:
+        console.error("You are not authorized.");
+        break;
+      case 404:
+        console.error("Resource not found.");
+        break;
+      case 500:
+        console.error("Server error. Please try again later.");
+        break;
+      default:
+        console.error(message);
+        break;
+    }
+
     return Promise.reject(error);
   }
 );

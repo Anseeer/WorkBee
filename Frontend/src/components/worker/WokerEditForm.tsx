@@ -20,6 +20,8 @@ import { getServiceByCategory } from "../../services/workerService";
 import type { IWorker } from "../../types/IWorker";
 import type { IAvailability } from "../../types/IAvailability";
 import { uploadToCloud } from "../../utilities/uploadToCloud";
+import { startOfMonth } from "date-fns";
+
 
 interface WorkerFormData {
     name: string;
@@ -277,13 +279,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     };
 
     const today = new Date();
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const startOfCurrentMonth = startOfMonth(today);
 
     return (
         <div className="fixed inset-0 bg-transparent backdrop-blur-md flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-                {/* Header */}
                 <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <User className="w-6 h-6 text-blue-600" />
@@ -299,15 +299,12 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
 
                 <form onSubmit={formik.handleSubmit} className="p-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Left Column */}
                         <div className="space-y-6">
-                            {/* Basic Info */}
                             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 space-y-4">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <User className="w-5 h-5 text-blue-600" /> Basic Information
                                 </h3>
 
-                                {/* Full Name */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Full Name
@@ -321,7 +318,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     />
                                 </div>
 
-                                {/* Phone and Age */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -352,7 +348,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Bio */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Bio
@@ -367,7 +362,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     />
                                 </div>
 
-                                {/* Location with Google Places */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Location
@@ -394,13 +388,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
                             </div>
 
-                            {/* Work Details */}
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100 space-y-4">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <Clock className="w-5 h-5 text-green-600" /> Work Details
                                 </h3>
 
-                                {/* Minimum Hours */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Minimum Hours
@@ -419,7 +411,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     </select>
                                 </div>
 
-                                {/* Job Type */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Work Type
@@ -467,7 +458,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
 
 
-                                {/* Preferred Schedule */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Work Schedule
@@ -499,30 +489,23 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
                             </div>
 
-                            {/* Calendar */}
-                            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border border-yellow-100">
-                                <h3 className="text-lg font-semibold mb-4">Manage Availability</h3>
-                                <DayPicker
-                                    mode="multiple"
-                                    selected={formik.values.availability}
-                                    onSelect={(dates) => formik.setFieldValue("availability", dates)}
-                                    fromMonth={startOfMonth}
-                                    toMonth={endOfMonth}
-                                    disabled={[
-                                        { before: today },
-                                        { before: startOfMonth, after: endOfMonth },
-                                    ]}
-                                    modifiersClassNames={{
-                                        selected: "bg-blue-500 text-white rounded-full",
-                                    }}
-                                    hideNavigation
-                                />
-                            </div>
+                            <DayPicker
+                                mode="multiple"
+                                selected={formik.values.availability}
+                                onSelect={(dates) => formik.setFieldValue("availability", dates)}
+                                fromMonth={startOfCurrentMonth}
+                                disabled={[
+                                    { before: today }, 
+                                ]}
+                                modifiersClassNames={{
+                                    selected: "bg-blue-500 text-white rounded-full",
+                                }}
+                            />
+
+
                         </div>
 
-                        {/* Right Column */}
                         <div className="space-y-6">
-                            {/* Profile Image */}
                             <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <Image className="w-5 h-5 text-purple-600" /> Profile Image
@@ -552,7 +535,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </label>
                             </div>
 
-                            {/* Government ID */}
                             <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-xl border border-orange-100 grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block mb-2">Front</label>
@@ -608,7 +590,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
                             </div>
 
-                            {/* Categories */}
                             <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-teal-100">
                                 <h3 className="text-lg font-semibold mb-4">Categories</h3>
                                 <div className="grid grid-cols-2 gap-2">
@@ -625,7 +606,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
                             </div>
 
-                            {/* Services */}
                             <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-xl border border-indigo-100">
                                 <h3 className="text-lg font-semibold mb-4">Services</h3>
                                 <div className="grid grid-cols-2 gap-2">
@@ -654,7 +634,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                         </div>
                     </div>
 
-                    {/* Buttons */}
                     <div className="flex justify-end gap-4 mt-6 border-t pt-4">
                         <button
                             type="button"

@@ -9,6 +9,7 @@ import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import { useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
 import { Eye, EyeOff } from "lucide-react";
+import { API_ROUTES } from "../../constant/api.routes";
 
 
 const WorkerRegistrationPage = () => {
@@ -158,7 +159,7 @@ const WorkerRegistrationPage = () => {
                 const res = await Dispatch(registerWorkerThunk(values)).unwrap();
                 console.log("res :", res);
                 toast.success("Registration successful!");
-                navigate("/workers/dashboard", { replace: true });
+                navigate(API_ROUTES.WORKER.DASHBOARD, { replace: true });
             } catch (error: unknown) {
                 const err = error as AxiosError<{ data: string }>;
                 toast.error(err.response?.data?.data || "Registration failed");
@@ -190,7 +191,6 @@ const WorkerRegistrationPage = () => {
                         </h2>
 
                         <form onSubmit={formik.handleSubmit} className="space-y-4">
-                            {/* Name + Location */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <div className="h-5">
@@ -231,7 +231,6 @@ const WorkerRegistrationPage = () => {
                                 </div>
                             </div>
 
-                            {/* Email + Phone */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <div className="h-5">
@@ -271,9 +270,7 @@ const WorkerRegistrationPage = () => {
                                 </div>
                             </div>
 
-                            {/* Password + Categories */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Password Field */}
                                 <div className="relative">
                                     <div className="h-5">
                                         {formik.touched.password && formik.errors.password && (
@@ -302,16 +299,13 @@ const WorkerRegistrationPage = () => {
                                     </button>
                                 </div>
 
-                                {/* Category Dropdown */}
                                 <div className="relative">
-                                    {/* Error Message */}
                                     <div className="h-5">
                                         {formik.touched.categories && formik.errors.categories && (
                                             <span className="text-sm text-red-500">{formik.errors.categories}</span>
                                         )}
                                     </div>
 
-                                    {/* Dropdown Trigger */}
                                     <div
                                         onClick={() => setShowDropdown(!showDropdown)}
                                         className="w-full h-[40px] flex items-center justify-between cursor-pointer 
@@ -329,7 +323,6 @@ const WorkerRegistrationPage = () => {
                                         <span className="text-gray-400">▼</span>
                                     </div>
 
-                                    {/* Dropdown Menu */}
                                     {showDropdown && (
                                         <div className="absolute mt-1 w-full bg-white border border-gray-300 
                                        rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
@@ -354,7 +347,6 @@ const WorkerRegistrationPage = () => {
                             </div>
 
 
-                            {/* Submit */}
                             <div className="pt-4">
                                 <button
                                     type="submit"
@@ -365,7 +357,6 @@ const WorkerRegistrationPage = () => {
                                 </button>
                             </div>
 
-                            {/* Sign-in */}
                             <div className="text-center pt-2">
                                 <p className="text-gray-600 text-sm">
                                     Already have an account?{" "}

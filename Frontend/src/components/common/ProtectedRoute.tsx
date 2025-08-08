@@ -2,6 +2,7 @@ import { useEffect, useState, type JSX } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "../../services/axios";
 import Loader from "./Loader";
+import { API_ROUTES } from "../../constant/api.routes";
 
 interface ProtectedRouteProps {
   children: JSX.Element;
@@ -35,9 +36,9 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
 
 
   if (!authInfo.isAuthenticated || authInfo.userRole?.toLowerCase() !== role.toLowerCase()) {
-    if (role === "User") return <Navigate to="/login" replace />;
-    if (role === "Worker") return <Navigate to="/workers/login" replace />;
-    if (role === "Admin") return <Navigate to="/admins/login" replace />;
+    if (role === "User") return <Navigate to={API_ROUTES.USER.LOGIN} replace />;
+    if (role === "Worker") return <Navigate to={API_ROUTES.WORKER.LOGIN} replace />;
+    if (role === "Admin") return <Navigate to={API_ROUTES.ADMIN.LOGIN} replace />;
   }
 
   return children;

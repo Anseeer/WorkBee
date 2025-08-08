@@ -45,7 +45,6 @@ export function DataTable<T extends { id: string }>({
         <div className="w-full max-w-6xl mx-auto p-2">
 
             <div className="border-2 border-green-700  rounded-2xl m-5  p-5 ">
-                {/* Search */}
                 <div className="mb-4 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <input
@@ -57,8 +56,7 @@ export function DataTable<T extends { id: string }>({
                     />
                 </div>
 
-                {/* Table */}
-                <div className="overflow-hidden rounded-lg overflow-x-scroll  border border-gray-200">
+                <div className="overflow-hidden rounded-lg  border border-gray-200">
                     <table className="w-full">
                         <thead className="bg-[#8FC39D]">
                             <tr>
@@ -120,7 +118,6 @@ export function DataTable<T extends { id: string }>({
                     </table>
                 </div>
 
-                {/* Pagination */}
                 <div className="mt-4 flex items-center justify-between">
                     <div className="text-sm text-gray-700">
                         Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} results

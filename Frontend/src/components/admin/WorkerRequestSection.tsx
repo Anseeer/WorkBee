@@ -4,7 +4,6 @@ import { approveWorker, fetchWorkersNonVerified, rejectedWorker } from '../../se
 import type { IWorker } from '../../types/IWorker';
 import { toast } from 'react-toastify';
 
-// Image Modal Component
 const ImageModal: React.FC<{
     isOpen: boolean;
     imageUrl: string;
@@ -39,7 +38,6 @@ const ImageModal: React.FC<{
     );
 };
 
-// Main Component
 const WorkerApprovalComponent: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<{
         url: string;
@@ -65,7 +63,6 @@ const WorkerApprovalComponent: React.FC = () => {
         if (!workerId) {
             toast.error("Worker Id Not Get")
         }
-        console.log("Worker ID :", workerId)
         await approveWorker(workerId);
         toast.success("Approved");
         setRequests(prev =>
@@ -98,12 +95,10 @@ const WorkerApprovalComponent: React.FC = () => {
     return (
         <div className="h-[560px] overflow-y-auto p-6">
             <div className="max-w-7xl mx-auto">
-                {/* Header */}
                 <div className="mb-8">
                     <p className="text-gray-600">Review and approve worker registration requests</p>
                 </div>
 
-                {/* Requests List */}
                 {pendingRequests.length === 0 ? (
                     <div className="bg-transparent rounded-2xl  p-12 text-center">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -120,7 +115,6 @@ const WorkerApprovalComponent: React.FC = () => {
                                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-green-100"
                             >
                                 <div className="p-6">
-                                    {/* Worker Info Header */}
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="flex items-center space-x-4">
                                             <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
@@ -149,7 +143,6 @@ const WorkerApprovalComponent: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    {/* Worker Details */}
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                         <div className="flex items-center space-x-2 text-gray-600">
                                             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
@@ -183,7 +176,7 @@ const WorkerApprovalComponent: React.FC = () => {
 
                                         </div>
                                     </div>
-                                    {/* Documenet */}
+
                                     <div className="mb-6">
                                         <div className="flex items-center space-x-2 mb-4">
                                             <FileText className="w-5 h-5 text-green-600" />
@@ -202,13 +195,11 @@ const WorkerApprovalComponent: React.FC = () => {
                                                             </span>
                                                         </div>
                                                         <div className="relative group">
-                                                            {/* ✅ Always visible blurred thumbnail */}
                                                             <img
                                                                 src={url}
                                                                 alt={`Government ID ${index + 1}`}
                                                                 className="w-full h-32 object-cover rounded-lg blur-sm group-hover:blur-none transition-all duration-300"
                                                             />
-                                                            {/* ✅ Zoom icon appears on hover */}
                                                             <button
                                                                 onClick={() =>
                                                                     openImageModal(url, `Government ID - ${index + 1}`)
@@ -227,7 +218,6 @@ const WorkerApprovalComponent: React.FC = () => {
                                     </div>
 
 
-                                    {/* Action Buttons */}
                                     <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
                                         <button
                                             onClick={() => handleApprove(request.id)}
@@ -252,7 +242,6 @@ const WorkerApprovalComponent: React.FC = () => {
                 )}
             </div>
 
-            {/* Image Modal */}
             <ImageModal
                 isOpen={selectedImage !== null}
                 imageUrl={selectedImage?.url || ''}

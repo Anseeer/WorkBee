@@ -5,6 +5,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { loginUserThunk } from "../../slice/userSlice";
 import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
+import { API_ROUTES } from "../../constant/api.routes";
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();
@@ -31,7 +32,7 @@ const LoginPage = () => {
       const res = await dispatch(loginUserThunk(credentials)).unwrap();
       console.log("Res :", res)
       toast.success("Login successful!");
-      navigate("/home", { replace: true });
+      navigate(API_ROUTES.USER.HOME, { replace: true });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
       toast.error(msg || "Login failed");
@@ -40,7 +41,16 @@ const LoginPage = () => {
     }
   };
 
-  return <LoginForm Submit={handleLogin} loading={loading} role="user" />;
+
+  const HandleForgotPass = () => {
+    navigate(API_ROUTES.USER.FORGOT_PASS)
+  }
+
+  const HandleRegister = () => {
+    navigate(API_ROUTES.USER.REGISTER);
+  }
+
+  return <LoginForm Submit={handleLogin} loading={loading} role="User" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
 };
 
 export default LoginPage;

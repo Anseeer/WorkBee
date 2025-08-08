@@ -1,14 +1,14 @@
 import { inject, injectable } from "inversify";
-import { AvailabilityRepository } from "../../repositories/availability/availability.repo";
 import TYPES from "../../inversify/inversify.types";
 import { IAvailability } from "../../model/availablity/availablity.interface";
 import { IAvailabilityService } from "./availability.service.interface";
+import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 
 @injectable()
 export class AvailabilityService implements IAvailabilityService {
-    private _availabilityRepository: AvailabilityRepository;
+    private _availabilityRepository: IAvailabilityRepository;
 
-    constructor(@inject(TYPES.availabilityRepository) availabilityRepo: AvailabilityRepository) {
+    constructor(@inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository) {
         this._availabilityRepository = availabilityRepo;
     }
 
@@ -18,7 +18,6 @@ export class AvailabilityService implements IAvailabilityService {
     };
 
     updateAvailability = async (availability: IAvailability): Promise<boolean> => {
-        console.log("Availability :", availability);
         const existingAvailability = await this._availabilityRepository.findByWorkerId(
             availability.workerId.toString()
         );

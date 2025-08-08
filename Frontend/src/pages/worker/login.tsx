@@ -5,6 +5,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
 import { loginWorkerThunk } from "../../slice/workerSlice";
+import { API_ROUTES } from "../../constant/api.routes";
 
 const WorkerLoginPage = () => {
     const dispatch = useAppDispatch();
@@ -30,7 +31,7 @@ const WorkerLoginPage = () => {
             setLoading(true);
             await dispatch(loginWorkerThunk(credentials)).unwrap();
             toast.success("Login successful!");
-            navigate("/workers/dashboard", { replace: true });
+            navigate(API_ROUTES.WORKER.DASHBOARD, { replace: true });
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : String(error);
             toast.error(msg || "Login failed");
@@ -39,7 +40,15 @@ const WorkerLoginPage = () => {
         }
     };
 
-    return <LoginForm Submit={handleLogin} loading={loading} role="worker" />;
+    const HandleForgotPass = () => {
+        navigate(API_ROUTES.WORKER.FORGOT_PASS)
+    }
+
+    const HandleRegister = () => {
+        navigate(API_ROUTES.WORKER.REGISTER);
+    }
+
+    return <LoginForm Submit={handleLogin} loading={loading} role="Worker" HandleForgotPass={ HandleForgotPass } HandleRegister={ HandleRegister } />;
 };
 
 export default WorkerLoginPage;

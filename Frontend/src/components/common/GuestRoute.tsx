@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "../../services/axios";
 import Loader from "./Loader";
-// import Loader from "./Loader";
+import { API_ROUTES } from "../../constant/api.routes";
 
 interface GuestRouteProps {
   children: JSX.Element;
@@ -35,9 +35,9 @@ const GuestRoute = ({ children, role }: GuestRouteProps) => {
 
 
   if (authInfo.isAuthenticated && authInfo.userRole?.toLowerCase() === role.toLowerCase()) {
-    if (role === "User") return <Navigate to="/home" replace />;
-    if (role === "Worker") return <Navigate to="/workers/dashboard" replace />;
-    if (role === "Admin") return <Navigate to="/admins/dashboard" replace />;
+    if (role === "User") return <Navigate to={API_ROUTES.USER.HOME} replace />;
+    if (role === "Worker") return <Navigate to={API_ROUTES.WORKER.DASHBOARD} replace />;
+    if (role === "Admin") return <Navigate to={API_ROUTES.ADMIN.DASHBOARD} replace />;
   }
 
   return children;

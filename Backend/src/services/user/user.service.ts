@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import { UserRepository } from "../../repositories/user/user.repo";
 import { Iuser } from "../../model/user/user.interface";
 import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
 import generateToken from "../../utilities/generateToken";
@@ -11,25 +10,26 @@ import { IUserService } from "./user.service.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { OAuth2Client } from "google-auth-library";
-
+import { IUserRepository } from "../../repositories/user/user.repo.interface";
+import { USERS_MESSAGE } from "../../constants/messages";
 
 @injectable()
 export class UserService implements IUserService {
-    private _userRepository: UserRepository;
+    private _userRepository: IUserRepository;
     private googleClient: OAuth2Client;
-    constructor(@inject(TYPES.userRepository) userRepo: UserRepository) {
+    constructor(@inject(TYPES.userRepository) userRepo: IUserRepository) {
         this._userRepository = userRepo;
         this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
     async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string }> {
         if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
-            throw new Error("All Fild is required for registration.");
+            throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
         }
 
         const userExist = await this._userRepository.findByEmail(userData.email);
         if (userExist) {
-            throw new Error('User Already Exist with This Email !');
+            throw new Error(USERS_MESSAGE.USER_ALREADY_EXISTS_WITH_EMAIL);
         }
 
         const hashedPass = await bcrypt.hash(userData.password, 10)
@@ -46,12 +46,16 @@ export class UserService implements IUserService {
     async loginUser(email: string, password: string): Promise<{ user: IUserDTO; token: string }> {
         let findUser = await this._userRepository.findByEmail(email);
         if (!findUser || findUser.role !== "User") {
-            throw new Error('User not found');
+            throw new Error(USERS_MESSAGE.CAT_FIND_USER);
         }
 
         const isMatch = await bcrypt.compare(password, findUser.password);
         if (!isMatch) {
-            throw new Error('Invalid credentials');
+            throw new Error(USERS_MESSAGE.INVALID_CREDENTIALS);
+        }
+
+        if (findUser.isActive == false) {
+            throw new Error("user is blocked by admin")
         }
 
         const token = generateToken(findUser._id.toString(), findUser.role);
@@ -86,15 +90,15 @@ export class UserService implements IUserService {
     async verifyOtp(email: string, otp: string): Promise<boolean> {
         const record = await getOtp(email);
 
-        if (!record) throw new Error("No OTP found for this email");
+        if (!record) throw new Error(USERS_MESSAGE.NO_OTP_FOUND_FOR_THIS_EMAIL);
         if (Date.now() > record.expiresAt) {
             deleteOtp(email);
 
-            throw new Error("OTP expired");
+            throw new Error(USERS_MESSAGE.OTP_EXPIRED);
         }
 
         if (record.otp !== otp.toString()) {
-            throw new Error("Invalid OTP");
+            throw new Error(USERS_MESSAGE.INVALID_OTP);
         }
 
 
@@ -114,11 +118,11 @@ export class UserService implements IUserService {
         });
 
         const payload = ticket.getPayload();
-        if (!payload?.email) throw new Error("Google login failed");
+        if (!payload?.email) throw new Error(USERS_MESSAGE.GOOGLE_LOGIN_FAILED);
 
         let user = await this._userRepository.findByEmail(payload.email);
         if (!user) {
-            throw new Error("Cannot find user, please sign up");
+            throw new Error(USERS_MESSAGE.CAT_FIND_USER);
         }
 
         const jwtToken = generateToken(user._id, user.role);

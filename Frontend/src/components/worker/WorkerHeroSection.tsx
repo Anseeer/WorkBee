@@ -4,6 +4,7 @@ import StepTwoIcon from "../../assets/stepTwo-icon.png"
 import StepThreeIcon from "../../assets/setThree-icon.png"
 import StepFourIcon from "../../assets/stepFour-icon.png"
 import { useNavigate } from "react-router-dom"
+import { API_ROUTES } from "../../constant/api.routes"
 
 const HeroSection = () => {
     const navigate = useNavigate();
@@ -20,11 +21,10 @@ const HeroSection = () => {
                     <p className="text-green-950 text-lg leading-relaxed">
                         Turn your skills into income. Whether you're a cleaner, plumber, technician, or just good with hands — get matched with people who need your help in your area                    </p>
 
-                    <button onClick={() => navigate('/workers/register')} className="flex px-3 py-1 bg-green-700 text-white  rounded-full border overflow-hidden shadow-lg max-w-md">
+                    <button onClick={() => navigate(API_ROUTES.WORKER.REGISTER)} className="flex px-3 py-1 bg-green-700 text-white  rounded-full border overflow-hidden shadow-lg max-w-md">
                         Get started
                     </button>
                 </div>
-                {/* hero image section */}
                 <div className="w-full p-5">
                     <img
                         src={WorkerHeroImg}
