@@ -121,6 +121,8 @@ export const USERS_MESSAGE = {
     NO_OTP_FOUND_FOR_THIS_EMAIL: "No OTP found for this email.",
     OTP_EXPIRED: "OTP has expired.",
     INVALID_OTP: "Invalid OTP entered.",
+    USER_BLOCKED: "User blocked by admin.",
+
 };
 
 export const WORKER_MESSAGE = {
@@ -159,4 +161,5 @@ export const WORKER_MESSAGE = {
     INVALID_OTP: "Invalid OTP.",
     OTP_EXPIRED: "OTP has expired.",
     WORKER_DATA_OR_ID_NOT_GET: "Worker data or ID not provided.",
+    WORKER_BLOCKED: "Worker blocked by admin.",
 };

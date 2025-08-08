@@ -160,6 +160,7 @@ export class UserController implements IUserController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
+            console.log(error)
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.GOOGLE_LOGIN_FAILED, message);
             logger.error(response)

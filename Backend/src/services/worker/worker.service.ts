@@ -33,6 +33,10 @@ export class WorkerService implements IWorkerService {
             throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
         }
 
+        if(existingWorker.isActive == false){
+            throw new Error(WORKER_MESSAGE.WORKER_BLOCKED)
+        }
+
         let existingAvailability: IAvailability[] | undefined | null;
 
         if (existingWorker.isAccountBuilt) {

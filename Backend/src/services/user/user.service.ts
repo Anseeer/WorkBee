@@ -55,7 +55,7 @@ export class UserService implements IUserService {
         }
 
         if (findUser.isActive == false) {
-            throw new Error("user is blocked by admin")
+            throw new Error(USERS_MESSAGE.USER_BLOCKED)
         }
 
         const token = generateToken(findUser._id.toString(), findUser.role);

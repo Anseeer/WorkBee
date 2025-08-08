@@ -1,18 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormik } from "formik";
 import { emailRegex, passRegex } from "../../regexs";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { GoogleLogin } from "@react-oauth/google";
+
 
 
 interface LoginFormProps {
   Submit: (credentials: { email: string; password: string }) => void;
   HandleForgotPass: () => void;
   HandleRegister: () => void;
+  HandleSuccess?: (credentials:any) => Promise<void>;
+  HandleFail?: () => void;
   loading?: boolean;
   role?: "User" | "Admin" | "Worker";
 }
 
-const LoginForm = ({ Submit, HandleForgotPass, HandleRegister, loading = false, role }: LoginFormProps) => {
+const LoginForm = ({ Submit, HandleForgotPass, HandleRegister, HandleFail, HandleSuccess, loading = false, role }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(true);
 
 
@@ -43,6 +48,7 @@ const LoginForm = ({ Submit, HandleForgotPass, HandleRegister, loading = false, 
       return errors;
     },
   });
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -130,6 +136,15 @@ const LoginForm = ({ Submit, HandleForgotPass, HandleRegister, loading = false, 
                 >
                   Sign up
                 </button>
+              </div>
+
+              <div className="flex items-center text-sm">
+                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
+                <span className="text-gray-600">Login through ?</span>
+                <GoogleLogin
+                  onSuccess={() => HandleSuccess}
+                  onError={() => HandleFail}
+                />
               </div>
             </div>
           }

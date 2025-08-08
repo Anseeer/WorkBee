@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,6 +7,7 @@ import { loginUserThunk } from "../../slice/userSlice";
 import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
 import { API_ROUTES } from "../../constant/api.routes";
+
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();
@@ -50,7 +52,23 @@ const LoginPage = () => {
     navigate(API_ROUTES.USER.REGISTER);
   }
 
-  return <LoginForm Submit={handleLogin} loading={loading} role="User" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
+//   const HandleLoginSucess = async (credentialResponse: any) => {
+//     try {
+//       const res = await axios.post("/users/google-login", {
+//         token: credentialResponse.credential,
+//       });
+
+//       console.log(res)
+
+//       toast.success("Login successful");
+//       navigate(API_ROUTES.USER.HOME)
+//     } catch (error) {
+//     console.error(error);
+//     toast.error("Google Log-In failed");
+//   }
+// }
+
+return <LoginForm Submit={handleLogin}  loading={loading} role="User" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
 };
 
 export default LoginPage;
