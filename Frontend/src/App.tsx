@@ -21,6 +21,7 @@ import WorkerDetails from "./components/common/WorkerDetails";
 import { WorkerDetailsProvider } from "./components/context/WorkerDetailContext";
 import GuestRoute from "./components/common/GuestRoute";
 import NotFoundPage from "./components/common/NotFoundPAge";
+import WorkDetails from "./pages/user/workDetails";
 const App = () => {
   return (
     <>
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPAss />} />
           <Route path="/verify-otp" element={<OtpVerification />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/work-details" element={<WorkDetails />} />
           <Route
             path="/home"
             element={

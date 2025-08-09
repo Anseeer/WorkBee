@@ -73,3 +73,19 @@ export const updateWorkerData = async (workerData: { worker: Partial<IWorker>, a
   return response;
 }
 
+export const fetchWorkerByWorkDetails = async (details:
+  {
+    categoryId: string;
+    serviceId: string;
+    workType: string;
+    size: string;
+    location: {
+      lat: number;
+      lng: number;
+      pincode: string;
+      address: string;
+    };
+  }) => {
+  const { data } = await axios.post("workers/search", details);
+  return data;
+};

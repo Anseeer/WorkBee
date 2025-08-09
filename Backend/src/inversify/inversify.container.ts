@@ -1,6 +1,4 @@
-import "reflect-metadata";
-import { Container } from "inversify";
-import TYPES from "./inversify.types";
+
 
 // Classes
 import { UserRepository } from "../repositories/user/user.repo";
@@ -16,7 +14,6 @@ import { CategoryRepository } from "../repositories/category/category.repo";
 import { CategoryService } from "../services/category/category.service";
 import { AvailabilityRepository } from "../repositories/availability/availability.repo";
 import { AvailabilityService } from "../services/availability/availability.service";
-
 
 // Interfaces
 import { IUserRepository } from "../repositories/user/user.repo.interface";
@@ -38,6 +35,14 @@ import { ServiceService } from "../services/service/service.service";
 import { IServiceService } from "../services/service/service.service.interface";
 import { IServiceController } from "../controllers/services/services.controller.interface";
 import { ServiceController } from "../controllers/services/services.controller";
+import TYPES from "./inversify.types";
+import { Container } from "inversify";
+import { IWorkController } from "../controllers/work/work.controller.interface";
+import { IWorkService } from "../services/work/work.service.interface";
+import { IWorkRepository } from "../repositories/work/work.repo.interface";
+import { WorkRepository } from "../repositories/work/work.repo";
+import { WorkService } from "../services/work/work.service";
+import { WorkController } from "../controllers/work/work.controller";
 
 const container = new Container();
 
@@ -59,6 +64,10 @@ container.bind<ICategoryController>(TYPES.categoryController).to(CategoryControl
 container.bind<IServiceRepository>(TYPES.serviceRepository).to(ServiceRepository);
 container.bind<IServiceService>(TYPES.serviceService).to(ServiceService);
 container.bind<IServiceController>(TYPES.serviceController).to(ServiceController);
+
+container.bind<IWorkRepository>(TYPES.workRepository).to(WorkRepository);
+container.bind<IWorkService>(TYPES.workService).to(WorkService);
+container.bind<IWorkController>(TYPES.workController).to(WorkController);
 
 container.bind<IAvailabilityRepository>(TYPES.availabilityRepository).to(AvailabilityRepository);
 container.bind<IAvailabilityService>(TYPES.availabilityService).to(AvailabilityService);

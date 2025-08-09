@@ -154,6 +154,7 @@ export const WORKER_MESSAGE = {
     INVALID_PASS: "Invalid password.",
     ALL_FIELDS_ARE_REQUIRED: "All fields are required.",
     WORKER_ALREADY_EXIST: "Worker already exists.",
+    WORKER_NOT_EXIST: "Worker not exists.",
     FAILDTO_UPDATE_AVAILABILITY: "Failed to update availability.",
     FAILDTO_DELETE_AVAILABILITY: "Failed to delete availability.",
     FAILDTO_CREATE_AVAILABILITY: "Failed to create availability.",
@@ -163,3 +164,9 @@ export const WORKER_MESSAGE = {
     WORKER_DATA_OR_ID_NOT_GET: "Worker data or ID not provided.",
     WORKER_BLOCKED: "Worker blocked by admin.",
 };
+
+export const WORK_MESSAGE = {
+    CANT_GET_WORK_DETAILS: "Can't get the job details.",
+    WORK_CREATED_SUCCESS: "Job created successfully.",
+    WORK_CREATED_FAILD: "Failed to create job."
+}

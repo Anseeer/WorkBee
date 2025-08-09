@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import type { IService } from "../../types/IServiceTypes";
 import { fetchService, fetchServiceBySearchTerm } from "../../services/userService";
+import { useNavigate } from "react-router-dom";
 
 const HomeHeroSection = () => {
     const [services, setServices] = useState<IService[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [notFound, setNotFound] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -44,6 +47,15 @@ const HomeHeroSection = () => {
         return () => clearTimeout(delayDebounce);
     }, [searchTerm]);
 
+    const HandleSelectedService = (serv: IService) => {
+        console.log("Servicesssssssssss", serv)
+        localStorage.removeItem("serviceId")
+        localStorage.removeItem("categoryId")
+        localStorage.setItem("serviceId", serv._id as string);
+        localStorage.setItem("categoryId", serv.category);
+        navigate('/work-details');
+    }
+
     return (
         <div className="w-full h-[500px] flex flex-col items-center justify-center py-12 px-4">
             {/* Title */}
@@ -70,6 +82,7 @@ const HomeHeroSection = () => {
                 {!notFound ? (
                     services.slice(0, 12).map((service) => (
                         <button
+                            onClick={() => HandleSelectedService(service)}
                             key={service.id}
                             className="bg-[#F5FAF5] text-black text-sm px-2 py-2 rounded-full font-medium shadow hover:bg-green-100 transition"
                         >

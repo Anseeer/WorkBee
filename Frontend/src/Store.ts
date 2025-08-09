@@ -2,13 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./slice/userSlice";
 import workerReducer from "./slice/workerSlice";
 import adminReducer from "./slice/adminSlice";
+import workDraft from "./slice/workDraftSlice";
 
 
 const Store = configureStore({
     reducer: {
         user: userReducer,
         worker: workerReducer,
-        admin: adminReducer
+        admin: adminReducer,
+        work:workDraft,
     },
 });
 

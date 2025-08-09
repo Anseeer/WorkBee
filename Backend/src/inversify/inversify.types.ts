@@ -22,6 +22,10 @@ const TYPES = {
     availabilityRepository: Symbol.for("availabilityRepository"),
     availabilityService: Symbol.for("availabilityService"),
     availabilityController: Symbol.for("availabilityController"),
+
+    workRepository: Symbol.for("workRepository"),
+    workService: Symbol.for("workService"),
+    workController: Symbol.for("workController"),
 };
 
 export default TYPES;
