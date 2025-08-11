@@ -1,25 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { IWork } from "../types/IWork";
+import { DraftWork } from "../services/userService";
+import type { AxiosError } from "axios";
 
-interface workDraf {
-    userId: string,
-    workerId: string,
-    serviceId: string,
-    categoryId: string,
-    wage: string,
-    location: {
-        address: string,
-        pincode: string,
-        lat: number,
-        lng: number
-    },
-    workType: string,
-    size: string,
-    description: string,
-    sheduleDate: string,
-    sheduleTime: string,
-}
 
-const initialState: workDraf = {
+const initialState: IWork = {
     userId: "",
     workerId: "",
     serviceId: "",
@@ -38,27 +23,41 @@ const initialState: workDraf = {
     sheduleTime: "",
 }
 
+export const WorkDraftThunk = createAsyncThunk('works/create-work',
+    async (WorkDetails: IWork, { rejectWithValue }) => {
+        try {
+            const response = await DraftWork(WorkDetails);
+            return response;
+        } catch (err) {
+            const error = err as AxiosError<{ data: string }>;
+            const errorMessage = error.response?.data?.data || "Something went wrong";
+            return rejectWithValue(errorMessage);
+        }
+    }
+)
+
 const workDraft = createSlice({
     name: "workDraft",
     initialState,
     reducers: {
         workDetails: (state, action) => {
-            console.log("Action :",action);
+            console.log("Action :", action);
             state.location = action.payload.location;
             state.workType = action.payload.workType;
             state.size = action.payload.taskSize;
             state.description = action.payload.description;
             state.categoryId = action.payload.categoryId;
             state.serviceId = action.payload.serviceId;
+            state.wage = action.payload.wage;
             return;
         },
         workerDetails: (state, action) => {
-            console.log(action.payload);
-        },
-        confirmWorkDetails: (state, action) => {
-            console.log(action.payload);
+            console.log("Action WorkDetail :", action);
+            state.workerId = action.payload.workerId;
+            state.sheduleDate = action.payload.date;
+            state.sheduleTime = action.payload.slot;
         }
     },
 });
-export const { workDetails, workerDetails, confirmWorkDetails } = workDraft.actions;
+export const { workDetails, workerDetails } = workDraft.actions;
 export default workDraft.reducer;

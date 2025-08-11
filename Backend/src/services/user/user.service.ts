@@ -12,13 +12,20 @@ import TYPES from "../../inversify/inversify.types";
 import { OAuth2Client } from "google-auth-library";
 import { IUserRepository } from "../../repositories/user/user.repo.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
+import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
+import { IAvailability } from "../../model/availablity/availablity.interface";
 
 @injectable()
 export class UserService implements IUserService {
     private _userRepository: IUserRepository;
+    private _availabilityRepository: IAvailabilityRepository;
     private googleClient: OAuth2Client;
-    constructor(@inject(TYPES.userRepository) userRepo: IUserRepository) {
+    constructor(
+        @inject(TYPES.userRepository) userRepo: IUserRepository,
+        @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository
+    ) {
         this._userRepository = userRepo;
+        this._availabilityRepository = availabilityRepo;
         this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
@@ -129,6 +136,11 @@ export class UserService implements IUserService {
         const userDTO: IUserDTO = mapUserToDTO(user);
 
         return { token: jwtToken, user: userDTO };
+    }
+
+    async fetchAvailability(id: string): Promise<IAvailability[] | null> {
+        const availability = await this._availabilityRepository.findByWorkerId(id);
+        return availability;
     }
 
 }

@@ -165,5 +165,24 @@ export class ServiceController implements IServiceController {
         }
     };
 
+    getById = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.query;
+            if (!id ) {
+                throw new Error(SERVICE_MESSAGE.ID_NOT_RECEIVED);
+            }
+
+            const result = await this._serviceService.getById(id as string);
+            const response = new successResponse(StatusCode.OK, SERVICE_MESSAGE.GET_ALL_SERVICES_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    };
+
 
 }

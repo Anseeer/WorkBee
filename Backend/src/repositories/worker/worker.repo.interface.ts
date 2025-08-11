@@ -1,4 +1,5 @@
 import { IAvailability } from "../../model/availablity/availablity.interface";
+import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 export interface IWorkerRepository {
@@ -16,4 +17,5 @@ export interface IWorkerRepository {
     approveWorker(id: string): Promise<boolean>;
     rejectedWorker(id: string): Promise<boolean>;
     update(worker: Partial<IWorker>): Promise<boolean>;
+    search(searchTerms:Partial<IWork>):Promise<IWorker[]>;
 }

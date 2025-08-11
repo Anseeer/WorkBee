@@ -7,6 +7,6 @@ const Router = express.Router();
 
 const WorkController = container.get<IWorkController>(TYPES.workController);
 
-Router.post("/create-work", WorkController.createWork);
+Router.post("/creat-work", WorkController.createWork);
 
 export default Router;

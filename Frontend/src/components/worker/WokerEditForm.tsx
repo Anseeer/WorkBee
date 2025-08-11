@@ -30,6 +30,7 @@ interface WorkerFormData {
     bio: string;
     profileImage: string;
     minHours: string | number;
+    radius: string | number;
     workType: string[];
     preferredSchedule: string[];
     location: {
@@ -85,7 +86,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         };
         document.addEventListener("mousedown", handleOutsideClick);
         return () => document.removeEventListener("mousedown", handleOutsideClick);
-    }, []);
+    });
 
     const initializeAutocomplete = () => {
         if (!locationRef.current || !window.google) return;
@@ -130,6 +131,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             bio: "",
             profileImage: "",
             minHours: "2",
+            radius: "",
             workType: [],
             preferredSchedule: [],
             location: {
@@ -172,6 +174,10 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                     typeof values.minHours === "string"
                         ? parseInt(values.minHours)
                         : values.minHours,
+                radius:
+                    typeof values.radius === "string"
+                        ? parseInt(values.radius)
+                        : values.radius,
                 workType: values.workType,
                 preferredSchedule: values.preferredSchedule,
                 location: {
@@ -231,6 +237,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 bio: worker.bio || "",
                 profileImage: typeof worker.profileImage === "string" ? worker.profileImage : "",
                 minHours: worker.minHours?.toString() || "2",
+                radius: worker.radius?.toString() || "2",
                 workType: Array.isArray(worker.workType) ? worker.workType : [worker.workType],
                 preferredSchedule: worker.preferredSchedule || [],
                 location: {
@@ -410,6 +417,22 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         ))}
                                     </select>
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Enter radius (in km)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="radius"
+                                        min="1"
+                                        max="100"
+                                        placeholder="e.g., 15"
+                                        value={formik.values.radius}
+                                        onChange={formik.handleChange}
+                                        className="w-full px-4 py-3 border rounded-lg"
+                                    />
+                                </div>
+
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -495,7 +518,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 onSelect={(dates) => formik.setFieldValue("availability", dates)}
                                 fromMonth={startOfCurrentMonth}
                                 disabled={[
-                                    { before: today }, 
+                                    { before: today },
                                 ]}
                                 modifiersClassNames={{
                                     selected: "bg-blue-500 text-white rounded-full",

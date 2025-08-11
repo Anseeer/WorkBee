@@ -1,5 +1,6 @@
 import axios from "./axios"
 import type { Iuser } from "../types/IUser";
+import type { IWork } from "../types/IWork";
 
 
 export const register = async (userData: Partial<Iuser>) => {
@@ -46,3 +47,29 @@ export const fetchService = async () => {
 export const fetchServiceBySearchTerm = async (searchKey: string) => {
     return await axios.post('services/by-search', { search: searchKey });
 };
+
+
+export const fetchAvailability = async (id: string | null) => {
+    if (!id) {
+        throw new Error("Worker Id Not Get")
+    }
+    const response = await axios.get(`users/fetch-availability?workerId=${id}`);
+    return response;
+}
+
+export const fetchServiceById = async (id:string) =>{
+    if(!id){
+        throw new Error('Service Id not get');
+    }
+    const response = await axios.post(`services/By-Id?id=${id}`);
+    return response;
+}
+
+export const DraftWork = async (workDetails:IWork)=>{
+    if(!workDetails){
+        throw new Error("WorkDetails not get");
+    }
+    console.log("Tryinh to create")
+    const response = await axios.post('works/creat-work',workDetails);
+    return response;
+}

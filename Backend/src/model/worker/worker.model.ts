@@ -48,6 +48,10 @@ const workerSchema = new Schema<IWorker>({
         type: String,
         required: false
     },
+    radius: {
+        type: Number,
+        required: false
+    },
     workType: {
         type: [String],
         enum: ['one-time', 'weekly', 'monthly', 'long-term'],

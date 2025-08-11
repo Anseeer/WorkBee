@@ -15,5 +15,6 @@ Router.post("/update", serviceController.update);
 Router.delete("/delete", serviceController.delete);
 Router.post("/by-worker", serviceController.getByWorker);
 Router.post("/by-search", serviceController.getBySearch);
+Router.post("/by-Id", serviceController.getById);
 
 export default Router;

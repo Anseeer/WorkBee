@@ -244,5 +244,24 @@ export class WorkerController implements IWorkerController {
         }
     }
 
+    searchWorker = async (req: Request, res: Response): Promise<void> =>{
+         try {
+            const searchTerms = req.body;
+            if (!searchTerms ) {
+                throw new Error("Search term not exitst");
+            }
+
+            const workers = await this._workerService.searchWorker(searchTerms);
+            const response = new successResponse(StatusCode.OK,"Success fully get the workers", {workers});
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const err = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, "faild to search workers ", err);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
 }
 

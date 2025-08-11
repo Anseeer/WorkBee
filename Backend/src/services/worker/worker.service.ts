@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt"
-import { WorkerRepository } from "../../repositories/worker/worker.repo";
 import generateToken from "../../utilities/generateToken";
 import mapWorkerToDTO from "../../mappers/worker/worker.map.DTO";
 import { IWorker } from "../../model/worker/worker.interface";
@@ -11,19 +10,29 @@ import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IWorkerService } from "./worker.service.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
-import { AvailabilityRepository } from "../../repositories/availability/availability.repo";
 import { WORKER_MESSAGE } from "../../constants/messages";
+import { IWork } from "../../model/work/work.interface";
+import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
+import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
+import { IServiceRepository } from "../../repositories/services/service.repo.interface";
+import { ICategoryRepository } from "../../repositories/category/category.repo.interface";
 
 @injectable()
 export class WorkerService implements IWorkerService {
-    private _workerRepository: WorkerRepository
-    private _availabilityRepository: AvailabilityRepository
+    private _workerRepository: IWorkerRepository
+    private _availabilityRepository: IAvailabilityRepository
+    private _serviceRepository: IServiceRepository
+    private _categoryRepository: ICategoryRepository
     constructor(
-        @inject(TYPES.workerRepository) workerRepo: WorkerRepository,
-        @inject(TYPES.availabilityRepository) availibilityRepo: AvailabilityRepository
+        @inject(TYPES.workerRepository) workerRepo: IWorkerRepository,
+        @inject(TYPES.availabilityRepository) availibilityRepo: IAvailabilityRepository,
+        @inject(TYPES.serviceRepository) serviceRepo: IServiceRepository,
+        @inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository,
     ) {
         this._workerRepository = workerRepo;
         this._availabilityRepository = availibilityRepo;
+        this._serviceRepository = serviceRepo;
+        this._categoryRepository = categoryRepo;
     }
 
     async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, availability?: IAvailability[] }> {
@@ -33,7 +42,7 @@ export class WorkerService implements IWorkerService {
             throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
         }
 
-        if(existingWorker.isActive == false){
+        if (existingWorker.isActive == false) {
             throw new Error(WORKER_MESSAGE.WORKER_BLOCKED)
         }
 
@@ -97,6 +106,7 @@ export class WorkerService implements IWorkerService {
             services: workerData.services,
             workType: workerData.workType,
             minHours: workerData.minHours,
+            radius: workerData.radius,
             preferredSchedule: workerData.preferredSchedule,
             govId: workerData.govId,
             isAccountBuilt: true
@@ -171,6 +181,20 @@ export class WorkerService implements IWorkerService {
         }
         await this._workerRepository.update(workerData);
         return true;
+    }
+
+    async searchWorker(serachTerm: Partial<IWork>): Promise<IWorkerDTO[]> {
+        if (!serachTerm) {
+            throw new Error("Search term not get");
+        }
+
+        if (!serachTerm.location?.lat || !serachTerm.location.lng || !serachTerm.workType || !serachTerm.serviceId || !serachTerm.categoryId) {
+            throw new Error("All terms are required for search ");
+        }
+
+        const filteredWorkers = await this._workerRepository.search(serachTerm);
+        const workers = filteredWorkers.map(mapWorkerToDTO);
+        return workers;
     }
 
 }

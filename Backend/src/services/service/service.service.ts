@@ -55,5 +55,9 @@ export class ServiceService implements IServiceService {
         return await this._serviceRepository.getBySearch(searchKey);
     };
 
+    getById = async (id: string): Promise<IServices | null> => {
+        return await this._serviceRepository.findById(id);
+    };
+
 
 } 

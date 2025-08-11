@@ -4,6 +4,8 @@ import { Search } from "lucide-react";
 import type { IService } from "../../types/IServiceTypes";
 import { fetchService, fetchServiceBySearchTerm } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../Store";
 
 const HomeHeroSection = () => {
     const [services, setServices] = useState<IService[]>([]);
@@ -55,6 +57,9 @@ const HomeHeroSection = () => {
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }
+        const workDetails = useSelector((state: RootState) => state?.work);
+        console.log("WorkDetails :",workDetails);
+    
 
     return (
         <div className="w-full h-[500px] flex flex-col items-center justify-center py-12 px-4">

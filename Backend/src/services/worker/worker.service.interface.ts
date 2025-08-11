@@ -1,5 +1,6 @@
 import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
+import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 
@@ -18,4 +19,5 @@ export interface IWorkerService {
     verifyOtp(email: string, otp: string): Promise<boolean>;
     resetPass(email: string, password: string): Promise<void>;
     updateWorker(workerData: IWorker): Promise<boolean>;
+    searchWorker(serachTerm: Partial<IWork>): Promise<IWorkerDTO[]>;
 }

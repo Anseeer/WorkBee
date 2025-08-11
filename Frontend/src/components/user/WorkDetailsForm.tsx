@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { workDetails } from '../../slice/workDraftSlice';
+import { fetchServiceById, } from '../../services/userService';
 
 interface WorkFormValues {
     location: {
@@ -17,6 +18,7 @@ interface WorkFormValues {
     description: string;
     categoryId: string | null;
     serviceId: string | null;
+    wage: string ;
 }
 
 interface Prop {
@@ -30,26 +32,41 @@ const WorkDetailForm = ({ setStep }: Prop) => {
     const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
     const [service, setService] = useState<string | null>(null);
     const [category, setCategory] = useState<string | null>(null);
+    const [wage, setWage] = useState<string>('');
 
     // Initial form values
     const initialValues: WorkFormValues = {
         location: { address: '', pincode: '', lat: 0, lng: 0 },
         taskSize: '',
-        workType: 'One Time',
+        workType: 'one-time',
         description: '',
         categoryId: category,
-        serviceId: service
+        serviceId: service,  
+        wage: wage,  
     };
 
     // Load category & service from localStorage
     useEffect(() => {
-        setService(localStorage.getItem('serviceId'));
-        setCategory(localStorage.getItem('categoryId'));
-    }, []);
+    const fetchData = async () => {
+        const serviceId = localStorage.getItem('serviceId');
+        const categoryId = localStorage.getItem('categoryId');
+
+        setService(serviceId);
+        setCategory(categoryId);
+
+        if (serviceId) {
+            const service = await fetchServiceById(serviceId);
+            setWage(service.data.data.wage);
+        }
+    };
+
+    fetchData();
+}, []);
+
 
     const formik = useFormik<WorkFormValues>({
         initialValues,
-        enableReinitialize: true, // so form updates when service/category change
+        enableReinitialize: true, 
         validate: (values) => {
             const errors: Partial<Record<keyof WorkFormValues, any>> = {};
 
@@ -73,12 +90,10 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         },
         onSubmit: async (values) => {
             await dispatch(workDetails(values));
-            alert('Form submitted successfully!');
             setStep(2);
         }
     });
 
-    // Google Maps Autocomplete Setup
     useEffect(() => {
         const initAutocomplete = () => {
             if (locationRef.current && window.google?.maps) {
@@ -138,7 +153,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                 script.removeEventListener('load', initAutocomplete);
             }
         };
-    }, [activeStep]);
+    },[formik.values.location.address]);
 
     return (
         <form
@@ -219,9 +234,9 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                         onChange={formik.handleChange}
                                         className="w-full p-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 text-base appearance-none bg-white pr-12"
                                     >
-                                        <option value="One Time">One Time</option>
-                                        <option value="Weekly">Weekly</option>
-                                        <option value="Monthly">Monthly</option>
+                                        <option value="one-time">One Time</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
                                     </select>
                                     <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                                     {formik.touched.workType && formik.errors.workType && (

@@ -5,7 +5,12 @@ import Worker from "../../model/worker/worker.model";
 import BaseRepository from "../base/base.repo";
 import { IWorkerRepository } from "./worker.repo.interface";
 import { Availability } from "../../model/availablity/availablity.model";
-import { ICategory } from "../../model/category/category.interface";
+import { IWork } from "../../model/work/work.interface";
+import haversine from 'haversine-distance';
+import mongoose, { Types } from "mongoose";
+
+const { ObjectId } = mongoose.Types;
+
 
 @injectable()
 export class WorkerRepository extends BaseRepository<IWorker> implements IWorkerRepository {
@@ -91,6 +96,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             bio: workerData.bio,
             profileImage: workerData.profileImage,
             minHours: workerData.minHours,
+            radius: workerData.radius,
             workType: workerData.workType,
             preferredSchedule: workerData.preferredSchedule,
             location: workerData.location,
@@ -106,6 +112,54 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         );
 
         return result.modifiedCount > 0;
+    }
+
+    async search(searchTerms: Partial<IWork>): Promise<IWorker[]> {
+        console.log("WorkType :", searchTerms.workType);
+        const query: any = {
+            workType: { $in: searchTerms.workType },
+            isAccountBuilt: true,
+            isActive: true,
+        };
+
+        if (searchTerms.categoryId) {
+            query.categories = { $in: [new Types.ObjectId(searchTerms.categoryId.toString())] };
+        }
+
+        if (searchTerms.serviceId) {
+            query.services = { $in: [new Types.ObjectId(searchTerms.serviceId.toString())] };
+        }
+
+        const workers = await this.model.find(query);
+
+        console.log('Workers after filter ::', workers)
+
+        if (!searchTerms.location) {
+            return workers;
+        }
+
+        const { lat, lng } = searchTerms.location;
+
+        const filteredWorkers = workers.filter(worker => {
+            if (!worker.location || !worker.radius) {
+                return false;
+            }
+
+            const workerCoords = {
+                latitude: worker.location.lat,
+                longitude: worker.location.lng
+            };
+            const searchCoords = {
+                latitude: lat,
+                longitude: lng
+            };
+
+            const distanceKm = haversine(workerCoords, searchCoords) / 1000;
+
+            return distanceKm <= worker.radius;
+        });
+
+        return filteredWorkers;
     }
 
 }

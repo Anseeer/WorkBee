@@ -9,4 +9,6 @@ export interface IUserController {
     resendOtp(req: Request, res: Response): Promise<void>;
     verifyOtp(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
+    fetchAvailability(req: Request, res: Response): Promise<void>;
+
 }

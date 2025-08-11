@@ -24,4 +24,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         await User.updateOne({ _id: id }, { $set: { isActive: newStatus } });
         return true;
     }
+
+    
+
 }

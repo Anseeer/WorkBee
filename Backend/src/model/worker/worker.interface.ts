@@ -12,6 +12,7 @@ export interface IWorker extends Document {
     profileImage: string,
     role: string,
     minHours: string,
+    radius: number,
     workType: string[],
     preferredSchedule: string[],
     isVerified: boolean,

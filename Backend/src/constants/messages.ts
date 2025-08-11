@@ -97,6 +97,8 @@ export const SERVICE_MESSAGE = {
 
 
 export const USERS_MESSAGE = {
+    FETCH_AVAILABILITY_SUCCESS:"Fetch availability successfull.",
+    FETCH_AVAILABILITY_FAILD:"Fetch availability faild.",
     REGISTRATION_SUCCESS: "User registered successfully.",
     REGISTRATION_FAILED: "User registration failed.",
     LOGIN_SUCCESS: "Login successful.",

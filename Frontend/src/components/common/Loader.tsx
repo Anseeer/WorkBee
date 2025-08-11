@@ -23,7 +23,7 @@ const Loader: React.FC<LoaderProps> = ({
   <img
     src="/BeeIcon.png"
     alt="Background Logo"
-    className="absolute  mb-30 justify-center  opacity-40 object-contain"
+    className="absolute  mb-30 justify-center  opacity-5 object-contain"
   />
 
   {/* Spinner */}

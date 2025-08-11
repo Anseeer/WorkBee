@@ -16,8 +16,8 @@ export interface IWork {
     description:string,
     sheduleDate:string,
     sheduleTime:string,
-    status:string,
-    paymentStatus:string,
-    createdAt:Date,
-    updatedAt:Date,
+    status?:string,
+    paymentStatus?:string,
+    createdAt?:Date,
+    updatedAt?:Date,
 }

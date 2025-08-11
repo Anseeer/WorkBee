@@ -306,6 +306,10 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                         <p className="text-sm text-gray-600 mb-2">Preferred Schedule</p>
                                         <p className="font-medium text-gray-900">{worker.preferredSchedule.join(', ')}</p>
                                     </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 mb-2">Radius (in km)</p>
+                                        <p className="font-medium text-gray-900">{worker?.radius}</p>
+                                    </div>
                                 </div>
                             </div>
 

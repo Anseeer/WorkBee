@@ -151,6 +151,21 @@ export class UserController implements IUserController {
 
     };
 
+    fetchAvailability = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { workerId } = req.query;
+            const availability = await this._userService.fetchAvailability(workerId as string);
+            const response = new successResponse(StatusCode.OK, USERS_MESSAGE.FETCH_AVAILABILITY_SUCCESS, availability);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_AVAILABILITY_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
     googleLogin = async (req: Request, res: Response) => {
         try {
             const { token } = req.body;

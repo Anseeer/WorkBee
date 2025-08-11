@@ -19,6 +19,10 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         return await this.model.findOne({ name })
     }
 
+    async findById(id: string): Promise<IServices> {
+        return await this.model.findById(id) as IServices;
+    }
+
     async getAllService(): Promise<IServices[]> {
         return await this.model.find().sort({ createdAt: 1 });
     }
@@ -67,7 +71,8 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
                 $match: {
                     $or: [
                         { name: { $in: regexArray } },
-                        { description: { $in: regexArray } }
+                        { description: { $in: regexArray } },
+                        { _id: { $in: regexArray } }
                     ]
                 }
             },

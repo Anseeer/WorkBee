@@ -78,7 +78,6 @@ export const fetchWorkerByWorkDetails = async (details:
     categoryId: string;
     serviceId: string;
     workType: string;
-    size: string;
     location: {
       lat: number;
       lng: number;

@@ -68,6 +68,7 @@ export default function BuildAccount() {
       workingHours: [] as string[],
       jobTypes: [] as string[],
       minHours: "1",
+      radius: "1",
       selectedServices: [] as string[],
       availableDates: [] as string[],
     },
@@ -80,6 +81,10 @@ export default function BuildAccount() {
       if (!values.bio) errors.bio = "Bio is required";
       if (values.workingHours.length === 0)
         errors.workingHours = "Select at least one slot";
+      if (values.radius.length === 0)
+        errors.radius = "Select at least five km radius";
+      if (values.radius.length < 5)
+        errors.radius = "Select distance (in km) you’re willing to travel for work";
       if (values.jobTypes.length === 0)
         errors.jobTypes = "Select at least one job type";
       if (values.selectedServices.length === 0)
@@ -121,6 +126,7 @@ export default function BuildAccount() {
           services: values.selectedServices,
           workType: values.jobTypes,
           minHours: Number(values.minHours),
+          radius: Number(values.radius),
           preferredSchedule: values.workingHours,
           govId: govUrls.length === 1 ? govUrls[0] : govUrls,
           availability,
@@ -310,14 +316,14 @@ export default function BuildAccount() {
           </div>
 
           <div
-            onBlur={() => formik.setFieldTouched("availableDates", true)} 
-            tabIndex={0} 
+            onBlur={() => formik.setFieldTouched("availableDates", true)}
+            tabIndex={0}
           >
             <h3 className="text-lg font-semibold mb-3">Availability</h3>
             <Calendar
               onClickDay={(date) => {
                 handleDateClick(date);
-                formik.setFieldTouched("availableDates", true); 
+                formik.setFieldTouched("availableDates", true);
               }}
               value={null}
               tileDisabled={({ date, view }) => {
@@ -397,6 +403,26 @@ export default function BuildAccount() {
               ))}
             </select>
           </div>
+          <div>
+            <label className="block text-sm mb-2">
+              Enter the maximum distance (in km) you’re willing to travel for work
+            </label>
+            <input
+              type="number"
+              name="radius"
+              min="1"
+              max="100"
+              placeholder="e.g., 15"
+              value={formik.values.radius}
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              className="w-28 p-2 border rounded focus:ring-2 focus:ring-green-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              You will only receive work within this distance from your location.
+            </p>
+          </div>
+
 
           <div>
             <h3 className="text-lg font-semibold mb-3">Working Hours</h3>

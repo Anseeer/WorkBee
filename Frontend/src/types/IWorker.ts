@@ -11,6 +11,7 @@ export interface IWorker {
     profileImage: string | File,
     role: string,
     minHours: number,
+    radius: number,
     workType: string[],
     preferredSchedule: string[],
     isVerified: boolean,
