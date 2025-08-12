@@ -143,4 +143,10 @@ export class UserService implements IUserService {
         return availability;
     }
 
+    async fetchData(userId: string): Promise<IUserDTO>{
+        const userData = await this._userRepository.fetchData(userId);
+        const user = mapUserToDTO(userData);
+        return user;        
+    }
+
 }

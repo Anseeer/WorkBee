@@ -115,7 +115,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     }
 
     async search(searchTerms: Partial<IWork>): Promise<IWorker[]> {
-        console.log("WorkType :", searchTerms.workType);
         const query: any = {
             workType: { $in: searchTerms.workType },
             isAccountBuilt: true,
@@ -132,7 +131,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
         const workers = await this.model.find(query);
 
-        console.log('Workers after filter ::', workers)
 
         if (!searchTerms.location) {
             return workers;

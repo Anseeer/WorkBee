@@ -15,6 +15,10 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         return await newItem.save();
     }
 
+    async findById(id: string): Promise<ICategory> {
+        return await this.model.findById(id) as ICategory;
+    }
+
     async getAll(): Promise<ICategory[]> {
         return await this.model.find().sort({ createdAt: -1 });
     }

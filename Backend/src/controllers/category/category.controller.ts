@@ -137,4 +137,24 @@ export class CategoryController implements ICategoryController {
         }
     }
 
+
+    getById = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.query;
+            if (!id) {
+                throw new Error(CATEGORY_MESSAGE.ID_NOT_RECEIVED);
+            }
+
+            const result = await this._categoryService.getById(id as string);
+            const response = new successResponse(StatusCode.OK, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_FAILED, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    };
+
 }

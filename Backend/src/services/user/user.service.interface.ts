@@ -13,5 +13,6 @@ export interface IUserService {
     resetPass(email: string, password: string): Promise<void>;
     googleLogin(token: string): Promise<{ user: IUserDTO, token: string }>;
     fetchAvailability(id: string): Promise<IAvailability[] | null>;
+    fetchData(userId: string): Promise<IUserDTO>;
 
 }

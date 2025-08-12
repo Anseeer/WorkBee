@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { Iuser } from "../types/IUser";
-import { forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/userService";
+import { fetchUser, forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/userService";
 import type { AxiosError } from "axios";
 
 interface userState {
@@ -96,6 +96,19 @@ export const resetPasswordUserThunk = createAsyncThunk("users/reset-password",
     }
 )
 
+export const fetchUserDataThunk = createAsyncThunk("users/fetch-data",
+    async (_,{ rejectWithValue }) => {
+        try {
+            const response = await fetchUser()
+            return response.data;
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ data: string }>;
+            const errorMessage = error.response?.data?.data || "Something went wrong";
+            return rejectWithValue(errorMessage);
+        }
+    }
+)
+
 const userSlice = createSlice({
     name: "user",
     initialState,
@@ -128,6 +141,13 @@ const userSlice = createSlice({
             .addCase(loginUserThunk.rejected, (state, action) => {
                 state.error = action.payload as string
             })
+            .addCase(fetchUserDataThunk.fulfilled,(state,action)=>{
+                state.user = action.payload.user;
+            })
+            .addCase(fetchUserDataThunk.rejected,(state)=>{
+                state.user = null;
+            })
+            
     }
 })
 

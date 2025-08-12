@@ -22,6 +22,22 @@ const workSchema = new Schema<IWork>({
         ref: "Category",
         required: true
     },
+    service:{
+        type:String,
+        required:false,
+    },
+    category:{
+        type:String,
+        required:false,
+    },
+    workerName:{
+        type:String,
+        required:false,
+    },
+    userName:{
+        type:String,
+        required:false,
+    },
     wage: {
         type: String,
         required: false

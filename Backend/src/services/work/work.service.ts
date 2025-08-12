@@ -59,4 +59,11 @@ export class WorkService implements IWorkService {
 
     }
 
+    fetchWorkHistoryByUser = async (userId: string): Promise<IWork[]> => {
+        if(!userId){
+            throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
+        }
+        return await this._workRepositoy.findByUser(userId);
+    }
+
 }

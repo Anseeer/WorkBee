@@ -14,4 +14,9 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         const newItem = new this.model(item);
         return await newItem.save();
     }
+
+    async findByUser(userId: string): Promise<IWork[]> {
+        return await this.model.find({userId});
+    }
+
 }

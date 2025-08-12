@@ -7,6 +7,7 @@ import logger from "../../utilities/logger";
 import { IWorkController } from "./work.controller.interface";
 import { IWorkService } from "../../services/work/work.service.interface";
 import { WORK_MESSAGE } from "../../constants/messages";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class WorkController implements IWorkController {
@@ -15,9 +16,12 @@ export class WorkController implements IWorkController {
         this._workService = workService;
     }
 
-    createWork = async (req: Request, res: Response): Promise<void> => {
+    createWork = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const workDetails = req.body;
+            const userId = req?.user?.id;
+            workDetails.userId = userId;
+            console.log("WorkDetails ::", workDetails)
             if (!workDetails) {
                 throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
             }
@@ -27,8 +31,29 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
+            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CREATED_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    fetchWorkHistoryByUser = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req?.user?.id;
+            if (!userId) {
+                throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
+            }
+
+            const result = await this._workService.fetchWorkHistoryByUser(userId);
+            const response = new successResponse(StatusCode.CREATED, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error);
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, message);
             logger.error(response);
             res.status(response.status).json(response);
         }

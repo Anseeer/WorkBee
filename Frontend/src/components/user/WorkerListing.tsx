@@ -19,6 +19,7 @@ interface FilterState {
 
 const WorkerListing = () => {
     const workDetails = useSelector((state: RootState) => state?.work);
+    const userDetails = useSelector((state: RootState) => state?.user.user);
     const [workers, setWorkers] = useState<IWorker[]>([]);
     const [filteredWorkers, setFilteredWorkers] = useState<IWorker[]>([]);
     const [availability, setAvailability] = useState<IAvailability | null>(null);
@@ -103,18 +104,29 @@ const WorkerListing = () => {
         setIsModalOpen(false)
     }
 
-    const Confirm = (date: string, slot: string) => {
-        const payload = {
+    const [triggerDraft, setTriggerDraft] = useState(false);
+
+    useEffect(() => {
+        if (triggerDraft) {
+            dispatch(WorkDraftThunk(workDetails));
+            setTriggerDraft(false);
+            navigate('/home')
+        }
+    }, [triggerDraft, workDetails, dispatch]);
+
+    const Confirm = async (date: string, slot: string) => {
+        await dispatch(workerDetails({
             date,
             slot,
-            workerId: selectedWorker?.id
-        }
-        dispatch(workerDetails(payload));
+            workerId: selectedWorker?.id,
+            workerName:selectedWorker?.name,
+            userName:userDetails?.name
+        }));
         toast.success("Requested");
         setIsModalOpen(false);
-        dispatch(WorkDraftThunk(workDetails))
-        navigate('/home')
-    }
+        setTriggerDraft(true); // Will run useEffect after workDetails updates
+    };
+
 
     const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;

@@ -1,9 +1,14 @@
 
 export interface IWork {
+    _id?:string,
     userId: string,
     workerId: string,
     serviceId: string,
     categoryId: string,
+    category: string,
+    service: string,
+    workerName: string,
+    userName: string,
     wage:string,
     location:{
         address:string,

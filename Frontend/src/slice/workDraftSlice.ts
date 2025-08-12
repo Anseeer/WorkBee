@@ -9,6 +9,10 @@ const initialState: IWork = {
     workerId: "",
     serviceId: "",
     categoryId: "",
+    category: "",
+    service: "",
+    workerName: "",
+    userName: "",
     wage: "",
     location: {
         address: "",
@@ -49,6 +53,8 @@ const workDraft = createSlice({
             state.categoryId = action.payload.categoryId;
             state.serviceId = action.payload.serviceId;
             state.wage = action.payload.wage;
+            state.service = action.payload.service;
+            state.category = action.payload.category;
             return;
         },
         workerDetails: (state, action) => {
@@ -56,8 +62,11 @@ const workDraft = createSlice({
             state.workerId = action.payload.workerId;
             state.sheduleDate = action.payload.date;
             state.sheduleTime = action.payload.slot;
+            state.workerName = action.payload.workerName;
+            state.userName = action.payload.userName;
+            return;
         }
-    },
+    }
 });
 export const { workDetails, workerDetails } = workDraft.actions;
 export default workDraft.reducer;

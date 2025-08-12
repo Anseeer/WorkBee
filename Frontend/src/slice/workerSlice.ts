@@ -129,6 +129,7 @@ export const fetchWorkerDetails = createAsyncThunk(
   }
 );
 
+
 const workerSlice = createSlice({
     name: "worker",
     initialState,

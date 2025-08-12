@@ -14,6 +14,10 @@ export const login = async (credintials: { email: string, password: string }) =>
     return response;
 }
 
+export const fetchUser = async ()=>{
+    const response = await axios.get('users/fetch-data',{withCredentials:true});
+    return response.data;
+}
 
 export const logoutUser = async () => {
     await axios.post('users/logout', {}, { withCredentials: true });
@@ -65,11 +69,24 @@ export const fetchServiceById = async (id:string) =>{
     return response;
 }
 
+export const fetchCategoryById = async (id:string) =>{
+    if(!id){
+        throw new Error('Category Id not get');
+    }
+    const response = await axios.post(`categories/By-Id?id=${id}`);
+    return response;
+}
+
 export const DraftWork = async (workDetails:IWork)=>{
     if(!workDetails){
         throw new Error("WorkDetails not get");
     }
     console.log("Tryinh to create")
     const response = await axios.post('works/creat-work',workDetails);
+    return response;
+}
+
+export const fetchWorkHistory = async (userId:string)=>{
+    const response = await axios.get(`works/users?userId=${userId}`);
     return response;
 }

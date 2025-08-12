@@ -8,6 +8,7 @@ import { IUserService } from "../../services/user/user.service.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class UserController implements IUserController {
@@ -178,6 +179,22 @@ export class UserController implements IUserController {
             console.log(error)
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.GOOGLE_LOGIN_FAILED, message);
+            logger.error(response)
+            res.status(response.status).json(response);
+        }
+    }
+
+    fetchData = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const user = await this._userService.fetchData(userId);
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.FETCH_USER_SUCCESS, { user });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error)
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_USER_FAILD, message);
             logger.error(response)
             res.status(response.status).json(response);
         }

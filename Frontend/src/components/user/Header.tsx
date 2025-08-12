@@ -7,32 +7,23 @@ import { toast } from 'react-toastify';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../slice/userSlice';
 import { API_ROUTES } from '../../constant/api.routes';
+import Loader from '../common/Loader';
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isLogged, setIsLogged] = useState<boolean | null>(null);
+
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-
-    const [isLogged, setIsLogged] = useState(false);
 
     useEffect(() => {
         axios.get("/auth/verify", { withCredentials: true })
             .then((res) => {
-                console.log("RES :", res.data)
-                const role = res.data.role;
-                console.log("Role :", role)
-                if (role === "User") {
-                    setIsLogged(true);
-                } else {
-                    setIsLogged(false);
-                }
+                setIsLogged(res.data.role === "User");
             })
             .catch(() => setIsLogged(false));
     }, []);
-
-    useEffect(() => {
-        console.log("ISLogged in:", isLogged);
-    }, [isLogged]);
 
     const handleLogout = async () => {
         try {
@@ -45,6 +36,16 @@ export default function Header() {
         } catch (error) {
             console.error("Logout failed:", error);
         }
+    };
+
+    const handleProfile = () => {
+            if (!isProfileOpen) {
+                navigate('/profile',{replace:true});
+                setIsProfileOpen(true)
+            } else {
+                navigate('/',{replace:true});
+                setIsProfileOpen(false);
+            }
     };
 
     const handleNavigate = (path: string) => {
@@ -61,7 +62,9 @@ export default function Header() {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-6">
-                        {!isLogged ? (
+                        {isLogged === null ? (
+                            <Loader />
+                        ) : !isLogged ? (
                             <>
                                 <button
                                     onClick={() => handleNavigate(API_ROUTES.USER.LOGIN)}
@@ -77,14 +80,14 @@ export default function Header() {
                         ) : (
                             <div className="flex items-center space-x-4">
                                 <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
-                                    <Bell className="h-6 w-6" />
+                                    <Bell className="h-6 w-6 cursor-pointer" />
                                 </button>
                                 <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
-                                    <MessageSquare className="h-6 w-6" />
+                                    <MessageSquare className="h-6 w-6 cursor-pointer" />
                                 </button>
                                 <button
-                                    onClick={handleLogout}
-                                    className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                                    onClick={handleProfile}
+                                    className="p-2 cursor-pointer text-gray-600 hover:text-gray-900 transition-colors">
                                     <User className="h-6 w-6" />
                                 </button>
                             </div>

@@ -50,15 +50,14 @@ const HomeHeroSection = () => {
     }, [searchTerm]);
 
     const HandleSelectedService = (serv: IService) => {
-        console.log("Servicesssssssssss", serv)
         localStorage.removeItem("serviceId")
         localStorage.removeItem("categoryId")
         localStorage.setItem("serviceId", serv._id as string);
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }
-        const workDetails = useSelector((state: RootState) => state?.work);
-        console.log("WorkDetails :",workDetails);
+        const user = useSelector((state: RootState) => state?.user.user);
+        console.log("UserData in redux :",user)
     
 
     return (

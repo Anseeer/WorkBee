@@ -22,7 +22,20 @@ import { WorkerDetailsProvider } from "./components/context/WorkerDetailContext"
 import GuestRoute from "./components/common/GuestRoute";
 import NotFoundPage from "./components/common/NotFoundPAge";
 import WorkDetails from "./pages/user/workDetails";
+import Profile from "./pages/user/profile";
+import { useAppDispatch } from "./hooks/useAppDispatch";
+import { useEffect } from "react";
+import { fetchData } from "./utilities/fetchData";
+
+
 const App = () => {
+
+  const dispatch = useAppDispatch();  
+
+  useEffect(()=>{
+    fetchData(dispatch);
+  },[dispatch])
+
   return (
     <>
       <Router>
@@ -38,12 +51,24 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPAss />} />
           <Route path="/verify-otp" element={<OtpVerification />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/work-details" element={<WorkDetails />} />
+          <Route path="/work-details" element={
+            <ProtectedRoute role="User">
+              <WorkDetails />
+            </ProtectedRoute>
+          } />
           <Route
             path="/home"
             element={
               <ProtectedRoute role="User" >
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute role="User" >
+                <Profile />
               </ProtectedRoute>
             }
           />

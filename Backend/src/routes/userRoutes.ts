@@ -13,6 +13,7 @@ router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/google-login', userController.googleLogin);
 router.post('/logout',auth, authorize(["User"]), userController.logout);
+router.get('/fetch-data',auth, authorize(["User"]), userController.fetchData);
 router.post('/forgot-password', userController.forgotPass);
 router.post('/resend-otp', userController.resendOtp);
 router.post('/verify-otp', userController.verifyOtp);

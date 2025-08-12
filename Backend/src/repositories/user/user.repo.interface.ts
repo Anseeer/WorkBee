@@ -8,4 +8,5 @@ export interface IUserRepository {
     delete(id: string): Promise<boolean>;
     getAllUsers(): Promise<Iuser[] | null>;
     setIsActive(id: string): Promise<boolean>;
+    fetchData(userId:string): Promise<Iuser>;
 }

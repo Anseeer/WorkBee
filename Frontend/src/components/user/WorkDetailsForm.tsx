@@ -4,7 +4,9 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { workDetails } from '../../slice/workDraftSlice';
-import { fetchServiceById, } from '../../services/userService';
+import { fetchCategoryById, fetchServiceById, } from '../../services/userService';
+import type { IService } from '../../types/IServiceTypes';
+import type { ICategory } from '../../types/ICategory';
 
 interface WorkFormValues {
     location: {
@@ -18,6 +20,8 @@ interface WorkFormValues {
     description: string;
     categoryId: string | null;
     serviceId: string | null;
+    service: string | null;
+    category: string | null;
     wage: string ;
 }
 
@@ -30,9 +34,10 @@ const WorkDetailForm = ({ setStep }: Prop) => {
     const [activeStep, setActiveStep] = useState<number>(0);
     const locationRef = useRef<HTMLInputElement>(null);
     const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-    const [service, setService] = useState<string | null>(null);
-    const [category, setCategory] = useState<string | null>(null);
-    const [wage, setWage] = useState<string>('');
+    const [serviceId, setServiceId] = useState<string | null>(null);
+    const [categoryId, setCategoryId] = useState<string | null>(null);
+    const [service, setService] = useState<IService|null>(null);
+    const [category, setCategory] = useState<ICategory|null>(null);
 
     // Initial form values
     const initialValues: WorkFormValues = {
@@ -40,9 +45,11 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         taskSize: '',
         workType: 'one-time',
         description: '',
-        categoryId: category,
-        serviceId: service,  
-        wage: wage,  
+        categoryId,
+        serviceId,  
+        service:service?.name as string,  
+        category:category?.name as string,  
+        wage: service?.wage as string,  
     };
 
     // Load category & service from localStorage
@@ -51,12 +58,17 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         const serviceId = localStorage.getItem('serviceId');
         const categoryId = localStorage.getItem('categoryId');
 
-        setService(serviceId);
-        setCategory(categoryId);
+        setServiceId(serviceId);
+        setCategoryId(categoryId);
 
         if (serviceId) {
             const service = await fetchServiceById(serviceId);
-            setWage(service.data.data.wage);
+            setService(service.data.data);
+        }
+
+        if (categoryId) {
+            const category = await fetchCategoryById(categoryId);
+            setCategory(category.data.data);
         }
     };
 

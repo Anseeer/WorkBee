@@ -25,6 +25,12 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         return true;
     }
 
-    
+    async fetchData(userId: string): Promise<Iuser> {
+        let user = await this.model.findById(userId);
+        if (!user) {
+            throw new Error("user not find in the id");
+        }
+        return user;
+    }
 
 }
