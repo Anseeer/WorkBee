@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
-import { fetchWorkHistory, logoutUser } from "../../services/userService";
+import { cancelWork, fetchWorkHistory, logoutUser } from "../../services/userService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { logout } from "../../slice/userSlice";
+import { fetchUserDataThunk, logout } from "../../slice/userSlice";
 import { useNavigate } from "react-router-dom";
 import { API_ROUTES } from "../../constant/api.routes";
 import { useEffect, useState } from "react";
@@ -16,11 +16,18 @@ const ProfileSection = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [isActiveTab, setIsActiveTab] = useState('Profile');
-    const user = useSelector((state: RootState) => state.user?.user);
+    const [isEdit, setIsEdit] = useState(false);
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
-    const [selectedImg, setSelectedImg] = useState<File | null>(null);
-    const Profile = getProfileImage(user?.name, selectedImg);
+    const [selectedImg, setSelectedImg] = useState<File | null | string>(null);
+    const user = useSelector((state: RootState) => state.user?.user);
 
+    useEffect(() => {
+        if (user?.profileImage) {
+            setSelectedImg(user.profileImage as string);
+        }
+    }, [user?.profileImage, isEdit]);
+
+    const Profile = getProfileImage(user?.name, selectedImg);
 
     const handleSectionClick = (section: string) => {
         setIsActiveTab(section)
@@ -28,11 +35,12 @@ const ProfileSection = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            await dispatch(fetchUserDataThunk());
             const workHistory = await fetchWorkHistory(user?.id as string);
             setWorkHistory(workHistory.data.data);
         }
         fetchData();
-    }, []);
+    }, [isEdit]);
 
     const handleLogout = async () => {
         try {
@@ -68,9 +76,15 @@ const ProfileSection = () => {
         setIsActiveTab("Profile")
     }
 
+    const HandleCancelWork = async (workId: string) => {
+        await cancelWork(workId);
+        const workHistory = await fetchWorkHistory(user?.id as string);
+        setWorkHistory(workHistory.data.data);
+        toast.success("Cancelation successfull")
+    }
 
     return (
-        <div className="flex h-[550px] mx-50 my-10 border border-green-900 border-5 rounded-3xl bg-white">
+        <div className="flex h-[550px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
             {/* Sidebar */}
             <div className="w-52 bg-white border-r-2 rounded-r rounded-3xl  border-gray-300">
                 <div className="p-6">
@@ -105,7 +119,8 @@ const ProfileSection = () => {
                     {isActiveTab == "Profile" ? (
                         <button
                             onClick={handleEdit}
-                            className="px-6 py-2 border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
+                            className="px-8 py-3 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
+            transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
                         >
                             Edit
                         </button>
@@ -194,45 +209,53 @@ const ProfileSection = () => {
                             <div>Action</div>
                         </div>
 
-                        {/* Row */}
-                        {paginatedData.map((work) => (
-                            <div
-                                key={work._id}
-                                className="grid grid-cols-6 items-center bg-gray-50 rounded-lg p-3 my-3 shadow-sm"
-                            >
-                                <div className="font-bold">{work.service || "Cleaning"}</div>
-                                <div>
-                                    {work.createdAt
-                                        ? new Date(work.createdAt).toLocaleDateString("en-US", {
-                                            weekday: "short",
-                                            month: "short",
-                                            day: "numeric",
-                                        })
-                                        : "No date"}
-                                </div>
-                                <div>{work.workerName || "Name"}</div>
-                                <div className="text-orange-500">{work.status || "Pending"}</div>
-                                <div>{work.wage || "InitialPayment"}</div>
-                                <button
-                                    className="px-3 py-1 rounded bg-gray-200 
-                       hover:bg-gray-500 
-                       cursor-pointer 
-                       font-semibold 
-                       transition-all duration-300 
-                       border border-gray-300"
+                        {/* Row or Empty Message */}
+                        {paginatedData.length > 0 ? (
+                            paginatedData.map((work) => (
+                                <div
+                                    key={work._id}
+                                    className="grid grid-cols-6 items-center bg-gray-50 rounded-lg p-3 my-3 shadow-sm"
                                 >
-                                    Info
-                                </button>
-                            </div>
-                        ))}
+                                    <div className="font-bold">{work.service || "Cleaning"}</div>
+                                    <div>
+                                        {work.createdAt
+                                            ? new Date(work.createdAt).toLocaleDateString("en-US", {
+                                                weekday: "short",
+                                                month: "short",
+                                                day: "numeric",
+                                            })
+                                            : "No date"}
+                                    </div>
+                                    <div>{work.workerName || "Name"}</div>
+                                    <div className="text-orange-500">{work.status || "Pending"}</div>
+                                    <div>{work.wage || "InitialPayment"}</div>
+                                    {work.status === "Pending" ? (
+                                        <button
+                                            onClick={() => HandleCancelWork(work._id as string)}
+                                            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-500 cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                        >
+                                            Cancel
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-500 cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                        >
+                                            Info
+                                        </button>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center text-gray-500 py-8">No work history found.</div>
+                        )}
 
                         {/* Pagination */}
-                        {totalPages > 1 && (
+                        {totalPages > 1 && paginatedData.length > 0 && (
                             <div className="flex justify-center mt-4 space-x-2">
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
-                                    className="px-2 py-1  rounded disabled:opacity-50"
+                                    className="px-2 py-1 rounded disabled:opacity-50"
                                 >
                                     &lt;
                                 </button>
@@ -251,7 +274,7 @@ const ProfileSection = () => {
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
                                     disabled={currentPage === totalPages}
-                                    className="px-2 py-1  rounded disabled:opacity-50"
+                                    className="px-2 py-1 rounded disabled:opacity-50"
                                 >
                                     &gt;
                                 </button>
@@ -260,7 +283,7 @@ const ProfileSection = () => {
                     </div>
 
                 ) : isActiveTab == "Edit" ? (
-                    <EditUserModal onClose={Close} />
+                    <EditUserModal onClose={Close} setEdit={setIsEdit} />
                 ) : null}
             </div>
         </div>

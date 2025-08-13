@@ -19,4 +19,9 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         return await this.model.find({userId});
     }
 
+    async cancel(workId: string): Promise<boolean> {
+        const res = await this.model.deleteOne({_id:workId});
+        return res.deletedCount > 0;
+    }
+
 }

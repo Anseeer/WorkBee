@@ -97,6 +97,9 @@ export const SERVICE_MESSAGE = {
 
 
 export const USERS_MESSAGE = {
+    USER_UPDATE_SUCCESS:"User update successfull.",
+    USER_UPDATE_FAILD:"User update faild.",
+    CATN_FIND_USER:"Cant find user.",
     FETCH_AVAILABILITY_SUCCESS:"Fetch availability successfull.",
     FETCH_AVAILABILITY_FAILD:"Fetch availability faild.",
     FETCH_USER_SUCCESS:"Fetch user successfull.",
@@ -170,10 +173,13 @@ export const WORKER_MESSAGE = {
 };
 
 export const WORK_MESSAGE = {
+    WORK_ID_NOT_GET:"Can`t get workId.",
     USER_ID_NOT_GET:"Can`t get userId.",
     CANT_GET_WORK_DETAILS: "Can't get the job details.",
     WORK_HISTORY_FETCH_SUCCESS: "Work-History fetch successfully.",
     WORK_HISTORY_FETCH_FAILD: "Work-History fetch faild.",
+    WORK_CANCEL_SUCCESS: "Work-Booking cancel successfully.",
+    WORK_CANCEL_FAILD: "Work-Booking cancel faild.",
     WORK_CREATED_SUCCESS: "Job created successfully.",
     WORK_CREATED_FAILD: "Failed to create job."
 }

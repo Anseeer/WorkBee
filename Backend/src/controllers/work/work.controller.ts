@@ -59,4 +59,24 @@ export class WorkController implements IWorkController {
         }
     }
 
+    cancelWork = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const {workId} = req.query;
+            if (!workId) {
+                throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
+            }
+
+            const result = await this._workService.cancel(workId as string);
+            const response = new successResponse(StatusCode.CREATED, WORK_MESSAGE.WORK_CANCEL_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error);
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CANCEL_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
 }

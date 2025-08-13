@@ -11,4 +11,5 @@ export interface IUserController {
     resetPassword(req: Request, res: Response): Promise<void>;
     fetchAvailability(req: Request, res: Response): Promise<void>;
     fetchData(req: Request, res: Response): Promise<void>;
+    update(req: Request, res: Response): Promise<void>;
 }

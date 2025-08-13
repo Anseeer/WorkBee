@@ -200,4 +200,21 @@ export class UserController implements IUserController {
         }
     }
 
+    update = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const {userDetails,userId} = req.body
+            console.log("DAta comes :",userDetails,userId);
+            const result = await this._userService.update(userDetails,userId);
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.USER_UPDATE_SUCCESS, { result });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error)
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.USER_UPDATE_FAILD, message);
+            logger.error(response)
+            res.status(response.status).json(response);
+        }
+    }
+
 }

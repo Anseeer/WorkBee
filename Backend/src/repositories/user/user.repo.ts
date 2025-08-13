@@ -33,4 +33,21 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         return user;
     }
 
+    async update(userDetails: Iuser, userId: string): Promise<boolean> {
+        const existingUser = await this.model.findById(userId);
+        if (!existingUser) {
+            throw new Error("Cant find the user");
+        }
+        const updatedFields = {
+            name: userDetails.name,
+            phone: userDetails.phone,
+            profileImage: userDetails.profileImage,
+            location: userDetails.location
+        };
+
+        const res = await this.model.updateOne({ _id: existingUser.id }, { $set: updatedFields });
+
+        return res.modifiedCount > 0;
+    }
+
 }

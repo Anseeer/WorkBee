@@ -19,5 +19,6 @@ router.post('/resend-otp', userController.resendOtp);
 router.post('/verify-otp', userController.verifyOtp);
 router.post('/reset-password', userController.resetPassword);
 router.get('/fetch-availability',auth, userController.fetchAvailability)
+router.put('/update',auth, userController.update)
 
 export default router;

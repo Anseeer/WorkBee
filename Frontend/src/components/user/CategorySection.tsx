@@ -9,6 +9,7 @@ import { fetchCategory } from "../../services/adminService";
 import type { ICategory } from "../../types/ICategory";
 import { getServiceByCategory } from "../../services/workerService";
 import type { IService } from "../../types/IServiceTypes";
+import { useNavigate } from "react-router-dom";
 
 const backgroundMap: Record<string, string> = {
     "Home Repair": HomeRepairBanner,
@@ -26,6 +27,15 @@ const CategorySection: React.FC = () => {
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
+
+     const HandleSelectedService = (serv: IService) => {
+            localStorage.removeItem("serviceId")
+            localStorage.removeItem("categoryId")
+            localStorage.setItem("serviceId", serv._id as string);
+            localStorage.setItem("categoryId", serv.category);
+            navigate('/work-details');
+        }
 
     const currentCategory = categories.find((cat) => cat._id === selectedCategory);
 
@@ -160,9 +170,10 @@ const CategorySection: React.FC = () => {
                         {services.map((service) => (
                             <button
                                 key={service.id}
-                                onClick={() =>
+                                onClick={() =>{
                                     setSelectedService(service.name.toLowerCase())
-                                }
+                                    HandleSelectedService(service)
+                                }}
                                 className={`px-6 py-3 rounded-full border-2 font-medium transition-all duration-200 ${selectedService === service.name.toLowerCase()
                                     ? "bg-green-800 text-white border-green-600 shadow-lg scale-105"
                                     : "bg-white text-gray-700 border-gray-300 hover:border-green-600 hover:text-green-600 hover:shadow-md"

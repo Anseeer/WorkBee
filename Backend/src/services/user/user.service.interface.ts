@@ -14,5 +14,6 @@ export interface IUserService {
     googleLogin(token: string): Promise<{ user: IUserDTO, token: string }>;
     fetchAvailability(id: string): Promise<IAvailability[] | null>;
     fetchData(userId: string): Promise<IUserDTO>;
+    update(userDetails: Iuser,userId:string): Promise<boolean>;
 
 }
