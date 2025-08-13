@@ -7,6 +7,7 @@ import WorkerDetails from "../../components/common/WorkerDetails";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import { fetchWorkerDetails } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+import WorkHistory from "../../components/worker/WorkHistory";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -70,7 +71,9 @@ const Dashboard = () => {
                     ) : (
                         <BuildAccount />
                     )
-                ) : null}
+                ) : activeTab === "history" ? (
+                    <WorkHistory/>
+                ): null}
             </div>
         </div>
     );

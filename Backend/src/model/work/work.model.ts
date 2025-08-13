@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IWork} from "./work.interface";
+import { IWork } from "./work.interface";
 
 const workSchema = new Schema<IWork>({
     userId: {
@@ -22,21 +22,21 @@ const workSchema = new Schema<IWork>({
         ref: "Category",
         required: true
     },
-    service:{
-        type:String,
-        required:false,
+    service: {
+        type: String,
+        required: false,
     },
-    category:{
-        type:String,
-        required:false,
+    category: {
+        type: String,
+        required: false,
     },
-    workerName:{
-        type:String,
-        required:false,
+    workerName: {
+        type: String,
+        required: false,
     },
-    userName:{
-        type:String,
-        required:false,
+    userName: {
+        type: String,
+        required: false,
     },
     wage: {
         type: String,
@@ -71,11 +71,13 @@ const workSchema = new Schema<IWork>({
     status: {
         type: String,
         required: true,
+        enum: ["Pending", "Canceled", "Completed", "Rejected", "Accepted"],
         default: 'Pending'
     },
     paymentStatus: {
         type: String,
         required: true,
+        enum: ["Pending", "Canceled", "Completed"],
         default: 'Pending'
     }
 

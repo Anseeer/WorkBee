@@ -10,6 +10,7 @@ const WorkController = container.get<IWorkController>(TYPES.workController);
 
 Router.post("/creat-work", auth, WorkController.createWork);
 Router.get("/users", auth, WorkController.fetchWorkHistoryByUser);
-Router.delete("/delete", auth, WorkController.cancelWork);
+Router.get("/workers", auth, WorkController.fetchWorkHistoryByWorker);
+Router.patch("/cancel", auth, WorkController.cancelWork);
 
 export default Router;

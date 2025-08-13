@@ -88,3 +88,11 @@ export const fetchWorkerByWorkDetails = async (details:
   const { data } = await axios.post("workers/search", details);
   return data;
 };
+
+export const fetchWorkHistory = async (workerId:string) =>{
+  if(!workerId){
+    throw new Error("Cant Get WorkerId");
+  }
+  const response = await axios.get(`works/workers?workerId=${workerId}`);
+  return response.data;
+}

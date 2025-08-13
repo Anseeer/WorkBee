@@ -227,7 +227,17 @@ const ProfileSection = () => {
                                             : "No date"}
                                     </div>
                                     <div>{work.workerName || "Name"}</div>
-                                    <div className="text-orange-500">{work.status || "Pending"}</div>
+                                    <div
+                                        className={`px-3 py-1 text-sm font-medium rounded-full w-fit
+    ${work.status === "Pending" ? "bg-orange-100 text-orange-700" :
+                                                work.status === "Canceled" ? "bg-red-100 text-red-700" :
+                                                    work.status === "Accepted" ? "bg-blue-100 text-blue-700" :
+                                                        work.status === "Rejected" ? "bg-red-100 text-red-700" :
+                                                            work.status === "Completed" ? "bg-green-100 text-green-700" :
+                                                                "bg-gray-100 text-gray-700"}`}
+                                    >
+                                        {work.status || "Pending"}
+                                    </div>
                                     <div>{work.wage || "InitialPayment"}</div>
                                     {work.status === "Pending" ? (
                                         <button
@@ -236,13 +246,13 @@ const ProfileSection = () => {
                                         >
                                             Cancel
                                         </button>
-                                    ) : (
+                                    ) : work.status == "Canceled" ? (
                                         <button
                                             className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-500 cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
                                             Info
                                         </button>
-                                    )}
+                                    ) : null}
                                 </div>
                             ))
                         ) : (

@@ -8,8 +8,8 @@ import { update } from "../../services/userService";
 import { toast } from "react-toastify";
 
 interface props {
-  onClose:()=> void;
-  setEdit:(arg:boolean)=> void;
+  onClose: () => void;
+  setEdit: (arg: boolean) => void;
 }
 
 export default function EditUserModal({ onClose, setEdit }: props) {
@@ -119,7 +119,7 @@ export default function EditUserModal({ onClose, setEdit }: props) {
     onSubmit: async (values) => {
       try {
         console.log(values);
-        await update(values,user?.id as string);
+        await update(values, user?.id as string);
         toast.success("Updated successfull")
         setEdit(true)
         onClose();

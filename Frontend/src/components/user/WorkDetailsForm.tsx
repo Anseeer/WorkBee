@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChevronDown } from 'lucide-react';
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { workDetails } from '../../slice/workDraftSlice';
@@ -22,7 +22,7 @@ interface WorkFormValues {
     serviceId: string | null;
     service: string | null;
     category: string | null;
-    wage: string ;
+    wage: string;
 }
 
 interface Prop {
@@ -36,49 +36,50 @@ const WorkDetailForm = ({ setStep }: Prop) => {
     const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
     const [serviceId, setServiceId] = useState<string | null>(null);
     const [categoryId, setCategoryId] = useState<string | null>(null);
-    const [service, setService] = useState<IService|null>(null);
-    const [category, setCategory] = useState<ICategory|null>(null);
+    const [service, setService] = useState<IService | null>(null);
+    const [category, setCategory] = useState<ICategory | null>(null);
+    const [showDropdown, setShowDropdown] = useState(false);
 
-    // Initial form values
+
     const initialValues: WorkFormValues = {
         location: { address: '', pincode: '', lat: 0, lng: 0 },
         taskSize: '',
         workType: 'one-time',
         description: '',
         categoryId,
-        serviceId,  
-        service:service?.name as string,  
-        category:category?.name as string,  
-        wage: service?.wage as string,  
+        serviceId,
+        service: service?.name as string,
+        category: category?.name as string,
+        wage: service?.wage as string,
     };
 
-    // Load category & service from localStorage
     useEffect(() => {
-    const fetchData = async () => {
-        const serviceId = localStorage.getItem('serviceId');
-        const categoryId = localStorage.getItem('categoryId');
+        console.log(showDropdown)
+        const fetchData = async () => {
+            const serviceId = localStorage.getItem('serviceId');
+            const categoryId = localStorage.getItem('categoryId');
 
-        setServiceId(serviceId);
-        setCategoryId(categoryId);
+            setServiceId(serviceId);
+            setCategoryId(categoryId);
 
-        if (serviceId) {
-            const service = await fetchServiceById(serviceId);
-            setService(service.data.data);
-        }
+            if (serviceId) {
+                const service = await fetchServiceById(serviceId);
+                setService(service.data.data);
+            }
 
-        if (categoryId) {
-            const category = await fetchCategoryById(categoryId);
-            setCategory(category.data.data);
-        }
-    };
+            if (categoryId) {
+                const category = await fetchCategoryById(categoryId);
+                setCategory(category.data.data);
+            }
+        };
 
-    fetchData();
-}, []);
+        fetchData();
+    }, []);
 
 
     const formik = useFormik<WorkFormValues>({
         initialValues,
-        enableReinitialize: true, 
+        enableReinitialize: true,
         validate: (values) => {
             const errors: Partial<Record<keyof WorkFormValues, any>> = {};
 
@@ -106,66 +107,47 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         }
     });
 
+
     useEffect(() => {
-        const initAutocomplete = () => {
-            if (locationRef.current && window.google?.maps) {
-                if (!autocompleteRef.current) {
-                    autocompleteRef.current = new window.google.maps.places.Autocomplete(locationRef.current, {
-                        types: ['geocode'],
-                        componentRestrictions: { country: 'IN' },
-                        fields: ['formatted_address', 'geometry', 'address_components'],
-                    });
+        const init = () => {
+            if (!locationRef.current) return;
+            autocompleteRef.current = new google.maps.places.Autocomplete(locationRef.current, {
+                types: ['address'],
+                componentRestrictions: { country: 'IN' },
+                fields: ['formatted_address', 'geometry', 'address_components']
+            });
 
-                    autocompleteRef.current.addListener('place_changed', () => {
-                        const place = autocompleteRef.current?.getPlace();
-                        if (!place || !place.geometry) return;
+            autocompleteRef.current.addListener('place_changed', () => {
+                const place = autocompleteRef.current?.getPlace();
+                if (!place || !place.geometry) return;
 
-                        let pincode = '';
-                        place.address_components?.forEach((component) => {
-                            if (component.types.includes('postal_code')) {
-                                pincode = component.long_name;
-                            }
-                        });
+                let pincode = '';
+                place.address_components?.forEach(component => {
+                    if (component.types.includes('postal_code')) {
+                        pincode = component.long_name;
+                    }
+                });
 
-                        formik.setFieldValue('location', {
-                            address: place.formatted_address || '',
-                            pincode,
-                            lat: place.geometry.location?.lat() || 0,
-                            lng: place.geometry.location?.lng() || 0
-                        });
-                    });
-                }
-            }
+                formik.setFieldValue('location', {
+                    address: place.formatted_address || '',
+                    pincode,
+                    lat: place.geometry.location?.lat() || 0,
+                    lng: place.geometry.location?.lng() || 0
+                });
+            });
         };
 
-        const loadScript = () => {
-            if (window.google?.maps) {
-                initAutocomplete();
-                return;
-            }
-            const existingScript = document.getElementById('google-maps-script');
-            if (existingScript) {
-                existingScript.addEventListener('load', initAutocomplete);
-            } else {
-                const script = document.createElement('script');
-                script.id = 'google-maps-script';
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places`;
-                script.async = true;
-                script.defer = true;
-                script.onload = initAutocomplete;
-                document.body.appendChild(script);
-            }
-        };
-
-        loadScript();
-
-        return () => {
-            const script = document.getElementById('google-maps-script');
-            if (script) {
-                script.removeEventListener('load', initAutocomplete);
-            }
-        };
-    },[formik.values.location.address]);
+        if (window.google && window.google.maps && window.google.maps.places) {
+            init();
+        } else {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places`;
+            script.async = true;
+            script.defer = true;
+            script.onload = init;
+            document.head.appendChild(script);
+        }
+    }, [locationRef.current, showDropdown]);
 
     return (
         <form
@@ -191,6 +173,8 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                 name="location.address"
                                 value={formik.values.location.address}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                onFocus={() => setShowDropdown(true)}
                                 className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-700 mb-2 text-base"
                                 placeholder="Enter your location..."
                             />

@@ -59,6 +59,28 @@ export class WorkController implements IWorkController {
         }
     }
 
+    fetchWorkHistoryByWorker = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const {workerId} = req.query;
+            console.log("queryyyyy :::",req.query)
+            console.log("workerId :::",workerId)
+            if (!workerId) {
+                throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
+            }
+
+            const result = await this._workService.fetchWorkHistoryByWorker(workerId as string);
+            const response = new successResponse(StatusCode.CREATED, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error);
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
     cancelWork = async (req: Request, res: Response): Promise<void> => {
         try {
             const {workId} = req.query;

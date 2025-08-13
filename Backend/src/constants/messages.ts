@@ -174,6 +174,7 @@ export const WORKER_MESSAGE = {
 
 export const WORK_MESSAGE = {
     WORK_ID_NOT_GET:"Can`t get workId.",
+    WORKER_ID_NOT_GET:"Can`t get workerId.",
     USER_ID_NOT_GET:"Can`t get userId.",
     CANT_GET_WORK_DETAILS: "Can't get the job details.",
     WORK_HISTORY_FETCH_SUCCESS: "Work-History fetch successfully.",

@@ -16,12 +16,15 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
     }
 
     async findByUser(userId: string): Promise<IWork[]> {
-        return await this.model.find({userId});
+        return await this.model.find({userId}).sort({createdAt:-1});
+    }
+    async findByWorker(workerId: string): Promise<IWork[]> {
+        return await this.model.find({workerId}).sort({createdAt:-1});
     }
 
     async cancel(workId: string): Promise<boolean> {
-        const res = await this.model.deleteOne({_id:workId});
-        return res.deletedCount > 0;
+        const res = await this.model.updateOne({_id:workId},{$set:{status:"Canceled"}});
+        return res.modifiedCount > 0;
     }
 
 }

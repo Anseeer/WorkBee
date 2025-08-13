@@ -97,6 +97,6 @@ export const update = async (userDetails: Partial<Iuser>, userId: string) => {
 }
 
 export const cancelWork = async (workId: string) => {
-    await axios.delete(`works/delete?workId=${workId}`);
+    await axios.patch(`works/cancel?workId=${workId}`);
     return;
 }

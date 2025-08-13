@@ -3,18 +3,20 @@ import { Search } from "lucide-react";
 import HeroImg from "../../assets/HeroImg.png";
 import { fetchServiceBySearchTerm } from "../../services/userService";
 import type { IService } from "../../types/IServiceTypes";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [services, setServices] = useState<IService[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             if (searchTerm.trim()) {
                 handleSearch(searchTerm);
             } else {
-                setServices([]); 
+                setServices([]);
             }
         }, 400);
 
@@ -32,6 +34,14 @@ const HeroSection = () => {
             setIsLoading(false);
         }
     };
+
+    const HandleSelectedService = (serv: IService) => {
+        localStorage.removeItem("serviceId")
+        localStorage.removeItem("categoryId")
+        localStorage.setItem("serviceId", serv._id as string);
+        localStorage.setItem("categoryId", serv.category);
+        navigate('/work-details');
+    }
 
     return (
         <section className="bg-white items-center relative">
@@ -71,6 +81,7 @@ const HeroSection = () => {
                                     {services.slice(0, 12).map((service) => (
                                         <button
                                             key={service.id}
+                                            onClick={() => HandleSelectedService(service)}
                                             className="bg-[#F5FAF5] text-black text-sm px-3 py-2 rounded-full font-medium shadow hover:bg-green-100 transition"
                                         >
                                             {service.name}
@@ -97,8 +108,8 @@ const HeroSection = () => {
                         className="w-full h-[500px] object-cover rounded-sm shadow-lg"
                     />
                 </div>
-                 {/* guide img */}
-            {/* <div className="w-full">
+                {/* guide img */}
+                {/* <div className="w-full">
                 <img
                     sizes="20"
                     src={GuideImg}
