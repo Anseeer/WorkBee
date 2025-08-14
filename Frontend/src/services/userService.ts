@@ -14,8 +14,8 @@ export const login = async (credintials: { email: string, password: string }) =>
     return response;
 }
 
-export const fetchUser = async () => {
-    const response = await axios.get('users/fetch-data', { withCredentials: true });
+export const fetchUser = async (userId?:string) => {
+    const response = await axios.get(`users/fetch-data?userId=${userId}`);
     return response.data;
 }
 
@@ -99,4 +99,9 @@ export const update = async (userDetails: Partial<Iuser>, userId: string) => {
 export const cancelWork = async (workId: string) => {
     await axios.patch(`works/cancel?workId=${workId}`);
     return;
+}
+
+export const getUserDetails = async (userId: string) => {
+    const response = await axios.get(`users/fetch-data?userId=${userId}`);
+    return response.data.data;
 }

@@ -5,4 +5,7 @@ export interface IWorkController {
     fetchWorkHistoryByUser(req: Request, res: Response): Promise<void>;
     fetchWorkHistoryByWorker(req: Request, res: Response): Promise<void>;
     cancelWork(req: Request, res: Response): Promise<void>;
+    acceptWork(req: Request, res: Response): Promise<void>;
+    completedWork(req: Request, res: Response): Promise<void>;
+    workDetailsById(req: Request, res: Response): Promise<void>;
 }

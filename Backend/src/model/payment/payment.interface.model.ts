@@ -1,0 +1,14 @@
+import mongoose from "mongoose";
+
+export interface IPayment {
+    userId: mongoose.Schema.Types.ObjectId,
+    workerId: mongoose.Schema.Types.ObjectId,
+    workId: mongoose.Schema.Types.ObjectId,
+    amount:number,
+    status:string,
+    paymentMethod:string,
+    transactionId:string,
+    notes:string,
+    createdAt:Date,
+    paidAt:Date
+} 

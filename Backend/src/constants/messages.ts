@@ -173,6 +173,8 @@ export const WORKER_MESSAGE = {
 };
 
 export const WORK_MESSAGE = {
+    WORK_DETAILS_GET_SUCCESS:"Work details get successfull.",
+    WORK_DETAILS_GET_FAILD:"Work details get faild.",
     WORK_ID_NOT_GET:"Can`t get workId.",
     WORKER_ID_NOT_GET:"Can`t get workerId.",
     USER_ID_NOT_GET:"Can`t get userId.",
@@ -181,6 +183,10 @@ export const WORK_MESSAGE = {
     WORK_HISTORY_FETCH_FAILD: "Work-History fetch faild.",
     WORK_CANCEL_SUCCESS: "Work-Booking cancel successfully.",
     WORK_CANCEL_FAILD: "Work-Booking cancel faild.",
+    WORK_COMPLETED_SUCCESS: "Work-Booking completed successfully.",
+    WORK_COMPLETED_FAILD: "Work-Booking completed faild.",
+    WORK_ACCEPT_SUCCESS: "Work-Booking accepted successfully.",
+    WORK_ACCEPT_FAILD: "Work-Booking accepted faild.",
     WORK_CREATED_SUCCESS: "Job created successfully.",
     WORK_CREATED_FAILD: "Failed to create job."
 }

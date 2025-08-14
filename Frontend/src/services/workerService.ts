@@ -21,6 +21,9 @@ export const buildAccount = async (workerId: string | undefined, accountData: Pa
 }
 
 export const getWorkerDetails = async (workerId: string) => {
+  if (!workerId) {
+    throw new Error("Cant Get WorkerId ID");
+  }
   return axios.get(`/workers/fetch-details?workerId=${workerId}`);
 };
 
@@ -89,10 +92,26 @@ export const fetchWorkerByWorkDetails = async (details:
   return data;
 };
 
-export const fetchWorkHistory = async (workerId:string) =>{
-  if(!workerId){
+export const fetchWorkHistory = async (workerId: string) => {
+  if (!workerId) {
     throw new Error("Cant Get WorkerId");
   }
   const response = await axios.get(`works/workers?workerId=${workerId}`);
   return response.data;
 }
+
+export const fetchWorkDetails = async (workId: string) => {
+  const response = await axios.get(`works/details?workId=${workId}`);
+  return response.data;
+}
+
+export const acceptWork = async (workId: string) => {
+  const response = await axios.patch(`works/accept?workId=${workId}`)
+  return response.data.data;
+}
+
+export const isCompletWork = async (workId: string) => {
+  const response = await axios.patch(`works/is-completed?workId=${workId}`)
+  return response.data.data;
+}
+

@@ -47,7 +47,7 @@ export class WorkController implements IWorkController {
             }
 
             const result = await this._workService.fetchWorkHistoryByUser(userId);
-            const response = new successResponse(StatusCode.CREATED, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
@@ -61,15 +61,15 @@ export class WorkController implements IWorkController {
 
     fetchWorkHistoryByWorker = async (req: Request, res: Response): Promise<void> => {
         try {
-            const {workerId} = req.query;
-            console.log("queryyyyy :::",req.query)
-            console.log("workerId :::",workerId)
+            const { workerId } = req.query;
+            console.log("queryyyyy :::", req.query)
+            console.log("workerId :::", workerId)
             if (!workerId) {
                 throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
             }
 
             const result = await this._workService.fetchWorkHistoryByWorker(workerId as string);
-            const response = new successResponse(StatusCode.CREATED, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
@@ -83,19 +83,79 @@ export class WorkController implements IWorkController {
 
     cancelWork = async (req: Request, res: Response): Promise<void> => {
         try {
-            const {workId} = req.query;
+            const { workId } = req.query;
             if (!workId) {
-                throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
+                throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             }
 
             const result = await this._workService.cancel(workId as string);
-            const response = new successResponse(StatusCode.CREATED, WORK_MESSAGE.WORK_CANCEL_SUCCESS, result);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_CANCEL_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
             console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CANCEL_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    completedWork = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { workId } = req.query;
+            if (!workId) {
+                throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
+            }
+
+            const result = await this._workService.completed(workId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_COMPLETED_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log("Error in the completded work",error);
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_COMPLETED_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    acceptWork = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { workId } = req.query;
+            if (!workId) {
+                throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
+            }
+
+            const result = await this._workService.accept(workId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_ACCEPT_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error);
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_ACCEPT_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    workDetailsById = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { workId } = req.query;
+            if (!workId) {
+                throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
+            }
+
+            const result = await this._workService.workDetails(workId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error);
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, message);
             logger.error(response);
             res.status(response.status).json(response);
         }

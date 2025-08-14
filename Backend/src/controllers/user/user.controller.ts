@@ -184,27 +184,58 @@ export class UserController implements IUserController {
         }
     }
 
-    fetchData = async (req: AuthRequest, res: Response): Promise<void> => {
+    fetchData = async (req: Request | AuthRequest, res: Response): Promise<void> => {
         try {
-            const userId = req.user?.id;
-            const user = await this._userService.fetchData(userId);
-            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.FETCH_USER_SUCCESS, { user });
-            logger.info(response)
+            let userId: string | undefined = undefined;
+
+            if (
+                req.query.userId !== undefined &&
+                req.query.userId !== "undefined" &&
+                req.query.userId !== ""
+            ) {
+                console.log("Found in query", req.query);
+                userId = String(req.query.userId);
+            }
+
+            if (!userId && (req as AuthRequest)?.user?.id) {
+                console.log("Found in auth token");
+                userId = String((req as AuthRequest).user?.id);
+            }
+
+            console.log("userId", userId);
+            if (!userId) {
+                throw new Error("User ID is required");
+            }
+
+            const user = await this._userService.fetchData(userId as string);
+
+            const response = new successResponse(
+                StatusCode.OK,
+                USERS_MESSAGE.FETCH_USER_SUCCESS,
+                { user }
+            );
+            logger.info(response);
             res.status(response.status).json(response);
+
         } catch (error) {
-            console.log(error)
+            console.error(error);
             const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_USER_FAILD, message);
-            logger.error(response)
+            const response = new errorResponse(
+                StatusCode.BAD_REQUEST,
+                USERS_MESSAGE.FETCH_USER_FAILD,
+                message
+            );
+            logger.error(response);
             res.status(response.status).json(response);
         }
-    }
+    };
+
 
     update = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const {userDetails,userId} = req.body
-            console.log("DAta comes :",userDetails,userId);
-            const result = await this._userService.update(userDetails,userId);
+            const { userDetails, userId } = req.body
+            console.log("DAta comes :", userDetails, userId);
+            const result = await this._userService.update(userDetails, userId);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.USER_UPDATE_SUCCESS, { result });
             logger.info(response)
             res.status(response.status).json(response);

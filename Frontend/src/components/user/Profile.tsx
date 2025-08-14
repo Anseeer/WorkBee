@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "react-toastify";
 import { cancelWork, fetchWorkHistory, logoutUser } from "../../services/userService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -10,6 +11,7 @@ import type { RootState } from "../../Store";
 import type { IWork } from "../../types/IWork";
 import { getProfileImage } from "../../utilities/getProfile";
 import EditUserModal from "./UserEditModal";
+import axios from "../../services/axios";
 
 const ProfileSection = () => {
 
@@ -20,6 +22,7 @@ const ProfileSection = () => {
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
     const [selectedImg, setSelectedImg] = useState<File | null | string>(null);
     const user = useSelector((state: RootState) => state.user?.user);
+
 
     useEffect(() => {
         if (user?.profileImage) {
@@ -82,6 +85,52 @@ const ProfileSection = () => {
         setWorkHistory(workHistory.data.data);
         toast.success("Cancelation successfull")
     }
+
+    const handlePayment = async () => {
+        try {
+            const { data } = await axios.post("rzp/create-order", {
+                amount: 500,  
+            });
+
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            document.body.appendChild(script);
+
+            script.onload = () => {
+                const options = {
+                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: "WorkBee",
+                    description: "Test Transaction",
+                    order_id: data.id,
+                    handler: function (response: any) {
+                        axios.post("rzp/verify-payment", response)
+                            .then((res) => {
+                                console.log(res.data);
+                            })
+                            .catch((err) => {
+                                console.error(err);
+                            });
+                    },
+                    prefill: {
+                        name: "Ansi",
+                        email: "ansi@example.com",
+                        contact: "7736222757",
+                    },
+                    theme: {
+                        color: "#399e6fff",
+                    },
+                };
+
+                const rzp = new (window as any).Razorpay(options);
+                rzp.open();
+            };
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     return (
         <div className="flex h-[550px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
@@ -242,15 +291,22 @@ const ProfileSection = () => {
                                     {work.status === "Pending" ? (
                                         <button
                                             onClick={() => HandleCancelWork(work._id as string)}
-                                            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-500 cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                            className="px-3 py-1 rounded bg-red-100 hover:bg-red-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
                                             Cancel
                                         </button>
                                     ) : work.status == "Canceled" ? (
                                         <button
-                                            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-500 cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                            className="px-3 py-1 rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
                                             Info
+                                        </button>
+                                    ) : work.status == "Completed" && work.paymentStatus == "Pending" ? (
+                                        <button
+                                            onClick={handlePayment}
+                                            className="px-3 py-1 rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                        >
+                                            Pay
                                         </button>
                                     ) : null}
                                 </div>

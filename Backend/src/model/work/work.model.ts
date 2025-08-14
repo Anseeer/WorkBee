@@ -22,6 +22,10 @@ const workSchema = new Schema<IWork>({
         ref: "Category",
         required: true
     },
+    paymentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Payment",
+    },
     service: {
         type: String,
         required: false,
@@ -79,8 +83,12 @@ const workSchema = new Schema<IWork>({
         required: true,
         enum: ["Pending", "Canceled", "Completed"],
         default: 'Pending'
+    },
+    isCompleted: {
+        type: Boolean,
+        required: true,
+        default: false
     }
-
 }, { timestamps: true })
 
 const Work = mongoose.model<IWork>("Work", workSchema);

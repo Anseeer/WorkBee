@@ -80,4 +80,29 @@ export class WorkService implements IWorkService {
         return await this._workRepositoy.cancel(workId);
     }
 
+    accept = async (workId: string): Promise<boolean> => {
+        if(!workId){
+            throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET)
+        }
+        return await this._workRepositoy.accept(workId);
+    }
+
+    completed = async (workId: string): Promise<boolean> => {
+        if(!workId){
+            throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET)
+        }
+        return await this._workRepositoy.setIsWorkCompleted(workId);
+    }
+
+    workDetails = async (workId: string): Promise<IWork> =>{
+        if(!workId){
+            throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
+        }
+        const workDetails = await this._workRepositoy.findById(workId as string);
+        if(!workDetails){
+            throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS)
+        }
+        return workDetails;
+    }
+
 }

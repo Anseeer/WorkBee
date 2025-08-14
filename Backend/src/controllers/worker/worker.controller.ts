@@ -194,7 +194,9 @@ export class WorkerController implements IWorkerController {
     };
 
     fetchDetails = async (req: Request, res: Response): Promise<void> => {
-        const { workerId } = req.query;
+        const  workerId  = req.query.workerId;
+        console.log("Query :",req.query)
+        console.log("WorkerID Of Fetch Details::",workerId);
         try {
             if (!workerId || typeof workerId !== "string") {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
@@ -212,6 +214,7 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
 
         } catch (error: unknown) {
+            console.log(error);
             const err = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD, err);
             logger.error(response);

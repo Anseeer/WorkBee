@@ -12,5 +12,8 @@ Router.post("/creat-work", auth, WorkController.createWork);
 Router.get("/users", auth, WorkController.fetchWorkHistoryByUser);
 Router.get("/workers", auth, WorkController.fetchWorkHistoryByWorker);
 Router.patch("/cancel", auth, WorkController.cancelWork);
+Router.patch("/accept", auth, WorkController.acceptWork);
+Router.patch("/is-completed", auth, WorkController.completedWork);
+Router.get("/details", auth, WorkController.workDetailsById);
 
 export default Router;

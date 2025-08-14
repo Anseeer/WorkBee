@@ -25,6 +25,7 @@
     "mongoose": "^8.16.1",
     "nocache": "^4.0.0",
     "nodemailer": "^7.0.4",
+    "razorpay": "^2.9.6",
     "reflect-metadata": "^0.2.2",
     "winston": "^3.17.0"
   },

@@ -8,6 +8,7 @@ import { Availability } from "../../model/availablity/availablity.model";
 import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
 import mongoose, { Types } from "mongoose";
+import { WORKER_MESSAGE } from "../../constants/messages";
 
 const { ObjectId } = mongoose.Types;
 
@@ -158,6 +159,12 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         });
 
         return filteredWorkers;
+    }
+
+    async findById(id: string): Promise<IWorker> {
+        const worker =  await this.model.findById(id);
+        if(!worker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+        return worker;
     }
 
 }

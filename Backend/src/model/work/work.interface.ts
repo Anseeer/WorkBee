@@ -6,6 +6,7 @@ export interface IWork extends Document {
     workerId: mongoose.Schema.Types.ObjectId,
     serviceId: mongoose.Schema.Types.ObjectId,
     categoryId: mongoose.Schema.Types.ObjectId,
+    paymentId: mongoose.Schema.Types.ObjectId,
     service:string,
     category:string,
     workerName:string,
@@ -19,6 +20,7 @@ export interface IWork extends Document {
     sheduleTime:string,
     status:string,
     paymentStatus:string,
+    isCompleted:boolean,
     createdAt:Date,
     updatedAt:Date,
 }
