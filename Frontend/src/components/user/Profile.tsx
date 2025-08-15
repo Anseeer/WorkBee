@@ -11,7 +11,8 @@ import type { RootState } from "../../Store";
 import type { IWork } from "../../types/IWork";
 import { getProfileImage } from "../../utilities/getProfile";
 import EditUserModal from "./UserEditModal";
-import axios from "../../services/axios";
+import PaymentModal from "./PaymentModal";
+import Wallet from "./Wallet";
 
 const ProfileSection = () => {
 
@@ -19,10 +20,15 @@ const ProfileSection = () => {
     const navigate = useNavigate();
     const [isActiveTab, setIsActiveTab] = useState('Profile');
     const [isEdit, setIsEdit] = useState(false);
+    const [isPaymentModal, setIsPaymentModal] = useState(false);
+    const [amount, setAmount] = useState<number | null>(null);
+    const [workId, setWorkId] = useState<string | null>(null);
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
     const [selectedImg, setSelectedImg] = useState<File | null | string>(null);
     const user = useSelector((state: RootState) => state.user?.user);
-
+    const wallet = useSelector((state: RootState) => state.user?.wallet);
+    console.log("User :", user);
+    console.log("Wallet :", wallet);
 
     useEffect(() => {
         if (user?.profileImage) {
@@ -43,7 +49,7 @@ const ProfileSection = () => {
             setWorkHistory(workHistory.data.data);
         }
         fetchData();
-    }, [isEdit]);
+    }, [isEdit, isPaymentModal]);
 
     const handleLogout = async () => {
         try {
@@ -86,79 +92,37 @@ const ProfileSection = () => {
         toast.success("Cancelation successfull")
     }
 
-    const handlePayment = async () => {
-        try {
-            const { data } = await axios.post("rzp/create-order", {
-                amount: 500,  
-            });
-
-            const script = document.createElement("script");
-            script.src = "https://checkout.razorpay.com/v1/checkout.js";
-            script.async = true;
-            document.body.appendChild(script);
-
-            script.onload = () => {
-                const options = {
-                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: "WorkBee",
-                    description: "Test Transaction",
-                    order_id: data.id,
-                    handler: function (response: any) {
-                        axios.post("rzp/verify-payment", response)
-                            .then((res) => {
-                                console.log(res.data);
-                            })
-                            .catch((err) => {
-                                console.error(err);
-                            });
-                    },
-                    prefill: {
-                        name: "Ansi",
-                        email: "ansi@example.com",
-                        contact: "7736222757",
-                    },
-                    theme: {
-                        color: "#399e6fff",
-                    },
-                };
-
-                const rzp = new (window as any).Razorpay(options);
-                rzp.open();
-            };
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    const closeModal = () => {
+        setIsPaymentModal(false)
+    }
 
     return (
-        <div className="flex h-[550px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
+        <div className="flex h-[530px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
             {/* Sidebar */}
-            <div className="w-52 bg-white border-r-2 rounded-r rounded-3xl  border-gray-300">
+            <div className="w-52 bg-white border-r-2 rounded-l-3xl border-gray-300">
                 <div className="p-6">
-                    <nav className="space-y-8">
-                        <div
-                            className={`text-lg font-medium cursor-pointer ${isActiveTab == "Profile" ? `text-green-700 font-bold ` : null}`}
-                            onClick={() => handleSectionClick('Profile')}
-                        >
-                            Profile
-                        </div>
-                        <div
-                            className={`text-lg font-medium cursor-pointer ${isActiveTab == "MyWorks" ? `text-green-700 font-bold ` : null}`}
-                            onClick={() => handleSectionClick('MyWorks')}
-                        >
-                            MyWorks
-                        </div>
-                        <div
-                            className={`text-lg font-medium cursor-pointer ${isActiveTab == "Wallet" ? `text-green-700 font-bold ` : null} `}
-                            onClick={() => handleSectionClick('Wallet')}
-                        >
-                            Wallet
-                        </div>
+                    <nav className="space-y-4">
+                        {[
+                            { label: "Profile", key: "Profile" },
+                            { label: "MyWorks", key: "MyWorks" },
+                            { label: "Wallet", key: "Wallet" }
+                        ].map((item) => (
+                            <div
+                                key={item.key}
+                                onClick={() => handleSectionClick(item.key)}
+                                className={`text-lg font-medium cursor-pointer px-3 py-2 rounded-lg transition-all duration-200 
+                        ${isActiveTab === item.key
+                                        ? "text-green-700 font-bold bg-green-100 border-l-4 border-green-600 shadow-md shadow-green-500/30"
+                                        : "hover:bg-gray-100"
+                                    }`}
+                            >
+                                {item.label}
+                            </div>
+                        ))}
                     </nav>
                 </div>
             </div>
+
 
             {/* Main Content */}
             <div className="flex-1 bg-gray-50 rounded-bl rounded-2xl ">
@@ -295,7 +259,7 @@ const ProfileSection = () => {
                                         >
                                             Cancel
                                         </button>
-                                    ) : work.status == "Canceled" ? (
+                                    ) : work.status == "Canceled" || work.status == "Completed" && work.paymentStatus == "Completed" ? (
                                         <button
                                             className="px-3 py-1 rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
@@ -303,7 +267,11 @@ const ProfileSection = () => {
                                         </button>
                                     ) : work.status == "Completed" && work.paymentStatus == "Pending" ? (
                                         <button
-                                            onClick={handlePayment}
+                                            onClick={() => {
+                                                setIsPaymentModal(true);
+                                                setAmount(Number(work.wage));
+                                                setWorkId(work._id as string);
+                                            }}
                                             className="px-3 py-1 rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
                                             Pay
@@ -350,6 +318,11 @@ const ProfileSection = () => {
 
                 ) : isActiveTab == "Edit" ? (
                     <EditUserModal onClose={Close} setEdit={setIsEdit} />
+                ) : isActiveTab == "Wallet" ? (
+                    <Wallet/>
+                ): null}
+                {isPaymentModal ? (
+                    <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />
                 ) : null}
             </div>
         </div>

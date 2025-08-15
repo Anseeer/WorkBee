@@ -14,22 +14,28 @@ import { IUserRepository } from "../../repositories/user/user.repo.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
+import { Wallet } from "../../model/wallet/wallet.model";
+import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
+import { IWallet } from "../../model/wallet/wallet.interface.model";
 
 @injectable()
 export class UserService implements IUserService {
     private _userRepository: IUserRepository;
     private _availabilityRepository: IAvailabilityRepository;
+    private _walletRepository: IWalletRepository;
     private googleClient: OAuth2Client;
     constructor(
         @inject(TYPES.userRepository) userRepo: IUserRepository,
-        @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository
+        @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository,
+        @inject(TYPES.walletRepository) walletRepo: IWalletRepository
     ) {
         this._userRepository = userRepo;
         this._availabilityRepository = availabilityRepo;
+        this._walletRepository = walletRepo;
         this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
-    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string }> {
+    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string, wallet:IWallet|null }> {
         if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
             throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
         }
@@ -43,14 +49,23 @@ export class UserService implements IUserService {
         userData.password = hashedPass;
         const newUser = await this._userRepository.create(userData);
 
+        await Wallet.create({
+            userId: newUser._id,
+            balance: 0,
+            currency: "INR",
+            transactions: []
+        })
+
+        const wallet = await this._walletRepository.findByUser(newUser.id);
+
         const token = generateToken(newUser._id.toString(), newUser.role);
 
         const user = mapUserToDTO(newUser);
 
-        return { user, token };
+        return { user, token, wallet };
     }
 
-    async loginUser(email: string, password: string): Promise<{ user: IUserDTO; token: string }> {
+    async loginUser(email: string, password: string): Promise<{ user: IUserDTO; token: string; wallet: IWallet | null }> {
         let findUser = await this._userRepository.findByEmail(email);
         if (!findUser || findUser.role !== "User") {
             throw new Error(USERS_MESSAGE.CAT_FIND_USER);
@@ -65,11 +80,13 @@ export class UserService implements IUserService {
             throw new Error(USERS_MESSAGE.USER_BLOCKED)
         }
 
+        const wallet = await this._walletRepository.findByUser(findUser.id);
+
         const token = generateToken(findUser._id.toString(), findUser.role);
 
         const user = await mapUserToDTO(findUser);
 
-        return { user, token };
+        return { user, token, wallet };
     }
 
     async forgotPass(email: string): Promise<string> {
@@ -143,14 +160,15 @@ export class UserService implements IUserService {
         return availability;
     }
 
-    async fetchData(userId: string): Promise<IUserDTO> {
+    async fetchData(userId: string): Promise<{user:IUserDTO,wallet:IWallet|null}> {
         const userData = await this._userRepository.fetchData(userId);
+        const wallet = await this._walletRepository.findByUser(userId);
         const user = mapUserToDTO(userData);
-        return user;
+        return {user,wallet};
     }
 
-    async update(userDetails: Iuser,userId:string): Promise<boolean> {
-        return await this._userRepository.update(userDetails,userId);
+    async update(userDetails: Iuser, userId: string): Promise<boolean> {
+        return await this._userRepository.update(userDetails, userId);
     }
 
 }

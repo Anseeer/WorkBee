@@ -2,16 +2,19 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { Iuser } from "../types/IUser";
 import { fetchUser, forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/userService";
 import type { AxiosError } from "axios";
+import type { IWallet } from "../types/IWallet";
 
 interface userState {
     user: Iuser | null,
     error: string | null;
+    wallet:IWallet|null;
     resetEmail: string | null;
 }
 
 const initialState: userState = {
     user: null,
     error: null,
+    wallet:null,
     resetEmail: null,
 }
 
@@ -125,6 +128,7 @@ const userSlice = createSlice({
             })
             .addCase(registerUserThunk.fulfilled, (state, action) => {
                 state.user = action.payload.newUser;
+                state.wallet = action.payload.wallet;
                 state.error = null;
             })
             .addCase(registerUserThunk.rejected, (state, action) => {
@@ -137,12 +141,14 @@ const userSlice = createSlice({
             .addCase(loginUserThunk.fulfilled, (state, action) => {
                 state.error = null;
                 state.user = action.payload.user;
+                state.wallet = action.payload.wallet;
             })
             .addCase(loginUserThunk.rejected, (state, action) => {
                 state.error = action.payload as string
             })
             .addCase(fetchUserDataThunk.fulfilled,(state,action)=>{
                 state.user = action.payload.user;
+                state.wallet = action.payload.wallet;
             })
             .addCase(fetchUserDataThunk.rejected,(state)=>{
                 state.user = null;

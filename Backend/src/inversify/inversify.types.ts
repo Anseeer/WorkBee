@@ -26,6 +26,8 @@ const TYPES = {
     workRepository: Symbol.for("workRepository"),
     workService: Symbol.for("workService"),
     workController: Symbol.for("workController"),
+
+    walletRepository: Symbol.for("walletRepository")
 };
 
 export default TYPES;

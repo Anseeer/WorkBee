@@ -19,8 +19,8 @@ export class UserController implements IUserController {
 
     register = async (req: Request, res: Response) => {
         try {
-            const { user, token } = await this._userService.registerUser(req.body);
-            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.REGISTRATION_SUCCESS, { user });
+            const { user, token, wallet } = await this._userService.registerUser(req.body);
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.REGISTRATION_SUCCESS, { user, wallet });
             res.cookie("token", token, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
@@ -40,8 +40,8 @@ export class UserController implements IUserController {
     login = async (req: Request, res: Response) => {
         try {
             const { email, password } = req.body;
-            const { user, token } = await this._userService.loginUser(email, password);
-            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.LOGIN_SUCCESS, { user });
+            const { user, token, wallet } = await this._userService.loginUser(email, password);
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.LOGIN_SUCCESS, { user, wallet });
             res.cookie("token", token, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
@@ -207,12 +207,12 @@ export class UserController implements IUserController {
                 throw new Error("User ID is required");
             }
 
-            const user = await this._userService.fetchData(userId as string);
+            const { user, wallet } = await this._userService.fetchData(userId as string);
 
             const response = new successResponse(
                 StatusCode.OK,
                 USERS_MESSAGE.FETCH_USER_SUCCESS,
-                { user }
+                { user, wallet }
             );
             logger.info(response);
             res.status(response.status).json(response);

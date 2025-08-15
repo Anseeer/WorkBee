@@ -1,5 +1,5 @@
 import Header from "../../components/user/Header";
-import ProfileSection from "../../components/user/Profile";
+import  ProfileSection from "../../components/user/Profile";
 
 const Profile = ()=>{
 

@@ -54,18 +54,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         work.isCompleted = true;
         work.status = "Completed";
 
-        if (!work.paymentId) {
-            const payment = await Payment.create({
-                workId: work.id,
-                userId: work.userId,
-                workerId: work.workerId,
-                amount: work.wage,
-                status: "Pending"
-            });
-
-            work.paymentId = payment.id;
-            work.paymentStatus = "Pending";
-        }
+        work.paymentStatus = "Pending";
 
         await work.save();
         return true;

@@ -1,78 +1,130 @@
-import { X } from "lucide-react";
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useFormik } from "formik";
+import axios from "../../services/axios";
 
-const PaymentModal = () => {
+interface Props {
+    onClose: () => void;
+    Amount: number;
+    workId: string;
+}
 
-    const [isClose, setIsClose] = useState(true);
+const PaymentModal = ({ onClose, Amount, workId }: Props) => {
+    const handlePayment = async (amount: number) => {
+        onClose();
+        try {
+            const { data } = await axios.post("rzp/create-order", { amount, workId });
 
-    const payments = [
-        {
-            _id: "1",
-            serviceName: "Home Cleaning",
-            amount: 500,
-            dueDate: "2025-08-20",
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            document.body.appendChild(script);
+
+            script.onload = () => {
+                const options = {
+                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: "WorkBee",
+                    description: "Service Payment",
+                    order_id: data.id,
+                    handler: async function (response: { razorpay_order_id: any; razorpay_payment_id: any; razorpay_signature: any; }) {
+                        await axios.post("/rzp/verify-payment", {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            workId
+                        })
+                            .then((res) => console.log(res))
+                            .catch((err) => console.log(err))
+                    }
+                    ,
+                    prefill: {
+                        name: "Ansi",
+                        email: "ansi@example.com",
+                        contact: "7736222757",
+                    },
+                    theme: { color: "#399e6f" },
+                };
+
+                const rzp = new (window as any).Razorpay(options);
+                rzp.open();
+            };
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const formik = useFormik({
+        initialValues: {
+            amount: Amount,
         },
-        {
-            _id: "2",
-            serviceName: "AC Repair",
-            amount: 1200,
+        validate: (values) => {
+            const errors: { amount?: string } = {};
+            if (!values.amount) {
+                errors.amount = "Amount is required";
+            } else if (values.amount < Amount) {
+                errors.amount = `Amount should be greater than or equal to ₹${Amount}`;
+            }
+            return errors;
         },
-    ];
-
-    const onClose = () => {
-        setIsClose(false);
-    }
-    if (!isClose) return;
+        onSubmit: (values) => {
+            handlePayment(values.amount);
+        },
+    });
 
     return (
-
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative animate-fadeIn">
-                {/* Close Button */}
+        <div className="fixed inset-0 bg-transparent bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+            <form
+                onSubmit={formik.handleSubmit}
+                className="bg-white border-2 border-green-700 rounded-lg shadow-lg p-6 w-96 relative animate-fadeIn"
+            >
+                {/* Close Icon */}
                 <button
+                    type="button"
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+                    className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
                 >
-                    <X className="w-5 h-5" />
+                    ✖
                 </button>
 
                 {/* Title */}
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                    Pending Payments
-                </h2>
+                <h2 className="text-lg font-semibold mb-2 text-center">Complete Your Payment</h2>
 
-                {payments.length === 0 ? (
-                    <p className="text-gray-500 text-sm">No pending payments 🎉</p>
-                ) : (
-                    <div className="space-y-4">
-                        {payments.map((payment) => (
-                            <div
-                                key={payment._id}
-                                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200"
-                            >
-                                <div>
-                                    <p className="font-medium text-gray-800">
-                                        {payment.serviceName}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                        Amount: ₹{payment.amount}
-                                    </p>
-                                    {payment.dueDate && (
-                                        <p className="text-xs text-red-500">
-                                            Due: {new Date(payment.dueDate).toLocaleDateString()}
-                                        </p>
-                                    )}
-                                </div>
-                                <button
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                                >
-                                    Pay Now
-                                </button>
-                            </div>
-                        ))}
-                    </div>
+                {/* Comfort Message */}
+                <p className="text-sm text-gray-600 mb-4 text-center">
+                    Please enter the amount based on the service.
+                    We ensure your payment is safe & secure.
+                </p>
+
+                {/* Input */}
+                <input
+                    type="number"
+                    name="amount"
+                    value={formik.values.amount}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter amount"
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700 mb-2 ${formik.touched.amount && formik.errors.amount
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
+                />
+
+                {/* Error Message */}
+                {formik.touched.amount && formik.errors.amount && (
+                    <p className="text-red-500 text-sm mb-4">{formik.errors.amount}</p>
                 )}
-            </div>
+
+                {/* Pay Button */}
+                <div className="flex justify-center">
+                    <button
+                        type="submit"
+                        className="px-6 py-2 rounded bg-green-700 text-white hover:bg-green-500 transition-all duration-300"
+                    >
+                        Pay Now
+                    </button>
+                </div>
+            </form>
         </div>
     );
 };

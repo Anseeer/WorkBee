@@ -14,6 +14,7 @@ import { CategoryRepository } from "../repositories/category/category.repo";
 import { CategoryService } from "../services/category/category.service";
 import { AvailabilityRepository } from "../repositories/availability/availability.repo";
 import { AvailabilityService } from "../services/availability/availability.service";
+import { WalletRepository } from "../repositories/wallet/wallet.repo";
 
 // Interfaces
 import { IUserRepository } from "../repositories/user/user.repo.interface";
@@ -35,6 +36,9 @@ import { ServiceService } from "../services/service/service.service";
 import { IServiceService } from "../services/service/service.service.interface";
 import { IServiceController } from "../controllers/services/services.controller.interface";
 import { ServiceController } from "../controllers/services/services.controller";
+import { IWalletRepository } from "../repositories/wallet/wallet.repo.interface";
+
+
 import TYPES from "./inversify.types";
 import { Container } from "inversify";
 import { IWorkController } from "../controllers/work/work.controller.interface";
@@ -72,5 +76,6 @@ container.bind<IWorkController>(TYPES.workController).to(WorkController);
 container.bind<IAvailabilityRepository>(TYPES.availabilityRepository).to(AvailabilityRepository);
 container.bind<IAvailabilityService>(TYPES.availabilityService).to(AvailabilityService);
 
+container.bind<IWalletRepository>(TYPES.walletRepository).to(WalletRepository);
 
 export default container;
