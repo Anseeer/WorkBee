@@ -44,13 +44,10 @@ const workerSchema = new Schema<IWorker>({
         type: String,
         required: false
     },
-    totalWorks: {
-        type: Number,
-        required: false
-    },
     completedWorks: {
         type: Number,
-        required: false
+        required: false,
+        default:0
     },
     radius: {
         type: Number,

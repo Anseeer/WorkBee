@@ -12,7 +12,6 @@ export interface IWorker extends Document {
     profileImage: string,
     role: string,
     radius: number,
-    totalWorks: number,
     completedWorks: number,
     workType: string[],
     preferredSchedule: string[],
@@ -31,5 +30,5 @@ export interface IWorker extends Document {
     },
     createdAt: Date,
     updatedAt: Date
-    isAccountBuilt:boolean
-    }
+    isAccountBuilt: boolean
+}

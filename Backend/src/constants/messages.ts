@@ -173,6 +173,7 @@ export const WORKER_MESSAGE = {
 };
 
 export const WORK_MESSAGE = {
+    WORK_NOT_EXIST:"Work not exist",
     WORK_DETAILS_GET_SUCCESS:"Work details get successfull.",
     WORK_DETAILS_GET_FAILD:"Work details get faild.",
     WORK_ID_NOT_GET:"Can`t get workId.",

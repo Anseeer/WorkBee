@@ -28,7 +28,7 @@ const Wallet = ({ balance, history }: WalletPageProps) => {
   const currentItems = history.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="bg-gray-50 flex flex-col items-center p-4">
+    <div className="bg-gray-50 flex flex-col items-center p-2">
       <main className="w-full max-w-4xl">
         {/* Wallet Card */}
         <div className="rounded-lg  flex flex-col items-center">
@@ -41,7 +41,7 @@ const Wallet = ({ balance, history }: WalletPageProps) => {
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg"
               alt="Card"
-              className="w-12 h-10"
+              className="w-15 h-10"
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ const Wallet = ({ balance, history }: WalletPageProps) => {
                           ₹{tx.amount.toFixed(2)}
                         </td>
                         <td className="p-2">{tx.type}</td>
-                        <td className="p-2">{tx.transactionId.slice(0,15)}</td>
+                        <td className="p-2">{tx.transactionId.slice(0,15).toUpperCase()}</td>
                         <td className="p-2">
                           {new Date(tx.createdAt).toLocaleDateString("en-GB")}
                         </td>

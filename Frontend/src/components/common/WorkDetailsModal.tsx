@@ -66,11 +66,25 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
     };
 
     const HandleAccepted = async () => {
-        await acceptWork(workDetails?._id as string,workerDetails?.id as string);
-        const work = await fetchWorkDetails(workId);
-        setWorkDetails(work.data);
-        toast.success("Accepted successfull")
-    }
+        try {
+            const res = await acceptWork(workDetails?._id as string);
+
+            if (!res.success) {
+                toast.error(res.error || "Something went wrong");
+                return;
+            }
+
+            const work = await fetchWorkDetails(workId);
+            setWorkDetails(work.data);
+
+            toast.success("Accepted successfully");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            const message = err?.response?.data?.data || "Failed to accept work";
+            toast.error(message);
+        }
+    };
+
 
     const HandleRejected = async () => {
         await cancelWork(workDetails?._id as string);
@@ -80,7 +94,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
     }
 
     const HandleIsCompleted = async () => {
-        await isCompletWork(workDetails?._id as string);
+        await isCompletWork(workDetails?._id as string, workDetails?.workerId as string);
         const work = await fetchWorkDetails(workId);
         setWorkDetails(work.data);
         toast.success("Completed successfull")
@@ -107,7 +121,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
                                     <p className="text-gray-600 mt-1">Job ID: #{workDetails?._id?.toString().substr(2, 9).toUpperCase()}</p>
                                 </div>
                                 <div className='flex items-center'>
-                                     {workDetails?.status === "Accepted" && (
+                                    {workDetails?.status === "Accepted" && (
                                         <div className="flex items-center gap-3">
                                             <label className="relative inline-flex items-center cursor-pointer">
                                                 <input

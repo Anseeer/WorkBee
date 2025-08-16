@@ -10,7 +10,6 @@ export interface IWorker {
     bio: string,
     profileImage: string | File,
     role: string,
-    totalWorks: number,
     completedWorks: number,
     radius: number,
     workType: string[],

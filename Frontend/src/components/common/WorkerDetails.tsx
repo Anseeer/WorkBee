@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MapPin, Clock, Phone, Mail, User, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Phone, Mail, User, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { useWorkerDetails } from '../context/WorkerDetailContext';
@@ -246,7 +246,6 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                         </div>
 
                         <div className="flex space-x-4">
-                            <StatCard icon={Clock} label="Total Works" value={worker.totalWorks} color="blue" />
                             <StatCard icon={CheckCircle} label="Completed" value={worker.completedWorks} color="green" />
                         </div>
                     </div>

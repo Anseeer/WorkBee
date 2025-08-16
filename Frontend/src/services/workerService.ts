@@ -105,13 +105,13 @@ export const fetchWorkDetails = async (workId: string) => {
   return response.data;
 }
 
-export const acceptWork = async (workId: string,workerId:string) => {
-  const response = await axios.patch(`works/accept?workId=${workId}&workerId:${workerId}`)
+export const acceptWork = async (workId: string) => {
+  const response = await axios.patch(`works/accept?workId=${workId}`)
   return response.data.data;
 }
 
-export const isCompletWork = async (workId: string) => {
-  const response = await axios.patch(`works/is-completed?workId=${workId}`)
+export const isCompletWork = async (workId: string,workerId:string) => {
+  const response = await axios.patch(`works/is-completed?workId=${workId}&workerId=${workerId}`)
   return response.data.data;
 }
 

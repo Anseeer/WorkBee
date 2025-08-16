@@ -13,6 +13,7 @@ import { getProfileImage } from "../../utilities/getProfile";
 import EditUserModal from "./UserEditModal";
 import PaymentModal from "./PaymentModal";
 import Wallet from "./Wallet";
+import AddMoneyModal from "./AddMoneyModal";
 
 const ProfileSection = () => {
 
@@ -21,8 +22,10 @@ const ProfileSection = () => {
     const [isActiveTab, setIsActiveTab] = useState('Profile');
     const [isEdit, setIsEdit] = useState(false);
     const [isPaymentModal, setIsPaymentModal] = useState(false);
+    const [isAddMoneyModal, setAddMoneyModal] = useState(false);
     const [amount, setAmount] = useState<number | null>(null);
     const [workId, setWorkId] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
     const [selectedImg, setSelectedImg] = useState<File | null | string>(null);
     const user = useSelector((state: RootState) => state.user?.user);
@@ -47,7 +50,7 @@ const ProfileSection = () => {
             setWorkHistory(workHistory.data.data);
         }
         fetchData();
-    }, [isEdit, isPaymentModal]);
+    }, [isEdit, isPaymentModal,isAddMoneyModal]);
 
     const handleLogout = async () => {
         try {
@@ -94,6 +97,15 @@ const ProfileSection = () => {
         setIsPaymentModal(false)
     }
 
+    const closeAddMoneyModal = () => {
+        setAddMoneyModal(false)
+    }
+
+    const handleAddMoney = () => {
+        setUserId(user?.id as string)
+        setAddMoneyModal(true)
+    }
+
     return (
         <div className="flex h-[530px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
             {/* Sidebar */}
@@ -130,10 +142,18 @@ const ProfileSection = () => {
                     {isActiveTab == "Profile" ? (
                         <button
                             onClick={handleEdit}
-                            className="px-8 py-3 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
+                            className="px-8 py-2 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
             transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
                         >
                             Edit
+                        </button>
+                    ) : isActiveTab == "Wallet" ? (
+                        <button
+                            onClick={handleAddMoney}
+                            className="px-3 py-1 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
+            transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
+                        >
+                            Add Money
                         </button>
                     ) : null}
                 </div>
@@ -327,7 +347,9 @@ const ProfileSection = () => {
                 ) : null}
                 {isPaymentModal ? (
                     <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />
-                ) : null}
+                ) : isAddMoneyModal ? (
+                    <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal}/>
+                ): null}
             </div>
         </div>
     );

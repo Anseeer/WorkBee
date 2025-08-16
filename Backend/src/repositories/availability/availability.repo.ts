@@ -11,7 +11,7 @@ export class AvailabilityRepository extends BaseRepository<IAvailability> implem
         super(Availability)
     }
 
-    findByWorkerId = async (workerId: string | mongoose.Types.ObjectId): Promise<IAvailability[] | null> => {
+    findByWorkerId = async (workerId: string | mongoose.Types.ObjectId): Promise<IAvailability| null> => {
         return await this.model.findOne({ workerId });
     }
 

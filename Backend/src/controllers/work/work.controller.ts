@@ -103,17 +103,19 @@ export class WorkController implements IWorkController {
 
     completedWork = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { workId } = req.query;
+            const { workId, workerId } = req.query;
             if (!workId) {
                 throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
+            } else if (!workerId) {
+                throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET)
             }
 
-            const result = await this._workService.completed(workId as string);
+            const result = await this._workService.completed(workId as string,workerId as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_COMPLETED_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error in the completded work",error);
+            console.log("Error in the completded work", error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_COMPLETED_FAILD, message);
             logger.error(response);
@@ -123,12 +125,12 @@ export class WorkController implements IWorkController {
 
     acceptWork = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { workId, workerId } = req.query;
+            const { workId } = req.query;
             if (!workId) {
                 throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             }
 
-            const result = await this._workService.accept(workId as string,workerId as string);
+            const result = await this._workService.accept(workId as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_ACCEPT_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
