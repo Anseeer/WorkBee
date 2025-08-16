@@ -1,14 +1,16 @@
 import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
+import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 
 export interface IWorkerService {
-    registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker?: {} }>;
+    registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker?: {},wallet:IWallet|null }>;
     loginWorker(credentials: { email: string; password: string }): Promise<{
         token: string;
         worker: IWorkerDTO;
+        wallet:IWallet|null,
         availability?: IAvailability[];
     }>;
     buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailability }>;

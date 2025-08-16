@@ -241,17 +241,13 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                         <User className="w-3 h-3" />
                                         <span>{worker.age} years old</span>
                                     </div>
-                                    <div className="flex items-center space-x-1">
-                                        <Clock className="w-3 h-3" />
-                                        <span>Min {worker.minHours}/hrs</span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex space-x-4">
-                            <StatCard icon={Clock} label="Total Works" value="26" color="blue" />
-                            <StatCard icon={CheckCircle} label="Completed" value="22" color="green" />
+                            <StatCard icon={Clock} label="Total Works" value={worker.totalWorks} color="blue" />
+                            <StatCard icon={CheckCircle} label="Completed" value={worker.completedWorks} color="green" />
                         </div>
                     </div>
                 </div>
@@ -294,10 +290,6 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Work Details</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <p className="text-sm text-gray-600 mb-2">Minimum Hours Per Day</p>
-                                        <p className="font-medium text-gray-900">{worker.minHours}</p>
-                                    </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-2">Work Type</p>
                                         <p className="font-medium text-gray-900">{worker.workType.join(', ')}</p>
@@ -377,18 +369,18 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                             }`}>
                                             {worker.isAccountBuilt ? 'Complete' : 'Incomplete'}
                                         </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
             {
-        isEdit ? (
-            <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose} />
-        ) : null
-    }
+                isEdit ? (
+                    <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose} />
+                ) : null
+            }
         </div >
     );
 };

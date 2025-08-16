@@ -44,8 +44,12 @@ const workerSchema = new Schema<IWorker>({
         type: String,
         required: false
     },
-    minHours: {
-        type: String,
+    totalWorks: {
+        type: Number,
+        required: false
+    },
+    completedWorks: {
+        type: Number,
         required: false
     },
     radius: {
@@ -82,7 +86,7 @@ const workerSchema = new Schema<IWorker>({
     status: {
         type: String,
         required: true,
-        enum: ["Pending Approval", "Approved", "Rejected"], 
+        enum: ["Pending Approval", "Approved", "Rejected"],
         default: "Pending Approval",
     },
     govId: {

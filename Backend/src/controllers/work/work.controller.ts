@@ -123,12 +123,12 @@ export class WorkController implements IWorkController {
 
     acceptWork = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { workId } = req.query;
+            const { workId, workerId } = req.query;
             if (!workId) {
                 throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             }
 
-            const result = await this._workService.accept(workId as string);
+            const result = await this._workService.accept(workId as string,workerId as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_ACCEPT_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);

@@ -29,7 +29,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
     }
 
     async accept(workId: string): Promise<boolean> {
-        const res = await this.model.updateOne({ _id: workId }, { $set: { status: "Accepted" } });
+        const res = await this.model.updateOne({ _id: workId }, { $set: { status: "Accepted"} });
         return res.modifiedCount > 0;
     }
 

@@ -7,6 +7,8 @@ import Work from "../model/work/work.model";
 import Payment from "../model/payment/payment.model";
 import { generateTransactionId } from "../utilities/generateTransactionId";
 import logger from "../utilities/logger";
+import { Wallet } from "../model/wallet/wallet.model";
+import Worker from "../model/worker/worker.model";
 
 router.post("/create-order", async (req, res) => {
     try {
@@ -73,6 +75,13 @@ router.post<{}, any, VerifyPaymentBody>(
                 throw new Error("Payment record not found");
             }
 
+            const worker = await Worker.findById(payment.workerId);
+            if (!worker) throw new Error("Worker not found");
+
+            worker.completedWorks += 1;
+            await worker.save();   
+
+
             const work = await Work.findById(workId);
             if (!work) {
                 throw new Error("Work not found");
@@ -81,35 +90,46 @@ router.post<{}, any, VerifyPaymentBody>(
             work.paymentId = payment.id;
             await work.save();
 
-            // Update payment
             payment.status = "Paid";
             payment.transactionId = await generateTransactionId(razorpay_payment_id);
             payment.paidAt = new Date();
             payment.notes = `Paid to ${work.service}`;
             await payment.save();
 
-            // Optional: Create transaction record
-            /*
-            await Transaction.create({
-                workId,
-                userId: payment.userId,
-                workerId: payment.workerId,
+            const workerTransaction = {
                 transactionId: payment.transactionId,
+                type: "CREDIT",
                 amount: payment.amount,
-                type: "credit",
+                description: `${work.service} wage`,
                 createdAt: new Date()
-            });
-    
-            // Optional: Update worker's wallet
+            }
+
+            const userTransaction = {
+                transactionId: payment.transactionId,
+                type: "DEBIT",
+                amount: payment.amount,
+                description: payment.notes,
+                createdAt: new Date()
+            }
+
             await Wallet.updateOne(
-                { userId: payment.workerId },
-                { $inc: { balance: payment.amount } }
+                { userId: work.userId },
+                {
+                    $inc: { balance: -userTransaction.amount },
+                    $push: { transactions: userTransaction }
+                }
             );
-            */
+
+            await Wallet.updateOne(
+                { userId: work.workerId },
+                {
+                    $inc: { balance: workerTransaction.amount },
+                    $push: { transactions: workerTransaction }
+                }
+            );
 
             res.json({ success: true, message: "Payment verified successfully" });
         } catch (error) {
-            console.log("Errorrrrrr:::::::::::::");
             logger.error(error);
             console.error(error);
             const message = error instanceof Error ? error.message : "Something went wrong";

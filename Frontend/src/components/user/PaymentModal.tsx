@@ -10,7 +10,6 @@ interface Props {
 
 const PaymentModal = ({ onClose, Amount, workId }: Props) => {
     const handlePayment = async (amount: number) => {
-        onClose();
         try {
             const { data } = await axios.post("rzp/create-order", { amount, workId });
 
@@ -34,10 +33,12 @@ const PaymentModal = ({ onClose, Amount, workId }: Props) => {
                             razorpay_signature: response.razorpay_signature,
                             workId
                         })
-                            .then((res) => console.log(res))
+                            .then((res) => {
+                                onClose()
+                                console.log(res)
+                            })
                             .catch((err) => console.log(err))
-                    }
-                    ,
+                    },
                     prefill: {
                         name: "Ansi",
                         email: "ansi@example.com",

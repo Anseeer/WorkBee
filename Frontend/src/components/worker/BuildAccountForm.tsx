@@ -67,7 +67,6 @@ export default function BuildAccount() {
       bio: "",
       workingHours: [] as string[],
       jobTypes: [] as string[],
-      minHours: "1",
       radius: "1",
       selectedServices: [] as string[],
       availableDates: [] as string[],
@@ -125,7 +124,6 @@ export default function BuildAccount() {
           age: Number(values.age),
           services: values.selectedServices,
           workType: values.jobTypes,
-          minHours: Number(values.minHours),
           radius: Number(values.radius),
           preferredSchedule: values.workingHours,
           govId: govUrls.length === 1 ? govUrls[0] : govUrls,
@@ -387,22 +385,6 @@ export default function BuildAccount() {
             ) : null}
           </div>
 
-          <div>
-            <label className="block text-sm mb-2">Minimum Work Hours</label>
-            <select
-              name="minHours"
-              value={formik.values.minHours}
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              className="w-24 p-2 border rounded focus:ring-2 focus:ring-green-500"
-            >
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((hr) => (
-                <option key={hr} value={hr}>
-                  {hr} hr
-                </option>
-              ))}
-            </select>
-          </div>
           <div>
             <label className="block text-sm mb-2">
               Enter the maximum distance (in km) you’re willing to travel for work

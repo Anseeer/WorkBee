@@ -27,8 +27,6 @@ const ProfileSection = () => {
     const [selectedImg, setSelectedImg] = useState<File | null | string>(null);
     const user = useSelector((state: RootState) => state.user?.user);
     const wallet = useSelector((state: RootState) => state.user?.wallet);
-    console.log("User :", user);
-    console.log("Wallet :", wallet);
 
     useEffect(() => {
         if (user?.profileImage) {
@@ -276,6 +274,12 @@ const ProfileSection = () => {
                                         >
                                             Pay
                                         </button>
+                                    ) : work.status == "Accepted" ? (
+                                        <button
+                                            className="px-3 py-1 rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                        >
+                                            Processing
+                                        </button>
                                     ) : null}
                                 </div>
                             ))
@@ -319,8 +323,8 @@ const ProfileSection = () => {
                 ) : isActiveTab == "Edit" ? (
                     <EditUserModal onClose={Close} setEdit={setIsEdit} />
                 ) : isActiveTab == "Wallet" ? (
-                    <Wallet/>
-                ): null}
+                    <Wallet history={wallet?.transactions} balance={wallet?.balance} />
+                ) : null}
                 {isPaymentModal ? (
                     <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />
                 ) : null}

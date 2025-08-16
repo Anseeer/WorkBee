@@ -120,6 +120,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             workType: { $in: searchTerms.workType },
             isAccountBuilt: true,
             isActive: true,
+            isVerified: true,
         };
 
         if (searchTerms.categoryId) {
@@ -162,8 +163,8 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     }
 
     async findById(id: string): Promise<IWorker> {
-        const worker =  await this.model.findById(id);
-        if(!worker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+        const worker = await this.model.findById(id);
+        if (!worker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
         return worker;
     }
 

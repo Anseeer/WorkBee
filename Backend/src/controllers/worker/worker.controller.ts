@@ -9,16 +9,21 @@ import { IAvailabilityService } from "../../services/availability/availability.s
 import { WORKER_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
+import { IWorkRepository } from "../../repositories/work/work.repo.interface";
+import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 
 @injectable()
 export class WorkerController implements IWorkerController {
     private _workerService: IWorkerService;
     private _availabilityService: IAvailabilityService;
+    private _walletRepository: IWalletRepository;
     constructor(
         @inject(TYPES.workerService) workerService: IWorkerService,
+        @inject(TYPES.walletRepository) walletRepo: IWalletRepository,
         @inject(TYPES.availabilityService) availabilityService: IAvailabilityService
     ) {
-        this._workerService = workerService
+        this._workerService = workerService,
+        this._walletRepository = walletRepo,
         this._availabilityService = availabilityService
     }
 
@@ -29,8 +34,8 @@ export class WorkerController implements IWorkerController {
                 throw new Error(WORKER_MESSAGE.EMAIL_AND_PASS_REQUIRED);
             }
             const credentials = { email, password };
-            const { token, worker, availability } = await this._workerService.loginWorker(credentials);
-            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.LOGIN_SUCCESS, { worker, availability });
+            const { token, worker, wallet, availability } = await this._workerService.loginWorker(credentials);
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.LOGIN_SUCCESS, { worker, availability, wallet });
             res.cookie("token", token, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
@@ -51,8 +56,8 @@ export class WorkerController implements IWorkerController {
 
     register = async (req: Request, res: Response) => {
         try {
-            const { token, worker } = await this._workerService.registerWorker(req.body);
-            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.REGISTRATION_SUCCESS, { worker });
+            const { token, worker, wallet } = await this._workerService.registerWorker(req.body);
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.REGISTRATION_SUCCESS, { worker, wallet });
             res.cookie("token", token, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
@@ -194,19 +199,21 @@ export class WorkerController implements IWorkerController {
     };
 
     fetchDetails = async (req: Request, res: Response): Promise<void> => {
-        const  workerId  = req.query.workerId;
-        console.log("Query :",req.query)
-        console.log("WorkerID Of Fetch Details::",workerId);
+        const workerId = req.query.workerId;
+        console.log("Query :", req.query)
+        console.log("WorkerID Of Fetch Details::", workerId);
         try {
             if (!workerId || typeof workerId !== "string") {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
             }
 
             const worker = await this._workerService.getUserById(workerId);
+            const wallet = await this._walletRepository.findByUser(worker?.id);
             const availability = await this._availabilityService.getAvailabilityByworkerId(workerId)
 
             const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.WORKER_DETAILS_FETCH_SUCCESSFULLY, {
                 worker,
+                wallet,
                 availability
             });
 
@@ -247,15 +254,15 @@ export class WorkerController implements IWorkerController {
         }
     }
 
-    searchWorker = async (req: Request, res: Response): Promise<void> =>{
-         try {
+    searchWorker = async (req: Request, res: Response): Promise<void> => {
+        try {
             const searchTerms = req.body;
-            if (!searchTerms ) {
+            if (!searchTerms) {
                 throw new Error("Search term not exitst");
             }
 
             const workers = await this._workerService.searchWorker(searchTerms);
-            const response = new successResponse(StatusCode.OK,"Success fully get the workers", {workers});
+            const response = new successResponse(StatusCode.OK, "Success fully get the workers", { workers });
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {

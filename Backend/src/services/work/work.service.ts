@@ -60,46 +60,53 @@ export class WorkService implements IWorkService {
     }
 
     fetchWorkHistoryByUser = async (userId: string): Promise<IWork[]> => {
-        if(!userId){
+        if (!userId) {
             throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
         }
         return await this._workRepositoy.findByUser(userId);
     }
 
     fetchWorkHistoryByWorker = async (workerId: string): Promise<IWork[]> => {
-        if(!workerId){
+        if (!workerId) {
             throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
         }
         return await this._workRepositoy.findByWorker(workerId);
     }
 
     cancel = async (workId: string): Promise<boolean> => {
-        if(!workId){
+        if (!workId) {
             throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET)
         }
         return await this._workRepositoy.cancel(workId);
     }
 
-    accept = async (workId: string): Promise<boolean> => {
-        if(!workId){
+    accept = async (workId: string, workerId: String): Promise<boolean> => {
+        if (!workId) {
             throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET)
         }
+
+        const worker = await this._workerRepositoy.findById(workerId as string);
+        if (!worker) throw new Error("Worker not found");
+
+        worker.totalWorks += 1;
+        await worker.save();   
+
         return await this._workRepositoy.accept(workId);
     }
 
     completed = async (workId: string): Promise<boolean> => {
-        if(!workId){
+        if (!workId) {
             throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET)
         }
         return await this._workRepositoy.setIsWorkCompleted(workId);
     }
 
-    workDetails = async (workId: string): Promise<IWork> =>{
-        if(!workId){
+    workDetails = async (workId: string): Promise<IWork> => {
+        if (!workId) {
             throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
         }
         const workDetails = await this._workRepositoy.findById(workId as string);
-        if(!workDetails){
+        if (!workDetails) {
             throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS)
         }
         return workDetails;

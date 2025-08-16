@@ -8,6 +8,7 @@ import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import { fetchWorkerDetails } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import WorkHistory from "../../components/worker/WorkHistory";
+import Wallet from "../../components/user/Wallet";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -15,6 +16,7 @@ const Dashboard = () => {
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
+    const wallet = workerData.wallet;
 
     useEffect(() => {
         const workerID = localStorage.getItem("workerId");
@@ -72,8 +74,12 @@ const Dashboard = () => {
                         <BuildAccount />
                     )
                 ) : activeTab === "history" ? (
-                    <WorkHistory/>
-                ): null}
+                    <WorkHistory />
+                ) : activeTab === "wallet" ? (
+                    <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700">
+                        <Wallet history={wallet?.transactions} balance={wallet?.balance} />
+                    </div>
+                ) : null}
             </div>
         </div>
     );

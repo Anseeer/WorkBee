@@ -16,11 +16,15 @@ import { IAvailabilityRepository } from "../../repositories/availability/availab
 import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
 import { IServiceRepository } from "../../repositories/services/service.repo.interface";
 import { ICategoryRepository } from "../../repositories/category/category.repo.interface";
+import { Wallet } from "../../model/wallet/wallet.model";
+import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
+import { IWallet } from "../../model/wallet/wallet.interface.model";
 
 @injectable()
 export class WorkerService implements IWorkerService {
     private _workerRepository: IWorkerRepository
     private _availabilityRepository: IAvailabilityRepository
+    private _walletRepository: IWalletRepository
     private _serviceRepository: IServiceRepository
     private _categoryRepository: ICategoryRepository
     constructor(
@@ -28,14 +32,16 @@ export class WorkerService implements IWorkerService {
         @inject(TYPES.availabilityRepository) availibilityRepo: IAvailabilityRepository,
         @inject(TYPES.serviceRepository) serviceRepo: IServiceRepository,
         @inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository,
+        @inject(TYPES.walletRepository) walletRepo: IWalletRepository,
     ) {
         this._workerRepository = workerRepo;
         this._availabilityRepository = availibilityRepo;
         this._serviceRepository = serviceRepo;
         this._categoryRepository = categoryRepo;
+        this._walletRepository = walletRepo;
     }
 
-    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, availability?: IAvailability[] }> {
+    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, wallet: IWallet | null, availability?: IAvailability[] }> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
         if (!existingWorker || existingWorker.role !== "Worker") {
@@ -62,18 +68,19 @@ export class WorkerService implements IWorkerService {
         }
 
         const token = generateToken(existingWorker.id.toString(), existingWorker.role);
-
+        const wallet = await this._walletRepository.findByUser(existingWorker.id);
         const worker = mapWorkerToDTO(existingWorker);
 
         return {
             token,
             worker,
+            wallet,
             availability: existingAvailability ?? undefined
         };
     }
 
 
-    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {} }> {
+    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {}, wallet: IWallet | null }> {
 
         if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
             throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
@@ -88,9 +95,18 @@ export class WorkerService implements IWorkerService {
         workerData.password = hashedPass;
         const newWorker = await this._workerRepository.create(workerData);
 
+        await Wallet.create({
+            userId: newWorker._id,
+            balance: 0,
+            currency: "INR",
+            transactions: []
+        })
+
+        const wallet = await this._walletRepository.findByUser(newWorker.id);
+
         const token = generateToken(newWorker.id.toString(), newWorker.role);
 
-        return { token, worker: newWorker };
+        return { token, worker: newWorker, wallet };
 
     }
 

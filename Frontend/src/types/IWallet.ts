@@ -5,10 +5,10 @@ export interface IWallet  {
     currency: string;
     transactions: {
         transactionId: string;
-        type: "credit" | "debit";
+        type: "CREDIT" | "DEBIT";
         amount: number;
         description?: string;
-        createdAt: Date;
+        createdAt: string;
     }[];
     createdAt?: Date;
     updatedAt?: Date;

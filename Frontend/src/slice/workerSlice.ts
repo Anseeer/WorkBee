@@ -3,22 +3,26 @@ import type { AxiosError } from "axios";
 import { buildAccount, forgotPassword, getWorkerDetails, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
 import type { IWorker } from "../types/IWorker";
 import type { IAvailability } from "../types/IAvailability";
+import type { IWallet } from "../types/IWallet";
 
 interface BuildAccountResponse {
     worker: IWorker;
     availability: IAvailability;
+    wallet:IWallet;
 }
 
 
 export interface WorkerState {
     worker: IWorker | null;
     availability: IAvailability | null;
+    wallet: IWallet | null;
     error: string | null;
 }
 
 const initialState: WorkerState = {
     worker: null,
     availability: null,
+    wallet: null,
     error: null,
 };
 
@@ -144,12 +148,14 @@ const workerSlice = createSlice({
             // Register
             .addCase(registerWorkerThunk.fulfilled, (state, action) => {
                 const worker = action.payload.worker;
+                const wallet = action.payload.wallet;
 
                 state.worker = {
                     ...worker,
                     id: worker._id || worker.id
                 };
                 state.error = null;
+                state.wallet = wallet;
                 localStorage.setItem("workerId", state.worker?.id as string);
             })
 
@@ -160,6 +166,7 @@ const workerSlice = createSlice({
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
                 console.log("Action.Payload :",action.payload)
                 const worker = action.payload.worker;
+                const wallet = action.payload.wallet;
                 const availability = action.payload.availability;
                 console.log("Worker :",worker)
                 console.log("Availability :",availability)
@@ -167,6 +174,7 @@ const workerSlice = createSlice({
                     ...worker,
                     id: worker.id || worker._id
                 };
+                state.wallet = wallet;
                 state.error = null;
                 localStorage.setItem("workerId", state.worker?.id as string);
             })
@@ -191,6 +199,7 @@ const workerSlice = createSlice({
                 console.log("PAyload.worker in the fetchWorker :",action.payload.worker)
                 console.log("PAyload.availability in the fetchWorker :",action.payload.availability)
                 state.worker = action.payload.worker;
+                state.wallet = action.payload.wallet;
                 state.availability = action.payload.availability;
             })
     },
