@@ -41,7 +41,7 @@ export class WorkerService implements IWorkerService {
         this._walletRepository = walletRepo;
     }
 
-    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, wallet: IWallet | null, availability?: IAvailability[] }> {
+    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, wallet: IWallet | null, availability?: IAvailability }> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
         if (!existingWorker || existingWorker.role !== "Worker") {
@@ -52,7 +52,7 @@ export class WorkerService implements IWorkerService {
             throw new Error(WORKER_MESSAGE.WORKER_BLOCKED)
         }
 
-        let existingAvailability: IAvailability[] | undefined | null;
+        let existingAvailability: IAvailability | undefined | null;
 
         if (existingWorker.isAccountBuilt) {
             existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
@@ -121,7 +121,6 @@ export class WorkerService implements IWorkerService {
             age: workerData.age,
             services: workerData.services,
             workType: workerData.workType,
-            minHours: workerData.minHours,
             radius: workerData.radius,
             preferredSchedule: workerData.preferredSchedule,
             govId: workerData.govId,
@@ -212,5 +211,16 @@ export class WorkerService implements IWorkerService {
         const workers = filteredWorkers.map(mapWorkerToDTO);
         return workers;
     }
+
+    async findWorkersByIds(workerIds: string[]): Promise<IWorkerDTO[]> {
+        if (!workerIds || workerIds.length === 0) {
+            throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+        }
+
+        const workers = await this._workerRepository.findWorkersByIds(workerIds);
+
+        return workers.map((worker) => mapWorkerToDTO(worker));
+    }
+
 
 }

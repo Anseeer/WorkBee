@@ -12,4 +12,5 @@ export interface IWorkerController {
     fetchDetails(req: Request, res: Response): Promise<void>;
     updateWorker(req: Request, res: Response): Promise<void>;
     searchWorker(req: Request, res: Response): Promise<void>;
+    findWorkersByIds(req: Request, res: Response): Promise<void>;
 }

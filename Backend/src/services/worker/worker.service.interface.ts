@@ -11,7 +11,7 @@ export interface IWorkerService {
         token: string;
         worker: IWorkerDTO;
         wallet:IWallet|null,
-        availability?: IAvailability[];
+        availability?: IAvailability;
     }>;
     buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailability }>;
     forgotPass(email: string): Promise<string>;
@@ -22,4 +22,5 @@ export interface IWorkerService {
     resetPass(email: string, password: string): Promise<void>;
     updateWorker(workerData: IWorker): Promise<boolean>;
     searchWorker(serachTerm: Partial<IWork>): Promise<IWorkerDTO[]>;
+    findWorkersByIds(workerIds: string[]): Promise<IWorkerDTO[]>;
 }

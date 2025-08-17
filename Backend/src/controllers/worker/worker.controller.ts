@@ -273,5 +273,25 @@ export class WorkerController implements IWorkerController {
         }
     }
 
+    findWorkersByIds = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const {workerIds} = req.body;
+            if (!workerIds) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+
+            const workers = await this._workerService.findWorkersByIds(workerIds);
+            const response = new successResponse(StatusCode.OK, "Success fully get the workers", { workers });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error);
+            const err = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, "faild to search workers ", err);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
 }
 

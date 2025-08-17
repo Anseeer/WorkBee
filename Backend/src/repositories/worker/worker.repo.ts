@@ -96,7 +96,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             age: workerData.age,
             bio: workerData.bio,
             profileImage: workerData.profileImage,
-            minHours: workerData.minHours,
             radius: workerData.radius,
             workType: workerData.workType,
             preferredSchedule: workerData.preferredSchedule,
@@ -166,6 +165,11 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         const worker = await this.model.findById(id);
         if (!worker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
         return worker;
+    }
+
+    async findWorkersByIds(workerIds: string[]): Promise<IWorker[]> {
+        const workers = await this.model.find({ _id: { $in: workerIds } });
+        return workers;
     }
 
 }

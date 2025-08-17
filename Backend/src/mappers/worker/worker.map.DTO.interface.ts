@@ -22,7 +22,6 @@ export interface IWorkerDTO {
     categories: string[];
     age: number;
     bio: string;
-    minHours: string; 
     profileImage: string;
     govId: string[];
     subscription: {

@@ -115,3 +115,11 @@ export const isCompletWork = async (workId: string,workerId:string) => {
   return response.data.data;
 }
 
+export const findWorkersByIds = async (workerIds:string[]) => {
+  if(!workerIds){
+    return ("WorkerIds not get")
+  }
+  const response = await axios.post(`workers/find-workers-byId`,{workerIds});
+  return response.data.data;
+}
+

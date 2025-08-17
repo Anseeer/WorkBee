@@ -67,13 +67,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
 
     const HandleAccepted = async () => {
         try {
-            const res = await acceptWork(workDetails?._id as string);
-
-            if (!res.success) {
-                toast.error(res.error || "Something went wrong");
-                return;
-            }
-
+            await acceptWork(workDetails?._id as string);
             const work = await fetchWorkDetails(workId);
             setWorkDetails(work.data);
 

@@ -30,7 +30,6 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
             : [],
         age: worker.age || 0,
         bio: worker.bio || "",
-        minHours: worker.minHours || "",
         profileImage: worker.profileImage || "",
         govId: worker.govId,
         subscription: worker.subscription

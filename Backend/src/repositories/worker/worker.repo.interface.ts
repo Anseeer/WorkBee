@@ -18,4 +18,5 @@ export interface IWorkerRepository {
     rejectedWorker(id: string): Promise<boolean>;
     update(worker: Partial<IWorker>): Promise<boolean>;
     search(searchTerms:Partial<IWork>):Promise<IWorker[]>;
+    findWorkersByIds(workerIds:string[]):Promise<IWorker[]>;
 }

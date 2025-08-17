@@ -12,6 +12,7 @@ import Loader from '../common/Loader';
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isMessageOpen, setIsMessageOpen] = useState(false);
     const [isLogged, setIsLogged] = useState<boolean | null>(null);
 
     const navigate = useNavigate();
@@ -39,13 +40,22 @@ export default function Header() {
     };
 
     const handleProfile = () => {
-            if (!isProfileOpen) {
-                navigate('/profile',{replace:true});
-                setIsProfileOpen(true)
-            } else {
-                navigate('/',{replace:true});
-                setIsProfileOpen(false);
-            }
+        if (!isProfileOpen) {
+            navigate('/profile', { replace: true });
+            setIsProfileOpen(true)
+        } else {
+            navigate('/', { replace: true });
+            setIsProfileOpen(false);
+        }
+    };
+    const handleMessage = () => {
+        if (!isMessageOpen) {
+            navigate('/message', { replace: true });
+            setIsMessageOpen(true)
+        } else {
+            navigate('/', { replace: true });
+            setIsMessageOpen(false);
+        }
     };
 
     const handleNavigate = (path: string) => {
@@ -82,7 +92,9 @@ export default function Header() {
                                 <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
                                     <Bell className="h-6 w-6 cursor-pointer" />
                                 </button>
-                                <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                                <button
+                                    onClick={handleMessage}
+                                    className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
                                     <MessageSquare className="h-6 w-6 cursor-pointer" />
                                 </button>
                                 <button

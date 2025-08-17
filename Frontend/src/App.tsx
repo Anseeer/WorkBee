@@ -26,15 +26,16 @@ import Profile from "./pages/user/profile";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { useEffect } from "react";
 import { fetchData } from "./utilities/fetchData";
+import Message from "./pages/user/messages";
 
 
 const App = () => {
 
-  const dispatch = useAppDispatch();  
+  const dispatch = useAppDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchData(dispatch);
-  },[dispatch])
+  }, [dispatch])
 
   return (
     <>
@@ -69,6 +70,14 @@ const App = () => {
             element={
               <ProtectedRoute role="User" >
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/message"
+            element={
+              <ProtectedRoute role="User" >
+                <Message />
               </ProtectedRoute>
             }
           />
