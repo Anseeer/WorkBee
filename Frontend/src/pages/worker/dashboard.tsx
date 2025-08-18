@@ -9,6 +9,7 @@ import { fetchWorkerDetails } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import WorkHistory from "../../components/worker/WorkHistory";
 import Wallet from "../../components/user/Wallet";
+import Message from "./message";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -79,7 +80,9 @@ const Dashboard = () => {
                     <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700">
                         <Wallet history={wallet?.transactions} balance={wallet?.balance} />
                     </div>
-                ) : null}
+                ) : activeTab === "message" ? (
+                    <Message/>
+                ): null}
             </div>
         </div>
     );

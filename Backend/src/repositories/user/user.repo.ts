@@ -50,4 +50,9 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         return res.modifiedCount > 0;
     }
 
+    async findUsersByIds(userIds: string[]): Promise<Iuser[]> {
+        const users = await this.model.find({ _id: { $in: userIds } });
+        return users;
+    }
+
 }

@@ -12,4 +12,5 @@ export interface IUserController {
     fetchAvailability(req: Request, res: Response): Promise<void>;
     fetchData(req: Request, res: Response): Promise<void>;
     update(req: Request, res: Response): Promise<void>;
+    findUsersByIds(req: Request, res: Response): Promise<void>;
 }

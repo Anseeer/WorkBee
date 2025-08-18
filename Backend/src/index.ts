@@ -16,6 +16,7 @@ import nocache from "nocache";
 import cookieParser from "cookie-parser";
 import { Server } from 'socket.io';
 import http from "http";
+import Message from "./model/message/message.model";
 
 dotenv.config();
 MongooseConnection();
@@ -58,10 +59,11 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('A user connected!', socket.id);
 
-  socket.on('joinRoom', (room: string) => {
+  socket.on('joinRoom', async(room: string) => {
     socket.join(room);
     console.log(`${socket.id} joined ${room}`);
-    // later: socket.emit('previousMessages', last50);
+    const last50 = await Message.find({room}).sort({timeStamp:-1}).limit(50).lean();
+    socket.emit('previousMessages', last50);
   });
 
   socket.on('leaveRoom', (room: string) => {
@@ -69,10 +71,10 @@ io.on('connection', (socket) => {
     console.log(`${socket.id} left ${room}`);
   });
 
-  socket.on('sendMessage', ({ room, sender, content }: { room: string; sender: string; content: string }) => {
-    // later: save to DB here
-    const message = { room, sender, content, timestamp: new Date() };
-    io.to(room).emit('message', message); // only to that room
+  socket.on('sendMessage', async ({ room, sender, receiver, content }: { room: string; sender: string; receiver:string; content: string }) => {
+    const message = new Message({ room, sender,receiver, content, timestamp: new Date() });
+    await message.save();
+    io.to(room).emit('message', message); 
   });
 
   socket.on('disconnect', () => {
@@ -83,6 +85,11 @@ io.on('connection', (socket) => {
 
 app.use(errorHandler)
 
+server.listen(process.env.PORT, () => {
+  console.log(`Listening...`)
+});
+
+
 app.listen(process.env.PORT, () => {
-  console.log(`listening on Port http://localhost:3003/`)
+  console.log(`listening on http://localhost:${process.env.PORT}/`)
 }); 

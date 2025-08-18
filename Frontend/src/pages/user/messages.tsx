@@ -41,16 +41,12 @@ const Message = () => {
 
     const users = workers;
 
-    const messages = [
-        { id: 1, text: "Hello! How are you doing today?", sender: "other", time: "10:30 AM" },
-        { id: 2, text: "I'm doing great, thanks for asking!", sender: "me", time: "10:32 AM" },
-        { id: 3, text: "That's wonderful to hear. I wanted to discuss the project details with you.", sender: "other", time: "10:33 AM" },
-        { id: 4, text: "Sure, I'm available to discuss. What would you like to know?", sender: "me", time: "10:35 AM" },
-    ];
     return (
         <>
+        <div className="h-screen max-h-[5">
             <Header />
-            <MessageSection users={users}  />
+            <MessageSection roomId={user?.id as string} me={user?.id as string} users={users} />
+        </div>
         </>
     )
 }

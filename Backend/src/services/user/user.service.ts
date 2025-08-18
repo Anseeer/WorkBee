@@ -35,7 +35,7 @@ export class UserService implements IUserService {
         this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
-    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string, wallet:IWallet|null }> {
+    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string, wallet: IWallet | null }> {
         if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
             throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
         }
@@ -68,7 +68,7 @@ export class UserService implements IUserService {
     async loginUser(email: string, password: string): Promise<{ user: IUserDTO; token: string; wallet: IWallet | null }> {
         let findUser = await this._userRepository.findByEmail(email);
         if (!findUser || findUser.role !== "User") {
-            throw new Error(USERS_MESSAGE.CAT_FIND_USER);
+            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 
         const isMatch = await bcrypt.compare(password, findUser.password);
@@ -146,7 +146,7 @@ export class UserService implements IUserService {
 
         let user = await this._userRepository.findByEmail(payload.email);
         if (!user) {
-            throw new Error(USERS_MESSAGE.CAT_FIND_USER);
+            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 
         const jwtToken = generateToken(user._id, user.role);
@@ -155,20 +155,30 @@ export class UserService implements IUserService {
         return { token: jwtToken, user: userDTO };
     }
 
-    async fetchAvailability(id: string): Promise<IAvailability[] | null> {
+    async fetchAvailability(id: string): Promise<IAvailability | null> {
         const availability = await this._availabilityRepository.findByWorkerId(id);
         return availability;
     }
 
-    async fetchData(userId: string): Promise<{user:IUserDTO,wallet:IWallet|null}> {
+    async fetchData(userId: string): Promise<{ user: IUserDTO, wallet: IWallet | null }> {
         const userData = await this._userRepository.fetchData(userId);
         const wallet = await this._walletRepository.findByUser(userId);
         const user = mapUserToDTO(userData);
-        return {user,wallet};
+        return { user, wallet };
     }
 
     async update(userDetails: Iuser, userId: string): Promise<boolean> {
         return await this._userRepository.update(userDetails, userId);
+    }
+
+    async findUsersByIds(userIds: string[]): Promise<IUserDTO[]> {
+        if (!userIds) {
+            throw new Error(USERS_MESSAGE.USER_ID_NOT_GET)
+        }
+
+        const users = await this._userRepository.findUsersByIds(userIds);
+
+        return users.map((user) => mapUserToDTO(user));
     }
 
 }

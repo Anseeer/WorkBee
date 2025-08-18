@@ -105,3 +105,9 @@ export const getUserDetails = async (userId: string) => {
     const response = await axios.get(`users/fetch-data?userId=${userId}`);
     return response.data.data;
 }
+
+export const findUsersByIds = async (userIds: string[]) => {
+    const response = await axios.post(`users/find-users-byId`,{userIds});
+    return response.data.data;
+}
+

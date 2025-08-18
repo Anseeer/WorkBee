@@ -10,4 +10,5 @@ export interface IUserRepository {
     setIsActive(id: string): Promise<boolean>;
     fetchData(userId:string): Promise<Iuser>;
     update(userDetails:Iuser,userId:string): Promise<boolean>;
+    findUsersByIds(userIds:string[]): Promise<Iuser[]>;
 }

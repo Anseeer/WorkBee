@@ -5,7 +5,6 @@ import type { Iuser } from "../../types/IUser";
 import { socket } from "../../utilities/socket";
 
 interface Props {
-  messages?: ChatMessage[];
   users: (IWorker | Iuser)[];
   roomId: string;
   me: string;
@@ -13,22 +12,31 @@ interface Props {
 
 type ChatMessage = {
   room: string;
-  sender: string; // userId
+  sender: string;
+  receiver: string;
   content: string;
   timestamp?: string | Date;
 };
 
-export default function MessageSection({ messages = [], users, roomId, me }: Props) {
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(messages);
+export default function MessageSection({ users, roomId, me }: Props) {
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<IWorker | Iuser | null>(null);
   const [message, setMessage] = useState(""); // input field state
   const joinedRef = useRef(false);
+  const [lastMessages, setLastMessages] = useState<Record<string, string>>({});
+
+
 
   // filter user list by search query
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const otherUserId = selectedUser?.id;
+  roomId = otherUserId ? [me, otherUserId].sort().join("_") : '';
+
+
 
   useEffect(() => {
     if (!socket.connected) socket.connect();
@@ -41,11 +49,28 @@ export default function MessageSection({ messages = [], users, roomId, me }: Pro
 
     const onMessage = (msg: ChatMessage) => {
       setChatMessages((prev) => [...prev, msg]);
+
+      // update last message for sender/receiver
+      const otherId = msg.sender === me ? msg.receiver : msg.sender;
+      setLastMessages((prev) => ({
+        ...prev,
+        [otherId]: msg.content,
+      }));
     };
+
 
     const onPrevious = (prevMsgs: ChatMessage[]) => {
       setChatMessages(prevMsgs);
+
+      if (prevMsgs.length > 0 && selectedUser) {
+        const lastMsg = prevMsgs[prevMsgs.length - 1];
+        setLastMessages((prev) => ({
+          ...prev,
+          [selectedUser.id]: lastMsg.content,
+        }));
+      }
     };
+
 
     socket.on("message", onMessage);
     socket.on("previousMessages", onPrevious);
@@ -63,15 +88,22 @@ export default function MessageSection({ messages = [], users, roomId, me }: Pro
     const trimmed = message.trim();
     if (!trimmed) return;
 
-    socket.emit("sendMessage", { room: roomId, sender: me, content: trimmed });
-    setMessage(""); // reset input
+    if (!selectedUser) return;
+
+    socket.emit("sendMessage", {
+      room: [me, selectedUser.id].sort().join("_"),
+      sender: me,
+      receiver: selectedUser.id,
+      content: trimmed
+    });
+    setMessage("");
   };
 
   return (
-    <div className="border-2 border-green-700 rounded-xl m-8 p-5 flex h-screen">
+    <div className="border-2 border-green-700 rounded-xl m-8 p-5 flex h-full ">
       {/* Sidebar */}
       <div className="w-1/3">
-        <div className="bg-[#65A276] w-80 h-full rounded-r rounded-xl p-4 flex flex-col gap-4">
+        <div className="bg-[#65A276] w-80 h-full overflow-y rounded-r rounded-xl p-4 flex flex-col gap-4">
           {/* Search Bar */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -104,7 +136,7 @@ export default function MessageSection({ messages = [], users, roomId, me }: Pro
 
                 <div className="flex flex-col min-w-0">
                   <h3 className="font-semibold text-gray-900 text-base">{user.name}</h3>
-                  <p className="text-gray-600 text-sm truncate">Hello</p>
+                  <p className="text-gray-600 text-sm truncate"> {lastMessages[user.id] ?? "No messages yet"}</p>
                 </div>
               </div>
             ))}
@@ -147,23 +179,37 @@ export default function MessageSection({ messages = [], users, roomId, me }: Pro
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {chatMessages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`flex ${msg.sender === me ? "justify-end" : "justify-start"}`}
-                >
+              {chatMessages.map((msg, i) => {
+                const time = new Date(msg.timestamp as string).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+
+                return (
                   <div
-                    className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                      msg.sender === me
-                        ? "bg-[#65A276] text-white"
-                        : "bg-gray-200 text-black"
-                    }`}
+                    key={i}
+                    className={`flex ${msg.sender === me ? "justify-end" : "justify-start"}`}
                   >
-                    <p className="text-sm">{msg.content}</p>
+                    <div
+                      className={`relative max-w-xs lg:max-w-md px-4 py-2 pb-4 rounded-2xl ${msg.sender === me
+                        ? "bg-[#65A276] text-black"
+                        : "bg-[#65A286] text-black"
+                        }`}
+                    >
+                      <p className="text-md">{msg.content}</p>
+                      <span
+                        className={`absolute bottom-1 text-[10px] text-gray-700 ${msg.sender === me ? "right-2" : "left-2"
+                          }`}
+                      >
+                        {time}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+
 
             {/* Input */}
             <div className="bg-[#65A276] px-6 py-3 rounded-xl rounded-t">
@@ -186,8 +232,23 @@ export default function MessageSection({ messages = [], users, roomId, me }: Pro
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select a user to start chatting
+          <div className="flex items-center justify-center h-full relative overflow-hidden">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
+            >
+              <source src="./bee.mp4" type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 "></div>
+            <div className="relative text-center space-y-4 text-white">
+              <div className="flex-shrink-0">
+                <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
+              </div>
+              <p className="text-black text-lg text-semibold">Select a user from the sidebar to start your conversation.</p>
+            </div>
           </div>
         )}
       </div>

@@ -99,7 +99,6 @@ export const SERVICE_MESSAGE = {
 export const USERS_MESSAGE = {
     USER_UPDATE_SUCCESS:"User update successfull.",
     USER_UPDATE_FAILD:"User update faild.",
-    CATN_FIND_USER:"Cant find user.",
     FETCH_AVAILABILITY_SUCCESS:"Fetch availability successfull.",
     FETCH_AVAILABILITY_FAILD:"Fetch availability faild.",
     FETCH_USER_SUCCESS:"Fetch user successfull.",
@@ -110,7 +109,7 @@ export const USERS_MESSAGE = {
     LOGIN_FAILED: "Login failed. Please check your credentials.",
     LOGOUT_SUCCESS: "Logout successful.",
     LOGOUT_FAILED: "Logout failed.",
-    CAT_FIND_USER: "Unable to find user.",
+    CANT_FIND_USER: "Unable to find user.",
     SUCCESSFULLY_SEND_OTP: "OTP sent successfully.",
     SUCCESSFULLY_RESEND_OTP: "OTP re-sent successfully.",
     FAILD_RESEND_OTP: "OTP re-sent Faild.",
@@ -128,6 +127,7 @@ export const USERS_MESSAGE = {
     NO_OTP_FOUND_FOR_THIS_EMAIL: "No OTP found for this email.",
     OTP_EXPIRED: "OTP has expired.",
     INVALID_OTP: "Invalid OTP entered.",
+    USER_ID_NOT_GET: "User Id not get.",
     USER_BLOCKED: "User blocked by admin.",
 
 };

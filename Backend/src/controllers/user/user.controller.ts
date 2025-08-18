@@ -79,7 +79,7 @@ export class UserController implements IUserController {
             const { email } = req.body;
             const user = await this._userService.getUserByEmail(email);
             if (!user) {
-                throw new Error(USERS_MESSAGE.CAT_FIND_USER);
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
             }
             const otp = await this._userService.forgotPass(email)
             logger.info("OTP :", otp);
@@ -99,7 +99,7 @@ export class UserController implements IUserController {
             const { email } = req.body;
             const user = await this._userService.getUserByEmail(email);
             if (!user) {
-                throw new Error(USERS_MESSAGE.CAT_FIND_USER);
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
             }
             const otp = await this._userService.resendOtp(email);
             const response = new successResponse(StatusCode.OK, USERS_MESSAGE.SUCCESSFULLY_RESEND_OTP, { otp });
@@ -137,7 +137,7 @@ export class UserController implements IUserController {
             }
             const user = await this._userService.getUserByEmail(email);
             if (!user) {
-                throw new Error(USERS_MESSAGE.CAT_FIND_USER);
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
             }
             await this._userService.resetPass(email, password);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.PASSWORD_RESET_SUCCESSFULLY, {});
@@ -243,6 +243,21 @@ export class UserController implements IUserController {
             console.log(error)
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.USER_UPDATE_FAILD, message);
+            logger.error(response)
+            res.status(response.status).json(response);
+        }
+    }
+
+    findUsersByIds = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { userIds } = req.body
+            const result = await this._userService.findUsersByIds(userIds);
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.FETCH_USER_SUCCESS, { result });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_USER_FAILD, message);
             logger.error(response)
             res.status(response.status).json(response);
         }
