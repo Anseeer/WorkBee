@@ -179,7 +179,7 @@ const ProfileSection = () => {
                             {/* Profile Picture */}
                             <div className="flex-shrink-0">
                                 <div className="w-32 h-32 rounded-full flex items-center justify-center">
-                                    <img src={Profile} alt="Profile img" className="w-32 h-32 bg-gray-300 rounded-full border-4 border-black flex items-center justify-center" />
+                                    <img src={Profile} alt="Profile img" className="w-32 h-32 bg-gray-300 object-cover rounded-full border-4 border-black " />
                                 </div>
                             </div>
 

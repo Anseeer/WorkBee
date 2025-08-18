@@ -24,7 +24,7 @@ const Dashboard = () => {
         if (workerID) {
             dispatch(fetchWorkerDetails(workerID));
         }
-    }, [dispatch, isEdit, activeTab]);
+    }, [dispatch, isEdit]);
 
     useEffect(() => {
         setSelectedDetails(workerData);

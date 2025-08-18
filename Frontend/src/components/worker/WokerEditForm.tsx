@@ -29,7 +29,6 @@ interface WorkerFormData {
     age: number | string;
     bio: string;
     profileImage: string;
-    minHours: string | number;
     radius: string | number;
     workType: string[];
     preferredSchedule: string[];
@@ -130,7 +129,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             age: "",
             bio: "",
             profileImage: "",
-            minHours: "2",
             radius: "",
             workType: [],
             preferredSchedule: [],
@@ -170,10 +168,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 age: typeof values.age === "string" ? parseInt(values.age) : values.age,
                 bio: values.bio,
                 profileImage: values.profileImage,
-                minHours:
-                    typeof values.minHours === "string"
-                        ? parseInt(values.minHours)
-                        : values.minHours,
                 radius:
                     typeof values.radius === "string"
                         ? parseInt(values.radius)
@@ -236,7 +230,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 age: worker.age?.toString() || "",
                 bio: worker.bio || "",
                 profileImage: typeof worker.profileImage === "string" ? worker.profileImage : "",
-                minHours: worker.minHours?.toString() || "2",
                 radius: worker.radius?.toString() || "2",
                 workType: Array.isArray(worker.workType) ? worker.workType : [worker.workType],
                 preferredSchedule: worker.preferredSchedule || [],
@@ -260,7 +253,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         }
     }, [workerData]);
 
-    const minHourOptions = ["1", "2", "3", "4", "5", "6", "8"];
 
     const workingHours = [
         { id: "morning", label: "Morning (9am - 1pm)" },
@@ -399,24 +391,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <Clock className="w-5 h-5 text-green-600" /> Work Details
                                 </h3>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Minimum Hours
-                                    </label>
-                                    <select
-                                        name="minHours"
-                                        value={formik.values.minHours}
-                                        onChange={formik.handleChange}
-                                        className="w-full px-4 py-3 border rounded-lg"
-                                    >
-                                        {minHourOptions.map((h) => (
-                                            <option key={h} value={h}>
-                                                {h} hour{h !== "1" && "s"}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Enter radius (in km)
@@ -521,7 +495,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     { before: today },
                                 ]}
                                 modifiersClassNames={{
-                                    selected: "bg-blue-500 text-white rounded-full",
+                                    selected: "bg-green-700 text-white rounded-full",
                                 }}
                             />
 
@@ -667,7 +641,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg"
+                            className="px-6 py-3 bg-green-700 text-white rounded-lg"
                         >
                             <Check className="w-4 h-4 inline mr-2" /> Update Worker
                         </button>

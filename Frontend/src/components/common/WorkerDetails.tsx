@@ -110,7 +110,7 @@ const Calendar = ({ availability }: CalendarProps) => {
                             className={`text-center p-2 text-sm font-medium rounded-lg transition-colors ${day === null
                                 ? ""
                                 : availableDays.includes(day)
-                                    ? "bg-blue-500 text-white shadow-sm"
+                                    ? "bg-green-700 text-white shadow-sm"
                                     : "text-gray-400"
                                 }`}
                         >
@@ -205,7 +205,7 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                                 : "/default-avatar.png"
                                     }
                                     alt="Worker Profile"
-                                    className="w-16 h-16 rounded-full object-cover shadow-lg border-4 border-white"
+                                    className="w-16 h-16 rounded-full object-cover shadow-lg border-2 border-black"
                                 />
                                 {worker.isVerified && (
                                     <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
