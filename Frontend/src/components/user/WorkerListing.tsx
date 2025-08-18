@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight, MapPin, User } from 'lucide-react';
 import { fetchWorkerByWorkDetails } from '../../services/workerService';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../Store';
@@ -67,7 +68,7 @@ const WorkerListing = () => {
 
         fetchWorkers();
     }, [workDetails]);
-
+    console.log('Worker ::',workers)
     useEffect(() => {
         if (filters.selectedTimeSlots.length === 0) {
             setFilteredWorkers(workers);
@@ -119,14 +120,13 @@ const WorkerListing = () => {
             date,
             slot,
             workerId: selectedWorker?.id,
-            workerName:selectedWorker?.name,
-            userName:userDetails?.name
+            workerName: selectedWorker?.name,
+            userName: userDetails?.name
         }));
         toast.success("Requested");
         setIsModalOpen(false);
         setTriggerDraft(true); // Will run useEffect after workDetails updates
     };
-
 
     const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -159,10 +159,18 @@ const WorkerListing = () => {
                 <div className="max-w-3xl space-y-4">
                     {paginatedWorkers.length > 0 ? (
                         paginatedWorkers.map((worker) => (
-                            <div key={worker.id} className="bg-white border-2 border-green-600 rounded-3xl p-6">
-                                <div className="flex items-center gap-6">
-                                    <div className="flex flex-col items-center flex-shrink-0">
-                                        <img src={worker.profileImage as string} className='w-20 h-20 bg-gray-300 rounded-full' alt="" />
+                            <div
+                                key={worker.id}
+                                className="bg-white border-2 border-green-600 rounded-3xl p-6"
+                            >
+                                <div className="flex items gap-6">
+                                    {/* Profile Image + Button */}
+                                    <div className="flex flex-col items-center   flex-shrink-0">
+                                        <img
+                                            src={worker.profileImage as string}
+                                            className="w-20 h-20 bg-gray-300 rounded-full object-cover"
+                                            alt={worker.name}
+                                        />
                                         <button
                                             onClick={() => handleSelectWorker(worker)}
                                             className="bg-green-800 mt-3 text-white px-5 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition-colors"
@@ -170,19 +178,46 @@ const WorkerListing = () => {
                                             Select
                                         </button>
                                     </div>
+
+                                    {/* Worker Details */}
                                     <div className="flex-1">
-                                        <h3 className="text-lg font-semibold text-gray-900">{worker.name}</h3>
-                                        <p className="text-sm text-gray-600">No. of Completed</p>
-                                        <div className="border-2 border-gray-300 rounded-2xl p-4">
-                                            <p className="text-sm font-medium text-gray-900 mb-1">How Can I Help:</p>
-                                            <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">{worker.bio}</p>
+                                        <h3 className="text-lg font-semibold text-gray-900">
+                                            {worker.name}
+                                        </h3>
+
+                                        {/* Info Row */}
+                                        <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2">
+                                            <div className="flex items-center pace-y-1">
+                                                <MapPin className="w-3 h-3" />
+                                                <span>{worker.location.address}</span>
+                                            </div>
+                                            <div className="flex items-center space-y-1">
+                                                <User className="w-3 h-3" />
+                                                <span>{worker.age} years old</span>
+                                            </div>
+                                            <div className="flex items-center space-x-1">
+                                                <CheckCircle className="w-3 h-3 text-green-600" />
+                                                <span>{worker.completedWorks ?? 0} completed works</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Bio */}
+                                        <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3">
+                                            <p className="text-sm font-medium text-gray-900 mb-1">
+                                                How Can I Help:
+                                            </p>
+                                            <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                                                {worker.bio}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <p className="text-gray-500 text-center py-10">No workers found matching your criteria.</p>
+                        <p className="text-gray-500 text-center py-10">
+                            No workers found matching your criteria.
+                        </p>
                     )}
                 </div>
 

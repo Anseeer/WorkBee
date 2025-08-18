@@ -11,7 +11,9 @@ export interface IWorkerDTO {
     isActive: boolean;
     isVerified: boolean;
     status: string;
+    radius: number;
     isAccountBuilt: boolean;
+    completedWorks: number;
     location: {
         address: string;
         pincode: string;

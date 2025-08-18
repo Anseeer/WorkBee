@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormik } from "formik";
 import axios from "../../services/axios";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../Store";
 
 interface Props {
     onClose: () => void;
@@ -9,6 +11,10 @@ interface Props {
 }
 
 const PaymentModal = ({ onClose, Amount, workId }: Props) => {
+
+    const wallet = useSelector((state: RootState) => state.user.wallet);
+    console.log("UserWallet", wallet)
+
     const handlePayment = async (amount: number) => {
         try {
             const { data } = await axios.post("rzp/create-order", { amount, workId });
@@ -65,7 +71,10 @@ const PaymentModal = ({ onClose, Amount, workId }: Props) => {
                 errors.amount = "Amount is required";
             } else if (values.amount < Amount) {
                 errors.amount = `Amount should be greater than or equal to ₹${Amount}`;
+            } else if (Amount > (wallet?.balance ?? 0)) {
+                errors.amount = `Insufficient balance. Your wallet balance is ₹${wallet?.balance ?? 0}`;
             }
+
             return errors;
         },
         onSubmit: (values) => {

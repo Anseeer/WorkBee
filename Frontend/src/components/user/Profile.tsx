@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "react-toastify";
-import { cancelWork, fetchWorkHistory, logoutUser } from "../../services/userService";
+import { fetchWorkHistory, logoutUser } from "../../services/userService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { fetchUserDataThunk, logout } from "../../slice/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +12,9 @@ import type { IWork } from "../../types/IWork";
 import { getProfileImage } from "../../utilities/getProfile";
 import EditUserModal from "./UserEditModal";
 import PaymentModal from "./PaymentModal";
-import Wallet from "./Wallet";
+import Wallet from "../common/Wallet";
 import AddMoneyModal from "./AddMoneyModal";
+import WorkInfoModal from "./WorkInfo";
 
 const ProfileSection = () => {
 
@@ -23,6 +24,7 @@ const ProfileSection = () => {
     const [isEdit, setIsEdit] = useState(false);
     const [isPaymentModal, setIsPaymentModal] = useState(false);
     const [isAddMoneyModal, setAddMoneyModal] = useState(false);
+    const [isWorkInfoModal, setWorkInfoModal] = useState(false);
     const [amount, setAmount] = useState<number | null>(null);
     const [workId, setWorkId] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
@@ -50,7 +52,7 @@ const ProfileSection = () => {
             setWorkHistory(workHistory.data.data);
         }
         fetchData();
-    }, [isEdit, isPaymentModal,isAddMoneyModal]);
+    }, [isEdit, isPaymentModal, isAddMoneyModal, isWorkInfoModal]);
 
     const handleLogout = async () => {
         try {
@@ -86,15 +88,16 @@ const ProfileSection = () => {
         setIsActiveTab("Profile")
     }
 
-    const HandleCancelWork = async (workId: string) => {
-        await cancelWork(workId);
-        const workHistory = await fetchWorkHistory(user?.id as string);
-        setWorkHistory(workHistory.data.data);
-        toast.success("Cancelation successfull")
-    }
+    // const HandleCancelWork = async (workId: string) => {
+    //     await cancelWork(workId);
+    //     const workHistory = await fetchWorkHistory(user?.id as string);
+    //     setWorkHistory(workHistory.data.data);
+    //     toast.success("Cancelation successfull")
+    // }
 
     const closeModal = () => {
         setIsPaymentModal(false)
+        setWorkInfoModal(false)
     }
 
     const closeAddMoneyModal = () => {
@@ -104,6 +107,17 @@ const ProfileSection = () => {
     const handleAddMoney = () => {
         setUserId(user?.id as string)
         setAddMoneyModal(true)
+    }
+
+    const HandleWorkInfo = (workId: string) => {
+        setWorkId(workId)
+        setWorkInfoModal(true)
+    }
+
+    const HandlePay = (workId: string, wage: number | string) => {
+        setIsPaymentModal(true);
+        setAmount(Number(wage));
+        setWorkId(workId);
     }
 
     return (
@@ -239,7 +253,6 @@ const ProfileSection = () => {
                             <div>Payment</div>
                             <div>Action</div>
                         </div>
-
                         {/* Row or Empty Message */}
                         {paginatedData.length > 0 ? (
                             paginatedData.map((work) => (
@@ -270,37 +283,21 @@ const ProfileSection = () => {
                                         {work.status || "Pending"}
                                     </div>
                                     <div>{work.wage || "InitialPayment"}</div>
-                                    {work.status === "Pending" ? (
+                                    {work.status == "Completed" && work.paymentStatus == "Pending" ? (
                                         <button
-                                            onClick={() => HandleCancelWork(work._id as string)}
-                                            className="px-3 py-1 rounded bg-red-100 hover:bg-red-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
-                                        >
-                                            Cancel
-                                        </button>
-                                    ) : work.status == "Canceled" || work.status == "Completed" && work.paymentStatus == "Completed" ? (
-                                        <button
-                                            className="px-3 py-1 rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
-                                        >
-                                            Info
-                                        </button>
-                                    ) : work.status == "Completed" && work.paymentStatus == "Pending" ? (
-                                        <button
-                                            onClick={() => {
-                                                setIsPaymentModal(true);
-                                                setAmount(Number(work.wage));
-                                                setWorkId(work._id as string);
-                                            }}
+                                            onClick={() => HandlePay(work._id as string, work.wage)}
                                             className="px-3 py-1 rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
                                             Pay
                                         </button>
-                                    ) : work.status == "Accepted" ? (
+                                    ) : (
                                         <button
+                                            onClick={() => HandleWorkInfo(work._id as string)}
                                             className="px-3 py-1 rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
-                                            Processing
+                                            Info
                                         </button>
-                                    ) : null}
+                                    )}
                                 </div>
                             ))
                         ) : (
@@ -348,8 +345,10 @@ const ProfileSection = () => {
                 {isPaymentModal ? (
                     <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />
                 ) : isAddMoneyModal ? (
-                    <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal}/>
-                ): null}
+                    <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />
+                ) : isWorkInfoModal ? (
+                    <WorkInfoModal workId={workId as string} closeModal={closeModal} />
+                ) : null}
             </div>
         </div>
     );

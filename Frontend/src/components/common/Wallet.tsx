@@ -54,7 +54,7 @@ const Wallet = ({ balance, history }: WalletPageProps) => {
               {/* Table Wrapper */}
               <div className="flex-1">
                 <table className="w-full text-left text-sm">
-                  <thead className="sticky top-0 bg-green-200">
+                  <thead className="sticky top-0 bg-[#8FC39D]">
                     <tr>
                       <th className="p-2">Amount</th>
                       <th className="p-2">Type</th>

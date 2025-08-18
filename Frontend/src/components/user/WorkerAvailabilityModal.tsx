@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { IWorker } from "../../types/IWorker";
 
+type BookedSlot = string | { slot: string; jobId?: string };
+
 interface IAvailability {
     availableDates: Array<{
         date: string;
-        bookedSlots: string[];
+        bookedSlots: BookedSlot[];
     }>;
 }
 
@@ -32,10 +34,15 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
 
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-    const [currentDate, setCurrentDate] = useState(new Date()); 
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString("en-CA");
+    };
+
 
     const handleDateChange = (date: Date) => {
-        const dateStr = date.toISOString().split("T")[0]; 
+        const dateStr = formatDate(date);
         setSelectedDate(dateStr);
         setSelectedSlot(null);
     };
@@ -44,9 +51,9 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
         if (!availability?.availableDates) return [];
 
         const dayAvailability = availability.availableDates.find(av => {
-            const avDate = new Date(av.date).toISOString().split("T")[0];
-            return avDate === date;
+            return formatDate(new Date(av.date)) === date;
         });
+
         if (!dayAvailability) return [];
 
         const allSlots = worker.preferredSchedule || [];
@@ -54,9 +61,12 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
         return allSlots.map(slot => ({
             slot,
             label: slot.charAt(0).toUpperCase() + slot.slice(1),
-            booked: dayAvailability.bookedSlots?.includes(slot) ?? false,
+            booked: dayAvailability.bookedSlots?.some(b =>
+                typeof b === "string" ? b === slot : b.slot === slot
+            ) ?? false
         }));
     };
+
 
     const availableSlots = selectedDate ? getAvailableSlotsForDate(selectedDate) : [];
     const isConfirmDisabled = !selectedDate || !selectedSlot;
@@ -74,17 +84,14 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
 
     const isDateAvailable = (date: Date) => {
         if (!availability?.availableDates) return false;
-        const dateStr = date.toISOString().split("T")[0];
-        return availability.availableDates.some(av => {
-            const avDate = new Date(av.date).toISOString().split("T")[0];
-            return avDate === dateStr;
-        });
+        const dateStr = formatDate(date);
+        return availability.availableDates.some(av => formatDate(new Date(av.date)) === dateStr);
     };
 
     const isDateSelected = (date: Date) => {
-        const dateStr = date.toISOString().split("T")[0];
-        return selectedDate === dateStr;
+        return selectedDate === formatDate(date);
     };
+
 
     const getDaysInMonth = () => {
         const year = currentDate.getFullYear();

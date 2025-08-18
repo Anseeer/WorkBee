@@ -13,6 +13,8 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
         isActive: worker.isActive ?? false,
         isVerified: worker.isVerified ?? false,
         status: worker.status,
+        radius: worker.radius,
+        completedWorks: worker.completedWorks,
         isAccountBuilt: worker.isAccountBuilt ?? false,
         location: worker.location
             ? {

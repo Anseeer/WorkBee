@@ -8,7 +8,7 @@ import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import { fetchWorkerDetails } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import WorkHistory from "../../components/worker/WorkHistory";
-import Wallet from "../../components/user/Wallet";
+import Wallet from "../../components/common/Wallet";
 import Message from "./message";
 
 const Dashboard = () => {
@@ -24,7 +24,7 @@ const Dashboard = () => {
         if (workerID) {
             dispatch(fetchWorkerDetails(workerID));
         }
-    }, [dispatch, isEdit]);
+    }, [dispatch, isEdit, activeTab]);
 
     useEffect(() => {
         setSelectedDetails(workerData);
@@ -62,9 +62,25 @@ const Dashboard = () => {
 
                 {activeTab === "dashboard" ? (
                     workerData.worker?.isAccountBuilt ? (
-                        <h1>Dashboard</h1>
+                        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
                     ) : (
-                        <button>Build Account</button>
+                        <div className="flex justify-center mt-40">
+                            <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
+                                <h2 className="text-xl font-semibold text-gray-800 mb-3">
+                                    Build Your Account
+                                </h2>
+                                <p className="text-gray-600 text-sm mb-6">
+                                    Complete your account setup to start receiving work opportunities and
+                                    manage your dashboard.
+                                </p>
+                                <button
+                                    onClick={() => setActiveTab('account')}
+                                    className="bg-green-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-green-800 transition-colors"
+                                >
+                                    Build Account
+                                </button>
+                            </div>
+                        </div>
                     )
                 ) : activeTab === "account" ? (
                     workerData.worker?.isAccountBuilt ? (
@@ -81,8 +97,8 @@ const Dashboard = () => {
                         <Wallet history={wallet?.transactions} balance={wallet?.balance} />
                     </div>
                 ) : activeTab === "message" ? (
-                    <Message/>
-                ): null}
+                    <Message />
+                ) : null}
             </div>
         </div>
     );

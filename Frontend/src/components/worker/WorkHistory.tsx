@@ -5,7 +5,7 @@ import type { RootState } from "../../Store";
 import { useEffect, useState } from "react";
 import { fetchWorkHistory } from "../../services/workerService";
 import { StatusBadge } from "../../utilities/StatusBadge";
-import WorkDetailsModal from "../common/WorkDetailsModal";
+import WorkDetailsModal from "./WorkDetailsModal";
 
 const WorkHistory = () => {
 
