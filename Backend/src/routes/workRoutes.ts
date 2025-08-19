@@ -15,5 +15,6 @@ Router.patch("/cancel", auth, WorkController.cancelWork);
 Router.patch("/accept", auth, WorkController.acceptWork);
 Router.patch("/is-completed", auth, WorkController.completedWork);
 Router.get("/details", auth, WorkController.workDetailsById);
+Router.get("/works", auth, WorkController.getAllWorks);
 
 export default Router;

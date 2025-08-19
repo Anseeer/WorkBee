@@ -163,4 +163,19 @@ export class WorkController implements IWorkController {
         }
     }
 
+    getAllWorks = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const result = await this._workService.getAllWorks();
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, result);
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error);
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, message);
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
 }

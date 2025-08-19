@@ -8,4 +8,5 @@ export interface IWorkRepository {
     accept(workId:string):Promise<boolean>;
     findById(workId:string):Promise<IWork|null>;
     setIsWorkCompleted(workId:string):Promise<boolean>;
+    getAllWorks():Promise<IWork[]>;
 }

@@ -4,7 +4,7 @@ import { DraftWork } from "../services/userService";
 import type { AxiosError } from "axios";
 
 
-const initialState: IWork = {
+export const initialState: IWork = {
     userId: "",
     workerId: "",
     serviceId: "",

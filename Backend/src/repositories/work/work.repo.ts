@@ -60,4 +60,8 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         return true;
     }
 
+    async getAllWorks(): Promise<IWork[]> {
+        return await this.model.find().sort({createdAt:-1});
+    }
+
 }

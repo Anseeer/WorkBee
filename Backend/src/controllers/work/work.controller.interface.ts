@@ -8,4 +8,5 @@ export interface IWorkController {
     acceptWork(req: Request, res: Response): Promise<void>;
     completedWork(req: Request, res: Response): Promise<void>;
     workDetailsById(req: Request, res: Response): Promise<void>;
+    getAllWorks(req: Request, res: Response): Promise<void>;
 }

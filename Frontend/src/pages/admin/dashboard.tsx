@@ -7,6 +7,7 @@ import WorkerDetails from "../../components/common/WorkerDetails";
 import CategoryTable from "../../components/admin/CategoryTable";
 import ServicesTable from "../../components/admin/ServiceTable";
 import WorkerApprovalComponent from "../../components/admin/WorkerRequestSection";
+import WorksTable from "../../components/admin/worksTable";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -19,7 +20,7 @@ const AdminDashboard = () => {
     if (tab === "category & Services") {
       setSubTab("category");
     } else if (tab === "workers") {
-      setSubTab("worker"); // default subtab
+      setSubTab("worker");
     }
   };
 
@@ -73,7 +74,7 @@ const AdminDashboard = () => {
       )}
       {subTab === "workerRequest" && (
         <>
-          <WorkerApprovalComponent/>
+          <WorkerApprovalComponent />
         </>
       )}
     </>
@@ -103,6 +104,13 @@ const AdminDashboard = () => {
         )}
 
         {activeTab === "category & Services" && renderCategoryServiceTabs()}
+        {activeTab === "jobs" && (
+          <>
+            <h3 className="py-2 px-2 text-2xl font-semibold">Jobs</h3>
+            <hr className="border border-green-900" />
+            <WorksTable />
+          </>
+        )}
       </div>
     </div>
   );

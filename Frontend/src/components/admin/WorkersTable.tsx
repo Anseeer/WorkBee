@@ -86,7 +86,8 @@ const WorkersTable = () => {
                         setSelectedDetails({
                             worker,
                             availability: availabilityData,
-                            error: null
+                            error: null,
+                            wallet: null
                         });
                     } catch (error) {
                         console.log(error);

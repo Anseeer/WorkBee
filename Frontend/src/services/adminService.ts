@@ -102,4 +102,9 @@ export const rejectedWorker = async (id: string) => {
     return response;
 }
 
+export const fetchWorks = async () => {
+    const response = await axios.get(`works/works`);
+    return response;
+}
+
 

@@ -11,5 +11,4 @@ Router.get("/verify", auth, (req: AuthRequest, res: Response) => {
   });
 });
 
-
 export default Router;

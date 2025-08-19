@@ -47,7 +47,7 @@ export class WorkService implements IWorkService {
 
         const userExist = await this._userRepositoy.findById(userId.toString());
         if (!userExist || userExist.isActive === false) {
-            throw new Error(USERS_MESSAGE.CAT_FIND_USER);
+            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 
         const servieExist = await this._serviceRepositoy.findById(serviceId.toString());
@@ -167,6 +167,10 @@ export class WorkService implements IWorkService {
             throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS)
         }
         return workDetails;
+    }
+
+    getAllWorks = async (): Promise<IWork[]> => {
+        return await this._workRepositoy.getAllWorks();
     }
 
 }

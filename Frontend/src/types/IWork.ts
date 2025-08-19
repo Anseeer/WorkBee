@@ -1,6 +1,7 @@
 
 export interface IWork {
     _id?:string,
+    id:string,
     userId: string,
     workerId: string,
     serviceId: string,
