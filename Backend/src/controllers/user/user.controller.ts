@@ -169,11 +169,17 @@ export class UserController implements IUserController {
 
     googleLogin = async (req: Request, res: Response) => {
         try {
-            const { token } = req.body;
-            const result = await this._userService.googleLogin(token);
+            const { credential } = req.body;
+            const { token, user, wallet } = await this._userService.googleLogin(credential);
 
-            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.GOOGLE_LOGIN_SUCCESS, { result });
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.GOOGLE_LOGIN_SUCCESS, { user, wallet });
             logger.info(response)
+            res.cookie("token", token, {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
             res.status(response.status).json(response);
         } catch (error) {
             console.log(error)

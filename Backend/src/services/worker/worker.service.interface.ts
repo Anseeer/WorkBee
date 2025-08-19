@@ -6,11 +6,11 @@ import { IWorker } from "../../model/worker/worker.interface";
 
 
 export interface IWorkerService {
-    registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker?: {},wallet:IWallet|null }>;
+    registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker?: {}, wallet: IWallet | null }>;
     loginWorker(credentials: { email: string; password: string }): Promise<{
         token: string;
         worker: IWorkerDTO;
-        wallet:IWallet|null,
+        wallet: IWallet | null,
         availability?: IAvailability;
     }>;
     buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailability }>;
@@ -23,4 +23,11 @@ export interface IWorkerService {
     updateWorker(workerData: IWorker): Promise<boolean>;
     searchWorker(serachTerm: Partial<IWork>): Promise<IWorkerDTO[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorkerDTO[]>;
+    googleLogin(credential: string): Promise<{
+        token: string;
+        worker: IWorkerDTO;
+        wallet: IWallet | null,
+        availability?: IAvailability;
+    }>;
+
 }

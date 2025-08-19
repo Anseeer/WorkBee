@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { loginUserThunk } from "../../slice/userSlice";
+import { googleLoginSuccess, loginUserThunk } from "../../slice/userSlice";
 import LoginForm from "../../components/common/LoginForm";
 import { emailRegex, passRegex } from "../../regexs";
 import { API_ROUTES } from "../../constant/api.routes";
+import axios from "../../services/axios";
+import type { CredentialResponse } from "@react-oauth/google";
 
 
 const LoginPage = () => {
@@ -52,23 +53,37 @@ const LoginPage = () => {
     navigate(API_ROUTES.USER.REGISTER);
   }
 
-//   const HandleLoginSucess = async (credentialResponse: any) => {
-//     try {
-//       const res = await axios.post("/users/google-login", {
-//         token: credentialResponse.credential,
-//       });
+  const handleGoogleLogin = async (response: CredentialResponse) => {
+    console.log("Google Login Success:", response);
 
-//       console.log(res)
+    if (!response.credential) {
+      toast.error("Google login failed: No credential received");
+      return;
+    }
 
-//       toast.success("Login successful");
-//       navigate(API_ROUTES.USER.HOME)
-//     } catch (error) {
-//     console.error(error);
-//     toast.error("Google Log-In failed");
-//   }
-// }
+    try {
+      const res = await axios.post("/users/google-login", {
+        credential: response.credential,
+      });
 
-return <LoginForm Submit={handleLogin}  loading={loading} role="User" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
+      console.log("Backend user:", res.data.data);
+
+      await dispatch(googleLoginSuccess(res.data.data));
+
+      toast.success("Login successful");
+      navigate(API_ROUTES.USER.HOME);
+    } catch (error) {
+      console.error(error);
+      toast.error("Google Log-In failed");
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.error("Google Login Failed");
+    toast.error("Google login failed");
+  };
+ 
+  return <LoginForm Submit={handleLogin} handleGoogleLogin={handleGoogleLogin} handleGoogleError={handleGoogleError} loading={loading} role="User" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
 };
 
 export default LoginPage;

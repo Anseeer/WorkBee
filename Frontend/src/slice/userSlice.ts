@@ -120,6 +120,11 @@ const userSlice = createSlice({
             state.user = null;
             state.error = null;
         },
+        googleLoginSuccess:(state,action)=>{
+            console.log("user ::",action.payload.user)
+            state.user = action.payload.user;
+            state.wallet = action.payload.wallet;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -157,5 +162,5 @@ const userSlice = createSlice({
     }
 })
 
-export const { logout } = userSlice.actions;
+export const { logout, googleLoginSuccess } = userSlice.actions;
 export default userSlice.reducer;

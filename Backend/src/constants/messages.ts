@@ -170,6 +170,8 @@ export const WORKER_MESSAGE = {
     OTP_EXPIRED: "OTP has expired.",
     WORKER_DATA_OR_ID_NOT_GET: "Worker data or ID not provided.",
     WORKER_BLOCKED: "Worker blocked by admin.",
+    GOOGLE_LOGIN_FAILED:"Worker Login faild",
+    GOOGLE_LOGIN_SUCCESS:"Worker Login successfull",
 };
 
 export const WORK_MESSAGE = {

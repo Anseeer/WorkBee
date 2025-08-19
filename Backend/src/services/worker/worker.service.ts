@@ -19,6 +19,10 @@ import { ICategoryRepository } from "../../repositories/category/category.repo.i
 import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client();
+
 
 @injectable()
 export class WorkerService implements IWorkerService {
@@ -222,5 +226,53 @@ export class WorkerService implements IWorkerService {
         return workers.map((worker) => mapWorkerToDTO(worker));
     }
 
+    async googleLogin(credential: string): Promise<{
+        token: string;
+        worker: IWorkerDTO;
+        wallet: IWallet | null;
+        availability?: IAvailability
+    }> {
+
+
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        console.log("Worker Payload :",payload)
+
+        if (!payload?.email) throw new Error(WORKER_MESSAGE.GOOGLE_LOGIN_FAILED);
+
+        const existingWorker = await this._workerRepository.findByEmail(payload.email);
+        if (!existingWorker || existingWorker.role !== "Worker") {
+            throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+        }
+
+        if (existingWorker.isActive === false) {
+            throw new Error(WORKER_MESSAGE.WORKER_BLOCKED);
+        }
+
+        let existingAvailability: IAvailability | undefined | null;
+
+        if (existingWorker.isAccountBuilt) {
+            existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
+
+            if (!existingAvailability) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
+            }
+        }
+
+        const jwtToken = generateToken(existingWorker.id.toString(), existingWorker.role);
+        const wallet = await this._walletRepository.findByUser(existingWorker.id);
+        const worker = mapWorkerToDTO(existingWorker);
+
+        return {
+            token: jwtToken,
+            worker,
+            wallet,
+            availability: existingAvailability ?? undefined,
+        };
+    }
 
 }

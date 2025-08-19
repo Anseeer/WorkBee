@@ -23,8 +23,8 @@ export class WorkerController implements IWorkerController {
         @inject(TYPES.availabilityService) availabilityService: IAvailabilityService
     ) {
         this._workerService = workerService,
-        this._walletRepository = walletRepo,
-        this._availabilityService = availabilityService
+            this._walletRepository = walletRepo,
+            this._availabilityService = availabilityService
     }
 
     login = async (req: Request, res: Response) => {
@@ -275,7 +275,7 @@ export class WorkerController implements IWorkerController {
 
     findWorkersByIds = async (req: Request, res: Response): Promise<void> => {
         try {
-            const {workerIds} = req.body;
+            const { workerIds } = req.body;
             if (!workerIds) {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
             }
@@ -289,6 +289,29 @@ export class WorkerController implements IWorkerController {
             const err = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, "faild to search workers ", err);
             logger.error(response);
+            res.status(response.status).json(response);
+        }
+    }
+
+    googleLogin = async (req: Request, res: Response) => {
+        try {
+            const { credential } = req.body;
+            const { token, worker, wallet, availability } = await this._workerService.googleLogin(credential);
+
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.GOOGLE_LOGIN_SUCCESS, { worker, wallet, availability });
+            logger.info(response)
+            res.cookie("token", token, {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error)
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GOOGLE_LOGIN_FAILED, message);
+            logger.error(response)
             res.status(response.status).json(response);
         }
     }

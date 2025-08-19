@@ -12,7 +12,7 @@ export interface IUserService {
     getUserByEmail(email: string): Promise<Iuser | null>;
     verifyOtp(email: string, otp: string): Promise<boolean>;
     resetPass(email: string, password: string): Promise<void>;
-    googleLogin(token: string): Promise<{ user: IUserDTO, token: string }>;
+    googleLogin(credential: string): Promise<{ user: IUserDTO, token: string,wallet:IWallet|null }>;
     fetchAvailability(id: string): Promise<IAvailability | null>;
     fetchData(userId: string): Promise<{ user: IUserDTO, wallet: IWallet | null }>;
     update(userDetails: Iuser, userId: string): Promise<boolean>;

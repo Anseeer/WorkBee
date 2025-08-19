@@ -8,7 +8,7 @@ import type { IWallet } from "../types/IWallet";
 interface BuildAccountResponse {
     worker: IWorker;
     availability: IAvailability;
-    wallet:IWallet;
+    wallet: IWallet;
 }
 
 
@@ -120,17 +120,17 @@ export const buildAccountWorkerThunk = createAsyncThunk(
 
 
 export const fetchWorkerDetails = createAsyncThunk(
-  "workers/fetch-details",
-  async (workerId: string, { rejectWithValue }) => {
-    try {
-      console.log("Getting the worker id from localStorage:", workerId);
-      const response = await getWorkerDetails(workerId);
-      return response.data.data as BuildAccountResponse;
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ data: string }>;
-      return rejectWithValue(err.response?.data?.data || "Failed to fetch worker");
+    "workers/fetch-details",
+    async (workerId: string, { rejectWithValue }) => {
+        try {
+            console.log("Getting the worker id from localStorage:", workerId);
+            const response = await getWorkerDetails(workerId);
+            return response.data.data as BuildAccountResponse;
+        } catch (error: unknown) {
+            const err = error as AxiosError<{ data: string }>;
+            return rejectWithValue(err.response?.data?.data || "Failed to fetch worker");
+        }
     }
-  }
 );
 
 
@@ -142,6 +142,18 @@ const workerSlice = createSlice({
             state.error = null;
             state.worker = null;
         },
+        googleLoginSuccess: (state, action) => {
+            const worker = action.payload.worker;
+            const wallet = action.payload.wallet;
+            state.worker = {
+                ...worker,
+                id: worker.id || worker._id
+            };
+            state.wallet = wallet;
+            state.availability = action.payload.availability;
+            state.error = null;
+            localStorage.setItem("workerId", state.worker?.id as string);
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -164,12 +176,12 @@ const workerSlice = createSlice({
             })
             // Login
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
-                console.log("Action.Payload :",action.payload)
+                console.log("Action.Payload :", action.payload)
                 const worker = action.payload.worker;
                 const wallet = action.payload.wallet;
                 const availability = action.payload.availability;
-                console.log("Worker :",worker)
-                console.log("Availability :",availability)
+                console.log("Worker :", worker)
+                console.log("Availability :", availability)
                 state.worker = {
                     ...worker,
                     id: worker.id || worker._id
@@ -194,10 +206,10 @@ const workerSlice = createSlice({
             .addCase(buildAccountWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            .addCase(fetchWorkerDetails.fulfilled,(state,action)=>{
-                console.log("PAyload in the fetchWorker :",action.payload)
-                console.log("PAyload.worker in the fetchWorker :",action.payload.worker)
-                console.log("PAyload.availability in the fetchWorker :",action.payload.availability)
+            .addCase(fetchWorkerDetails.fulfilled, (state, action) => {
+                console.log("PAyload in the fetchWorker :", action.payload)
+                console.log("PAyload.worker in the fetchWorker :", action.payload.worker)
+                console.log("PAyload.availability in the fetchWorker :", action.payload.availability)
                 state.worker = action.payload.worker;
                 state.wallet = action.payload.wallet;
                 state.availability = action.payload.availability;
@@ -205,5 +217,5 @@ const workerSlice = createSlice({
     },
 });
 
-export const { logout } = workerSlice.actions;
+export const { logout, googleLoginSuccess } = workerSlice.actions;
 export default workerSlice.reducer;

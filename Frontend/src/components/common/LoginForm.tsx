@@ -3,7 +3,8 @@ import { useFormik } from "formik";
 import { emailRegex, passRegex } from "../../regexs";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import GoogleAuth from "./GoogleSignButton";
+import type { CredentialResponse } from "@react-oauth/google";
 
 
 
@@ -11,13 +12,15 @@ interface LoginFormProps {
   Submit: (credentials: { email: string; password: string }) => void;
   HandleForgotPass: () => void;
   HandleRegister: () => void;
-  HandleSuccess?: (credentials:any) => Promise<void>;
+  HandleSuccess?: (credentials: any) => Promise<void>;
   HandleFail?: () => void;
+  handleGoogleLogin?: (response: CredentialResponse) => void;
+  handleGoogleError?: () => void;
   loading?: boolean;
   role?: "User" | "Admin" | "Worker";
 }
 
-const LoginForm = ({ Submit, HandleForgotPass, HandleRegister, HandleFail, HandleSuccess, loading = false, role }: LoginFormProps) => {
+const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotPass, HandleRegister, loading = false, role }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(true);
 
 
@@ -137,15 +140,18 @@ const LoginForm = ({ Submit, HandleForgotPass, HandleRegister, HandleFail, Handl
                   Sign up
                 </button>
               </div>
-
-              <div className="flex items-center text-sm">
-                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
-                <span className="text-gray-600">Login through ?</span>
-                <GoogleLogin
-                  onSuccess={() => HandleSuccess}
-                  onError={() => HandleFail}
-                />
-              </div>
+              {handleGoogleLogin && handleGoogleError ? (
+                <div className="flex items-center text-sm">
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
+                  <>
+                    <span className="text-gray-600 mr-2 ">Login through ?</span>
+                    <GoogleAuth
+                      handleGoogleLogin={handleGoogleLogin!}
+                      handleGoogleError={handleGoogleError}
+                    />
+                  </>
+                </div>
+              ) : null}
             </div>
           }
         </div>

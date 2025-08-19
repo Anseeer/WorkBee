@@ -18,12 +18,13 @@ import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 
+const client = new OAuth2Client();
+
 @injectable()
 export class UserService implements IUserService {
     private _userRepository: IUserRepository;
     private _availabilityRepository: IAvailabilityRepository;
     private _walletRepository: IWalletRepository;
-    private googleClient: OAuth2Client;
     constructor(
         @inject(TYPES.userRepository) userRepo: IUserRepository,
         @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository,
@@ -32,7 +33,6 @@ export class UserService implements IUserService {
         this._userRepository = userRepo;
         this._availabilityRepository = availabilityRepo;
         this._walletRepository = walletRepo;
-        this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
     async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string, wallet: IWallet | null }> {
@@ -135,24 +135,37 @@ export class UserService implements IUserService {
         await this._userRepository.resetPassword(email, hashedPass);
     }
 
-    async googleLogin(token: string): Promise<{ token: string; user: IUserDTO }> {
-        const ticket = await this.googleClient.verifyIdToken({
-            idToken: token,
+    async googleLogin(credential: string): Promise<{
+        token: string;
+        user: IUserDTO;
+        wallet: IWallet | null
+    }> {
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
             audience: process.env.GOOGLE_CLIENT_ID,
         });
 
         const payload = ticket.getPayload();
         if (!payload?.email) throw new Error(USERS_MESSAGE.GOOGLE_LOGIN_FAILED);
 
-        let user = await this._userRepository.findByEmail(payload.email);
-        if (!user) {
+        const existingUser = await this._userRepository.findByEmail(payload.email);
+        if (!existingUser || existingUser.role !== "User") {
             throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 
-        const jwtToken = generateToken(user._id, user.role);
-        const userDTO: IUserDTO = mapUserToDTO(user);
+        if (existingUser.isActive === false) {
+            throw new Error(USERS_MESSAGE.USER_BLOCKED);
+        }
 
-        return { token: jwtToken, user: userDTO };
+        const wallet = await this._walletRepository.findByUser(existingUser.id);
+        const jwtToken = generateToken(existingUser._id.toString(), existingUser.role);
+        const userDTO: IUserDTO = mapUserToDTO(existingUser);
+
+        return {
+            token: jwtToken,
+            user: userDTO,
+            wallet
+        };
     }
 
     async fetchAvailability(id: string): Promise<IAvailability | null> {
