@@ -202,3 +202,8 @@ export const AUTH_MESSAGE = {
     NO_REFRESH_TOKEN:'Access Denied. No refresh provided.',
     USER_BLOCKED:'Access denied: User account is blocked',
 }
+
+export const WALLET_MESSAGE = {
+    WALLET_GET_SUCCESSFULL:'Wallet get successfull.',
+    WALLET_GET_FAILD:'Wallet get faild.',
+}

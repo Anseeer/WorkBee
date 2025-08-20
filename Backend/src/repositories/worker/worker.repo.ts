@@ -9,6 +9,7 @@ import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
 import { Types } from "mongoose";
 import { WORKER_MESSAGE } from "../../constants/messages";
+import { IWallet } from "../../model/wallet/wallet.interface.model";
 
 
 

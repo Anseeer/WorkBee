@@ -6,10 +6,11 @@ import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { IWorkerService } from "../../services/worker/worker.service.interface";
 import { IAvailabilityService } from "../../services/availability/availability.service.interface";
-import { WORKER_MESSAGE } from "../../constants/messages";
+import { WALLET_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
+import { isValidObjectId } from "mongoose";
 
 @injectable()
 export class WorkerController implements IWorkerController {
@@ -332,6 +333,26 @@ export class WorkerController implements IWorkerController {
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GOOGLE_LOGIN_FAILED, message);
             logger.error(response)
+            res.status(response.status).json(response);
+        }
+    }
+
+    findWallet = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const workerId = req.query.workerId;
+            if (!workerId || typeof workerId !== 'string') {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+
+            const wallet = await this._workerService.findWallet(workerId as string);
+            const response = new successResponse(StatusCode.OK, WALLET_MESSAGE.WALLET_GET_SUCCESSFULL, { wallet });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log(error)
+            const err = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, err);
+            logger.error(response);
             res.status(response.status).json(response);
         }
     }

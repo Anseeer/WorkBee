@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchWallet } from "../../services/workerService";
 
 interface Transaction {
   transactionId: string;
@@ -10,22 +11,35 @@ interface Transaction {
 
 
 interface WalletPageProps {
-  balance?: number;
-  history?: Transaction[];
+  balancePrev?: number;
+  historyPrev?: Transaction[];
+  workerId?: string;
 }
 
-const Wallet = ({ balance, history }: WalletPageProps) => {
+const Wallet = ({ balancePrev, historyPrev, workerId }: WalletPageProps) => {
+  const [balance, setBalance] = useState<number>(balancePrev as number);
+  const [history, setHistory] = useState<Transaction[]>(historyPrev as Transaction[]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
-  if (!history?.length) {
-    history = [];
-  } else if (!balance) {
-    balance = 0.00;
-  }
-  const totalPages = Math.ceil(history.length / itemsPerPage);
+
+  useEffect(() => {
+    const loadWallet = async () => {
+      try {
+        if (!workerId) return;
+        const res = await fetchWallet(workerId);
+        const wallet = res.wallet;
+        setBalance(wallet.balance || 0);
+        setHistory(wallet.transactions || []);
+      } catch (err) {
+        console.error("Failed to fetch wallet:", err);
+      }
+    };
+    loadWallet();
+  }, [workerId]);
+
+  const totalPages = Math.ceil(history.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = history.slice(startIndex, startIndex + itemsPerPage);
-
   return (
     <div className="bg-gray-50 flex flex-col items-center p-2">
       <main className="w-full max-w-4xl">

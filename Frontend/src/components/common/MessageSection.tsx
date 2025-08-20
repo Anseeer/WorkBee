@@ -253,7 +253,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
               playsInline
               className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
             >
-              <source src="./bee.mp4" type="video/mp4" />
+              <source src="/bee.mp4" type="video/mp4" />
             </video>
             <div className="absolute inset-0 "></div>
             <div className="relative text-center space-y-4 text-white">

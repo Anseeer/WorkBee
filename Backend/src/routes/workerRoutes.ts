@@ -21,6 +21,7 @@ Router.put("/update", auth, authorize(["Worker"]), workerController.updateWorker
 Router.post("/search", auth, workerController.searchWorker);
 Router.post("/find-workers-byId", auth, workerController.findWorkersByIds);
 Router.post('/google-login', workerController.googleLogin);
+Router.get('/wallet', auth, workerController.findWallet);
 
 
 

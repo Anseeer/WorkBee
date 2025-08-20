@@ -22,7 +22,7 @@ const WorksTable = () => {
         { key: 'workerName', label: 'Worker' },
         { key: 'status', label: 'Status', render: (u) => <StatusBadge status={u.status} /> },
         { key: 'paymentStatus', label: 'Payment', render: (u) => <StatusBadge status={u.paymentStatus} /> },
-        { key: 'wage', label: 'wage' },
+        { key: 'wage', label: 'wage',render: (u) => '₹'+ u.wage },
         {
             key: 'location',
             label: 'Location',

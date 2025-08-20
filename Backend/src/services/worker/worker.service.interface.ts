@@ -24,6 +24,7 @@ export interface IWorkerService {
     updateWorker(workerData: IWorker): Promise<boolean>;
     searchWorker(serachTerm: Partial<IWork>): Promise<IWorkerDTO[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorkerDTO[]>;
+    findWallet(workerId: string): Promise<IWallet|null>;
     googleLogin(credential: string): Promise<{
         accessToken: string;
         refreshToken: string;

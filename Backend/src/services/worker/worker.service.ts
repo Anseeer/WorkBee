@@ -20,6 +20,7 @@ import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { OAuth2Client } from "google-auth-library";
+import { Types } from 'mongoose';
 
 const client = new OAuth2Client();
 
@@ -279,6 +280,10 @@ export class WorkerService implements IWorkerService {
             wallet,
             availability: existingAvailability ?? undefined,
         };
+    }
+
+    async findWallet(workerId: string): Promise<IWallet | null> {
+        return await this._walletRepository.findByUser(workerId as string);
     }
 
 }

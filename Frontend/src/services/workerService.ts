@@ -123,3 +123,11 @@ export const findWorkersByIds = async (workerIds:string[]) => {
   return response.data.data;
 }
 
+
+export const fetchWallet = async (workerId:string) => {
+  if(!workerId){
+    return("WorkerId not get")
+  }
+  const response = await axios.get(`workers/wallet?workerId=${workerId}`);
+  return response.data.data;
+}

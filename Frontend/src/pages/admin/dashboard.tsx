@@ -99,7 +99,26 @@ const AdminDashboard = () => {
           <>
             <h3 className="py-2 px-2 text-2xl font-semibold">Dashboard</h3>
             <hr className="border border-green-900" />
-            <h1>Dashboard</h1>
+
+            <div className="flex items-center justify-center h-[550px] relative overflow-hidden">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
+              >
+                <source src="/bee.mp4" type="video/mp4" />
+              </video>
+
+              <div className="absolute inset-0 "></div>
+              <div className="relative text-center space-y-4 text-white">
+                <div className="flex-shrink-0">
+                  <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
+                </div>
+                <p className="text-black text-lg text-semibold">Dashboard</p>
+              </div>
+            </div>
           </>
         )}
 

@@ -30,7 +30,6 @@ const workerSchema = new Schema<IWorker>({
         ref: 'Category',
         required: true
     },
-    // account building
     profileImage: {
         type: String,
         required: false
@@ -60,7 +59,7 @@ const workerSchema = new Schema<IWorker>({
     },
     preferredSchedule: {
         type: [String],
-        enum: ['morning', 'afternoon', 'evening', 'night', 'flexible'],
+        enum: ['morning', 'afternoon', 'evening', 'night', 'full-day'],
         required: false
     },
     age: {
