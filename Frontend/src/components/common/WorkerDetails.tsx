@@ -37,13 +37,13 @@ const Calendar = ({ availability }: CalendarProps) => {
     useEffect(() => {
         const generateCalendar = (date: dayjs.Dayjs) => {
             const startOfMonth = date.startOf("month");
-            const startDay = startOfMonth.day(); // Sunday = 0
+            const startDay = startOfMonth.day();
 
             const daysInMonth = date.daysInMonth();
             const days: (number | null)[] = [];
 
             for (let i = 0; i < startDay; i++) {
-                days.push(null); // blank days before start
+                days.push(null);
             }
 
             for (let i = 1; i <= daysInMonth; i++) {
@@ -66,7 +66,6 @@ const Calendar = ({ availability }: CalendarProps) => {
     const year = currentDate.format("YYYY");
     const availableDays = getAvailableDaysForMonth(currentDate);
 
-    // Corrected the return statement for the Calendar component
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6  top-6">
             <div className="flex items-center justify-between mb-6">

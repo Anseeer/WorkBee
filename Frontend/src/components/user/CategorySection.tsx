@@ -29,13 +29,13 @@ const CategorySection: React.FC = () => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
-     const HandleSelectedService = (serv: IService) => {
-            localStorage.removeItem("serviceId")
-            localStorage.removeItem("categoryId")
-            localStorage.setItem("serviceId", serv._id as string);
-            localStorage.setItem("categoryId", serv.category);
-            navigate('/work-details');
-        }
+    const HandleSelectedService = (serv: IService) => {
+        localStorage.removeItem("serviceId")
+        localStorage.removeItem("categoryId")
+        localStorage.setItem("serviceId", serv._id as string);
+        localStorage.setItem("categoryId", serv.category);
+        navigate('/work-details');
+    }
 
     const currentCategory = categories.find((cat) => cat._id === selectedCategory);
 
@@ -170,7 +170,7 @@ const CategorySection: React.FC = () => {
                         {services.map((service) => (
                             <button
                                 key={service.id}
-                                onClick={() =>{
+                                onClick={() => {
                                     setSelectedService(service.name.toLowerCase())
                                     HandleSelectedService(service)
                                 }}

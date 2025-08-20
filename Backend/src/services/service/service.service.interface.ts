@@ -9,5 +9,5 @@ export interface IServiceService {
     delete(serviceId: string): Promise<boolean>;
     getByWorker(serviceIds: string[]): Promise<IServices[]>;
     getBySearch(searchKey: string): Promise<IServices[]>;
-    getById(id: string): Promise<IServices | null >;
+    getById(id: string): Promise<IServices | null>;
 }

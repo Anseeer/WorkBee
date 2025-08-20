@@ -112,19 +112,16 @@ export class WorkService implements IWorkService {
 
         if (!dateEntry) throw new Error("No availability on this date");
 
-        // ✅ Ensure bookedSlots array exists
         if (!Array.isArray(dateEntry.bookedSlots)) {
             dateEntry.bookedSlots = [];
         }
 
         const bookedSlots = dateEntry.bookedSlots as { slot: string; jobId?: mongoose.Types.ObjectId }[];
 
-        // Check if slot already booked
         if (bookedSlots.some(slotObj => slotObj.slot === time)) {
             throw new Error("Slot already booked");
         }
 
-        // Push new slot
         bookedSlots.push({
             slot: time,
             jobId: work._id as mongoose.Types.ObjectId

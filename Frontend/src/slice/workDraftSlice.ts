@@ -5,6 +5,7 @@ import type { AxiosError } from "axios";
 
 
 export const initialState: IWork = {
+    id:"",
     userId: "",
     workerId: "",
     serviceId: "",
@@ -45,7 +46,6 @@ const workDraft = createSlice({
     initialState,
     reducers: {
         workDetails: (state, action) => {
-            console.log("Action :", action);
             state.location = action.payload.location;
             state.workType = action.payload.workType;
             state.size = action.payload.taskSize;
@@ -58,7 +58,6 @@ const workDraft = createSlice({
             return;
         },
         workerDetails: (state, action) => {
-            console.log("Action WorkDetail :", action);
             state.workerId = action.payload.workerId;
             state.sheduleDate = action.payload.date;
             state.sheduleTime = action.payload.slot;

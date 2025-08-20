@@ -19,15 +19,22 @@ export class UserController implements IUserController {
 
     register = async (req: Request, res: Response) => {
         try {
-            const { user, token, wallet } = await this._userService.registerUser(req.body);
+            const { user, accessToken, refreshToken, wallet } = await this._userService.registerUser(req.body);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.REGISTRATION_SUCCESS, { user, wallet });
-            res.cookie("token", token, {
+
+            res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
-            logger.info(response);
+
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
+            });
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
@@ -40,13 +47,20 @@ export class UserController implements IUserController {
     login = async (req: Request, res: Response) => {
         try {
             const { email, password } = req.body;
-            const { user, token, wallet } = await this._userService.loginUser(email, password);
+            const { user, accessToken, refreshToken, wallet } = await this._userService.loginUser(email, password);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.LOGIN_SUCCESS, { user, wallet });
-            res.cookie("token", token, {
+            res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             logger.info(response);
             res.status(response.status).json(response);
@@ -60,7 +74,12 @@ export class UserController implements IUserController {
 
     logout = async (req: Request, res: Response): Promise<void> => {
         try {
-            res.clearCookie('token', {
+            res.clearCookie('accessToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+            res.clearCookie('refreshToken', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
@@ -170,19 +189,25 @@ export class UserController implements IUserController {
     googleLogin = async (req: Request, res: Response) => {
         try {
             const { credential } = req.body;
-            const { token, user, wallet } = await this._userService.googleLogin(credential);
+            const { accessToken, refreshToken, user, wallet } = await this._userService.googleLogin(credential);
 
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.GOOGLE_LOGIN_SUCCESS, { user, wallet });
             logger.info(response)
-            res.cookie("token", token, {
+            res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
+
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
+            });
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error)
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.GOOGLE_LOGIN_FAILED, message);
             logger.error(response)
@@ -199,16 +224,13 @@ export class UserController implements IUserController {
                 req.query.userId !== "undefined" &&
                 req.query.userId !== ""
             ) {
-                console.log("Found in query", req.query);
                 userId = String(req.query.userId);
             }
 
             if (!userId && (req as AuthRequest)?.user?.id) {
-                console.log("Found in auth token");
                 userId = String((req as AuthRequest).user?.id);
             }
 
-            console.log("userId", userId);
             if (!userId) {
                 throw new Error("User ID is required");
             }
@@ -224,7 +246,6 @@ export class UserController implements IUserController {
             res.status(response.status).json(response);
 
         } catch (error) {
-            console.error(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(
                 StatusCode.BAD_REQUEST,
@@ -240,13 +261,11 @@ export class UserController implements IUserController {
     update = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const { userDetails, userId } = req.body
-            console.log("DAta comes :", userDetails, userId);
             const result = await this._userService.update(userDetails, userId);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.USER_UPDATE_SUCCESS, { result });
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error)
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.USER_UPDATE_FAILD, message);
             logger.error(response)

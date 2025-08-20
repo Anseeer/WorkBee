@@ -68,7 +68,7 @@ const WorkerListing = () => {
 
         fetchWorkers();
     }, [workDetails]);
-    console.log('Worker ::',workers)
+    console.log('Worker ::', workers)
     useEffect(() => {
         if (filters.selectedTimeSlots.length === 0) {
             setFilteredWorkers(workers);

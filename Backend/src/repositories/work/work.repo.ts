@@ -4,6 +4,7 @@ import { IWork } from "../../model/work/work.interface";
 import { IWorkRepository } from "./work.repo.interface";
 import Work from "../../model/work/work.model";
 import Payment from "../../model/payment/payment.model";
+import { WORK_MESSAGE } from "../../constants/messages";
 
 @injectable()
 export class WorkRepository extends BaseRepository<IWork> implements IWorkRepository {
@@ -29,14 +30,14 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
     }
 
     async accept(workId: string): Promise<boolean> {
-        const res = await this.model.updateOne({ _id: workId }, { $set: { status: "Accepted"} });
+        const res = await this.model.updateOne({ _id: workId }, { $set: { status: "Accepted" } });
         return res.modifiedCount > 0;
     }
 
     async findById(workId: string): Promise<IWork> {
         const workDetails = await this.model.findById(workId);
         if (!workDetails) {
-            throw new Error("Work not found");
+            throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
         }
         return workDetails;
     }
@@ -44,11 +45,11 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
     async setIsWorkCompleted(workId: string): Promise<boolean> {
         const work = await this.model.findById(workId);
         if (!work) {
-            throw new Error("Work not found for the given ID");
+            throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
         }
 
         if (work.isCompleted) {
-            throw new Error("Work is already marked as completed");
+            throw new Error(WORK_MESSAGE.WORK_ALREADY_MARK_COMPLETED);
         }
 
         work.isCompleted = true;
@@ -61,7 +62,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
     }
 
     async getAllWorks(): Promise<IWork[]> {
-        return await this.model.find().sort({createdAt:-1});
+        return await this.model.find().sort({ createdAt: -1 });
     }
 
 }

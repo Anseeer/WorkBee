@@ -97,12 +97,12 @@ export const SERVICE_MESSAGE = {
 
 
 export const USERS_MESSAGE = {
-    USER_UPDATE_SUCCESS:"User update successfull.",
-    USER_UPDATE_FAILD:"User update faild.",
-    FETCH_AVAILABILITY_SUCCESS:"Fetch availability successfull.",
-    FETCH_AVAILABILITY_FAILD:"Fetch availability faild.",
-    FETCH_USER_SUCCESS:"Fetch user successfull.",
-    FETCH_USER_FAILD:"Fetch user faild.",
+    USER_UPDATE_SUCCESS: "User update successfull.",
+    USER_UPDATE_FAILD: "User update faild.",
+    FETCH_AVAILABILITY_SUCCESS: "Fetch availability successfull.",
+    FETCH_AVAILABILITY_FAILD: "Fetch availability faild.",
+    FETCH_USER_SUCCESS: "Fetch user successfull.",
+    FETCH_USER_FAILD: "Fetch user faild.",
     REGISTRATION_SUCCESS: "User registered successfully.",
     REGISTRATION_FAILED: "User registration failed.",
     LOGIN_SUCCESS: "Login successful.",
@@ -133,6 +133,8 @@ export const USERS_MESSAGE = {
 };
 
 export const WORKER_MESSAGE = {
+    GET_WORKERS_SUCCESSFULL:"Workers get successfull",
+    GET_WORKERS_FAILD:"Workers get faild",
     EMAIL_AND_PASS_REQUIRED: "Email and password are required.",
     LOGIN_FAILD: "Worker login failed. Please check credentials.",
     LOGIN_SUCCESS: "Worker login successful.",
@@ -170,17 +172,17 @@ export const WORKER_MESSAGE = {
     OTP_EXPIRED: "OTP has expired.",
     WORKER_DATA_OR_ID_NOT_GET: "Worker data or ID not provided.",
     WORKER_BLOCKED: "Worker blocked by admin.",
-    GOOGLE_LOGIN_FAILED:"Worker Login faild",
-    GOOGLE_LOGIN_SUCCESS:"Worker Login successfull",
+    GOOGLE_LOGIN_FAILED: "Worker Login faild",
+    GOOGLE_LOGIN_SUCCESS: "Worker Login successfull",
 };
 
 export const WORK_MESSAGE = {
-    WORK_NOT_EXIST:"Work not exist",
-    WORK_DETAILS_GET_SUCCESS:"Work details get successfull.",
-    WORK_DETAILS_GET_FAILD:"Work details get faild.",
-    WORK_ID_NOT_GET:"Can`t get workId.",
-    WORKER_ID_NOT_GET:"Can`t get workerId.",
-    USER_ID_NOT_GET:"Can`t get userId.",
+    WORK_NOT_EXIST: "Work not exist",
+    WORK_DETAILS_GET_SUCCESS: "Work details get successfull.",
+    WORK_DETAILS_GET_FAILD: "Work details get faild.",
+    WORK_ID_NOT_GET: "Can`t get workId.",
+    WORKER_ID_NOT_GET: "Can`t get workerId.",
+    USER_ID_NOT_GET: "Can`t get userId.",
     CANT_GET_WORK_DETAILS: "Can't get the job details.",
     WORK_HISTORY_FETCH_SUCCESS: "Work-History fetch successfully.",
     WORK_HISTORY_FETCH_FAILD: "Work-History fetch faild.",
@@ -188,8 +190,15 @@ export const WORK_MESSAGE = {
     WORK_CANCEL_FAILD: "Work-Booking cancel faild.",
     WORK_COMPLETED_SUCCESS: "Work-Booking completed successfully.",
     WORK_COMPLETED_FAILD: "Work-Booking completed faild.",
+    WORK_ALREADY_MARK_COMPLETED: "Work alredy mark as completed.",
     WORK_ACCEPT_SUCCESS: "Work-Booking accepted successfully.",
     WORK_ACCEPT_FAILD: "Work-Booking accepted faild.",
     WORK_CREATED_SUCCESS: "Job created successfully.",
     WORK_CREATED_FAILD: "Failed to create job."
+}
+
+export const AUTH_MESSAGE = {
+    ACCESS_DENIED:'Access Denied. No token provided.',
+    NO_REFRESH_TOKEN:'Access Denied. No refresh provided.',
+    USER_BLOCKED:'Access denied: User account is blocked',
 }

@@ -17,6 +17,7 @@ import cookieParser from "cookie-parser";
 import { Server } from 'socket.io';
 import http from "http";
 import Message from "./model/message/message.model";
+import logger from "./utilities/logger";
 
 dotenv.config();
 MongooseConnection();
@@ -57,28 +58,27 @@ const io = new Server(server, {
 
 // server.ts (socket part)
 io.on('connection', (socket) => {
-  console.log('A user connected!', socket.id);
-
-  socket.on('joinRoom', async(room: string) => {
+  logger.info('A user connected!', socket.id);
+  socket.on('joinRoom', async (room: string) => {
     socket.join(room);
-    console.log(`${socket.id} joined ${room}`);
-    const last50 = await Message.find({room}).sort({timeStamp:-1}).limit(50).lean();
+    logger.info(`${socket.id} joined ${room}`);
+    const last50 = await Message.find({ room }).sort({ timeStamp: -1 }).limit(50).lean();
     socket.emit('previousMessages', last50);
   });
 
   socket.on('leaveRoom', (room: string) => {
     socket.leave(room);
-    console.log(`${socket.id} left ${room}`);
+    logger.info(`${socket.id} left ${room}`);
   });
 
-  socket.on('sendMessage', async ({ room, sender, receiver, content }: { room: string; sender: string; receiver:string; content: string }) => {
-    const message = new Message({ room, sender,receiver, content, timestamp: new Date() });
+  socket.on('sendMessage', async ({ room, sender, receiver, content }: { room: string; sender: string; receiver: string; content: string }) => {
+    const message = new Message({ room, sender, receiver, content, timestamp: new Date() });
     await message.save();
-    io.to(room).emit('message', message); 
+    io.to(room).emit('message', message);
   });
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected', socket.id);
+    logger.info('A user disconnected', socket.id);
   });
 });
 
@@ -86,10 +86,10 @@ io.on('connection', (socket) => {
 app.use(errorHandler)
 
 server.listen(process.env.PORT, () => {
-  console.log(`Listening...`)
+  logger.info(`Listening...`)
 });
 
 
 app.listen(process.env.PORT, () => {
-  console.log(`listening on http://localhost:${process.env.PORT}/`)
+  logger.info(`listening on http://localhost:${process.env.PORT}/`)
 }); 

@@ -88,13 +88,6 @@ const ProfileSection = () => {
         setIsActiveTab("Profile")
     }
 
-    // const HandleCancelWork = async (workId: string) => {
-    //     await cancelWork(workId);
-    //     const workHistory = await fetchWorkHistory(user?.id as string);
-    //     setWorkHistory(workHistory.data.data);
-    //     toast.success("Cancelation successfull")
-    // }
-
     const closeModal = () => {
         setIsPaymentModal(false)
         setWorkInfoModal(false)
@@ -306,11 +299,11 @@ const ProfileSection = () => {
 
                         {/* Pagination */}
                         {totalPages > 1 && paginatedData.length > 0 && (
-                            <div className="flex justify-center mt-4 space-x-2">
+                            <div className="flex justify-center items-center mb-1 mt-2 space-x-2">
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
-                                    className="px-2 py-1 rounded disabled:opacity-50"
+                                    className="px-1 rounded disabled:opacity-50"
                                 >
                                     &lt;
                                 </button>
@@ -319,7 +312,7 @@ const ProfileSection = () => {
                                     <button
                                         key={page}
                                         onClick={() => handlePageChange(page)}
-                                        className={`px-3 py-1 border rounded-full ${currentPage === page ? "bg-gray-900 text-white" : ""
+                                        className={`px-2 border rounded-full ${currentPage === page ? "bg-gray-900 text-white" : ""
                                             }`}
                                     >
                                         {page}

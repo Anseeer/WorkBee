@@ -22,7 +22,6 @@ const Wallet = ({ balance, history }: WalletPageProps) => {
   } else if (!balance) {
     balance = 0.00;
   }
-  // pagination
   const totalPages = Math.ceil(history.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = history.slice(startIndex, startIndex + itemsPerPage);
@@ -78,7 +77,7 @@ const Wallet = ({ balance, history }: WalletPageProps) => {
                           ₹{tx.amount.toFixed(2)}
                         </td>
                         <td className="p-2">{tx.type}</td>
-                        <td className="p-2">{tx.transactionId.slice(0,15).toUpperCase()}</td>
+                        <td className="p-2">{tx.transactionId.slice(0, 15).toUpperCase()}</td>
                         <td className="p-2">
                           {new Date(tx.createdAt).toLocaleDateString("en-GB")}
                         </td>

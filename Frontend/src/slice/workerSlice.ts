@@ -196,9 +196,6 @@ const workerSlice = createSlice({
             })
             // Build Account
             .addCase(buildAccountWorkerThunk.fulfilled, (state, action) => {
-                console.log("Build Account payload :", action.payload)
-                console.log("Build Account worker :", action.payload.worker)
-                console.log("Build Account availalblity :", action.payload.availability)
                 state.worker = action.payload.worker;
                 state.availability = action.payload.availability
                 state.error = null;
@@ -207,9 +204,6 @@ const workerSlice = createSlice({
                 state.error = action.payload as string;
             })
             .addCase(fetchWorkerDetails.fulfilled, (state, action) => {
-                console.log("PAyload in the fetchWorker :", action.payload)
-                console.log("PAyload.worker in the fetchWorker :", action.payload.worker)
-                console.log("PAyload.availability in the fetchWorker :", action.payload.availability)
                 state.worker = action.payload.worker;
                 state.wallet = action.payload.wallet;
                 state.availability = action.payload.availability;

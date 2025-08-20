@@ -12,7 +12,7 @@ export const API_ROUTES = {
     REGISTER: "/admins/register",
     DASHBOARD: "/admins/dashboard",
     FORGOT_PASS: "/admins/forgot-password",
-    LOGOUT:"/admins/logout"
+    LOGOUT: "/admins/logout"
   },
   WORKER: {
     REGISTER: "/workers/register",

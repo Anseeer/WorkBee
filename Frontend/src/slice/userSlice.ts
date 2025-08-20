@@ -7,14 +7,14 @@ import type { IWallet } from "../types/IWallet";
 interface userState {
     user: Iuser | null,
     error: string | null;
-    wallet:IWallet|null;
+    wallet: IWallet | null;
     resetEmail: string | null;
 }
 
 const initialState: userState = {
     user: null,
     error: null,
-    wallet:null,
+    wallet: null,
     resetEmail: null,
 }
 
@@ -100,7 +100,7 @@ export const resetPasswordUserThunk = createAsyncThunk("users/reset-password",
 )
 
 export const fetchUserDataThunk = createAsyncThunk("users/fetch-data",
-    async (_,{ rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
             const response = await fetchUser()
             return response.data;
@@ -120,8 +120,8 @@ const userSlice = createSlice({
             state.user = null;
             state.error = null;
         },
-        googleLoginSuccess:(state,action)=>{
-            console.log("user ::",action.payload.user)
+        googleLoginSuccess: (state, action) => {
+            console.log("user ::", action.payload.user)
             state.user = action.payload.user;
             state.wallet = action.payload.wallet;
         }
@@ -151,14 +151,14 @@ const userSlice = createSlice({
             .addCase(loginUserThunk.rejected, (state, action) => {
                 state.error = action.payload as string
             })
-            .addCase(fetchUserDataThunk.fulfilled,(state,action)=>{
+            .addCase(fetchUserDataThunk.fulfilled, (state, action) => {
                 state.user = action.payload.user;
                 state.wallet = action.payload.wallet;
             })
-            .addCase(fetchUserDataThunk.rejected,(state)=>{
+            .addCase(fetchUserDataThunk.rejected, (state) => {
                 state.user = null;
             })
-            
+
     }
 })
 

@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export interface IWorkerDTO {
-    id: Types.ObjectId | string;  
+    id: Types.ObjectId | string;
     name: string;
     email: string;
     phone: string;
@@ -20,7 +20,7 @@ export interface IWorkerDTO {
         lat: number;
         lng: number;
     };
-    services: string[]; 
+    services: string[];
     categories: string[];
     age: number;
     bio: string;
@@ -31,6 +31,6 @@ export interface IWorkerDTO {
         startDate: Date;
         endDate: Date;
         isActive: boolean;
-    } | null; 
-    createdAt:Date|string;
+    } | null;
+    createdAt: Date | string;
 }

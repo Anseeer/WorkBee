@@ -16,12 +16,12 @@ const WorksTable = () => {
     }, []);
 
     const columns: Column<IWork>[] = [
-        { key: '_id', label: 'ID', render: (u) => '#'+u?._id?.slice(0, 5).toUpperCase() },
+        { key: '_id', label: 'ID', render: (u) => '#' + u?._id?.slice(0, 5).toUpperCase() },
         { key: 'service', label: 'Work', render: (u) => u.service.split(' ').slice(0, 3).join(' ') },
         { key: 'userName', label: 'User' },
         { key: 'workerName', label: 'Worker' },
-        { key: 'status', label: 'Status',render:(u)=>  <StatusBadge status={u.status} />  },
-        { key: 'paymentStatus', label: 'Payment',render:(u)=>  <StatusBadge status={u.paymentStatus} /> },
+        { key: 'status', label: 'Status', render: (u) => <StatusBadge status={u.status} /> },
+        { key: 'paymentStatus', label: 'Payment', render: (u) => <StatusBadge status={u.paymentStatus} /> },
         { key: 'wage', label: 'wage' },
         {
             key: 'location',
@@ -29,8 +29,8 @@ const WorksTable = () => {
             render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
         },
         { key: 'sheduleDate', label: 'Date' },
-       
-       
+
+
     ];
 
     return (
@@ -38,7 +38,7 @@ const WorksTable = () => {
             <DataTable
                 data={works}
                 columns={columns}
-                searchKeys={['service', 'workerName', 'userName','location']}
+                searchKeys={['service', 'workerName', 'userName', 'location']}
             />
         </div>
     );

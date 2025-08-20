@@ -49,7 +49,7 @@ export class CategoryService implements ICategoryService {
         return await this._categoryRepository.getByWorker(categoryIds);
     }
 
-    getById = async (categoryId: string): Promise<ICategory |null> => {
+    getById = async (categoryId: string): Promise<ICategory | null> => {
         return await this._categoryRepository.findById(categoryId);
     };
 

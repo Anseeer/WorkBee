@@ -81,7 +81,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
       socket.off("previousMessages", onPrevious);
       joinedRef.current = false;
     };
-  }, [roomId]);
+  }, [roomId, me]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -98,6 +98,13 @@ export default function MessageSection({ users, roomId, me }: Props) {
     });
     setMessage("");
   };
+
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
 
   return (
     <div className="border-2 border-green-700 rounded-xl m-8 p-5 flex h-full ">
@@ -161,10 +168,14 @@ export default function MessageSection({ users, roomId, me }: Props) {
                   <img
                     src={selectedUser.profileImage as string}
                     className="w-12 h-12 bg-black rounded-full"
-                    alt=""
+                    alt="Profile image"
                   />
                 </div>
-                <h2 className="text-black font-semibold text-lg">{selectedUser.name}</h2>
+
+                <div className="flex flex-col">
+                  <h2 className="text-black font-semibold text-lg">{selectedUser.name}</h2>
+                  <p className="text-xs text-gray-700">{selectedUser.phone ?? "No phone available"}</p>
+                </div>
               </div>
 
               <div className="flex items-center gap-4">
@@ -177,7 +188,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
               </div>
             </div>
 
-            {/* Messages */}
+            {/* message */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {chatMessages.map((msg, i) => {
                 const time = new Date(msg.timestamp as string).toLocaleTimeString([], {
@@ -192,9 +203,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
                     className={`flex ${msg.sender === me ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`relative max-w-xs lg:max-w-md px-4 py-2 pb-4 rounded-2xl ${msg.sender === me
-                        ? "bg-[#65A276] text-black"
-                        : "bg-[#65A286] text-black"
+                      className={`relative max-w-xs lg:max-w-md px-6 py-1 pb-4 rounded-2xl ${msg.sender === me ? "bg-[#65A276] text-black" : "bg-[#65A286] text-black"
                         }`}
                     >
                       <p className="text-md">{msg.content}</p>
@@ -208,7 +217,11 @@ export default function MessageSection({ users, roomId, me }: Props) {
                   </div>
                 );
               })}
+
+              {/* invisible anchor to scroll to */}
+              <div ref={bottomRef} />
             </div>
+
 
 
             {/* Input */}

@@ -21,7 +21,6 @@ export class WorkController implements IWorkController {
             const workDetails = req.body;
             const userId = req?.user?.id;
             workDetails.userId = userId;
-            console.log("WorkDetails ::", workDetails)
             if (!workDetails) {
                 throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
             }
@@ -31,7 +30,6 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CREATED_FAILD, message);
             logger.error(response);
@@ -51,7 +49,6 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, message);
             logger.error(response);
@@ -62,8 +59,6 @@ export class WorkController implements IWorkController {
     fetchWorkHistoryByWorker = async (req: Request, res: Response): Promise<void> => {
         try {
             const { workerId } = req.query;
-            console.log("queryyyyy :::", req.query)
-            console.log("workerId :::", workerId)
             if (!workerId) {
                 throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
             }
@@ -73,7 +68,6 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, message);
             logger.error(response);
@@ -93,7 +87,6 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CANCEL_FAILD, message);
             logger.error(response);
@@ -110,12 +103,11 @@ export class WorkController implements IWorkController {
                 throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET)
             }
 
-            const result = await this._workService.completed(workId as string,workerId as string);
+            const result = await this._workService.completed(workId as string, workerId as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_COMPLETED_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error in the completded work", error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_COMPLETED_FAILD, message);
             logger.error(response);
@@ -135,7 +127,6 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_ACCEPT_FAILD, message);
             logger.error(response);
@@ -155,7 +146,6 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, message);
             logger.error(response);
@@ -170,7 +160,6 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, message);
             logger.error(response);

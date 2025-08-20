@@ -22,13 +22,20 @@ export class AdminController implements IAdminController {
             if (!email || !password) {
                 throw new Error(ADMIN_MESSAGES.MISSING_CREDENTIALS);
             }
-            const { token, admin } = await this._adminService.login(req.body);
+            const { accessToken, refreshToken, admin } = await this._adminService.login(req.body);
             const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.LOGIN_SUCCESS, { admin });
-            res.cookie("token", token, {
+            res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                secure: COOKIE_CONFIG.SECURE,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             res.status(response.status).json(response);
         } catch (error) {
@@ -41,7 +48,12 @@ export class AdminController implements IAdminController {
 
     logout = async (req: Request, res: Response): Promise<void> => {
         try {
-            res.clearCookie('token', {
+            res.clearCookie('accessToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+            res.clearCookie('refreshToken', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
@@ -54,7 +66,6 @@ export class AdminController implements IAdminController {
             res.status(response.status).json(response);
         }
     };
-
 
     fetchUsers = async (req: Request, res: Response) => {
         try {

@@ -1,4 +1,4 @@
-import { GoogleOAuthProvider, GoogleLogin, type CredentialResponse} from "@react-oauth/google";
+import { GoogleOAuthProvider, GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 
 interface Props {
   handleGoogleLogin: (response: CredentialResponse) => void;
@@ -16,9 +16,9 @@ const GoogleAuth = ({ handleGoogleLogin, handleGoogleError }: Props) => {
           console.error("Google login failed");
           if (handleGoogleError) handleGoogleError();
         }}
-        useOneTap 
-        type="icon" 
-        shape="circle" 
+        useOneTap
+        type="icon"
+        shape="circle"
       />
     </GoogleOAuthProvider>
   );

@@ -29,7 +29,6 @@ const HomeHeroSection = () => {
     useEffect(() => {
         const delayDebounce = setTimeout(async () => {
             if (searchTerm.trim() === "") {
-                // If search is cleared, show all
                 const response = await fetchService();
                 setServices(response.data.data.service);
                 setNotFound(false);
@@ -56,9 +55,9 @@ const HomeHeroSection = () => {
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }
-        const user = useSelector((state: RootState) => state?.user.user);
-        console.log("UserData in redux :",user)
-    
+    const user = useSelector((state: RootState) => state?.user.user);
+    console.log("UserData in redux :", user)
+
 
     return (
         <div className="w-full h-[500px] flex flex-col items-center justify-center py-12 px-4">

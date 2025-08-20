@@ -7,6 +7,6 @@ export interface IWorkService {
     fetchWorkHistoryByWorker(workerId: string): Promise<IWork[]>;
     cancel(workId: string): Promise<boolean>;
     accept(workId: string): Promise<boolean>;
-    completed(workId: string,workerId:string): Promise<boolean>;
+    completed(workId: string, workerId: string): Promise<boolean>;
     getAllWorks(): Promise<IWork[]>;
 }

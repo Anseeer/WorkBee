@@ -3,6 +3,7 @@ import TYPES from "../../inversify/inversify.types";
 import { IAvailability } from "../../model/availablity/availablity.interface";
 import { IAvailabilityService } from "./availability.service.interface";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
+import { WORKER_MESSAGE } from "../../constants/messages";
 
 @injectable()
 export class AvailabilityService implements IAvailabilityService {
@@ -12,9 +13,9 @@ export class AvailabilityService implements IAvailabilityService {
         this._availabilityRepository = availabilityRepo;
     }
 
-    getAvailabilityByworkerId = async (id: string): Promise<IAvailability[]> => {
+    getAvailabilityByworkerId = async (id: string): Promise<IAvailability> => {
         const availability = await this._availabilityRepository.findByWorkerId(id);
-        return availability as IAvailability[];
+        return availability as IAvailability;
     };
 
     updateAvailability = async (availability: IAvailability): Promise<boolean> => {
@@ -23,8 +24,7 @@ export class AvailabilityService implements IAvailabilityService {
         );
 
         if (!existingAvailability) {
-            console.warn(`Availability not found for worker ID: ${availability.workerId}`);
-            throw new Error("Cannot find availability for this worker");
+            throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
         }
 
         const updated = await this._availabilityRepository.update(availability);

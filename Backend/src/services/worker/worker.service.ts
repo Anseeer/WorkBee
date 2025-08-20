@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-import generateToken from "../../utilities/generateToken";
+import { generate_Access_Token, generate_Refresh_Token } from "../../utilities/generateToken";
 import mapWorkerToDTO from "../../mappers/worker/worker.map.DTO";
 import { IWorker } from "../../model/worker/worker.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
@@ -45,7 +45,7 @@ export class WorkerService implements IWorkerService {
         this._walletRepository = walletRepo;
     }
 
-    async loginWorker(credentials: { email: string, password: string }): Promise<{ token: string, worker: IWorkerDTO, wallet: IWallet | null, availability?: IAvailability }> {
+    async loginWorker(credentials: { email: string, password: string }): Promise<{ accessToken: string, refreshToken: string, worker: IWorkerDTO, wallet: IWallet | null, availability?: IAvailability }> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
         if (!existingWorker || existingWorker.role !== "Worker") {
@@ -71,12 +71,14 @@ export class WorkerService implements IWorkerService {
             throw new Error(WORKER_MESSAGE.INVALID_PASS);
         }
 
-        const token = generateToken(existingWorker.id.toString(), existingWorker.role);
+        const accessToken = generate_Access_Token(existingWorker.id.toString(), existingWorker.role);
+        const refreshToken = generate_Refresh_Token(existingWorker.id.toString(), existingWorker.role);
         const wallet = await this._walletRepository.findByUser(existingWorker.id);
         const worker = mapWorkerToDTO(existingWorker);
 
         return {
-            token,
+            accessToken,
+            refreshToken,
             worker,
             wallet,
             availability: existingAvailability ?? undefined
@@ -84,7 +86,7 @@ export class WorkerService implements IWorkerService {
     }
 
 
-    async registerWorker(workerData: Partial<IWorker>): Promise<{ token: string, worker: {}, wallet: IWallet | null }> {
+    async registerWorker(workerData: Partial<IWorker>): Promise<{ accessToken: string, refreshToken: string, worker: {}, wallet: IWallet | null }> {
 
         if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
             throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
@@ -108,9 +110,10 @@ export class WorkerService implements IWorkerService {
 
         const wallet = await this._walletRepository.findByUser(newWorker.id);
 
-        const token = generateToken(newWorker.id.toString(), newWorker.role);
+        const accessToken = generate_Access_Token(newWorker.id.toString(), newWorker.role);
+        const refreshToken = generate_Refresh_Token(newWorker.id.toString(), newWorker.role);
 
-        return { token, worker: newWorker, wallet };
+        return { accessToken, refreshToken, worker: newWorker, wallet };
 
     }
 
@@ -227,7 +230,8 @@ export class WorkerService implements IWorkerService {
     }
 
     async googleLogin(credential: string): Promise<{
-        token: string;
+        accessToken: string;
+        refreshToken: string;
         worker: IWorkerDTO;
         wallet: IWallet | null;
         availability?: IAvailability
@@ -240,7 +244,7 @@ export class WorkerService implements IWorkerService {
         });
 
         const payload = ticket.getPayload();
-        console.log("Worker Payload :",payload)
+        console.log("Worker Payload :", payload)
 
         if (!payload?.email) throw new Error(WORKER_MESSAGE.GOOGLE_LOGIN_FAILED);
 
@@ -263,12 +267,14 @@ export class WorkerService implements IWorkerService {
             }
         }
 
-        const jwtToken = generateToken(existingWorker.id.toString(), existingWorker.role);
+        const accessToken = generate_Access_Token(existingWorker.id.toString(), existingWorker.role);
+        const refreshToken = generate_Refresh_Token(existingWorker.id.toString(), existingWorker.role);
         const wallet = await this._walletRepository.findByUser(existingWorker.id);
         const worker = mapWorkerToDTO(existingWorker);
 
         return {
-            token: jwtToken,
+            accessToken,
+            refreshToken,
             worker,
             wallet,
             availability: existingAvailability ?? undefined,

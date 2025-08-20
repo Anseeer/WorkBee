@@ -7,10 +7,9 @@ import { IWorkerRepository } from "./worker.repo.interface";
 import { Availability } from "../../model/availablity/availablity.model";
 import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 import { WORKER_MESSAGE } from "../../constants/messages";
 
-const { ObjectId } = mongoose.Types;
 
 
 @injectable()
@@ -56,7 +55,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     async setIsActive(id: string): Promise<boolean> {
         let worker = await this.model.findById(id);
         if (!worker) {
-            throw new Error("user not find in the id");
+            throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
         }
         let newStatus = !worker.isActive;
 
@@ -67,7 +66,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     async approveWorker(id: string): Promise<boolean> {
         let worker = await this.model.findById(id);
         if (!worker) {
-            throw new Error("worker not find in the id");
+            throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
         }
 
         await this.model.updateOne({ _id: id }, { $set: { isVerified: true, status: "Approved" } });
@@ -77,7 +76,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     async rejectedWorker(id: string): Promise<boolean> {
         let worker = await this.model.findById(id);
         if (!worker) {
-            throw new Error("worker not find in the id");
+            throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
         }
 
         await this.model.updateOne({ _id: id }, { $set: { isVerified: false, status: "Rejected" } });
@@ -87,7 +86,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     async update(workerData: Partial<IWorker>): Promise<boolean> {
         const worker = await this.model.findById(workerData._id);
         if (!worker) {
-            throw new Error("Can't get the worker");
+            throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
         }
 
         const updatedFields = {

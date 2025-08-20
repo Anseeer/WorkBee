@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Iuser } from "../../model/user/user.interface";
 import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
-import generateToken from "../../utilities/generateToken";
+import { generate_Access_Token, generate_Refresh_Token } from "../../utilities/generateToken";
 import { mapUserToDTO } from "../../mappers/user/user.map.DTO";
 import { generateOTP } from "../../utilities/generateOtp";
 import { emailService } from "../../utilities/emailService";
@@ -35,7 +35,7 @@ export class UserService implements IUserService {
         this._walletRepository = walletRepo;
     }
 
-    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, token: string, wallet: IWallet | null }> {
+    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWallet | null }> {
         if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
             throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
         }
@@ -58,14 +58,15 @@ export class UserService implements IUserService {
 
         const wallet = await this._walletRepository.findByUser(newUser.id);
 
-        const token = generateToken(newUser._id.toString(), newUser.role);
+        const accessToken = generate_Access_Token(newUser._id.toString(), newUser.role);
+        const refreshToken = generate_Refresh_Token(newUser._id.toString(), newUser.role);
 
         const user = mapUserToDTO(newUser);
 
-        return { user, token, wallet };
+        return { user, accessToken, refreshToken, wallet };
     }
 
-    async loginUser(email: string, password: string): Promise<{ user: IUserDTO; token: string; wallet: IWallet | null }> {
+    async loginUser(email: string, password: string): Promise<{ user: IUserDTO; accessToken: string; refreshToken: string; wallet: IWallet | null }> {
         let findUser = await this._userRepository.findByEmail(email);
         if (!findUser || findUser.role !== "User") {
             throw new Error(USERS_MESSAGE.CANT_FIND_USER);
@@ -82,11 +83,12 @@ export class UserService implements IUserService {
 
         const wallet = await this._walletRepository.findByUser(findUser.id);
 
-        const token = generateToken(findUser._id.toString(), findUser.role);
+        const accessToken = generate_Access_Token(findUser._id.toString(), findUser.role);
+        const refreshToken = generate_Refresh_Token(findUser._id.toString(), findUser.role);
 
         const user = await mapUserToDTO(findUser);
 
-        return { user, token, wallet };
+        return { user, accessToken, refreshToken, wallet };
     }
 
     async forgotPass(email: string): Promise<string> {
@@ -136,7 +138,8 @@ export class UserService implements IUserService {
     }
 
     async googleLogin(credential: string): Promise<{
-        token: string;
+        accessToken: string;
+        refreshToken: string;
         user: IUserDTO;
         wallet: IWallet | null
     }> {
@@ -158,11 +161,13 @@ export class UserService implements IUserService {
         }
 
         const wallet = await this._walletRepository.findByUser(existingUser.id);
-        const jwtToken = generateToken(existingUser._id.toString(), existingUser.role);
+        const jwtAccessToken = generate_Access_Token(existingUser._id.toString(), existingUser.role);
+        const jwtRefreshToken = generate_Refresh_Token(existingUser._id.toString(), existingUser.role);
         const userDTO: IUserDTO = mapUserToDTO(existingUser);
 
         return {
-            token: jwtToken,
+            accessToken: jwtAccessToken,
+            refreshToken: jwtRefreshToken,
             user: userDTO,
             wallet
         };

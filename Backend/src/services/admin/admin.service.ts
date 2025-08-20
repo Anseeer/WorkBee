@@ -1,4 +1,4 @@
-import generateToken from "../../utilities/generateToken";
+import { generate_Access_Token, generate_Refresh_Token } from "../../utilities/generateToken";
 import bcrypt from "bcrypt";
 import { IAdminService } from "./admin.services.interface";
 import { inject, injectable } from "inversify";
@@ -29,7 +29,7 @@ export class AdminService implements IAdminService {
         this._availabilityRepository = availabilityRepo;
     }
 
-    async login(adminData: Partial<Iuser>): Promise<{ token: string, admin: IUserDTO }> {
+    async login(adminData: Partial<Iuser>): Promise<{ accessToken: string, refreshToken: string, admin: IUserDTO }> {
         const existingAdmin = await this._userRepository.findByEmail(adminData.email!);
         if (!existingAdmin) {
             throw new Error(ADMIN_MESSAGES.CANT_FIND_ADMIN);
@@ -44,10 +44,11 @@ export class AdminService implements IAdminService {
             throw new Error(ADMIN_MESSAGES.INVALID_PASSWORD);
         }
 
-        const token = await generateToken(existingAdmin._id.toString(), existingAdmin.role);
+        const accessToken = generate_Access_Token(existingAdmin._id.toString(), existingAdmin.role);
+        const refreshToken = generate_Refresh_Token(existingAdmin._id.toString(), existingAdmin.role);
         const admin = mapUserToDTO(existingAdmin);
 
-        return { token, admin };
+        return { accessToken, refreshToken, admin };
     }
 
     async fetchUsers(): Promise<IUserDTO[] | undefined> {
@@ -82,7 +83,7 @@ export class AdminService implements IAdminService {
         return workers;
     }
 
-    async fetchAvailability(id: string): Promise<IAvailability[] | null> {
+    async fetchAvailability(id: string): Promise<IAvailability | null> {
         const availability = await this._availabilityRepository.findByWorkerId(id);
         return availability;
     }

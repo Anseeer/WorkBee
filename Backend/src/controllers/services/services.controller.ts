@@ -122,7 +122,6 @@ export class ServiceController implements IServiceController {
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_CATEGORIES_FAILED, message);
             logger.error(response);
-            console.log("Error :", response)
             res.status(response.status).json(response);
         }
     }
@@ -141,7 +140,6 @@ export class ServiceController implements IServiceController {
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_WORKER_FAILED, message);
             logger.error(response);
-            console.log("Error :", response)
             res.status(response.status).json(response);
         }
     }
@@ -168,7 +166,7 @@ export class ServiceController implements IServiceController {
     getById = async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.query;
-            if (!id ) {
+            if (!id) {
                 throw new Error(SERVICE_MESSAGE.ID_NOT_RECEIVED);
             }
 

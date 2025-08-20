@@ -4,10 +4,10 @@ import axios from "../../services/axios";
 
 interface Props {
     onClose: () => void;
-    userId:string,
+    userId: string,
 }
 
-const AddMoneyModal = ({ onClose, userId}: Props) => {
+const AddMoneyModal = ({ onClose, userId }: Props) => {
     const handlePayment = async (amount: number) => {
         try {
             const { data } = await axios.post("rzp/create-wallet-order", { amount });
@@ -102,11 +102,10 @@ const AddMoneyModal = ({ onClose, userId}: Props) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     placeholder="Enter amount"
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700 mb-2 ${
-                        formik.touched.amount && formik.errors.amount
-                            ? "border-red-500"
-                            : "border-gray-300"
-                    }`}
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700 mb-2 ${formik.touched.amount && formik.errors.amount
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                 />
 
                 {/* Error Message */}

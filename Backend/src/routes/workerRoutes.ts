@@ -9,17 +9,17 @@ const Router = express.Router();
 const workerController = container.get<IWorkerController>(TYPES.workerController);
 
 Router.post("/login", workerController.login);
-Router.post("/logout",auth, authorize(["Worker"]), workerController.logout);
+Router.post("/logout", auth, authorize(["Worker"]), workerController.logout);
 Router.post("/register", workerController.register);
-Router.post("/build-account",auth, authorize(["Worker"]), workerController.buildAccount);
-Router.get("/fetch-details",auth,workerController.fetchDetails);
+Router.post("/build-account", auth, authorize(["Worker"]), workerController.buildAccount);
+Router.get("/fetch-details", auth, workerController.fetchDetails);
 Router.post("/forgot-password", workerController.forgotPass);
 Router.post("/resend-otp", workerController.resendOtp);
 Router.post("/verify-otp", workerController.verifyOtp);
 Router.post("/reset-password", workerController.resetPassword);
-Router.put("/update",auth,authorize(["Worker"]), workerController.updateWorker);
-Router.post("/search",auth, workerController.searchWorker);
-Router.post("/find-workers-byId",auth, workerController.findWorkersByIds);
+Router.put("/update", auth, authorize(["Worker"]), workerController.updateWorker);
+Router.post("/search", auth, workerController.searchWorker);
+Router.post("/find-workers-byId", auth, workerController.findWorkersByIds);
 Router.post('/google-login', workerController.googleLogin);
 
 
