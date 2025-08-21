@@ -10,23 +10,23 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         super(User);
     }
     getAllUsers(): Promise<Iuser[] | null> {
-        let users = User.find({ role: "User" }).sort({ createdAt: -1 });
+        const users = User.find({ role: "User" }).sort({ createdAt: -1 });
         return users;
     }
 
     async setIsActive(id: string): Promise<boolean> {
-        let user = await User.findById(id);
+        const user = await User.findById(id);
         if (!user) {
             throw new Error("user not find in the id");
         }
-        let newStatus = !user.isActive;
+        const newStatus = !user.isActive;
 
         await User.updateOne({ _id: id }, { $set: { isActive: newStatus } });
         return true;
     }
 
     async fetchData(userId: string): Promise<Iuser> {
-        let user = await this.model.findById(userId);
+        const user = await this.model.findById(userId);
         if (!user) {
             throw new Error("user not find in the id");
         }

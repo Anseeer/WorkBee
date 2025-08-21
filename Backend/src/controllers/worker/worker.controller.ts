@@ -9,21 +9,20 @@ import { IAvailabilityService } from "../../services/availability/availability.s
 import { WALLET_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
-import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
-import { isValidObjectId } from "mongoose";
+import { IWalletService } from "../../services/wallet/wallet.service.interface";
 
 @injectable()
 export class WorkerController implements IWorkerController {
     private _workerService: IWorkerService;
     private _availabilityService: IAvailabilityService;
-    private _walletRepository: IWalletRepository;
+    private _walletService: IWalletService;
     constructor(
         @inject(TYPES.workerService) workerService: IWorkerService,
-        @inject(TYPES.walletRepository) walletRepo: IWalletRepository,
+        @inject(TYPES.walletService) walletService: IWalletService,
         @inject(TYPES.availabilityService) availabilityService: IAvailabilityService
     ) {
         this._workerService = workerService,
-            this._walletRepository = walletRepo,
+            this._walletService = walletService,
             this._availabilityService = availabilityService
     }
 
@@ -225,7 +224,7 @@ export class WorkerController implements IWorkerController {
             }
 
             const worker = await this._workerService.getUserById(workerId);
-            const wallet = await this._walletRepository.findByUser(worker?.id);
+            const wallet = await this._walletService.findByUser(worker?.id);
             const availability = await this._availabilityService.getAvailabilityByworkerId(workerId)
 
             const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.WORKER_DETAILS_FETCH_SUCCESSFULLY, {
