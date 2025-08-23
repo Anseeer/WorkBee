@@ -1,15 +1,15 @@
 import Header from "../../components/user/Header";
-import  ProfileSection from "../../components/user/Profile";
+import ProfileSection from "../../components/user/Profile";
 
-const Profile = ()=>{
+const Profile = () => {
 
-    return(
+    return (
         <>
-        <Header/>
-        <ProfileSection/>
+            <Header />
+            <ProfileSection />
         </>
     );
-    
+
 }
 
 export default Profile;

@@ -20,8 +20,15 @@ export class ServiceService implements IServiceService {
         return await this._serviceRepository.create(service);
     }
 
-    getAllServices = async (): Promise<IServices[]> => {
-        return await this._serviceRepository.getAllService();
+    getAllServices = async (currentPage:string,pageSize:string): Promise<{services:IServices[],totalPage:number}> => {
+        const page = parseInt(currentPage);
+        const size = parseInt(pageSize);
+        const startIndex = (page-1) * size;
+        const endIndex = page * size;
+        const service = await this._serviceRepository.getAllService();
+        const services = service.slice(startIndex,endIndex);
+        const totalPage = Math.ceil(service.length/size);
+        return {services,totalPage}
     };
 
     setIsActive = async (serviceId: string): Promise<boolean> => {

@@ -64,18 +64,38 @@ export class WorkService implements IWorkService {
 
     }
 
-    fetchWorkHistoryByUser = async (userId: string): Promise<IWork[]> => {
+    fetchWorkHistoryByUser = async (userId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWork[], totalPages: number }> => {
         if (!userId) {
             throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
         }
-        return await this._workRepositoy.findByUser(userId);
+        const page = parseInt(currentPage);
+        const size = parseInt(pageSize)
+        const startIndex = (page - 1) * size;
+        const endIndex = page * size;
+
+        const works = await this._workRepositoy.findByUser(userId);
+        const paginatedWorks = works.slice(startIndex, endIndex);
+        const totalPages = Math.ceil(works.length / size);
+
+        return { paginatedWorks, totalPages }
     }
 
-    fetchWorkHistoryByWorker = async (workerId: string): Promise<IWork[]> => {
+    fetchWorkHistoryByWorker = async (workerId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorkHistory: IWork[], totalPage: number }> => {
         if (!workerId) {
             throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
         }
-        return await this._workRepositoy.findByWorker(workerId);
+        const page = parseInt(currentPage);
+        const size = parseInt(pageSize)
+        const startIndex = (page - 1) * size;
+        const endIndex = page * size;
+
+        console.log(startIndex, endIndex)
+
+        const workHistory = await this._workRepositoy.findByWorker(workerId);
+        const paginatedWorkHistory = workHistory.slice(startIndex, endIndex);
+        const totalPage = Math.ceil(workHistory.length / size);
+
+        return { paginatedWorkHistory, totalPage }
     }
 
     cancel = async (workId: string): Promise<boolean> => {
@@ -166,8 +186,15 @@ export class WorkService implements IWorkService {
         return workDetails;
     }
 
-    getAllWorks = async (): Promise<IWork[]> => {
-        return await this._workRepositoy.getAllWorks();
+    getAllWorks = async (currentPage: string, pageSize: string): Promise<{paginatedWorks :IWork[],totalPage:number}> => {
+        const page = parseInt(currentPage);
+        const size = parseInt(pageSize);
+        const startIndex = (page - 1) * size;
+        const endIndex = page * size;
+        const works = await this._workRepositoy.getAllWorks();
+        const paginatedWorks = works.slice(startIndex,endIndex);
+        const totalPage = Math.ceil(works.length/size);
+        return {paginatedWorks,totalPage}
     }
 
 }

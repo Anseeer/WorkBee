@@ -17,46 +17,61 @@ const ServicesTable = () => {
     const [deleted, setDeleted] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<IService | null>(null);
+    const [currrentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(10);
 
     useEffect(() => {
-        const fetchAllData = async () => {
+        const fetchCategories = async () => {
             try {
-                setCategories([])
-                const categoryRes = await fetchCategory();
-                const formattedCategories = categoryRes.data.data.categories.map((cat: any) => ({
+                const categoryRes = await fetchCategory(1, 1000); // always fetch all categories
+                const formattedCategories = categoryRes.data.data.category.map((cat: any) => ({
                     ...cat,
                     id: cat._id,
                 }));
-
-                console.log("REsult :", formattedCategories)
                 setCategories(formattedCategories);
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+            }
+        };
 
-                const serviceRes = await fetchService();
-                const servicesRaw = serviceRes.data.data.service.map((srv: any) => ({
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const serviceRes = await fetchService(currrentPage, 3);
+                const servicesRaw = serviceRes.data.data.services.map((srv: any) => ({
                     ...srv,
                     id: srv._id,
                 }));
 
-
                 const servicesWithNames = servicesRaw.map((srv: any) => {
-                    const categoryObj = formattedCategories.find((cat: ICategory) => cat.id === srv.category);
+                    const categoryId =
+                        typeof srv.category === "object" ? srv.category._id : srv.category;
+
+                    const categoryObj = categories.find(
+                        (cat: ICategory) => cat.id === categoryId
+                    );
+
                     return {
                         ...srv,
-                        categoryName: categoryObj ? categoryObj.name : 'Unknown',
+                        categoryName: categoryObj ? categoryObj.name : "Unknown",
                     };
                 });
 
-
                 setService(servicesWithNames);
-            } catch (error) {
-                console.error("Error fetching data:", error);
+                setTotalPage(serviceRes.data.data.totalPage);
+            } catch (err) {
+                console.error("Error fetching services:", err);
             }
         };
 
-        setAdded(false);
-        setDeleted(false);
-        fetchAllData();
-    }, [added, deleted]);
+        if (categories.length > 0) {
+            fetchServices();
+        }
+    }, [added, deleted, currrentPage, categories]);
+
 
 
 
@@ -194,7 +209,9 @@ const ServicesTable = () => {
         <div className="p-4 max-w-7xl mx-auto">
             <AddingServiceSection setAdded={setAdded} />
             <DataTable
-                itemsPerPage={3}
+                setCurrentPage={setCurrentPage}
+                currentPage={currrentPage}
+                totalPages={totalPage}
                 data={service}
                 columns={columns}
                 searchKeys={['name', 'description', 'wage']}

@@ -32,6 +32,8 @@ const ProfileSection = () => {
     const [selectedImg, setSelectedImg] = useState<File | null | string>(null);
     const user = useSelector((state: RootState) => state.user?.user);
     const wallet = useSelector((state: RootState) => state.user?.wallet);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         if (user?.profileImage) {
@@ -48,11 +50,12 @@ const ProfileSection = () => {
     useEffect(() => {
         const fetchData = async () => {
             await dispatch(fetchUserDataThunk());
-            const workHistory = await fetchWorkHistory(user?.id as string);
-            setWorkHistory(workHistory.data.data);
+            const workHistory = await fetchWorkHistory(user?.id as string, currentPage, 4);
+            setWorkHistory(workHistory.data.data.paginatedWorks);
+            setTotalPage(workHistory.data.data.totalPages)
         }
         fetchData();
-    }, [isEdit, isPaymentModal, isAddMoneyModal, isWorkInfoModal]);
+    }, [isEdit, isPaymentModal, isAddMoneyModal, isWorkInfoModal, currentPage]);
 
     const handleLogout = async () => {
         try {
@@ -70,16 +73,10 @@ const ProfileSection = () => {
         setIsActiveTab('Edit')
     };
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 4;
 
-    const totalPages = Math.ceil(workHistory.length / itemsPerPage);
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedData = workHistory.slice(startIndex, startIndex + itemsPerPage);
 
     const handlePageChange = (page: number) => {
-        if (page >= 1 && page <= totalPages) {
+        if (page >= 1 && page <= totalPage) {
             setCurrentPage(page);
         }
     };
@@ -247,13 +244,13 @@ const ProfileSection = () => {
                             <div>Action</div>
                         </div>
                         {/* Row or Empty Message */}
-                        {paginatedData.length > 0 ? (
-                            paginatedData.map((work) => (
+                        {workHistory.length > 0 ? (
+                            workHistory.map((work) => (
                                 <div
                                     key={work._id}
                                     className="grid grid-cols-6 items-center bg-gray-50 rounded-lg p-3 my-3 shadow-sm"
                                 >
-                                    <div className="font-bold">{work.service || "Cleaning"}</div>
+                                    <div className="font-bold">{work.service.split(" ").slice(0, 3).join(" ")}</div>
                                     <div>
                                         {work.createdAt
                                             ? new Date(work.createdAt).toLocaleDateString("en-US", {
@@ -298,7 +295,7 @@ const ProfileSection = () => {
                         )}
 
                         {/* Pagination */}
-                        {totalPages > 1 && paginatedData.length > 0 && (
+                        {totalPage > 1 && workHistory.length > 0 && (
                             <div className="flex justify-center items-center mb-1 mt-2 space-x-2">
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
@@ -308,7 +305,7 @@ const ProfileSection = () => {
                                     &lt;
                                 </button>
 
-                                {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
+                                {Array.from({ length: totalPage }, (_, idx) => idx + 1).map((page) => (
                                     <button
                                         key={page}
                                         onClick={() => handlePageChange(page)}
@@ -321,7 +318,7 @@ const ProfileSection = () => {
 
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
+                                    disabled={currentPage === totalPage}
                                     className="px-2 py-1 rounded disabled:opacity-50"
                                 >
                                     &gt;
@@ -333,7 +330,7 @@ const ProfileSection = () => {
                 ) : isActiveTab == "Edit" ? (
                     <EditUserModal onClose={Close} setEdit={setIsEdit} />
                 ) : isActiveTab == "Wallet" ? (
-                    <Wallet history={wallet?.transactions} balance={wallet?.balance} />
+                    <Wallet historyPrev={wallet?.transactions} balancePrev={wallet?.balance} />
                 ) : null}
                 {isPaymentModal ? (
                     <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />

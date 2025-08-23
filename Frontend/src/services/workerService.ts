@@ -92,11 +92,11 @@ export const fetchWorkerByWorkDetails = async (details:
   return data;
 };
 
-export const fetchWorkHistory = async (workerId: string) => {
+export const fetchWorkHistory = async (workerId: string,currentPage:number,pagesize:number) => {
   if (!workerId) {
     throw new Error("Cant Get WorkerId");
   }
-  const response = await axios.get(`works/workers?workerId=${workerId}`);
+  const response = await axios.get(`works/workers?workerId=${workerId}&currentPage=${currentPage}&pageSize=${pagesize}`);
   return response.data;
 }
 

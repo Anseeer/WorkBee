@@ -7,6 +7,8 @@ import type { IAvailability } from '../../types/IAvailability';
 
 const WorkersTable = () => {
     const [workers, setWorkers] = useState<IWorker[]>([]);
+    const [currentPage,setCurrentPage] = useState(1);
+    const [totalPage,setTotalPage] = useState(0);
     const { setSelectedDetails } = useWorkerDetails()
 
     const FetchAvailability = async (id: string): Promise<IAvailability> => {
@@ -21,12 +23,13 @@ const WorkersTable = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchWorkers();
-            setWorkers(res.data.data);
+            const res = await fetchWorkers(currentPage,5);
+            setWorkers(res.data.data.workers);
+            setTotalPage(res.data.data.totalPage);
 
         };
         fetchData();
-    }, []);
+    }, [currentPage]);
 
     const handleToggle = async (id: string) => {
         try {
@@ -78,6 +81,9 @@ const WorkersTable = () => {
         <div className="p-4 max-w-7xl mx-auto">
             <DataTable<IWorker>
                 data={workers}
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                totalPages={totalPage}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
                 onRowClick={async (worker) => {

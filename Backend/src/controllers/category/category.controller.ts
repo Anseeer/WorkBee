@@ -18,8 +18,9 @@ export class CategoryController implements ICategoryController {
 
     getAll = async (req: Request, res: Response) => {
         try {
-            const categories = await this._categoryService.getAll();
-            const response = new successResponse(StatusCode.OK, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_SUCCESS, { categories });
+            const { currentPage, pageSize } = req.query;
+            const { category, totalPage } = await this._categoryService.getAll(currentPage as string, pageSize as string);
+            const response = new successResponse(StatusCode.OK, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_SUCCESS, { category, totalPage });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -56,7 +57,7 @@ export class CategoryController implements ICategoryController {
 
     update = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { categoryId } = req.query;
+            const { currentPage, pageSize, categoryId } = req.query
             const { name, description, imageUrl } = req.body;
 
             if (!categoryId) {
@@ -64,8 +65,8 @@ export class CategoryController implements ICategoryController {
             }
 
             if (name) {
-                const allOtherCategories = await this._categoryService.getAll();
-                const existingNames = allOtherCategories
+                const { category, totalPage } = await this._categoryService.getAll(currentPage as string, pageSize as string);
+                const existingNames = category
                     .filter(cat => cat.id.toString() !== categoryId)
                     .map(cat => cat.name.toLowerCase());
 

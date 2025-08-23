@@ -5,14 +5,17 @@ import { DataTable, type Column } from '../common/Table';
 
 const UserTable = () => {
     const [users, setUsers] = useState<Iuser[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchUsers();
-            setUsers(res.data.data);
+            const res = await fetchUsers(currentPage,5);
+            setUsers(res.data.data.users);
+            setTotalPages(res.data.data.totalPage);
         };
         fetchData();
-    }, []);
+    },[currentPage]);
 
     const handleToggle = async (id: string) => {
         try {
@@ -59,6 +62,9 @@ const UserTable = () => {
     return (
         <div className="p-4 max-w-7xl mx-auto">
             <DataTable
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
                 data={users}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}

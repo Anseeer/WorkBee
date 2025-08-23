@@ -6,14 +6,17 @@ import { StatusBadge } from '../../utilities/StatusBadge';
 
 const WorksTable = () => {
     const [works, setWorks] = useState<IWork[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchWorks();
-            setWorks(res.data.data);
+            const res = await fetchWorks(currentPage,5);
+            setWorks(res.data.data.paginatedWorks);
+            setTotalPage(res.data.data.totalPage);
         };
         fetchData();
-    }, []);
+    }, [currentPage]);
 
     const columns: Column<IWork>[] = [
         { key: '_id', label: 'ID', render: (u) => '#' + u?._id?.slice(0, 5).toUpperCase() },
@@ -22,7 +25,7 @@ const WorksTable = () => {
         { key: 'workerName', label: 'Worker' },
         { key: 'status', label: 'Status', render: (u) => <StatusBadge status={u.status} /> },
         { key: 'paymentStatus', label: 'Payment', render: (u) => <StatusBadge status={u.paymentStatus} /> },
-        { key: 'wage', label: 'wage',render: (u) => '₹'+ u.wage },
+        { key: 'wage', label: 'wage', render: (u) => '₹' + u.wage },
         {
             key: 'location',
             label: 'Location',
@@ -34,8 +37,11 @@ const WorksTable = () => {
     ];
 
     return (
-        <div className="p-4 max-w-7xl mx-auto">
+        <div className="p-4 max-w-6xl mx-auto">
             <DataTable
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                totalPages={totalPage}
                 data={works}
                 columns={columns}
                 searchKeys={['service', 'workerName', 'userName', 'location']}

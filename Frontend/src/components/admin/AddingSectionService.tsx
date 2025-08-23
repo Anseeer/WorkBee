@@ -16,8 +16,8 @@ const AddingServiceSection = ({ setAdded }: Props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetchCategory();
-                const formatted = res.data.data.categories
+                const res = await fetchCategory(1,100);
+                const formatted = res.data.data.category
                     .filter((cat: ICategory) => cat.isActive == true)
                     .map((cat: any) => ({
                         id: cat._id,

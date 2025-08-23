@@ -14,18 +14,22 @@ interface DataTableProps<T> {
     columns: Column<T>[];
     searchKeys?: (keyof T)[];
     itemsPerPage?: number;
+    currentPage: number
+    setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+    totalPages?: number | undefined;
     onRowClick?: (item: T) => void;
 }
 
 export function DataTable<T extends { id: string }>({
     data,
+    currentPage,
+    setCurrentPage,
     columns,
+    totalPages,
     searchKeys = [],
-    itemsPerPage = 5,
     onRowClick,
 }: DataTableProps<T>) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
 
 
     const filteredData = useMemo(() => {
@@ -36,10 +40,6 @@ export function DataTable<T extends { id: string }>({
         );
     }, [data, searchTerm, searchKeys]);
 
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentItems = filteredData.slice(startIndex, endIndex);
 
     return (
         <div className="w-full max-w-6xl mx-auto p-2">
@@ -68,8 +68,8 @@ export function DataTable<T extends { id: string }>({
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {currentItems.length > 0 ? (
-                                currentItems.map((item, i) => (
+                            {filteredData.length > 0 ? (
+                                filteredData.map((item, i) => (
                                     <tr
                                         onClick={() => onRowClick?.(item)}
                                         key={item.id + '-' + i}
@@ -119,9 +119,6 @@ export function DataTable<T extends { id: string }>({
                 </div>
 
                 <div className="mt-4 flex items-center justify-between">
-                    <div className="text-sm text-gray-700">
-                        Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} results
-                    </div>
                     <div className="flex items-center space-x-2">
                         <button
                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -145,7 +142,7 @@ export function DataTable<T extends { id: string }>({
                         ))}
 
                         <button
-                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages as number, p + 1))}
                             disabled={currentPage === totalPages}
                             className="p-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >

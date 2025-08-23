@@ -1,7 +1,7 @@
 import { ICategory } from "../../model/category/category.interface";
 
 export interface ICategoryService {
-    getAll(): Promise<ICategory[]>;
+    getAll(currentPage:string,pageSize:string): Promise<{category:ICategory[],totalPage:number}>;
     createCategory(category: ICategory): Promise<ICategory>;
     getById(categoryId: string): Promise<ICategory | null>;
     setIsActive(category: string): Promise<boolean>;

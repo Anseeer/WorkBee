@@ -13,9 +13,15 @@ export class CategoryService implements ICategoryService {
         this._categoryRepository = categoryRepo;
     }
 
-    getAll = async (): Promise<ICategory[]> => {
+    getAll = async (currentPage:string,pageSize:string): Promise<{category:ICategory[],totalPage:number}> => {
+        const page = parseInt(currentPage);
+        const size = parseInt(pageSize);
+        const startIndex = (page-1) * size;
+        const endIndex = page * size;
         const categories = await this._categoryRepository.getAll();
-        return categories;
+        const category = categories.slice(startIndex,endIndex);
+        const totalPage = Math.ceil(categories.length/size);
+        return {category,totalPage};
     };
 
     createCategory = async (category: ICategory): Promise<ICategory> => {

@@ -9,8 +9,8 @@ export const logoutAdmin = async () => {
     await axios.post('/admins/logout', {}, { withCredentials: true });
 };
 
-export const fetchUsers = async () => {
-    const response = await axios.get('admins/users');
+export const fetchUsers = async (currentPage:number,pageSize:number) => {
+    const response = await axios.get(`admins/users?currentPage=${currentPage}&pageSize=${pageSize}`);
     return response;
 }
 
@@ -19,8 +19,8 @@ export const setIsActiveUsers = async (id: string) => {
     return response;
 }
 
-export const fetchWorkers = async () => {
-    const response = await axios.get('admins/workers');
+export const fetchWorkers = async (currentPage:number,pageSize:number) => {
+    const response = await axios.get(`admins/workers?currentPage=${currentPage}&pageSize=${pageSize}`);
     return response;
 }
 
@@ -29,13 +29,13 @@ export const fetchWorkersNonVerified = async () => {
     return response;
 }
 
-export const fetchCategory = async () => {
-    const response = await axios.get('categories/categories');
+export const fetchCategory = async (currentPage:number,pageSize:number) => {
+    const response = await axios.get(`categories/categories?currentPage=${currentPage}&pageSize=${pageSize}`);
     return response;
 }
 
-export const fetchService = async () => {
-    const response = await axios.get('services/getAll-services');
+export const fetchService = async (currentPage:number,pageSize:number) => {
+    const response = await axios.get(`services/getAll-services?currentPage=${currentPage}&pageSize=${pageSize}`);
     return response;
 }
 
@@ -61,8 +61,8 @@ export const addCategory = async (category: { name: string; description: string;
     return await axios.post('categories/create-category', category);
 };
 
-export const updateCategory = async (id: string, category: { name: string; description: string; imageUrl?: string }) => {
-    return await axios.post(`categories/update?categoryId=${id}`, category);
+export const updateCategory = async (id: string, currentPage:number,pageSize:number, category: { name: string; description: string; imageUrl?: string }) => {
+    return await axios.post(`categories/update?categoryId=${id}&currentPage=${currentPage}&pageSize=${pageSize}`, category);
 };
 
 
@@ -102,8 +102,8 @@ export const rejectedWorker = async (id: string) => {
     return response;
 }
 
-export const fetchWorks = async () => {
-    const response = await axios.get(`works/works`);
+export const fetchWorks = async (currentPage:number,pageSize:number) => {
+    const response = await axios.get(`works/works?currentPage=${currentPage}&pageSize=${pageSize}`);
     return response;
 }
 

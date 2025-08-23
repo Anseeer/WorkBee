@@ -13,15 +13,18 @@ const WorkHistory = () => {
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
     const [workId, setWorkId] = useState('')
     const [isModal, setIsModalOpen] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
     console.log(worker);
 
     useEffect(() => {
         const fetchData = async () => {
-            const history = await fetchWorkHistory(worker?._id as string);
-            setWorkHistory(history.data)
+            const history = await fetchWorkHistory(worker?._id as string, currentPage, 5);
+            setWorkHistory(history.data.paginatedWorkHistory)
+            setTotalPage(history.data.totalPage)
         }
         fetchData()
-    }, [isModal])
+    }, [isModal,currentPage])
 
     const handleInfoModal = (workId: string) => {
         setWorkId(workId);
@@ -66,7 +69,9 @@ const WorkHistory = () => {
                 <WorkDetailsModal workId={workId} closeModal={onClsoe} />
             ) : (
                 <DataTable
-                    itemsPerPage={5}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    totalPages={totalPage}
                     data={workHistory.map(w => ({
                         ...w,
                         id: w._id ?? ''

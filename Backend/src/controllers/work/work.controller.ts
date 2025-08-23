@@ -40,11 +40,12 @@ export class WorkController implements IWorkController {
     fetchWorkHistoryByUser = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req?.user?.id;
+            const { currentPage, pageSize } = req.query;
             if (!userId) {
                 throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
             }
 
-            const result = await this._workService.fetchWorkHistoryByUser(userId);
+            const result = await this._workService.fetchWorkHistoryByUser(userId, currentPage as string, pageSize as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
@@ -58,12 +59,12 @@ export class WorkController implements IWorkController {
 
     fetchWorkHistoryByWorker = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { workerId } = req.query;
+            const { workerId,currentPage,pageSize } = req.query;
             if (!workerId) {
                 throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
             }
 
-            const result = await this._workService.fetchWorkHistoryByWorker(workerId as string);
+            const result = await this._workService.fetchWorkHistoryByWorker(workerId as string,currentPage as string,pageSize as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
@@ -155,8 +156,9 @@ export class WorkController implements IWorkController {
 
     getAllWorks = async (req: Request, res: Response): Promise<void> => {
         try {
-            const result = await this._workService.getAllWorks();
-            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, result);
+            const {currentPage,pageSize} = req.query;
+            const {paginatedWorks,totalPage} = await this._workService.getAllWorks(currentPage as string,pageSize as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, {paginatedWorks,totalPage});
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {

@@ -49,11 +49,12 @@ export class UserController implements IUserController {
             const { email, password } = req.body;
             const { user, accessToken, refreshToken, wallet } = await this._userService.loginUser(email, password);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.LOGIN_SUCCESS, { user, wallet });
+
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
-                maxAge: COOKIE_CONFIG.MAX_AGE,
+                maxAge: COOKIE_CONFIG.MAX_AGE ,
             });
 
             res.cookie("refreshToken", refreshToken, {
@@ -65,6 +66,7 @@ export class UserController implements IUserController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
+            console.log(error)
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.LOGIN_FAILED, message);
             logger.error(response);

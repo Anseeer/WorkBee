@@ -34,8 +34,9 @@ export class ServiceController implements IServiceController {
 
     getAllservices = async (req: Request, res: Response) => {
         try {
-            const service = await this._serviceService.getAllServices();
-            const response = new successResponse(StatusCode.OK, SERVICE_MESSAGE.GET_ALL_SERVICES_SUCCESS, { service });
+            const {currentPage,pageSize} = req.query;
+            const {services,totalPage} = await this._serviceService.getAllServices(currentPage as string,pageSize as string);
+            const response = new successResponse(StatusCode.OK, SERVICE_MESSAGE.GET_ALL_SERVICES_SUCCESS, {services,totalPage});
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -63,7 +64,7 @@ export class ServiceController implements IServiceController {
 
     update = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { serviceId } = req.query;
+            const { serviceId, currentPage,pageSize } = req.query;
             const service = req.body;
 
             if (!serviceId) {
@@ -71,8 +72,8 @@ export class ServiceController implements IServiceController {
             }
 
             if (service.name) {
-                const allOtherServices = await this._serviceService.getAllServices();
-                const existingNames = allOtherServices
+                const {services} = await this._serviceService.getAllServices(currentPage as string,pageSize as string);;
+                const existingNames = services
                     .filter(serv => serv.id.toString() !== serviceId)
                     .map(serv => serv.name.toLowerCase());
 

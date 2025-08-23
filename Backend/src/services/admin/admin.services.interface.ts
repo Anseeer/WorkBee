@@ -5,10 +5,10 @@ import { Iuser } from "../../model/user/user.interface";
 
 export interface IAdminService {
     login(adminData: Partial<Iuser>): Promise<{ admin: IUserDTO, accessToken: string, refreshToken: string }>;
-    fetchUsers(): Promise<IUserDTO[] | undefined>;
+    fetchUsers(currentPage:string,pageSize:string): Promise<{users:IUserDTO[] | undefined,totalPage:number}>;
     setIsActiveUsers(id: string): Promise<boolean>;
     setIsActiveWorkers(id: string): Promise<boolean>;
-    fetchWorkers(): Promise<IWorkerDTO[] | undefined>;
+    fetchWorkers(currentPage:string,pageSize:string): Promise<{workers:IWorkerDTO[] | undefined,totalPage:number}>;
     fetchWorkersNonVerified(): Promise<IWorkerDTO[] | undefined>;
     fetchAvailability(id: string): Promise<IAvailability | null>;
     approveWorker(id: string): Promise<void>;

@@ -51,10 +51,16 @@ export class AdminService implements IAdminService {
         return { accessToken, refreshToken, admin };
     }
 
-    async fetchUsers(): Promise<IUserDTO[] | undefined> {
+    async fetchUsers(currentPage: string, pageSize: string): Promise<{ users: IUserDTO[] | undefined, totalPage: number }> {
+        const page = parseInt(currentPage);
+        const size = parseInt(pageSize);
+        const startIndex = (page - 1) * size;
+        const endIndex = page * size;
         const allUsers = await this._userRepository.getAllUsers();
-        const users = allUsers?.map((item) => mapUserToDTO(item));
-        return users;
+        const user = allUsers?.slice(startIndex, endIndex);
+        const users = user?.map((item) => mapUserToDTO(item));
+        const totalPage = Math.ceil(allUsers?.length as number / size);
+        return { users, totalPage };
     }
 
     async setIsActiveUsers(id: string): Promise<boolean> {
@@ -71,10 +77,16 @@ export class AdminService implements IAdminService {
         return await this._workerRepository.setIsActive(id);
     }
 
-    async fetchWorkers(): Promise<IWorkerDTO[] | undefined> {
+    async fetchWorkers(currentPage: string, pageSize: string): Promise<{ workers: IWorkerDTO[] | undefined, totalPage: number }> {
+        const page = parseInt(currentPage);
+        const size = parseInt(pageSize);
+        const startIndex = (page - 1) * size;
+        const endIndex = page * size;
         const allWorkers = await this._workerRepository.getAllWorkers();
-        const workers = allWorkers.map((item) => mapWorkerToDTO(item));
-        return workers;
+        const worker = allWorkers.slice(startIndex, endIndex);
+        const workers = worker.map((item) => mapWorkerToDTO(item));
+        const totalPage = Math.ceil(allWorkers.length/size);
+        return {workers,totalPage};
     }
 
     async fetchWorkersNonVerified(): Promise<IWorkerDTO[] | undefined> {

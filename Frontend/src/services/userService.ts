@@ -86,8 +86,9 @@ export const DraftWork = async (workDetails: IWork) => {
     return response;
 }
 
-export const fetchWorkHistory = async (userId: string) => {
-    const response = await axios.get(`works/users?userId=${userId}`);
+export const fetchWorkHistory = async (userId: string,currentPage:number,pageSize:number) => {
+    console.log("userId:",userId,"CurrentPage :",currentPage,"pageSize:",pageSize);
+    const response = await axios.get(`works/users?userId=${userId}&currentPage=${currentPage}&pageSize=${pageSize}`);
     return response;
 }
 

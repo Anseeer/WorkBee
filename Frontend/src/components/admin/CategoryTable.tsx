@@ -16,20 +16,23 @@ const CategoryTable = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<ICategory | null>(null);
     const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPage, setTotalPage] = useState(0)
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchCategory();
-            const formatted = res.data.data.categories.map((cat: any) => ({
+            const res = await fetchCategory(currentPage, 3);
+            const formatted = res.data.data.category.map((cat: any) => ({
                 ...cat,
                 id: cat._id
             }));
             setCategory(formatted);
+            setTotalPage(res.data.data.totalPage);
         };
         setAdded(false);
         setDeleted(false);
         fetchData();
-    }, [added, deleted]);
+    }, [added, deleted, currentPage]);
 
     const handleToggle = async (id: string) => {
         try {
@@ -106,7 +109,7 @@ const CategoryTable = () => {
                     imageUrl = await uploadToCloud(values.imageFile);
                 }
 
-                await updateCategory(editData._id, {
+                await updateCategory(editData._id, currentPage, 3, {
                     name: values.name,
                     description: values.description,
                     imageUrl: imageUrl as string,
@@ -179,7 +182,9 @@ const CategoryTable = () => {
         <div className="p-4 max-w-7xl mx-auto">
             <AddingCategorySection setAdded={setAdded} />
             <DataTable
-                itemsPerPage={3}
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                totalPages={totalPage}
                 data={category}
                 columns={columns}
                 searchKeys={['name', 'description']}
