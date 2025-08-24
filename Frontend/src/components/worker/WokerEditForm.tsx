@@ -197,8 +197,8 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const res = await fetchCategory();
-            setAllCategories(res.data.data.categories);
+            const res = await fetchCategory(1,1000);
+            setAllCategories(res.data.data.category);
         };
         fetchCategories();
     }, []);

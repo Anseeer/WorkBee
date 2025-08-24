@@ -352,11 +352,11 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm text-gray-600">Subscription</span>
-                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.subscription.isActive
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.subscription?.isActive
                                             ? 'bg-green-100 text-green-800'
                                             : 'bg-red-100 text-red-800'
                                             }`}>
-                                            {worker.subscription.isActive ? 'Active' : 'Inactive'}
+                                            {worker.subscription?.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between">

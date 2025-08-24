@@ -1,5 +1,5 @@
 import { Iuser } from "../../model/user/user.interface"
-import { IUserDTO } from "./user.map.DTO.interface"
+import { IUserDTO, IUserEntity } from "./user.map.DTO.interface"
 
 
 export const mapUserToDTO = (user: Iuser): IUserDTO => {
@@ -19,3 +19,25 @@ export const mapUserToDTO = (user: Iuser): IUserDTO => {
         role: user.role,
     }
 }
+
+
+export const mapToUserEntity = (user: Partial<Iuser>): IUserEntity => {
+    return {
+        id: user._id as string,
+        name: user.name as string,
+        email: user.email as string,
+        phone: user.phone as string,
+        password: user.password,
+        location: user.location
+            ? {
+                address: user.location.address,
+                pincode: user.location.pincode,
+                lat: user.location.lat,
+                lng: user.location.lng,
+              }
+            : undefined,
+        profileImage: user.profileImage,
+        isActive: user.isActive as boolean,
+        role: user.role as string,
+    };
+};

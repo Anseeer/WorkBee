@@ -23,11 +23,11 @@ export interface IWorker extends Document {
     services: Types.ObjectId[],
     categories: Types.ObjectId[],
     subscription: {
-        plan: mongoose.Schema.Types.ObjectId;
+        plan: string;
         startDate: Date;
         endDate: Date;
         isActive: boolean;
-    },
+    }|null,
     createdAt: Date,
     updatedAt: Date
     isAccountBuilt: boolean

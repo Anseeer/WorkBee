@@ -45,8 +45,8 @@ const CategorySection: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetchCategory();
-                const fetchedCategories = response.data.data.categories.filter(
+                const response = await fetchCategory(1,1000);
+                const fetchedCategories = response.data.data.category.filter(
                     (cat: ICategory) => cat.isActive === true
                 );
 

@@ -78,7 +78,7 @@ const HeroSection = () => {
                         {searchTerm && services.length > 0 && (
                             <div className="absolute mt-3 w-md  p-4 z-10">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    {services.slice(0, 12).map((service) => (
+                                    {services?.slice(0, 6).map((service) => (
                                         <button
                                             key={service.id}
                                             onClick={() => HandleSelectedService(service)}

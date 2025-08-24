@@ -30,7 +30,8 @@ const HomeHeroSection = () => {
         const delayDebounce = setTimeout(async () => {
             if (searchTerm.trim() === "") {
                 const response = await fetchService();
-                setServices(response.data.data.service);
+                console.log("Res:",response.data.data.services)
+                setServices(response.data.data.services);
                 setNotFound(false);
             } else {
                 try {
@@ -83,7 +84,7 @@ const HomeHeroSection = () => {
             {/* Service Buttons */}
             <div className="grid grid-cols-2 px-20 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-10">
                 {!notFound ? (
-                    services.slice(0, 12).map((service) => (
+                    services?.slice(0, 12).map((service) => (
                         <button
                             onClick={() => HandleSelectedService(service)}
                             key={service.id}

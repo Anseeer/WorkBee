@@ -85,7 +85,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     }
 
     async update(workerData: Partial<IWorker>): Promise<boolean> {
-        const worker = await this.model.findById(workerData._id);
+        const worker = await this.model.findById(workerData.id);
         if (!worker) {
             throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
         }
@@ -107,7 +107,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         };
 
         const result = await this.model.updateOne(
-            { _id: workerData._id },
+            { _id: workerData.id },
             { $set: updatedFields }
         );
 

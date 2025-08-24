@@ -32,8 +32,8 @@ export const logoutWorker = async () => {
 };
 
 export const getAllCategories = async (): Promise<ICategory[]> => {
-  const res = await axios.get("/categories/categories");
-  return res.data.data.categories;
+  const res = await axios.get(`/categories/categories?currentPage=${1}&pageSize=${1000}`);
+  return res.data.data.category;
 };
 
 export const forgotPassword = async (email: string) => {

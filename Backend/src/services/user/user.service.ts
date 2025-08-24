@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { Iuser } from "../../model/user/user.interface";
 import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
 import { generate_Access_Token, generate_Refresh_Token } from "../../utilities/generateToken";
-import { mapUserToDTO } from "../../mappers/user/user.map.DTO";
+import { mapToUserEntity, mapUserToDTO } from "../../mappers/user/user.map.DTO";
 import { generateOTP } from "../../utilities/generateOtp";
 import { emailService } from "../../utilities/emailService";
 import { deleteOtp, getOtp, saveOtp } from "../../utilities/otpStore";
@@ -47,7 +47,8 @@ export class UserService implements IUserService {
 
         const hashedPass = await bcrypt.hash(userData.password, 10)
         userData.password = hashedPass;
-        const newUser = await this._userRepository.create(userData);
+        const userEntity = await mapToUserEntity(userData);
+        const newUser = await this._userRepository.create(userEntity);
 
         await Wallet.create({
             userId: newUser._id,
@@ -186,7 +187,8 @@ export class UserService implements IUserService {
     }
 
     async update(userDetails: Iuser, userId: string): Promise<boolean> {
-        return await this._userRepository.update(userDetails, userId);
+        const userData = await mapToUserEntity(userDetails);
+        return await this._userRepository.update(userData, userId);
     }
 
     async findUsersByIds(userIds: string[]): Promise<IUserDTO[]> {

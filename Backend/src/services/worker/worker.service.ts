@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt"
 import { generate_Access_Token, generate_Refresh_Token } from "../../utilities/generateToken";
-import mapWorkerToDTO from "../../mappers/worker/worker.map.DTO";
+import mapWorkerToDTO, { mapWorkerToEntity } from "../../mappers/worker/worker.map.DTO";
 import { IWorker } from "../../model/worker/worker.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
 import { generateOTP } from "../../utilities/generateOtp";
@@ -100,7 +100,8 @@ export class WorkerService implements IWorkerService {
 
         const hashedPass = await bcrypt.hash(workerData.password, 10);
         workerData.password = hashedPass;
-        const newWorker = await this._workerRepository.create(workerData);
+        const workerEntity = await mapWorkerToEntity(workerData);
+        const newWorker = await this._workerRepository.create(workerEntity);
 
         await Wallet.create({
             userId: newWorker._id,
@@ -202,7 +203,8 @@ export class WorkerService implements IWorkerService {
         if (!workerData || !workerData._id) {
             throw new Error(WORKER_MESSAGE.WORKER_DATA_OR_ID_NOT_GET)
         }
-        await this._workerRepository.update(workerData);
+        const workerEntity = await mapWorkerToEntity(workerData)
+        await this._workerRepository.update(workerEntity);
         return true;
     }
 

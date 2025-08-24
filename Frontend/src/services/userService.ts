@@ -14,7 +14,7 @@ export const login = async (credintials: { email: string, password: string }) =>
     return response;
 }
 
-export const fetchUser = async (userId?:string) => {
+export const fetchUser = async (userId?: string) => {
     const response = await axios.get(`users/fetch-data?userId=${userId}`);
     return response.data;
 }
@@ -44,7 +44,7 @@ export const resetPass = async (email: string, password: string) => {
 }
 
 export const fetchService = async () => {
-    const response = await axios.get('services/getAll-services');
+    const response = await axios.get(`services/getAll-services?currentPage=${1}&pageSize=${1000}`);
     return response;
 }
 
@@ -86,8 +86,8 @@ export const DraftWork = async (workDetails: IWork) => {
     return response;
 }
 
-export const fetchWorkHistory = async (userId: string,currentPage:number,pageSize:number) => {
-    console.log("userId:",userId,"CurrentPage :",currentPage,"pageSize:",pageSize);
+export const fetchWorkHistory = async (userId: string, currentPage: number, pageSize: number) => {
+    console.log("userId:", userId, "CurrentPage :", currentPage, "pageSize:", pageSize);
     const response = await axios.get(`works/users?userId=${userId}&currentPage=${currentPage}&pageSize=${pageSize}`);
     return response;
 }
@@ -108,7 +108,7 @@ export const getUserDetails = async (userId: string) => {
 }
 
 export const findUsersByIds = async (userIds: string[]) => {
-    const response = await axios.post(`users/find-users-byId`,{userIds});
+    const response = await axios.post(`users/find-users-byId`, { userIds });
     return response.data.data;
 }
 
