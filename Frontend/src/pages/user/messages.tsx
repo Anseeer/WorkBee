@@ -16,8 +16,8 @@ const Message = () => {
             if (!user?.id) return;
 
             try {
-                const work = await fetchWorkHistory(user.id);
-                const workHistory = work?.data?.data ?? [];
+                const work = await fetchWorkHistory(user.id,1,1000);
+                const workHistory = work?.data?.data.paginatedWorks ?? [];
 
                 const workerIds = workHistory
                     .filter((work: IWork) => work.status !== "Pending" && work.status !== "Canceled")

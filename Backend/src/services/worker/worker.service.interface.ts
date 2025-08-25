@@ -24,7 +24,7 @@ export interface IWorkerService {
     updateWorker(workerData: IWorker): Promise<boolean>;
     searchWorker(serachTerm: Partial<IWork>): Promise<IWorkerDTO[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorkerDTO[]>;
-    findWallet(workerId: string): Promise<IWallet|null>;
+    findWallet(workerId: string): Promise<IWallet | null>;
     googleLogin(credential: string): Promise<{
         accessToken: string;
         refreshToken: string;
@@ -32,5 +32,6 @@ export interface IWorkerService {
         wallet: IWallet | null,
         availability?: IAvailability;
     }>;
+    fetchData(workerId: string): Promise<{ availability?: IAvailability, worker: IWorkerDTO, wallet: IWallet | null }>;
 
 }

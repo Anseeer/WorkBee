@@ -19,4 +19,5 @@ export interface IWorkerRepository {
     update(worker: Partial<IWorker>): Promise<boolean>;
     search(searchTerms: Partial<IWork>): Promise<IWorker[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorker[]>;
+
 }

@@ -10,6 +10,7 @@ import { WALLET_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { IWalletService } from "../../services/wallet/wallet.service.interface";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class WorkerController implements IWorkerController {
@@ -80,7 +81,7 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            console.log("Error:",error);
+            console.log("Error:", error);
             const errMsg = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg);
             logger.error(response);
@@ -263,7 +264,7 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:",error);
+            console.log("Error:", error);
             const err = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.UPDATE_WORKER_FAILD, err);
             logger.error(response);
@@ -357,6 +358,39 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
         }
     }
+
+    fetchData = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            let userId;
+            if ((req as AuthRequest)?.user?.id) {
+                userId = String((req as AuthRequest).user?.id);
+            }
+
+            if (!userId) {
+                throw new Error("User ID is required");
+            }
+
+            const { worker, availability, wallet } = await this._workerService.fetchData(userId as string);
+
+            const response = new successResponse(
+                StatusCode.OK,
+                WORKER_MESSAGE.WORKER_DETAILS_FETCH_SUCCESSFULLY,
+                { availability, worker, wallet }
+            );
+            logger.info(response);
+            res.status(response.status).json(response);
+
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            const response = new errorResponse(
+                StatusCode.BAD_REQUEST,
+                WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD,
+                message
+            );
+            logger.error(response);
+            res.status(response.status).json(response);
+        }
+    };
 
 }
 

@@ -34,6 +34,7 @@ const ProfileSection = () => {
     const wallet = useSelector((state: RootState) => state.user?.wallet);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
+    const [walletUpdated, setWalletUpdated] = useState(false);
 
     useEffect(() => {
         if (user?.profileImage) {
@@ -92,6 +93,7 @@ const ProfileSection = () => {
 
     const closeAddMoneyModal = () => {
         setAddMoneyModal(false)
+        setWalletUpdated((prev) => !prev);
     }
 
     const handleAddMoney = () => {
@@ -108,7 +110,9 @@ const ProfileSection = () => {
         setIsPaymentModal(true);
         setAmount(Number(wage));
         setWorkId(workId);
+
     }
+
 
     return (
         <div className="flex h-[530px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
@@ -330,12 +334,12 @@ const ProfileSection = () => {
                 ) : isActiveTab == "Edit" ? (
                     <EditUserModal onClose={Close} setEdit={setIsEdit} />
                 ) : isActiveTab == "Wallet" ? (
-                    <Wallet historyPrev={wallet?.transactions} balancePrev={wallet?.balance} />
+                    <Wallet walletUpdated={walletUpdated} workerId={user?.id}  historyPrev={wallet?.transactions} balancePrev={wallet?.balance} />
                 ) : null}
                 {isPaymentModal ? (
                     <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />
                 ) : isAddMoneyModal ? (
-                    <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />
+                    <AddMoneyModal  userId={userId as string} onClose={closeAddMoneyModal} />
                 ) : isWorkInfoModal ? (
                     <WorkInfoModal workId={workId as string} closeModal={closeModal} />
                 ) : null}

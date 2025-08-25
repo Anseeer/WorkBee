@@ -14,19 +14,23 @@ interface WalletPageProps {
   balancePrev?: number;
   historyPrev?: Transaction[];
   workerId?: string;
+  walletUpdated?: boolean;
 }
 
-const Wallet = ({ balancePrev, historyPrev, workerId }: WalletPageProps) => {
+const Wallet = ({ balancePrev, historyPrev, workerId, walletUpdated }: WalletPageProps) => {
   const [balance, setBalance] = useState<number>(balancePrev as number);
   const [history, setHistory] = useState<Transaction[]>(historyPrev as Transaction[]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
+
+  console.log("wallet Updated",walletUpdated)
 
   useEffect(() => {
     const loadWallet = async () => {
       try {
         if (!workerId) return;
         const res = await fetchWallet(workerId);
+        console.log("Wallet",res.wallet.balance);
         const wallet = res.wallet;
         setBalance(wallet.balance || 0);
         setHistory(wallet.transactions || []);
@@ -35,7 +39,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId }: WalletPageProps) => {
       }
     };
     loadWallet();
-  }, [workerId]);
+  }, [workerId, walletUpdated]);
 
   const totalPages = Math.ceil(history.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;

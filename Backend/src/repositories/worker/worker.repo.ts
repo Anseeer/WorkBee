@@ -134,7 +134,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
 
         if (!searchTerms.location) {
-            return workers;
+            return workers
         }
 
         const { lat, lng } = searchTerms.location;
