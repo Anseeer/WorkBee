@@ -4,8 +4,6 @@ import { Search } from "lucide-react";
 import type { IService } from "../../types/IServiceTypes";
 import { fetchService, fetchServiceBySearchTerm } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../Store";
 
 const HomeHeroSection = () => {
     const [services, setServices] = useState<IService[]>([]);
@@ -30,7 +28,7 @@ const HomeHeroSection = () => {
         const delayDebounce = setTimeout(async () => {
             if (searchTerm.trim() === "") {
                 const response = await fetchService();
-                console.log("Res:",response.data.data.services)
+                console.log("Res:", response.data.data.services)
                 setServices(response.data.data.services);
                 setNotFound(false);
             } else {
@@ -56,25 +54,22 @@ const HomeHeroSection = () => {
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }
-    const user = useSelector((state: RootState) => state?.user.user);
-    console.log("UserData in redux :", user)
-
 
     return (
         <div className="w-full h-[500px] flex flex-col items-center justify-center py-12 px-4">
             {/* Title */}
-            <h1 className="text-3xl lg:text-5xl font-semibold text-black py-10">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black py-10">
                 Find Help Now
             </h1>
 
             {/* Search Box */}
-            <div className="w-full max-w-2xl border border-gray-300 flex rounded-full overflow-hidden bg-[#F5FAF5] shadow-md focus-within:border-transparent focus-within:ring-2 focus-within:ring-offset-0 focus-within:ring-green-900">
+            <div className=" max-w-ful h-md  xs:w-sm xs:h-sm sm:w-md sm:h-sm md:w-lg md:h-lg lg:w-xl lg:h-xl xl:w-2xl border border-gray-300 flex rounded-full overflow-hidden bg-[#F5FAF5] shadow-md focus-within:border-transparent focus-within:ring-2 focus-within:ring-offset-0 focus-within:ring-green-900">
                 <input
                     type="text"
                     placeholder="What do you need help with?"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1 text-base md:text-lg px-6 py-4 focus:outline-none bg-[#F5FAF5] text-black placeholder-gray-500"
+                    className="flex-1 text-base sm:text-xs md:text-lg px-6 py-4 focus:outline-none bg-[#F5FAF5] text-black placeholder-gray-500"
                 />
                 <div className="bg-green-900 px-6 flex items-center justify-center">
                     <Search className="text-white w-6 h-6" />

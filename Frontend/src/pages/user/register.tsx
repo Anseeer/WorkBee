@@ -158,9 +158,9 @@ const RegistrationPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 fixed w-full">
-      <div className="absolute top-7.5 left-7.5">
-        <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
+    <div className="h-screen overflow-y-auto scroll bg-gray-50 md:p-4 sm:p-2 lg:p-8 xl:p-12 fixed w-full">
+      <div className="absolute top-8 left-8 ">
+        <h1 className="merienda-text  text-xl sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-green-900">WorkBee</h1>
       </div>
 
       <div className="flex items-center justify-center m-25">
