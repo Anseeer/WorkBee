@@ -43,8 +43,6 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
 
     next();
   } catch (err) {
-    logger.error(err)
-
     if (!refreshToken) {
       res.status(401).send(AUTH_MESSAGE.NO_REFRESH_TOKEN);
       return;

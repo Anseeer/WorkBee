@@ -47,7 +47,6 @@ export class AdminService implements IAdminService {
         const accessToken = generate_Access_Token(existingAdmin._id.toString(), existingAdmin.role);
         const refreshToken = generate_Refresh_Token(existingAdmin._id.toString(), existingAdmin.role);
         const admin = mapUserToDTO(existingAdmin);
-
         return { accessToken, refreshToken, admin };
     }
 

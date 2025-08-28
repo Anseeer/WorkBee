@@ -48,7 +48,11 @@ const App = () => {
             </GuestRoute>
           } />
           <Route path="/register" element={<RegistrationPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={
+            <GuestRoute role="User" >
+              <LoginPage />
+            </GuestRoute>
+          } />
           <Route path="/forgot-password" element={<ForgotPAss />} />
           <Route path="/verify-otp" element={<OtpVerification />} />
           <Route path="/reset-password" element={<ResetPassword />} />

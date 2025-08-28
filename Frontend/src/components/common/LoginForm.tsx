@@ -6,8 +6,6 @@ import { useState } from "react";
 import GoogleAuth from "./GoogleSignButton";
 import type { CredentialResponse } from "@react-oauth/google";
 
-
-
 interface LoginFormProps {
   Submit: (credentials: { email: string; password: string }) => void;
   HandleForgotPass: () => void;
@@ -23,14 +21,12 @@ interface LoginFormProps {
 const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotPass, HandleRegister, loading = false, role }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(true);
 
-
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
     onSubmit: (values) => {
-      console.log(values)
       Submit(values);
     },
     validate: (values) => {

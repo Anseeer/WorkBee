@@ -133,7 +133,6 @@ export const fetchWorkerDetails = createAsyncThunk(
     }
 );
 
-
 export const fetchWorkerDataThunk = createAsyncThunk("workers/fetch-data",
     async (_, { rejectWithValue }) => {
         try {
@@ -201,7 +200,6 @@ const workerSlice = createSlice({
                 state.error = null;
                 localStorage.setItem("workerId", state.worker?.id as string);
             })
-
             .addCase(loginWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })

@@ -52,7 +52,7 @@ export default function MessageSection({ users, me }: Props) {
         ...prev,
         [selectedUser.id]: 0,
       }));
-      
+
     }
   }, [selectedUser, me]);
 
@@ -154,7 +154,7 @@ export default function MessageSection({ users, me }: Props) {
     <div className="border-2 border-green-700 rounded-xl m-8 p-5 flex h-full">
       {/* Sidebar */}
       <div className="w-1/3">
-        <div className="bg-[#65A276] w-80 h-full overflow-y rounded-r rounded-xl p-4 flex flex-col gap-4">
+        <div className="bg-[#65A276]  h-full overflow-y rounded-r rounded-xl p-4 flex flex-col gap-5 mr-10">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-500" />
@@ -164,26 +164,26 @@ export default function MessageSection({ users, me }: Props) {
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-100 rounded-lg py-4 pl-12 pr-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all"
+              className="w-full bg-gray-100 rounded-lg sm:py-3 py-4 pl-12 pr-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all"
             />
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:gap-2 gap-3">
             {filteredUsers.map((user) => (
               <div
                 onClick={() => onSelect(user)}
                 key={user.id}
-                className="bg-gray-100 rounded-lg p-4 flex items-center gap-4 hover:bg-white transition-all cursor-pointer"
+                className="bg-gray-100 rounded-lg p-4 sm:p-2 sm:gap-3 flex items-center gap-4 hover:bg-white transition-all cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="md:w-12 md:h-12 sm:w-7 sm:h-7 rounded-full flex items-center justify-center flex-shrink-0">
                   <img
                     src={user.profileImage as string}
-                    className="w-12 h-12 rounded-full"
+                    className=" w-7 h-7 md:w-12 md:h-12 sm:w-7 sm:h-7 rounded-full"
                     alt=""
                   />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <h3 className="font-semibold text-gray-900 text-base flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 md:text-base sm:text-sm flex items-center gap-2">
                     {user.name}
                     {unread && unread[user.id] > 0 && (
                       <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -191,7 +191,7 @@ export default function MessageSection({ users, me }: Props) {
                       </span>
                     )}
                   </h3>
-                  <p className="text-gray-600 text-sm truncate">
+                  <p className="text-gray-600 md:text-sm sm:text-xs truncate">
                     {lastMessages[user.id] ?? "No messages yet"}
                   </p>
                 </div>
@@ -306,6 +306,7 @@ export default function MessageSection({ users, me }: Props) {
           </div>
         )}
       </div>
+
     </div>
   );
 }
