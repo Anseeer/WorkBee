@@ -10,6 +10,8 @@ import { IWork } from "../../model/work/work.interface";
 import { CATEGORY_MESSAGE, SERVICE_MESSAGE, USERS_MESSAGE, WORK_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 import mongoose from "mongoose";
+import { IWorkDTO } from "../../mappers/work/work.map.DTO.interface";
+import { mapWorkToDTO, mapWorkToEntity } from "../../mappers/work/work.map.DTO";
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -35,7 +37,7 @@ export class WorkService implements IWorkService {
         this._categoryRepositoy = categoryRepo;
     }
 
-    createWork = async (workDetails: IWork): Promise<IWork> => {
+    createWork = async (workDetails: IWork): Promise<IWorkDTO> => {
         const { workerId, userId, serviceId, categoryId } = workDetails;
         if (!workDetails) {
             throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
@@ -59,12 +61,14 @@ export class WorkService implements IWorkService {
         if (!categoryExist || categoryExist.isActive === false) {
             throw new Error(CATEGORY_MESSAGE.CATEGORY_NOT_EXIST);
         }
-
-        return await this._workRepositoy.create(workDetails);
+        const workEntity = mapWorkToEntity(workDetails)
+        const newWork = await this._workRepositoy.create(workEntity);
+        const work = mapWorkToDTO(newWork);
+        return work;
 
     }
 
-    fetchWorkHistoryByUser = async (userId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWork[], totalPages: number }> => {
+    fetchWorkHistoryByUser = async (userId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPages: number }> => {
         if (!userId) {
             throw new Error(WORK_MESSAGE.USER_ID_NOT_GET);
         }
@@ -73,14 +77,15 @@ export class WorkService implements IWorkService {
         const startIndex = (page - 1) * size;
         const endIndex = page * size;
 
-        const works = await this._workRepositoy.findByUser(userId);
+        const findWorks = await this._workRepositoy.findByUser(userId);
+        const works = findWorks.map((work) => mapWorkToDTO(work));
         const paginatedWorks = works.slice(startIndex, endIndex);
         const totalPages = Math.ceil(works.length / size);
 
         return { paginatedWorks, totalPages }
     }
 
-    fetchWorkHistoryByWorker = async (workerId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorkHistory: IWork[], totalPage: number }> => {
+    fetchWorkHistoryByWorker = async (workerId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorkHistory: IWorkDTO[], totalPage: number }> => {
         if (!workerId) {
             throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
         }
@@ -91,7 +96,8 @@ export class WorkService implements IWorkService {
 
         console.log(startIndex, endIndex)
 
-        const workHistory = await this._workRepositoy.findByWorker(workerId);
+        const findWorkHistory = await this._workRepositoy.findByWorker(workerId);
+        const workHistory = findWorkHistory.map((work) => mapWorkToDTO(work))
         const paginatedWorkHistory = workHistory.slice(startIndex, endIndex);
         const totalPage = Math.ceil(workHistory.length / size);
 
@@ -152,9 +158,6 @@ export class WorkService implements IWorkService {
         return await this._workRepositoy.accept(workId);
     };
 
-
-
-
     completed = async (workId: string, workerId: string): Promise<boolean> => {
         if (!workId) {
             throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
@@ -173,28 +176,29 @@ export class WorkService implements IWorkService {
         return await this._workRepositoy.setIsWorkCompleted(workId);
     };
 
-
-    workDetails = async (workId: string): Promise<IWork> => {
+    workDetails = async (workId: string): Promise<IWorkDTO> => {
         if (!workId) {
             throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
         }
 
-        const workDetails = await this._workRepositoy.findById(workId as string);
+        const work = await this._workRepositoy.findById(workId as string);
+        const workDetails = mapWorkToDTO(work as IWork);
         if (!workDetails) {
             throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS)
         }
         return workDetails;
     }
 
-    getAllWorks = async (currentPage: string, pageSize: string): Promise<{paginatedWorks :IWork[],totalPage:number}> => {
+    getAllWorks = async (currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPage: number }> => {
         const page = parseInt(currentPage);
         const size = parseInt(pageSize);
         const startIndex = (page - 1) * size;
         const endIndex = page * size;
-        const works = await this._workRepositoy.getAllWorks();
-        const paginatedWorks = works.slice(startIndex,endIndex);
-        const totalPage = Math.ceil(works.length/size);
-        return {paginatedWorks,totalPage}
+        const allWorks = await this._workRepositoy.getAllWorks();
+        const works = allWorks.map((work) => mapWorkToDTO(work))
+        const paginatedWorks = works.slice(startIndex, endIndex);
+        const totalPage = Math.ceil(works.length / size);
+        return { paginatedWorks, totalPage }
     }
 
 }

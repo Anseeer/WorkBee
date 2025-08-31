@@ -13,6 +13,8 @@ import { IUserRepository } from "../../repositories/user/user.repo.interface";
 import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 import { ADMIN_MESSAGES } from "../../constants/messages";
+import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
+import { mapAvailabilityToDTO } from "../../mappers/availability/availability.map.DTO";
 
 @injectable()
 export class AdminService implements IAdminService {
@@ -95,8 +97,9 @@ export class AdminService implements IAdminService {
         return workers;
     }
 
-    async fetchAvailability(id: string): Promise<IAvailability | null> {
-        const availability = await this._availabilityRepository.findByWorkerId(id);
+    async fetchAvailability(id: string): Promise<IAvailabilityDTO | null> {
+        const findAvailability = await this._availabilityRepository.findByWorkerId(id);
+        const availability = mapAvailabilityToDTO(findAvailability as IAvailability);
         return availability;
     }
 

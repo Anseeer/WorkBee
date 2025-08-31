@@ -1,3 +1,4 @@
+import { IAvailabilitEntity } from "../../mappers/availability/availability.map.DTO.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
 import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
@@ -10,7 +11,7 @@ export interface IWorkerRepository {
     findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null>;
     findAvailabilityByWorkerId(id: string): Promise<IAvailability | null>;
     setAvailability(availability: IAvailability): Promise<IAvailability | null>;
-    updateAvailability(id: string, availability: IAvailability): Promise<IAvailability | null>;
+    updateAvailability(id: string, availability: IAvailabilitEntity): Promise<IAvailability | null>;
     getAllWorkers(): Promise<IWorker[]>;
     getAllNonVerifiedWorkers(): Promise<IWorker[]>;
     setIsActive(id: string): Promise<boolean>;

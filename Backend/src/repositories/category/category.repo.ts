@@ -3,6 +3,7 @@ import { ICategory } from "../../model/category/category.interface";
 import Category from "../../model/category/category.model";
 import BaseRepository from "../base/base.repo";
 import { ICategoryRepository } from "./category.repo.interface";
+import { ICategoryEntity } from "../../mappers/category/category.map.DTO.interface";
 
 @injectable()
 export class CategoryRepository extends BaseRepository<ICategory> implements ICategoryRepository {
@@ -10,7 +11,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         super(Category)
     }
 
-    async create(item: Partial<ICategory>): Promise<ICategory> {
+    async create(item: Partial<ICategoryEntity>): Promise<ICategory> {
         const newItem = new this.model(item);
         return await newItem.save();
     }
@@ -38,7 +39,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         return true;
     }
 
-    update = async (category: ICategory, categoryId: string): Promise<boolean> => {
+    update = async (category: ICategoryEntity, categoryId: string): Promise<boolean> => {
         const result = await this.model.updateOne(
             { _id: categoryId },
             {
@@ -51,8 +52,6 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         );
         return result.modifiedCount > 0;
     };
-
-
 
     delete = async (id: string): Promise<boolean> => {
         const result = await this.model.deleteOne({ _id: id });

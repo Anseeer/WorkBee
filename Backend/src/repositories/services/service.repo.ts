@@ -3,6 +3,7 @@ import { IServices } from "../../model/service/service.interface";
 import Services from "../../model/service/service.model";
 import BaseRepository from "../base/base.repo";
 import { IServiceRepository } from "./service.repo.interface";
+import { IServiceEntity } from "../../mappers/service/service.map.DTO.interface";
 
 @injectable()
 export class ServiceRepository extends BaseRepository<IServices> implements IServiceRepository {
@@ -10,7 +11,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         super(Services);
     }
 
-    async create(item: Partial<IServices>): Promise<IServices> {
+    async create(item: Partial<IServiceEntity>): Promise<IServices> {
         const newItem = await new this.model(item);
         return await newItem.save();
     }
@@ -39,7 +40,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         return true;
     }
 
-    update = async (service: IServices, serviceId: string): Promise<boolean> => {
+    update = async (service: IServiceEntity, serviceId: string): Promise<boolean> => {
         const result = await this.model.updateOne(
             { _id: serviceId },
             { $set: { name: service.name, wage: service.wage, category: service.category } }

@@ -17,6 +17,10 @@ import { IAvailability } from "../../model/availablity/availablity.interface";
 import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
+import { mapAvailabilityToDTO } from "../../mappers/availability/availability.map.DTO";
+import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
+import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
+import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 
 const client = new OAuth2Client();
 
@@ -35,7 +39,7 @@ export class UserService implements IUserService {
         this._walletRepository = walletRepo;
     }
 
-    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWallet | null }> {
+    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }> {
         if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
             throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
         }
@@ -57,17 +61,18 @@ export class UserService implements IUserService {
             transactions: []
         })
 
-        const wallet = await this._walletRepository.findByUser(newUser.id);
+        const walletData = await this._walletRepository.findByUser(newUser.id);
 
         const accessToken = generate_Access_Token(newUser._id.toString(), newUser.role);
         const refreshToken = generate_Refresh_Token(newUser._id.toString(), newUser.role);
 
         const user = mapUserToDTO(newUser);
+        const wallet = mapWalletToDTO(walletData as IWallet);
 
         return { user, accessToken, refreshToken, wallet };
     }
 
-    async loginUser(email: string, password: string): Promise<{ user: IUserDTO; accessToken: string; refreshToken: string; wallet: IWallet | null }> {
+    async loginUser(email: string, password: string): Promise<{ user: IUserDTO; accessToken: string; refreshToken: string; wallet: IWalletDTO | null }> {
         let findUser = await this._userRepository.findByEmail(email);
         if (!findUser || findUser.role !== "User") {
             throw new Error(USERS_MESSAGE.CANT_FIND_USER);
@@ -82,12 +87,13 @@ export class UserService implements IUserService {
             throw new Error(USERS_MESSAGE.USER_BLOCKED)
         }
 
-        const wallet = await this._walletRepository.findByUser(findUser.id);
+        const walletData = await this._walletRepository.findByUser(findUser.id);
 
         const accessToken = generate_Access_Token(findUser._id.toString(), findUser.role);
         const refreshToken = generate_Refresh_Token(findUser._id.toString(), findUser.role);
 
-        const user = await mapUserToDTO(findUser);
+        const user = mapUserToDTO(findUser);
+        const wallet = mapWalletToDTO(walletData as IWallet);
 
         return { user, accessToken, refreshToken, wallet };
     }
@@ -104,13 +110,15 @@ export class UserService implements IUserService {
         return this.forgotPass(email);
     }
 
-    async getUserById(id: string): Promise<Iuser | null> {
-        const user = await this._userRepository.findById(id);
+    async getUserById(id: string): Promise<IUserDTO | null> {
+        const userData = await this._userRepository.findById(id);
+        const user = mapUserToDTO(userData as Iuser);
         return user
     }
 
-    async getUserByEmail(email: string): Promise<Iuser | null> {
-        const user = await this._userRepository.findByEmail(email);
+    async getUserByEmail(email: string): Promise<IUserDTO | null> {
+        const userData = await this._userRepository.findByEmail(email);
+        const user = mapUserToDTO(userData as Iuser);
         return user
     }
 
@@ -142,7 +150,7 @@ export class UserService implements IUserService {
         accessToken: string;
         refreshToken: string;
         user: IUserDTO;
-        wallet: IWallet | null
+        wallet: IWalletDTO | null
     }> {
         const ticket = await client.verifyIdToken({
             idToken: credential,
@@ -161,27 +169,30 @@ export class UserService implements IUserService {
             throw new Error(USERS_MESSAGE.USER_BLOCKED);
         }
 
-        const wallet = await this._walletRepository.findByUser(existingUser.id);
+        const walletData = await this._walletRepository.findByUser(existingUser.id);
         const jwtAccessToken = generate_Access_Token(existingUser._id.toString(), existingUser.role);
         const jwtRefreshToken = generate_Refresh_Token(existingUser._id.toString(), existingUser.role);
         const userDTO: IUserDTO = mapUserToDTO(existingUser);
+        const walletDTO: IWalletDTO = mapWalletToDTO(walletData as IWallet);
 
         return {
             accessToken: jwtAccessToken,
             refreshToken: jwtRefreshToken,
             user: userDTO,
-            wallet
+            wallet: walletDTO
         };
     }
 
-    async fetchAvailability(id: string): Promise<IAvailability | null> {
-        const availability = await this._availabilityRepository.findByWorkerId(id);
+    async fetchAvailability(id: string): Promise<IAvailabilityDTO | null> {
+        const availabilityData = await this._availabilityRepository.findByWorkerId(id);
+        const availability = mapAvailabilityToDTO(availabilityData as IAvailability);
         return availability;
     }
 
-    async fetchData(userId: string): Promise<{ user: IUserDTO, wallet: IWallet | null }> {
+    async fetchData(userId: string): Promise<{ user: IUserDTO, wallet: IWalletDTO | null }> {
         const userData = await this._userRepository.fetchData(userId);
-        const wallet = await this._walletRepository.findByUser(userId);
+        const walletData = await this._walletRepository.findByUser(userId);
+        const wallet = mapWalletToDTO(walletData as IWallet)
         const user = mapUserToDTO(userData);
         return { user, wallet };
     }

@@ -4,6 +4,7 @@ import BaseRepository from "../base/base.repo";
 import { IWalletRepository } from "./wallet.repo.interface";
 import { Wallet } from "../../model/wallet/wallet.model";
 import { isValidObjectId } from "mongoose";
+import { IWalletEntity } from "../../mappers/wallet/map.wallet.DTO.interface";
 
 @injectable()
 export class WalletRepository extends BaseRepository<IWallet> implements IWalletRepository {
@@ -11,7 +12,7 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
         super(Wallet);
     }
 
-    async create(item: Partial<IWallet>): Promise<IWallet> {
+    async create(item: Partial<IWalletEntity>): Promise<IWallet> {
         const newItem = new this.model(item);
         return await newItem.save();
     }

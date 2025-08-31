@@ -20,10 +20,12 @@ import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { OAuth2Client } from "google-auth-library";
-import { Types } from 'mongoose';
+import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
+import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
+import { mapAvailabilityToDTO, mapAvailabilityToEntity } from "../../mappers/availability/availability.map.DTO";
+import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 
 const client = new OAuth2Client();
-
 
 @injectable()
 export class WorkerService implements IWorkerService {
@@ -46,7 +48,7 @@ export class WorkerService implements IWorkerService {
         this._walletRepository = walletRepo;
     }
 
-    async loginWorker(credentials: { email: string, password: string }): Promise<{ accessToken: string, refreshToken: string, worker: IWorkerDTO, wallet: IWallet | null, availability?: IAvailability }> {
+    async loginWorker(credentials: { email: string, password: string }): Promise<{ accessToken: string, refreshToken: string, worker: IWorkerDTO, wallet: IWalletDTO | null, availability?: IAvailabilityDTO }> {
 
         const existingWorker = await this._workerRepository.findByEmail(credentials.email);
         if (!existingWorker || existingWorker.role !== "Worker") {
@@ -58,6 +60,7 @@ export class WorkerService implements IWorkerService {
         }
 
         let existingAvailability: IAvailability | undefined | null;
+        let availability: IAvailabilityDTO | undefined;
 
         if (existingWorker.isAccountBuilt) {
             existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
@@ -65,6 +68,7 @@ export class WorkerService implements IWorkerService {
             if (!existingAvailability) {
                 throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
             }
+            availability = mapAvailabilityToDTO(existingAvailability)
         }
 
         const matchPass = await bcrypt.compare(credentials.password, existingWorker.password);
@@ -74,7 +78,8 @@ export class WorkerService implements IWorkerService {
 
         const accessToken = generate_Access_Token(existingWorker.id.toString(), existingWorker.role);
         const refreshToken = generate_Refresh_Token(existingWorker.id.toString(), existingWorker.role);
-        const wallet = await this._walletRepository.findByUser(existingWorker.id);
+        const walletData = await this._walletRepository.findByUser(existingWorker.id);
+        const wallet = mapWalletToDTO(walletData as IWallet)
         const worker = mapWorkerToDTO(existingWorker);
 
         return {
@@ -82,12 +87,11 @@ export class WorkerService implements IWorkerService {
             refreshToken,
             worker,
             wallet,
-            availability: existingAvailability ?? undefined
+            availability: availability ?? undefined
         };
     }
 
-
-    async registerWorker(workerData: Partial<IWorker>): Promise<{ accessToken: string, refreshToken: string, worker: {}, wallet: IWallet | null }> {
+    async registerWorker(workerData: Partial<IWorker>): Promise<{ accessToken: string, refreshToken: string, worker: IWorkerDTO, wallet: IWalletDTO | null }> {
 
         if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
             throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
@@ -102,6 +106,7 @@ export class WorkerService implements IWorkerService {
         workerData.password = hashedPass;
         const workerEntity = await mapWorkerToEntity(workerData);
         const newWorker = await this._workerRepository.create(workerEntity);
+        const worker = mapWorkerToDTO(newWorker as IWorker);
 
         await Wallet.create({
             userId: newWorker._id,
@@ -110,16 +115,16 @@ export class WorkerService implements IWorkerService {
             transactions: []
         })
 
-        const wallet = await this._walletRepository.findByUser(newWorker.id);
+        const newWallet = await this._walletRepository.findByUser(newWorker.id);
+        const wallet = mapWalletToDTO(newWallet as IWallet);
 
         const accessToken = generate_Access_Token(newWorker.id.toString(), newWorker.role);
         const refreshToken = generate_Refresh_Token(newWorker.id.toString(), newWorker.role);
 
-        return { accessToken, refreshToken, worker: newWorker, wallet };
-
+        return { accessToken, refreshToken, worker, wallet };
     }
 
-    async buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailability }> {
+    async buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailabilityDTO }> {
 
         const existingWorker = await this._workerRepository.findById(workerId);
         if (!existingWorker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
@@ -139,11 +144,13 @@ export class WorkerService implements IWorkerService {
         const updatedWorkerEntity = await this._workerRepository.findByIdAndUpdate(workerId, updatedFields);
         if (!updatedWorkerEntity) throw new Error(WORKER_MESSAGE.UPDATE_WORKER_SUCCESSFULLY);
 
-        let updatedAvailability: IAvailability | null;
+        let updatedAvailability: IAvailabilityDTO | null;
         const existingAvailability = await this._workerRepository.findAvailabilityByWorkerId(workerId);
 
         if (existingAvailability) {
-            updatedAvailability = await this._workerRepository.updateAvailability(workerId, availability);
+            const updatedFields = mapAvailabilityToEntity(availability);
+            updatedAvailability = await this._workerRepository.updateAvailability(workerId, updatedFields);
+            updatedAvailability = mapAvailabilityToDTO(updatedAvailability as IAvailability)
             if (!updatedAvailability) throw new Error(WORKER_MESSAGE.FAILDTO_UPDATE_AVAILABILITY);
         } else {
             updatedAvailability = await this._workerRepository.setAvailability(availability);
@@ -168,13 +175,21 @@ export class WorkerService implements IWorkerService {
         return this.forgotPass(email);
     }
 
-    async getUserById(id: string): Promise<IWorker | null> {
-        const user = this._workerRepository.findById(id);
+    async getUserById(id: string): Promise<IWorkerDTO | null> {
+        const findUser = await this._workerRepository.findById(id);
+        if (!findUser) {
+            throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+        }
+        const user = mapWorkerToDTO(findUser)
         return user
     }
 
-    async getUserByEmail(email: string): Promise<IWorker | null> {
-        const user = this._workerRepository.findByEmail(email);
+    async getUserByEmail(email: string): Promise<IWorkerDTO | null> {
+        const findUser = await this._workerRepository.findByEmail(email);
+        if (!findUser) {
+            throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+        }
+        const user = mapWorkerToDTO(findUser);
         return user
     }
 
@@ -236,10 +251,9 @@ export class WorkerService implements IWorkerService {
         accessToken: string;
         refreshToken: string;
         worker: IWorkerDTO;
-        wallet: IWallet | null;
-        availability?: IAvailability
+        wallet: IWalletDTO | null;
+        availability?: IAvailabilityDTO
     }> {
-
 
         const ticket = await client.verifyIdToken({
             idToken: credential,
@@ -260,11 +274,11 @@ export class WorkerService implements IWorkerService {
             throw new Error(WORKER_MESSAGE.WORKER_BLOCKED);
         }
 
-        let existingAvailability: IAvailability | undefined | null;
+        let existingAvailability: IAvailabilityDTO | undefined | null;
 
         if (existingWorker.isAccountBuilt) {
             existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
-
+            existingAvailability = mapAvailabilityToDTO(existingAvailability as IAvailability)
             if (!existingAvailability) {
                 throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
             }
@@ -272,7 +286,8 @@ export class WorkerService implements IWorkerService {
 
         const accessToken = generate_Access_Token(existingWorker.id.toString(), existingWorker.role);
         const refreshToken = generate_Refresh_Token(existingWorker.id.toString(), existingWorker.role);
-        const wallet = await this._walletRepository.findByUser(existingWorker.id);
+        const findWallet = await this._walletRepository.findByUser(existingWorker.id);
+        const wallet = mapWalletToDTO(findWallet as IWallet)
         const worker = mapWorkerToDTO(existingWorker);
 
         return {
@@ -284,8 +299,9 @@ export class WorkerService implements IWorkerService {
         };
     }
 
-    async findWallet(workerId: string): Promise<IWallet | null> {
-        return await this._walletRepository.findByUser(workerId as string);
+    async findWallet(workerId: string): Promise<IWalletDTO | null> {
+        const wallet =  await this._walletRepository.findByUser(workerId as string);
+        return await mapWalletToDTO(wallet as IWallet);
     }
 
 }

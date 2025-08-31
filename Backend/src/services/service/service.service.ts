@@ -4,6 +4,8 @@ import { IServiceService } from "./service.service.interface";
 import { IServices } from "../../model/service/service.interface";
 import { IServiceRepository } from "../../repositories/services/service.repo.interface";
 import { SERVICE_MESSAGE } from "../../constants/messages";
+import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
+import { mapServiceToDTO, mapServiceToEntity } from "../../mappers/service/service.map.DTO";
 
 @injectable()
 export class ServiceService implements IServiceService {
@@ -12,23 +14,27 @@ export class ServiceService implements IServiceService {
         this._serviceRepository = serviceRepo;
     }
 
-    create = async (service: IServices): Promise<IServices> => {
+    create = async (service: IServices): Promise<IServiceDTO> => {
         const existingService = await this._serviceRepository.findByName(service.name);
         if (existingService) {
             throw new Error(SERVICE_MESSAGE.SERVICE_ALREADY_EXIST);
         }
-        return await this._serviceRepository.create(service);
+        const serviceEntity = mapServiceToEntity(service);
+        const newService = await this._serviceRepository.create(serviceEntity);
+        const serv = mapServiceToDTO(newService);
+        return serv;
     }
 
-    getAllServices = async (currentPage:string,pageSize:string): Promise<{services:IServices[],totalPage:number}> => {
+    getAllServices = async (currentPage: string, pageSize: string): Promise<{ services: IServiceDTO[], totalPage: number }> => {
         const page = parseInt(currentPage);
         const size = parseInt(pageSize);
-        const startIndex = (page-1) * size;
+        const startIndex = (page - 1) * size;
         const endIndex = page * size;
         const service = await this._serviceRepository.getAllService();
-        const services = service.slice(startIndex,endIndex);
-        const totalPage = Math.ceil(service.length/size);
-        return {services,totalPage}
+        const serv = service.slice(startIndex, endIndex);
+        const services = serv.map((serv) => mapServiceToDTO(serv))
+        const totalPage = Math.ceil(service.length / size);
+        return { services, totalPage }
     };
 
     setIsActive = async (serviceId: string): Promise<boolean> => {
@@ -37,7 +43,8 @@ export class ServiceService implements IServiceService {
     }
 
     update = async (service: IServices, serviceId: string): Promise<boolean> => {
-        await this._serviceRepository.update(service, serviceId);
+        const serviceEntity = mapServiceToEntity(service);
+        await this._serviceRepository.update(serviceEntity, serviceId);
         return true;
     }
 
@@ -50,21 +57,28 @@ export class ServiceService implements IServiceService {
         return true;
     }
 
-    getByCategories = async (categoryIds: string[]): Promise<IServices[]> => {
-        return await this._serviceRepository.getByCategories(categoryIds);
+    getByCategories = async (categoryIds: string[]): Promise<IServiceDTO[]> => {
+        const serv = await this._serviceRepository.getByCategories(categoryIds);
+        const services = serv.map((serv) => mapServiceToDTO(serv));
+        return services;
     }
 
-    getByWorker = async (serviceIds: string[]): Promise<IServices[]> => {
-        return await this._serviceRepository.getByWorker(serviceIds);
+    getByWorker = async (serviceIds: string[]): Promise<IServiceDTO[]> => {
+        const serv = await this._serviceRepository.getByWorker(serviceIds);
+        const services = serv.map((serv) => mapServiceToDTO(serv));
+        return services;
     }
 
-    getBySearch = async (searchKey: string): Promise<IServices[]> => {
-        return await this._serviceRepository.getBySearch(searchKey);
+    getBySearch = async (searchKey: string): Promise<IServiceDTO[]> => {
+        const serv = await this._serviceRepository.getBySearch(searchKey);
+        const services = serv.map((serv) => mapServiceToDTO(serv));
+        return services;
     };
 
-    getById = async (id: string): Promise<IServices | null> => {
-        return await this._serviceRepository.findById(id);
+    getById = async (id: string): Promise<IServiceDTO | null> => {
+        const serv = await this._serviceRepository.findById(id);
+        const services = mapServiceToDTO(serv as IServices);
+        return services;
     };
 
-
-} 
+}

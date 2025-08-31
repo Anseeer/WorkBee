@@ -1,0 +1,47 @@
+import mongoose from "mongoose";
+import { ILocation } from "../../model/location/location.interface";
+
+export interface IWorkDTO {
+    userId: mongoose.Schema.Types.ObjectId,
+    workerId: mongoose.Schema.Types.ObjectId,
+    serviceId: mongoose.Schema.Types.ObjectId,
+    categoryId: mongoose.Schema.Types.ObjectId,
+    paymentId: mongoose.Schema.Types.ObjectId,
+    service: string,
+    category: string,
+    workerName: string,
+    userName: string,
+    wage: string,
+    location: ILocation,
+    workType: string,
+    size: string,
+    description: string,
+    sheduleDate: string,
+    sheduleTime: string,
+    status: string,
+    paymentStatus: string,
+    isCompleted: boolean,
+    createdAt: Date,
+}
+
+export interface IWorkEntity {
+    userId: mongoose.Schema.Types.ObjectId,
+    workerId: mongoose.Schema.Types.ObjectId,
+    serviceId: mongoose.Schema.Types.ObjectId,
+    categoryId: mongoose.Schema.Types.ObjectId,
+    paymentId: mongoose.Schema.Types.ObjectId,
+    service: string,
+    category: string,
+    workerName: string,
+    userName: string,
+    wage: string,
+    location: ILocation,
+    workType: string,
+    size: string,
+    description: string,
+    sheduleDate: string,
+    sheduleTime: string,
+    status: string,
+    paymentStatus: string,
+    isCompleted: boolean,
+}
