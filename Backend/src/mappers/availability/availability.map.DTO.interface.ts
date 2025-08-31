@@ -9,11 +9,13 @@ export interface ISlotDTO {
 }
 
 export interface IAvailabilityDTO {
+    _id?: string,
     workerId: mongoose.Schema.Types.ObjectId;
     availableDates: ISlotDTO[];
 }
 
 export interface IAvailabilitEntity {
+    _id?: string,
     workerId: mongoose.Schema.Types.ObjectId;
     availableDates: ISlotDTO[];
 }

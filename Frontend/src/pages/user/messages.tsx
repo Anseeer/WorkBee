@@ -16,8 +16,8 @@ const Message = () => {
             if (!user?.id) return;
 
             try {
-                const work = await fetchWorkHistory(user.id);
-                const workHistory = work?.data?.data ?? [];
+                const work = await fetchWorkHistory(user.id, 1, 1000);
+                const workHistory = work?.data?.data.paginatedWorks ?? [];
 
                 const workerIds = workHistory
                     .filter((work: IWork) => work.status !== "Pending" && work.status !== "Canceled")
@@ -35,18 +35,14 @@ const Message = () => {
         fetchData();
     }, [user?.id]);
 
-    console.log("workers ::", workers);
-
-
-
     const users = workers;
 
     return (
         <>
-        <div className="h-screen max-h-[5">
-            <Header />
-            <MessageSection roomId={user?.id as string} me={user?.id as string} users={users} />
-        </div>
+            <div className="h-screen max-h-[5">
+                <Header />
+                <MessageSection roomId={user?.id as string} me={user?.id as string} users={users} />
+            </div>
         </>
     )
 }

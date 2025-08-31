@@ -9,14 +9,14 @@ interface Transaction {
   createdAt: string;
 }
 
-
 interface WalletPageProps {
   balancePrev?: number;
   historyPrev?: Transaction[];
-  workerId?: string;
+  workerId: string;
+  reload?: boolean;
 }
 
-const Wallet = ({ balancePrev, historyPrev, workerId }: WalletPageProps) => {
+const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps) => {
   const [balance, setBalance] = useState<number>(balancePrev as number);
   const [history, setHistory] = useState<Transaction[]>(historyPrev as Transaction[]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,9 +25,10 @@ const Wallet = ({ balancePrev, historyPrev, workerId }: WalletPageProps) => {
   useEffect(() => {
     const loadWallet = async () => {
       try {
-        if (!workerId) return;
+        if (!workerId) throw new Error("WorkerID not get");
         const res = await fetchWallet(workerId);
         const wallet = res.wallet;
+        console.log("wallet :", wallet)
         setBalance(wallet.balance || 0);
         setHistory(wallet.transactions || []);
       } catch (err) {
@@ -35,7 +36,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId }: WalletPageProps) => {
       }
     };
     loadWallet();
-  }, [workerId]);
+  }, [workerId, reload]);
 
   const totalPages = Math.ceil(history.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;

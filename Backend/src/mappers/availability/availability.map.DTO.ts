@@ -3,6 +3,7 @@ import { IAvailabilitEntity, IAvailabilityDTO } from "./availability.map.DTO.int
 
 export const mapAvailabilityToDTO = (availability: IAvailability): IAvailabilityDTO => {
     return {
+        _id: availability.id,
         workerId: availability.workerId,
         availableDates: availability.availableDates
     }
@@ -10,7 +11,8 @@ export const mapAvailabilityToDTO = (availability: IAvailability): IAvailability
 
 export const mapAvailabilityToEntity = (availability: IAvailability): IAvailabilitEntity => {
     return {
-        workerId:availability.workerId,
-        availableDates:availability.availableDates
+        _id: availability.id,
+        workerId: availability.workerId,
+        availableDates: availability.availableDates
     }
 }

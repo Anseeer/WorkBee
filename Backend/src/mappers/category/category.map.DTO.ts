@@ -3,6 +3,7 @@ import { ICategoryDTO, ICategoryEntity } from "./category.map.DTO.interface"
 
 export const mapCategoryToDTO = (category: ICategory): ICategoryDTO => {
     return {
+        _id: category.id,
         name: category.name,
         description: category.description,
         imageUrl: category.imageUrl,
@@ -12,9 +13,10 @@ export const mapCategoryToDTO = (category: ICategory): ICategoryDTO => {
 
 export const mapCategoryToEntity = (category: ICategory): ICategoryEntity => {
     return {
-        name:category.name,
-        description:category.description,
-        imageUrl:category.imageUrl,
-        isActive:category.isActive,
+        _id: category.id,
+        name: category.name,
+        description: category.description,
+        imageUrl: category.imageUrl,
+        isActive: category.isActive,
     }
 }

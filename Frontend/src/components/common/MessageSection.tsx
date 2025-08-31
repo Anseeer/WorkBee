@@ -22,13 +22,10 @@ export default function MessageSection({ users, roomId, me }: Props) {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<IWorker | Iuser | null>(null);
-  const [message, setMessage] = useState(""); // input field state
+  const [message, setMessage] = useState("");
   const joinedRef = useRef(false);
   const [lastMessages, setLastMessages] = useState<Record<string, string>>({});
 
-
-
-  // filter user list by search query
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -41,7 +38,6 @@ export default function MessageSection({ users, roomId, me }: Props) {
   useEffect(() => {
     if (!socket.connected) socket.connect();
 
-    // join once per room change
     if (!joinedRef.current) {
       socket.emit("joinRoom", roomId);
       joinedRef.current = true;
@@ -50,7 +46,6 @@ export default function MessageSection({ users, roomId, me }: Props) {
     const onMessage = (msg: ChatMessage) => {
       setChatMessages((prev) => [...prev, msg]);
 
-      // update last message for sender/receiver
       const otherId = msg.sender === me ? msg.receiver : msg.sender;
       setLastMessages((prev) => ({
         ...prev,

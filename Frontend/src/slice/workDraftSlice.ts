@@ -5,7 +5,6 @@ import type { AxiosError } from "axios";
 
 
 export const initialState: IWork = {
-    id:"",
     userId: "",
     workerId: "",
     serviceId: "",
@@ -32,6 +31,7 @@ export const WorkDraftThunk = createAsyncThunk('works/create-work',
     async (WorkDetails: IWork, { rejectWithValue }) => {
         try {
             const response = await DraftWork(WorkDetails);
+            console.log("workDetails from the state :", WorkDetails);
             return response;
         } catch (err) {
             const error = err as AxiosError<{ data: string }>;
@@ -55,6 +55,7 @@ const workDraft = createSlice({
             state.wage = action.payload.wage;
             state.service = action.payload.service;
             state.category = action.payload.category;
+            console.log("WorkState :", state);
             return;
         },
         workerDetails: (state, action) => {
@@ -63,6 +64,7 @@ const workDraft = createSlice({
             state.sheduleTime = action.payload.slot;
             state.workerName = action.payload.workerName;
             state.userName = action.payload.userName;
+            console.log("WorkState :", state);
             return;
         }
     }

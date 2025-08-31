@@ -1,4 +1,5 @@
 export interface ICategoryDTO {
+    _id: string,
     name: string,
     description: string,
     imageUrl?: string;
@@ -6,6 +7,7 @@ export interface ICategoryDTO {
 }
 
 export interface ICategoryEntity {
+    _id: string,
     name: string,
     description: string,
     imageUrl?: string;

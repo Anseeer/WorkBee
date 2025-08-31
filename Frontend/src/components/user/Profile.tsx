@@ -22,6 +22,7 @@ const ProfileSection = () => {
     const navigate = useNavigate();
     const [isActiveTab, setIsActiveTab] = useState('Profile');
     const [isEdit, setIsEdit] = useState(false);
+    const [reloadWallet, setReloadWallet] = useState(false);
     const [isPaymentModal, setIsPaymentModal] = useState(false);
     const [isAddMoneyModal, setAddMoneyModal] = useState(false);
     const [isWorkInfoModal, setWorkInfoModal] = useState(false);
@@ -51,6 +52,7 @@ const ProfileSection = () => {
         const fetchData = async () => {
             await dispatch(fetchUserDataThunk());
             const workHistory = await fetchWorkHistory(user?.id as string, currentPage, 4);
+            console.log("Work History :", workHistory)
             setWorkHistory(workHistory.data.data.paginatedWorks);
             setTotalPage(workHistory.data.data.totalPages)
         }
@@ -91,7 +93,8 @@ const ProfileSection = () => {
     }
 
     const closeAddMoneyModal = () => {
-        setAddMoneyModal(false)
+        setAddMoneyModal(false);
+        setReloadWallet((prev) => !prev);
     }
 
     const handleAddMoney = () => {
@@ -108,6 +111,7 @@ const ProfileSection = () => {
         setIsPaymentModal(true);
         setAmount(Number(wage));
         setWorkId(workId);
+
     }
 
     return (
@@ -330,7 +334,7 @@ const ProfileSection = () => {
                 ) : isActiveTab == "Edit" ? (
                     <EditUserModal onClose={Close} setEdit={setIsEdit} />
                 ) : isActiveTab == "Wallet" ? (
-                    <Wallet historyPrev={wallet?.transactions} balancePrev={wallet?.balance} />
+                    <Wallet historyPrev={wallet?.transactions} workerId={userId as string} reload={reloadWallet} balancePrev={wallet?.balance} />
                 ) : null}
                 {isPaymentModal ? (
                     <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />

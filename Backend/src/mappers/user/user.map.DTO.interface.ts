@@ -15,7 +15,6 @@ export interface IUserDTO {
     role: string
 }
 
-
 export interface IUserEntity {
     id: string;
     name: string;

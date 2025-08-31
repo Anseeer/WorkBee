@@ -5,6 +5,7 @@ import { ILocation } from "../../model/location/location.interface"
 
 export const mapWorkToDTO = (work: Partial<IWork>): IWorkDTO => {
     return {
+        _id: work.id,
         userId: work.userId as ObjectId,
         workerId: work.workerId as ObjectId,
         serviceId: work.serviceId as ObjectId,
@@ -30,6 +31,7 @@ export const mapWorkToDTO = (work: Partial<IWork>): IWorkDTO => {
 
 export const mapWorkToEntity = (work: Partial<IWork>): IWorkEntity => {
     return {
+        _id: work.id,
         userId: work.userId as ObjectId,
         workerId: work.workerId as ObjectId,
         serviceId: work.serviceId as ObjectId,

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { ILocation } from "../../model/location/location.interface";
 
 export interface IWorkDTO {
+    _id: string,
     userId: mongoose.Schema.Types.ObjectId,
     workerId: mongoose.Schema.Types.ObjectId,
     serviceId: mongoose.Schema.Types.ObjectId,
@@ -25,6 +26,7 @@ export interface IWorkDTO {
 }
 
 export interface IWorkEntity {
+    _id?: string,
     userId: mongoose.Schema.Types.ObjectId,
     workerId: mongoose.Schema.Types.ObjectId,
     serviceId: mongoose.Schema.Types.ObjectId,

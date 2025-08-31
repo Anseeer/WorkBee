@@ -81,7 +81,6 @@ export const DraftWork = async (workDetails: IWork) => {
     if (!workDetails) {
         throw new Error("WorkDetails not get");
     }
-    console.log("Tryinh to create")
     const response = await axios.post('works/creat-work', workDetails);
     return response;
 }

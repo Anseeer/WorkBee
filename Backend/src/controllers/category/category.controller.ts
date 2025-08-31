@@ -67,7 +67,7 @@ export class CategoryController implements ICategoryController {
             if (name) {
                 const { category, totalPage } = await this._categoryService.getAll(currentPage as string, pageSize as string);
                 const existingNames = category
-                    .filter(cat => cat.id.toString() !== categoryId)
+                    .filter(cat => cat?._id.toString() !== categoryId)
                     .map(cat => cat.name.toLowerCase());
 
                 if (existingNames.includes(name.toLowerCase())) {

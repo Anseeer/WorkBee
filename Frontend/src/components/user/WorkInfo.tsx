@@ -239,7 +239,9 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                             {/* Description */}
                             <div className="mt-8 bg-gray-50 rounded-lg p-6">
                                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Job Description</h3>
-                                <p className="text-gray-700 leading-relaxed">{workDetails?.description}</p>
+                                <p className="text-gray-700 leading-relaxed break-words whitespace-pre-line">
+                                    {workDetails?.description}
+                                </p>
                             </div>
 
                             {/* Status Information */}

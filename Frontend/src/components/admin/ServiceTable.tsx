@@ -70,10 +70,7 @@ const ServicesTable = () => {
         if (categories.length > 0) {
             fetchServices();
         }
-    }, [added, deleted, currrentPage, categories]);
-
-
-
+    }, [added, deleted, isEditing, currrentPage, categories]);
 
     const handleToggle = async (id: string) => {
         try {

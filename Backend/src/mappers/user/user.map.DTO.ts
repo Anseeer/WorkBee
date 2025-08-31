@@ -1,7 +1,6 @@
 import { Iuser } from "../../model/user/user.interface"
 import { IUserDTO, IUserEntity } from "./user.map.DTO.interface"
 
-
 export const mapUserToDTO = (user: Iuser): IUserDTO => {
     return {
         id: user._id,
@@ -20,7 +19,6 @@ export const mapUserToDTO = (user: Iuser): IUserDTO => {
     }
 }
 
-
 export const mapToUserEntity = (user: Partial<Iuser>): IUserEntity => {
     return {
         id: user._id as string,
@@ -34,7 +32,7 @@ export const mapToUserEntity = (user: Partial<Iuser>): IUserEntity => {
                 pincode: user.location.pincode,
                 lat: user.location.lat,
                 lng: user.location.lng,
-              }
+            }
             : undefined,
         profileImage: user.profileImage,
         isActive: user.isActive as boolean,

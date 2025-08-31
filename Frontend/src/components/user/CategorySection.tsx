@@ -36,25 +36,20 @@ const CategorySection: React.FC = () => {
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }
-
     const currentCategory = categories.find((cat) => cat._id === selectedCategory);
-
-    console.log("Selected Service :", selectedService);
-    console.log("current Category :", currentCategory);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetchCategory(1,1000);
+                const response = await fetchCategory(1, 1000);
                 const fetchedCategories = response.data.data.category.filter(
                     (cat: ICategory) => cat.isActive === true
                 );
 
                 if (fetchedCategories.length > 0) {
+                    console.log("Fetched category :", fetchedCategories)
                     setCategories(fetchedCategories);
                     setSelectedCategory(fetchedCategories[0]._id);
                 }
-                console.log("Categories Fetched:", fetchedCategories);
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
             }
@@ -67,6 +62,7 @@ const CategorySection: React.FC = () => {
             if (!selectedCategory) return;
             try {
                 const serv = await getServiceByCategory([selectedCategory]);
+                console.log("Services fetched :", serv)
                 setServices(serv.data.data);
             } catch (error) {
                 console.error("Failed to fetch services:", error);
@@ -207,8 +203,6 @@ const CategorySection: React.FC = () => {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IServiceDTO {
+    _id: string,
     category: mongoose.Schema.Types.ObjectId,
     name: string,
     description: string,
@@ -9,6 +10,7 @@ export interface IServiceDTO {
 }
 
 export interface IServiceEntity {
+    _id: string,
     category: mongoose.Schema.Types.ObjectId,
     name: string,
     description: string,

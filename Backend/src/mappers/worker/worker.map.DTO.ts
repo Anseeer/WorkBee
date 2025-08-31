@@ -5,6 +5,7 @@ import { IWorkerDTO, IWorkerEntity } from "./worker.map.DTO.interface";
 function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
     return {
         id: worker._id ? worker._id.toString() : "",
+        _id: worker.id,
         name: worker.name || "",
         email: worker.email || "",
         phone: worker.phone || "",
@@ -53,6 +54,7 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
 export function mapWorkerToEntity(worker: Partial<IWorker>): IWorkerEntity {
     return {
         id: worker._id ? worker._id.toString() : "",
+        _id: worker.id,
         name: worker.name ?? "",
         email: worker.email ?? "",
         phone: worker.phone ?? "",

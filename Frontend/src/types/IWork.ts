@@ -1,7 +1,7 @@
 
 export interface IWork {
-    _id?:string,
-    id:string,
+    _id?: string,
+    id?: string,
     userId: string,
     workerId: string,
     serviceId: string,
@@ -10,20 +10,20 @@ export interface IWork {
     service: string,
     workerName: string,
     userName: string,
-    wage:string,
-    location:{
-        address:string,
-        pincode:string,
-        lat:number,
-        lng:number
+    wage: string,
+    location: {
+        address: string,
+        pincode: string,
+        lat: number,
+        lng: number
     },
-    workType:string,
-    size:string,
-    description:string,
-    sheduleDate:string,
-    sheduleTime:string,
-    status?:string,
-    paymentStatus?:string,
-    createdAt?:Date,
-    updatedAt?:Date,
+    workType: string,
+    size: string,
+    description: string,
+    sheduleDate: string,
+    sheduleTime: string,
+    status?: string,
+    paymentStatus?: string,
+    createdAt?: Date,
+    updatedAt?: Date,
 }

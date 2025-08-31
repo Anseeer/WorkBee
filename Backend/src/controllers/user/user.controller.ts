@@ -54,7 +54,7 @@ export class UserController implements IUserController {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
-                maxAge: COOKIE_CONFIG.MAX_AGE ,
+                maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {

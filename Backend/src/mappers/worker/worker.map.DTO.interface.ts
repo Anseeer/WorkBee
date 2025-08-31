@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 
 export interface IWorkerDTO {
     id: Types.ObjectId | string;
+    _id?: string,
     name: string;
     email: string;
     phone: string;
@@ -37,7 +38,8 @@ export interface IWorkerDTO {
 }
 
 export interface IWorkerEntity {
-   id: Types.ObjectId | string;
+    id: Types.ObjectId | string;
+    _id?: string,
     name: string;
     email: string;
     phone: string;
@@ -69,6 +71,6 @@ export interface IWorkerEntity {
         endDate: Date;
         isActive: boolean;
     } | null;
-    createdAt: Date ;
+    createdAt: Date;
 }
 

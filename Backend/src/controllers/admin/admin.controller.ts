@@ -69,9 +69,9 @@ export class AdminController implements IAdminController {
 
     fetchUsers = async (req: Request, res: Response) => {
         try {
-            const {currentPage,pageSize} = req.query;
-            const {users,totalPage} = await this._adminService.fetchUsers(currentPage as string,pageSize as string);
-            const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.FETCH_USERS_SUCCESS, {users,totalPage});
+            const { currentPage, pageSize } = req.query;
+            const { users, totalPage } = await this._adminService.fetchUsers(currentPage as string, pageSize as string);
+            const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.FETCH_USERS_SUCCESS, { users, totalPage });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -114,9 +114,9 @@ export class AdminController implements IAdminController {
 
     fetchWorkers = async (req: Request, res: Response): Promise<void> => {
         try {
-            const {currentPage,pageSize} = req.query;
-            const {workers,totalPage} = await this._adminService.fetchWorkers(currentPage as string, pageSize as string);
-            const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.FETCH_WORKERS_SUCCESS, {workers,totalPage});
+            const { currentPage, pageSize } = req.query;
+            const { workers, totalPage } = await this._adminService.fetchWorkers(currentPage as string, pageSize as string);
+            const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.FETCH_WORKERS_SUCCESS, { workers, totalPage });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {

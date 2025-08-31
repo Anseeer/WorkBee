@@ -14,8 +14,9 @@ const Message = () => {
         const fetchData = async () => {
 
             try {
-                const work = await fetchWorkHistory(worker?._id as string);
-                const workHistory = work?.data ?? [];
+                const work = await fetchWorkHistory(worker?._id as string, 1, 1000);
+                const workHistory = work?.data.paginatedWorkHistory ?? [];
+                console.log("WorkHistory :", workHistory)
 
                 const userIds = workHistory
                     .filter((work: IWork) => work.status !== "Pending" && work.status !== "Canceled")
@@ -35,9 +36,9 @@ const Message = () => {
 
     return (
         <>
-        <div className="max-h-[540px] h-[540px]">
-            <MessageSection roomId={worker?._id as string} me={worker?._id as string} users={users} />
-        </div>
+            <div className="max-h-[540px] h-[540px]">
+                <MessageSection roomId={worker?._id as string} me={worker?._id as string} users={users} />
+            </div>
         </>
     )
 }

@@ -30,6 +30,7 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
+            console.log("Error :", error);
             const message = error instanceof Error ? error.message : String(error);
             const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CREATED_FAILD, message);
             logger.error(response);
@@ -59,12 +60,12 @@ export class WorkController implements IWorkController {
 
     fetchWorkHistoryByWorker = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { workerId,currentPage,pageSize } = req.query;
+            const { workerId, currentPage, pageSize } = req.query;
             if (!workerId) {
                 throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
             }
 
-            const result = await this._workService.fetchWorkHistoryByWorker(workerId as string,currentPage as string,pageSize as string);
+            const result = await this._workService.fetchWorkHistoryByWorker(workerId as string, currentPage as string, pageSize as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_HISTORY_FETCH_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
@@ -156,9 +157,9 @@ export class WorkController implements IWorkController {
 
     getAllWorks = async (req: Request, res: Response): Promise<void> => {
         try {
-            const {currentPage,pageSize} = req.query;
-            const {paginatedWorks,totalPage} = await this._workService.getAllWorks(currentPage as string,pageSize as string);
-            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, {paginatedWorks,totalPage});
+            const { currentPage, pageSize } = req.query;
+            const { paginatedWorks, totalPage } = await this._workService.getAllWorks(currentPage as string, pageSize as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { paginatedWorks, totalPage });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {

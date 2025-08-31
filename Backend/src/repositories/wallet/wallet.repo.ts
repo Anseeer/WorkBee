@@ -22,6 +22,12 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
         if (!isValidObjectId(userId)) {
             throw new Error('Invalid Wallet ID provided.');
         }
-        return await this.model.findOne({ userId });
+        const wallet = await this.model.findOne({ userId }).lean();
+        if (wallet) {
+            wallet.transactions.sort(
+                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+        }
+        return wallet;
     }
 }

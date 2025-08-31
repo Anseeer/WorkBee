@@ -116,17 +116,25 @@ const WorkerListing = () => {
     }, [triggerDraft, workDetails, dispatch]);
 
     const Confirm = async (date: string, slot: string) => {
-        await dispatch(workerDetails({
-            date,
-            slot,
-            workerId: selectedWorker?.id,
-            workerName: selectedWorker?.name,
-            userName: userDetails?.name
-        }));
-        toast.success("Requested");
-        setIsModalOpen(false);
-        setTriggerDraft(true); // Will run useEffect after workDetails updates
+        try {
+            const res = await dispatch(workerDetails({
+                date,
+                slot,
+                workerId: selectedWorker?.id,
+                workerName: selectedWorker?.name,
+                userName: userDetails?.name
+            }));
+
+            console.log("Actual API Response:", res);
+            toast.success("Requested");
+            setIsModalOpen(false);
+            setTriggerDraft(true);
+        } catch (error) {
+            toast.error("Failed to request job");
+            console.error("Error Response:", error);
+        }
     };
+
 
     const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;

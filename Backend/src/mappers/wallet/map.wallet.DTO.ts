@@ -3,6 +3,7 @@ import { IWalletDTO, IWalletEntity } from "./map.wallet.DTO.interface";
 
 export const mapWalletToDTO = (wallet: IWallet): IWalletDTO => {
     return {
+        _id: wallet.id,
         userId: wallet.userId,
         balance: wallet.balance,
         transactions: wallet.transactions,

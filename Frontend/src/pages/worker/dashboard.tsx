@@ -81,7 +81,7 @@ const Dashboard = () => {
                                 <p className="text-black text-lg text-semibold">Dashboard</p>
                             </div>
                         </div>
-                        ) : (
+                    ) : (
                         <div className="flex justify-center mt-40">
                             <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-3">
@@ -112,7 +112,7 @@ const Dashboard = () => {
                     <WorkHistory />
                 ) : activeTab === "wallet" ? (
                     <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700">
-                        <Wallet workerId={workerData.worker?._id} historyPrev={wallet?.transactions} balancePrev={wallet?.balance} />
+                        <Wallet workerId={workerData.worker?._id as string} historyPrev={wallet?.transactions} balancePrev={wallet?.balance} />
                     </div>
                 ) : activeTab === "message" ? (
                     <Message />

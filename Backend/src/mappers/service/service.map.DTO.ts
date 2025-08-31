@@ -3,6 +3,7 @@ import { IServiceDTO, IServiceEntity } from "./service.map.DTO.interface";
 
 export const mapServiceToDTO = (service: IServices): IServiceDTO => {
     return {
+        _id: service.id,
         name: service.name,
         description: service.description,
         wage: service.wage,
@@ -13,6 +14,7 @@ export const mapServiceToDTO = (service: IServices): IServiceDTO => {
 
 export const mapServiceToEntity = (service: IServices): IServiceEntity => {
     return {
+        _id: service.id,
         name: service.name,
         description: service.description,
         wage: service.wage,
