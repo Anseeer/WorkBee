@@ -3,7 +3,7 @@ import TYPES from "../../inversify/inversify.types";
 import { IServiceController } from "./services.controller.interface";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { IServiceService } from "../../services/service/service.service.interface";
 import { SERVICE_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
@@ -16,7 +16,7 @@ export class ServiceController implements IServiceController {
         this._serviceService = serviceService;
     }
 
-    createService = async (req: Request, res: Response) => {
+    createService = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const service = req.body;
             const result = await this._serviceService.create(service);
@@ -24,15 +24,13 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.CREATE_SERVICE_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.CREATE_SERVICE_FAILED, errMsg));
         }
     }
 
 
-    getAllservices = async (req: Request, res: Response) => {
+    getAllservices = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { currentPage, pageSize } = req.query;
             const { services, totalPage } = await this._serviceService.getAllServices(currentPage as string, pageSize as string);
@@ -40,14 +38,12 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, errMsg));
         }
     }
 
-    setIsActive = async (req: Request, res: Response): Promise<void> => {
+    setIsActive = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { serviceId } = req.query;
             let result = await this._serviceService.setIsActive(serviceId as string);
@@ -55,14 +51,12 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.UPDATE_SERVICE_STATUS_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.UPDATE_SERVICE_STATUS_FAILED, errMsg));
         }
     }
 
-    update = async (req: Request, res: Response): Promise<void> => {
+    update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { serviceId, currentPage, pageSize } = req.query;
             const service = req.body;
@@ -87,14 +81,12 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.UPDATE_SERVICE_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.UPDATE_SERVICE_FAILED, errMsg));
         }
     }
 
-    delete = async (req: Request, res: Response): Promise<void> => {
+    delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { serviceId } = req.query;
             let result = await this._serviceService.delete(serviceId as string);
@@ -102,14 +94,12 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.DELETE_SERVICE_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.DELETE_SERVICE_FAILED, errMsg));
         }
     }
 
-    getByCategories = async (req: Request, res: Response): Promise<void> => {
+    getByCategories = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { categoryIds } = req.body;
             if (!Array.isArray(categoryIds) || categoryIds.length === 0) {
@@ -120,14 +110,12 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_CATEGORIES_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_CATEGORIES_FAILED, errMsg));
         }
     }
 
-    getByWorker = async (req: Request, res: Response): Promise<void> => {
+    getByWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { serviceIds } = req.body;
             if (!Array.isArray(serviceIds) || serviceIds.length === 0) {
@@ -138,14 +126,12 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_WORKER_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_WORKER_FAILED, errMsg));
         }
     }
 
-    getBySearch = async (req: Request, res: Response): Promise<void> => {
+    getBySearch = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { search } = req.body;
             if (!search || typeof search !== "string") {
@@ -157,14 +143,12 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_SEARCH_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_SEARCH_FAILED, errMsg));
         }
     };
 
-    getById = async (req: Request, res: Response): Promise<void> => {
+    getById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id } = req.query;
             if (!id) {
@@ -176,10 +160,8 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, errMsg));
         }
     };
 

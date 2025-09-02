@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { errorResponse, successResponse } from "../../utilities/response";
 import { StatusCode } from "../../constants/status.code";
 import logger from "../../utilities/logger";
@@ -16,7 +16,7 @@ export class WorkController implements IWorkController {
         this._workService = workService;
     }
 
-    createWork = async (req: AuthRequest, res: Response): Promise<void> => {
+    createWork = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const workDetails = req.body;
             const userId = req?.user?.id;
@@ -30,15 +30,12 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error :", error);
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CREATED_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CREATED_FAILD, errMsg));
         }
     }
 
-    fetchWorkHistoryByUser = async (req: AuthRequest, res: Response): Promise<void> => {
+    fetchWorkHistoryByUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req?.user?.id;
             const { currentPage, pageSize } = req.query;
@@ -51,14 +48,12 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, errMsg));
         }
     }
 
-    fetchWorkHistoryByWorker = async (req: Request, res: Response): Promise<void> => {
+    fetchWorkHistoryByWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workerId, currentPage, pageSize } = req.query;
             if (!workerId) {
@@ -70,14 +65,12 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_HISTORY_FETCH_FAILD, errMsg));
         }
     }
 
-    cancelWork = async (req: Request, res: Response): Promise<void> => {
+    cancelWork = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workId } = req.query;
             if (!workId) {
@@ -89,14 +82,12 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CANCEL_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_CANCEL_FAILD, errMsg));
         }
     }
 
-    completedWork = async (req: Request, res: Response): Promise<void> => {
+    completedWork = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workId, workerId } = req.query;
             if (!workId) {
@@ -110,14 +101,12 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_COMPLETED_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_COMPLETED_FAILD, errMsg));
         }
     }
 
-    acceptWork = async (req: Request, res: Response): Promise<void> => {
+    acceptWork = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workId } = req.query;
             if (!workId) {
@@ -129,14 +118,12 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_ACCEPT_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_ACCEPT_FAILD, errMsg));
         }
     }
 
-    workDetailsById = async (req: Request, res: Response): Promise<void> => {
+    workDetailsById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workId } = req.query;
             if (!workId) {
@@ -148,14 +135,12 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
         }
     }
 
-    getAllWorks = async (req: Request, res: Response): Promise<void> => {
+    getAllWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { currentPage, pageSize } = req.query;
             const { paginatedWorks, totalPage } = await this._workService.getAllWorks(currentPage as string, pageSize as string);
@@ -163,10 +148,8 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
         }
     }
 

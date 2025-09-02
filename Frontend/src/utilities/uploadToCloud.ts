@@ -7,8 +7,7 @@ export const uploadToCloud = async (file: File): Promise<string> => {
   formData.append("file", file);
   formData.append("upload_preset", "WorkBee"); 
 
-  const res = await axios.post(
-    "https://api.cloudinary.com/v1_1/doh6cm4oc/image/upload",
+  const res = await axios.post(import.meta.env.VITE_CLOUDNARY_URL,
     formData,
     {
       headers: {

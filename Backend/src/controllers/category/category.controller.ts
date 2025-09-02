@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { ICategoryController } from "./category.controller.interface";
@@ -16,7 +16,7 @@ export class CategoryController implements ICategoryController {
         this._categoryService = categoryService;
     }
 
-    getAll = async (req: Request, res: Response) => {
+    getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { currentPage, pageSize } = req.query;
             const { category, totalPage } = await this._categoryService.getAll(currentPage as string, pageSize as string);
@@ -24,14 +24,12 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(400, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_FAILED, errMsg));
         }
     }
 
-    createCategory = async (req: Request, res: Response) => {
+    createCategory = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { name, description, imageUrl } = req.body;
 
@@ -47,15 +45,13 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.CREATE_CATEGORY_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.CREATE_CATEGORY_FAILED, errMsg));
         }
     };
 
 
-    update = async (req: Request, res: Response): Promise<void> => {
+    update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { currentPage, pageSize, categoryId } = req.query
             const { name, description, imageUrl } = req.body;
@@ -65,7 +61,7 @@ export class CategoryController implements ICategoryController {
             }
 
             if (name) {
-                const { category, totalPage } = await this._categoryService.getAll(currentPage as string, pageSize as string);
+                const { category } = await this._categoryService.getAll(currentPage as string, pageSize as string);
                 const existingNames = category
                     .filter(cat => cat?._id.toString() !== categoryId)
                     .map(cat => cat.name.toLowerCase());
@@ -86,14 +82,12 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.UPDATE_CATEGORY_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.UPDATE_CATEGORY_FAILED, errMsg));
         }
     };
 
-    setIsActive = async (req: Request, res: Response): Promise<void> => {
+    setIsActive = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { categoryId } = req.query;
             let result = await this._categoryService.setIsActive(categoryId as string);
@@ -101,14 +95,12 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.UPDATE_CATEGORY_STATUS_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.UPDATE_CATEGORY_STATUS_FAILED, errMsg));
         }
     }
 
-    delete = async (req: Request, res: Response): Promise<void> => {
+    delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { categoryId } = req.query;
             let result = await this._categoryService.delete(categoryId as string);
@@ -116,14 +108,12 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.DELETE_CATEGORY_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.DELETE_CATEGORY_FAILED, errMsg));
         }
     }
 
-    getByWorker = async (req: Request, res: Response): Promise<void> => {
+    getByWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { categoryIds } = req.body;
             let result = await this._categoryService.getByWorker(categoryIds);
@@ -131,15 +121,13 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_CATEGORIES_BY_WORKER_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_CATEGORIES_BY_WORKER_FAILED, errMsg));
         }
     }
 
 
-    getById = async (req: Request, res: Response): Promise<void> => {
+    getById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id } = req.query;
             if (!id) {
@@ -151,10 +139,8 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_FAILED, errMsg));
         }
     };
 

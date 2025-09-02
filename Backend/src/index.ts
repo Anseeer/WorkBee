@@ -19,7 +19,7 @@ import http from "http";
 import Message from "./model/message/message.model";
 import logger from "./utilities/logger";
 
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 MongooseConnection();
 
 const app = express();
@@ -56,7 +56,6 @@ const io = new Server(server, {
   },
 });
 
-// server.ts (socket part)
 io.on('connection', (socket) => {
   logger.info('A user connected!', socket.id);
   socket.on('joinRoom', async (room: string) => {

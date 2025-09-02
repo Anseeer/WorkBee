@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { IWorkerController } from "./worker.controller.interface";
@@ -26,7 +26,7 @@ export class WorkerController implements IWorkerController {
             this._availabilityService = availabilityService
     }
 
-    login = async (req: Request, res: Response) => {
+    login = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
@@ -37,14 +37,12 @@ export class WorkerController implements IWorkerController {
             const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.LOGIN_SUCCESS, { worker, availability, wallet });
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
@@ -52,65 +50,52 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.LOGIN_FAILD, errMsg);
-            logger.error(response)
-            res.status(response.status).json(response);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.LOGIN_FAILD, errMsg));
         }
     }
 
-
-
-    register = async (req: Request, res: Response) => {
+    register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { accessToken, refreshToken, worker, wallet } = await this._workerService.registerWorker(req.body);
             const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.REGISTRATION_SUCCESS, { worker, wallet });
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            console.log("Error:", error);
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg);
-            logger.error(response);
-            res.status(response.status).json(response);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg));
         }
     };
 
-    logout = async (req: Request, res: Response): Promise<void> => {
+    logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             res.clearCookie('accessToken', {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
             res.clearCookie('refreshToken', {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
             res.json({ message: WORKER_MESSAGE.LOGOUT_SUCCESs });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.LOGOUT_FAILD, errMsg);
-            logger.error(response);
-            res.status(response.status).json(response);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.LOGOUT_FAILD, errMsg));
         }
     };
 
 
-    buildAccount = async (req: Request, res: Response) => {
+    buildAccount = async (req: Request, res: Response, next: NextFunction) => {
         const { workerId } = req.query;
 
         try {
@@ -131,15 +116,12 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
 
         } catch (error: unknown) {
-            const err = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_ACCOUNT_BUILD_FAILD, err);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_ACCOUNT_BUILD_FAILD, errMsg));;
         }
     };
 
-
-    forgotPass = async (req: Request, res: Response) => {
+    forgotPass = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email } = req.body;
             const user = await this._workerService.getUserByEmail(email);
@@ -147,19 +129,16 @@ export class WorkerController implements IWorkerController {
                 throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             }
             const otp = await this._workerService.forgotPass(email)
-            logger.info("OTP :", otp);
             const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.SUCCESSFULLUY_SEND_OTP, { otp, email });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_SEND_OTP, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_SEND_OTP, errMsg));
         }
     }
 
-    resendOtp = async (req: Request, res: Response) => {
+    resendOtp = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email } = req.body;
             const user = await this._workerService.getUserByEmail(email);
@@ -171,14 +150,12 @@ export class WorkerController implements IWorkerController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_RESEND_OTP, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_RESEND_OTP, errMsg));
         }
     }
 
-    verifyOtp = async (req: Request, res: Response) => {
+    verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, otp } = req.body;
             await this._workerService.verifyOtp(email, otp);
@@ -186,15 +163,13 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_VERIFY_OTP, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_VERIFY_OTP, errMsg));
         }
 
     }
 
-    resetPassword = async (req: Request, res: Response) => {
+    resetPassword = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
@@ -209,15 +184,13 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.PASSWORD_RESET_FAILD, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.PASSWORD_RESET_FAILD, errMsg));
         }
 
     };
 
-    fetchDetails = async (req: Request, res: Response): Promise<void> => {
+    fetchDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const workerId = req.query.workerId;
         try {
             if (!workerId || typeof workerId !== "string") {
@@ -238,14 +211,12 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
 
         } catch (error: unknown) {
-            const err = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD, err);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD, errMsg));
         }
     }
 
-    updateWorker = async (req: Request, res: Response): Promise<void> => {
+    updateWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workerData } = req.body;
             const worker = workerData.worker;
@@ -263,15 +234,12 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error);
-            const err = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.UPDATE_WORKER_FAILD, err);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.UPDATE_WORKER_FAILD, errMsg));
         }
     }
 
-    searchWorker = async (req: Request, res: Response): Promise<void> => {
+    searchWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const searchTerms = req.body;
             if (!searchTerms) {
@@ -283,14 +251,12 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            const err = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GET_WORKERS_FAILD, err);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GET_WORKERS_FAILD, errMsg));
         }
     }
 
-    findWorkersByIds = async (req: Request, res: Response): Promise<void> => {
+    findWorkersByIds = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workerIds } = req.body;
             if (!workerIds) {
@@ -302,14 +268,12 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            const err = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GET_WORKERS_FAILD, err);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GET_WORKERS_FAILD, errMsg));
         }
     }
 
-    googleLogin = async (req: Request, res: Response) => {
+    googleLogin = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { credential } = req.body;
             const { accessToken, refreshToken, worker, wallet, availability } = await this._workerService.googleLogin(credential);
@@ -318,27 +282,23 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GOOGLE_LOGIN_FAILED, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GOOGLE_LOGIN_FAILED, errMsg));
         }
     }
 
-    findWallet = async (req: Request, res: Response): Promise<void> => {
+    findWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const workerId = req.query.workerId;
             if (!workerId || typeof workerId !== 'string') {
@@ -350,13 +310,9 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error)
-            const err = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, err);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, errMsg));
         }
     }
-
 }
 

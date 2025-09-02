@@ -1,20 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import logger from "../utilities/logger";
 import { StatusCode } from "../constants/status.code";
-
-interface CustomError extends Error {
-    statusCode?: number | undefined;
-}
+import { errorResponse } from "../utilities/response";
 
 export const errorHandler = (
-    err: CustomError,
+    err: errorResponse<any>,
     req: Request,
     res: Response,
-    // eslint-disable-next-line no-unused-vars
     _next: NextFunction
 ) => {
-    const status = err.statusCode || StatusCode.INTERNAL_SERVER_ERROR;
-    const message = err.message || 'Internal Server Error';
+    const status = err.status || StatusCode.INTERNAL_SERVER_ERROR;
+    const message = err.message || "Internal Server Error";
 
     logger.error(`[${req.method}] ${req.originalUrl} → ${message}`);
 
@@ -22,5 +18,6 @@ export const errorHandler = (
         success: false,
         message,
         statusCode: status,
+        data: err.data || null,
     });
 };
