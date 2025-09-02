@@ -21,9 +21,9 @@ export class WorkerController implements IWorkerController {
         @inject(TYPES.walletService) walletService: IWalletService,
         @inject(TYPES.availabilityService) availabilityService: IAvailabilityService
     ) {
-        this._workerService = workerService,
-            this._walletService = walletService,
-            this._availabilityService = availabilityService
+        this._workerService = workerService;
+            this._walletService = walletService;
+            this._availabilityService = availabilityService;
     }
 
     login = async (req: Request, res: Response, next: NextFunction) => {

@@ -26,4 +26,4 @@ Router.get('/wallet', auth, workerController.findWallet);
 
 
 
-export default Router; workerController
+export default Router;

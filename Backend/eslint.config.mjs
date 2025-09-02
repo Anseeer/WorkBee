@@ -1,40 +1,31 @@
-
-import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
 import { defineConfig } from "eslint/config";
+import tsParser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 
 export default defineConfig([
   {
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    files: ["**/*.{ts,tsx,js,jsx}"],
+
     languageOptions: {
-      parser: tseslint.parser,
+      parser: tsParser,
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
-        ecmaFeatures: { jsx: true },
       },
       globals: {
-        ...globals.browser,
-        ...globals.node,
+        node: "readonly",
       },
     },
+
     plugins: {
-      js,
-      '@typescript-eslint': tseslint.plugin,
-      react: pluginReact,
+      "@typescript-eslint": tsPlugin,
     },
+
     rules: {
-      ...js.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,
-      ...pluginReact.configs.flat.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
 
-      // Your custom rule
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', }],
-      'react/react-in-jsx-scope': 'off',
-      "no-unused-vars": "off", 
-
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "no-unused-vars": "off",
     },
   },
 ]);

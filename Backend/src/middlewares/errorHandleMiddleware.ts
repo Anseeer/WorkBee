@@ -4,7 +4,7 @@ import { StatusCode } from "../constants/status.code";
 import { errorResponse } from "../utilities/response";
 
 export const errorHandler = (
-    err: errorResponse<any>,
+    err: errorResponse<unknown>,
     req: Request,
     res: Response,
     _next: NextFunction
