@@ -24,7 +24,7 @@ const WorkHistory = () => {
             setTotalPage(history.data.totalPage)
         }
         fetchData()
-    }, [isModal,currentPage])
+    }, [isModal, currentPage, worker?._id])
 
     const handleInfoModal = (workId: string) => {
         setWorkId(workId);

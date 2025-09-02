@@ -76,7 +76,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
       socket.off("previousMessages", onPrevious);
       joinedRef.current = false;
     };
-  }, [roomId, me]);
+  }, [roomId, me, selectedUser]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();

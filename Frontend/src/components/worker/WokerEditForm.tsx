@@ -160,7 +160,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 updatedAt: new Date().toISOString(),
             };
 
-
             const workerPayload: Partial<IWorker> = {
                 _id: workerData?.worker?._id || "",
                 name: values.name,
@@ -251,7 +250,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                     ) || [],
             });
         }
-    }, [workerData]);
+    }, [formik, workerData]);
 
 
     const workingHours = [

@@ -74,7 +74,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         };
 
         fetchData();
-    }, []);
+    }, [showDropdown]);
 
 
     const formik = useFormik<WorkFormValues>({
@@ -148,7 +148,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
             script.onload = init;
             document.head.appendChild(script);
         }
-    }, [locationRef.current, showDropdown]);
+    }, [formik, showDropdown]);
 
     return (
         <form

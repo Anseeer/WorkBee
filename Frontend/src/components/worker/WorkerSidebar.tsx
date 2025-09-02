@@ -6,7 +6,7 @@ import notificationIcon from "../../assets/Bell-icon.png";
 import reviewIcon from "../../assets/review-icon.png";
 import walletIcon from "../../assets/wallet-icon.png";
 import logoutIcon from "../../assets/logout-icon.png";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutWorker } from "../../services/workerService";
 import { toast } from "react-toastify";
@@ -23,14 +23,15 @@ export default function WorkerSidebar({ handleTab }: prop) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const handleClick = useCallback((tab: string) => {
+    setActiveTab(tab);
+    handleTab(tab);
+  },[handleTab]);
+  
   useEffect(() => {
     handleClick(activeTab);
-  }, [activeTab]);
+  }, [activeTab, handleClick]);
 
-  const handleClick = (tab: string) => {
-    setActiveTab(tab);
-    handleTab(activeTab);
-  };
 
   const handleLogout = async () => {
     try {

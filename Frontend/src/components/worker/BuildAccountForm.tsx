@@ -56,7 +56,7 @@ export default function BuildAccount() {
       setService(formattedServices);
     }
     fetchData();
-  }, [])
+  }, [worker?.categories])
 
   const formik = useFormik({
     initialValues: {

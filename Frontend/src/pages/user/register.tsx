@@ -98,6 +98,47 @@ const RegistrationPage = () => {
   })
 
   useEffect(() => {
+    const initializeAutocomplete = () => {
+      if (!inputRef.current || !window.google) return;
+
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(
+        inputRef.current,
+        {
+          types: ['address'],
+          componentRestrictions: { country: 'IN' },
+          fields: ['formatted_address', 'geometry', 'address_components', 'name']
+        }
+      );
+
+      autocompleteRef.current.addListener("place_changed", () => {
+        const place = autocompleteRef.current?.getPlace();
+
+        if (!place || !place.geometry) return;
+
+        const addressComponents = place.address_components || [];
+        let pincode = "";
+
+        for (const component of addressComponents) {
+          if (component.types.includes("postal_code")) {
+            pincode = component.long_name;
+            break;
+          }
+        }
+
+        const lat = place.geometry.location?.lat() || 0;
+        const lng = place.geometry.location?.lng() || 0;
+
+        formik.setFieldValue("location", {
+          address: place.formatted_address || "",
+          pincode,
+          lat,
+          lng,
+        });
+      });
+
+
+    };
+
     const loadGoogleMapsAPI = () => {
       if (window.google && window.google.maps) {
         initializeAutocomplete();
@@ -113,49 +154,7 @@ const RegistrationPage = () => {
     };
 
     loadGoogleMapsAPI();
-  }, []);
-
-  const initializeAutocomplete = () => {
-    if (!inputRef.current || !window.google) return;
-
-    autocompleteRef.current = new window.google.maps.places.Autocomplete(
-      inputRef.current,
-      {
-        types: ['address'],
-        componentRestrictions: { country: 'IN' },
-        fields: ['formatted_address', 'geometry', 'address_components', 'name']
-      }
-    );
-
-    autocompleteRef.current.addListener("place_changed", () => {
-      const place = autocompleteRef.current?.getPlace();
-
-      if (!place || !place.geometry) return;
-
-      const addressComponents = place.address_components || [];
-      let pincode = "";
-
-      for (const component of addressComponents) {
-        if (component.types.includes("postal_code")) {
-          pincode = component.long_name;
-          break;
-        }
-      }
-
-      const lat = place.geometry.location?.lat() || 0;
-      const lng = place.geometry.location?.lng() || 0;
-
-      formik.setFieldValue("location", {
-        address: place.formatted_address || "",
-        pincode,
-        lat,
-        lng,
-      });
-    });
-
-
-  };
-
+  }, [formik]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 fixed w-full">

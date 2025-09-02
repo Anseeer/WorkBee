@@ -8,7 +8,7 @@ import WorkersIcon from "../../assets/workers-icon.png";
 import JobsIcon from "../../assets/jobs-icon.png";
 import CategoryAndServicesIcon from "../../assets/category&services.png";
 import RevenueIcon from "../../assets/reveneu.png";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "../../services/adminService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -25,14 +25,18 @@ export default function AdminSidebar({ handleTab }: props) {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
+    const handleClick = useCallback(
+        (tab: string) => {
+            setActiveTab(tab);
+            handleTab(tab);
+        },
+        [handleTab]
+    );
+
     useEffect(() => {
         handleClick(activeTab);
-    }, [activeTab]);
+    }, [activeTab, handleClick]);
 
-    const handleClick = (tab: string) => {
-        setActiveTab(tab);
-        handleTab(activeTab);
-    };
 
     const handleLogout = async () => {
         try {
