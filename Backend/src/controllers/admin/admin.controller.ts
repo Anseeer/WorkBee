@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
 import { IAdminController } from "./admin.controller.interface";
@@ -16,7 +16,7 @@ export class AdminController implements IAdminController {
         this._adminService = adminService;
     }
 
-    login = async (req: Request, res: Response) => {
+    login = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
@@ -26,48 +26,41 @@ export class AdminController implements IAdminController {
             const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.LOGIN_SUCCESS, { admin });
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             res.status(response.status).json(response);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.LOGIN_FAILED, errMsg);
-            logger.error(response);
-            res.status(response.status).json(response);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.LOGIN_FAILED, errMsg));
         }
+
     }
 
-    logout = async (req: Request, res: Response): Promise<void> => {
+    logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             res.clearCookie('accessToken', {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
             res.clearCookie('refreshToken', {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
             res.json({ message: ADMIN_MESSAGES.LOGOUT_SUCCESS });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.LOGOUT_FAILED, errMsg);
-            logger.error(response);
-            res.status(response.status).json(response);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.LOGOUT_FAILED, errMsg));
         }
     };
 
-    fetchUsers = async (req: Request, res: Response) => {
+    fetchUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { currentPage, pageSize } = req.query;
             const { users, totalPage } = await this._adminService.fetchUsers(currentPage as string, pageSize as string);
@@ -75,14 +68,12 @@ export class AdminController implements IAdminController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_USERS_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_USERS_FAILED, errMsg));
         }
     }
 
-    setIsActiveUsers = async (req: Request, res: Response): Promise<void> => {
+    setIsActiveUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.query.id as string;
             await this._adminService.setIsActiveUsers(id);
@@ -90,14 +81,12 @@ export class AdminController implements IAdminController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.UPDATE_USERS_STATUS_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.UPDATE_USERS_STATUS_FAILED, errMsg));
         }
     }
 
-    setIsActiveWorkers = async (req: Request, res: Response): Promise<void> => {
+    setIsActiveWorkers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.query.id as string;
             await this._adminService.setIsActiveWorkers(id);
@@ -105,14 +94,12 @@ export class AdminController implements IAdminController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.UPDATE_WORKERS_STATUS_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.UPDATE_WORKERS_STATUS_FAILED, errMsg));
         }
     }
 
-    fetchWorkers = async (req: Request, res: Response): Promise<void> => {
+    fetchWorkers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { currentPage, pageSize } = req.query;
             const { workers, totalPage } = await this._adminService.fetchWorkers(currentPage as string, pageSize as string);
@@ -120,28 +107,24 @@ export class AdminController implements IAdminController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_WORKERS_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_WORKERS_FAILED, errMsg));
         }
     }
 
-    fetchWorkersNonVerified = async (req: Request, res: Response): Promise<void> => {
+    fetchWorkersNonVerified = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const workers = await this._adminService.fetchWorkersNonVerified();
             const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.FETCH_NON_VERIFIED_WORKERS_SUCCESS, workers);
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_NON_VERIFIED_WORKERS_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_NON_VERIFIED_WORKERS_FAILED, errMsg));
         }
     }
 
-    fetchAvailability = async (req: Request, res: Response): Promise<void> => {
+    fetchAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workerId } = req.query;
             const availability = await this._adminService.fetchAvailability(workerId as string);
@@ -149,14 +132,12 @@ export class AdminController implements IAdminController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_AVAILABILITY_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.FETCH_AVAILABILITY_FAILED, errMsg));
         }
     }
 
-    approveWorker = async (req: Request, res: Response): Promise<void> => {
+    approveWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workerId } = req.query;
             const approved = await this._adminService.approveWorker(workerId as string);
@@ -164,14 +145,12 @@ export class AdminController implements IAdminController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.APPROVE_WORKER_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.APPROVE_WORKER_FAILED, errMsg));
         }
     }
 
-    rejectedWorker = async (req: Request, res: Response): Promise<void> => {
+    rejectedWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workerId } = req.query;
             const rejected = await this._adminService.rejectedWorker(workerId as string);
@@ -179,10 +158,8 @@ export class AdminController implements IAdminController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.REJECT_WORKER_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.REJECT_WORKER_FAILED, errMsg));
         }
     }
 

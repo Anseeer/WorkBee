@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import logger from "../../utilities/logger";
 import { errorResponse, successResponse } from "../../utilities/response";
 import { IUserController } from "./user.controller.interface";
@@ -17,34 +17,30 @@ export class UserController implements IUserController {
         this._userService = userService
     }
 
-    register = async (req: Request, res: Response) => {
+    register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { user, accessToken, refreshToken, wallet } = await this._userService.registerUser(req.body);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.REGISTRATION_SUCCESS, { user, wallet });
 
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.REGISTRATION_FAILED, message);
-            logger.error("Error", response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.REGISTRATION_FAILED, errMsg));
         }
     }
 
-    login = async (req: Request, res: Response) => {
+    login = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
             const { user, accessToken, refreshToken, wallet } = await this._userService.loginUser(email, password);
@@ -52,50 +48,41 @@ export class UserController implements IUserController {
 
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            console.log(error)
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.LOGIN_FAILED, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.LOGIN_FAILED, errMsg));
         }
     }
 
-    logout = async (req: Request, res: Response): Promise<void> => {
+    logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             res.clearCookie('accessToken', {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
             res.clearCookie('refreshToken', {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
             res.json({ message: USERS_MESSAGE.LOGOUT_SUCCESS });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.LOGOUT_FAILED, errMsg);
-            logger.error(response);
-            res.status(response.status).json(response);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.LOGIN_FAILED, errMsg));
         }
     };
 
-    forgotPass = async (req: Request, res: Response) => {
+    forgotPass = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email } = req.body;
             const user = await this._userService.getUserByEmail(email);
@@ -108,14 +95,12 @@ export class UserController implements IUserController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_SEND_OTP, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_SEND_OTP, errMsg));
         }
     }
 
-    resendOtp = async (req: Request, res: Response) => {
+    resendOtp = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email } = req.body;
             const user = await this._userService.getUserByEmail(email);
@@ -127,14 +112,12 @@ export class UserController implements IUserController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_RESEND_OTP, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_RESEND_OTP, errMsg));
         }
     }
 
-    verifyOtp = async (req: Request, res: Response) => {
+    verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, otp } = req.body;
             await this._userService.verifyOtp(email, otp);
@@ -142,15 +125,13 @@ export class UserController implements IUserController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILED_VERIFY_OTP, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILED_VERIFY_OTP, errMsg));
         }
 
     }
 
-    resetPassword = async (req: Request, res: Response) => {
+    resetPassword = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
@@ -165,15 +146,13 @@ export class UserController implements IUserController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.PASSWORD_RESET_FAILED, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.PASSWORD_RESET_FAILED, errMsg));
         }
 
     };
 
-    fetchAvailability = async (req: Request, res: Response): Promise<void> => {
+    fetchAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { workerId } = req.query;
             const availability = await this._userService.fetchAvailability(workerId as string);
@@ -181,14 +160,12 @@ export class UserController implements IUserController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_AVAILABILITY_FAILD, message);
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_AVAILABILITY_FAILD, errMsg));
         }
     }
 
-    googleLogin = async (req: Request, res: Response) => {
+    googleLogin = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { credential } = req.body;
             const { accessToken, refreshToken, user, wallet } = await this._userService.googleLogin(credential);
@@ -197,27 +174,23 @@ export class UserController implements IUserController {
             logger.info(response)
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                secure: COOKIE_CONFIG.SECURE,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.GOOGLE_LOGIN_FAILED, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.GOOGLE_LOGIN_FAILED, errMsg));
         }
     }
 
-    fetchData = async (req: Request | AuthRequest, res: Response): Promise<void> => {
+    fetchData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             let userId: string | undefined = undefined;
 
@@ -248,19 +221,13 @@ export class UserController implements IUserController {
             res.status(response.status).json(response);
 
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(
-                StatusCode.BAD_REQUEST,
-                USERS_MESSAGE.FETCH_USER_FAILD,
-                message
-            );
-            logger.error(response);
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_USER_FAILD, errMsg));
         }
     };
 
 
-    update = async (req: AuthRequest, res: Response): Promise<void> => {
+    update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { userDetails, userId } = req.body
             const result = await this._userService.update(userDetails, userId);
@@ -268,14 +235,12 @@ export class UserController implements IUserController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.USER_UPDATE_FAILD, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.USER_UPDATE_FAILD, errMsg));
         }
     }
 
-    findUsersByIds = async (req: Request, res: Response): Promise<void> => {
+    findUsersByIds = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { userIds } = req.body
             const result = await this._userService.findUsersByIds(userIds);
@@ -283,10 +248,8 @@ export class UserController implements IUserController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            const response = new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_USER_FAILD, message);
-            logger.error(response)
-            res.status(response.status).json(response);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FETCH_USER_FAILD, errMsg));
         }
     }
 
