@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AxiosError } from "axios";
-import { buildAccount, forgotPassword, getWorkerDetails, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
+import { buildAccount, fetchData, forgotPassword, getWorkerDetails, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
 import type { IWorker } from "../types/IWorker";
 import type { IAvailability } from "../types/IAvailability";
 import type { IWallet } from "../types/IWallet";
@@ -133,6 +133,18 @@ export const fetchWorkerDetails = createAsyncThunk(
     }
 );
 
+export const fetchWorkerDataThunk = createAsyncThunk("workers/fetch-data",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await fetchData()
+            return response.data;
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ data: string }>;
+            const errorMessage = error.response?.data?.data || "Something went wrong";
+            return rejectWithValue(errorMessage);
+        }
+    }
+)
 
 const workerSlice = createSlice({
     name: "worker",
@@ -157,7 +169,6 @@ const workerSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Register
             .addCase(registerWorkerThunk.fulfilled, (state, action) => {
                 const worker = action.payload.worker;
                 const wallet = action.payload.wallet;
@@ -174,7 +185,6 @@ const workerSlice = createSlice({
             .addCase(registerWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            // Login
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
                 console.log("Action.Payload :", action.payload)
                 const worker = action.payload.worker;
@@ -190,11 +200,9 @@ const workerSlice = createSlice({
                 state.error = null;
                 localStorage.setItem("workerId", state.worker?.id as string);
             })
-
             .addCase(loginWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            // Build Account
             .addCase(buildAccountWorkerThunk.fulfilled, (state, action) => {
                 state.worker = action.payload.worker;
                 state.availability = action.payload.availability
@@ -207,6 +215,14 @@ const workerSlice = createSlice({
                 state.worker = action.payload.worker;
                 state.wallet = action.payload.wallet;
                 state.availability = action.payload.availability;
+            })
+            .addCase(fetchWorkerDataThunk.fulfilled, (state, action) => {
+                state.worker = action.payload.worker;
+                state.wallet = action.payload.wallet;
+                state.availability = action.payload.availability;
+            })
+            .addCase(fetchWorkerDataThunk.rejected, (state, action) => {
+                state.error = action.payload as string;
             })
     },
 });

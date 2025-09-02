@@ -37,6 +37,7 @@ const CategorySection: React.FC = () => {
         navigate('/work-details');
     }
     const currentCategory = categories.find((cat) => cat._id === selectedCategory);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -98,26 +99,31 @@ const CategorySection: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-6 my-5 min-h-screen">
-            <div className="mb-8 relative">
+        <div className="w-full max-w-8xl mx-auto p-6 my-5 min-h-screen">
+            <div className="mb-8 relative mx-2">
                 <button
                     onClick={scrollLeft}
                     disabled={!canScrollLeft}
-                    className={`absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200 ${canScrollLeft
-                        ? "hover:bg-green-100 text-green-600"
-                        : "text-gray-300 cursor-not-allowed"
+                    className={`absolute -left-2 sm:-left-4 top-1/2 transform -translate-y-1/2 
+                                bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200
+                                ${canScrollLeft
+                            ? "hover:bg-green-100 text-green-600"
+                            : "text-gray-300 cursor-not-allowed"
                         }`}
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
+                {/* Scrollable Categories */}
                 <div
                     ref={scrollRef}
-                    className="flex flex-nowrap overflow-x-auto w-full gap-20 justify-center mb-2 px-8 scrollbar-hide"
-                    style={{
-                        scrollbarWidth: "none",
-                        msOverflowStyle: "none",
-                    }}
+                    className="
+                            flex flex-nowrap overflow-x-auto w-full justify-center items-center 
+                            gap-6 sm:gap-10 md:gap-14 lg:gap-20 
+                            px-4 sm:px-6 md:px-8 lg:px-12 
+                            mb-2 scrollbar-hide
+                            "
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                     {categories.map((category) => (
                         <div
@@ -126,35 +132,47 @@ const CategorySection: React.FC = () => {
                                 setSelectedCategory(category._id);
                                 setSelectedService("");
                             }}
-                            className={`flex flex-col items-center cursor-pointer transition-all duration-200 p-4 rounded-lg ${selectedCategory === category._id
-                                ? "text-green-800 bg-white shadow-md"
-                                : "text-gray-600 hover:text-green-600"
+                            className={`flex flex-col items-center cursor-pointer 
+                                    transition-all duration-200 
+                                    p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6
+                                    rounded-lg
+                                    ${selectedCategory === category._id
+                                    ? "text-green-800 bg-white shadow-md"
+                                    : "text-gray-600 hover:text-green-600"
                                 }`}
                         >
                             <div className="mb-2">
                                 <img
                                     src={category.imageUrl}
-                                    alt=""
-                                    className="w-20 h-20 object-cover rounded"
+                                    alt={category.name}
+                                    className="
+                                    object-cover rounded
+                                    w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20
+                                    "
                                 />
                             </div>
-                            <span className="text-sm font-medium">{category.name}</span>
+                            <span className="text-xs sm:text-sm md:text-base font-medium text-center">
+                                {category.name}
+                            </span>
                         </div>
                     ))}
                 </div>
 
+                {/* Right Scroll Button */}
                 <button
                     onClick={scrollRight}
                     disabled={!canScrollRight}
-                    className={`absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200 ${canScrollRight
-                        ? "hover:bg-green-100 text-green-600"
-                        : "text-gray-300 cursor-not-allowed"
+                    className={`absolute -right-2 sm:-right-4 top-1/2 transform -translate-y-1/2 
+      bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200
+      ${canScrollRight
+                            ? "hover:bg-green-100 text-green-600"
+                            : "text-gray-300 cursor-not-allowed"
                         }`}
                 >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
-                <div className="h-1 bg-green-900 w-full rounded"></div>
+                <div className="h-1 bg-green-900 w-full rounded mt-3"></div>
             </div>
 
             {currentCategory && (

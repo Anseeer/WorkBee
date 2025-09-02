@@ -4,8 +4,6 @@ import { Search } from "lucide-react";
 import type { IService } from "../../types/IServiceTypes";
 import { fetchService, fetchServiceBySearchTerm } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../Store";
 
 const HomeHeroSection = () => {
     const [services, setServices] = useState<IService[]>([]);
@@ -30,7 +28,7 @@ const HomeHeroSection = () => {
         const delayDebounce = setTimeout(async () => {
             if (searchTerm.trim() === "") {
                 const response = await fetchService();
-                console.log("Res:",response.data.data.services)
+                console.log("Res:", response.data.data.services)
                 setServices(response.data.data.services);
                 setNotFound(false);
             } else {
@@ -56,25 +54,43 @@ const HomeHeroSection = () => {
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }
-    const user = useSelector((state: RootState) => state?.user.user);
-    console.log("UserData in redux :", user)
 
+    const [visibleCount, setVisibleCount] = useState(12);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width >= 1024) {
+                setVisibleCount(12);
+            } else if (width >= 768) {
+                setVisibleCount(8);
+            } else if (width >= 640) {
+                setVisibleCount(4);
+            } else {
+                setVisibleCount(2);
+            }
+        };
+
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <div className="w-full h-[500px] flex flex-col items-center justify-center py-12 px-4">
             {/* Title */}
-            <h1 className="text-3xl lg:text-5xl font-semibold text-black py-10">
+            <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-5xl xl2:text-7xl font-semibold text-black py-10">
                 Find Help Now
             </h1>
 
             {/* Search Box */}
-            <div className="w-full max-w-2xl border border-gray-300 flex rounded-full overflow-hidden bg-[#F5FAF5] shadow-md focus-within:border-transparent focus-within:ring-2 focus-within:ring-offset-0 focus-within:ring-green-900">
+            <div className=" max-w-ful h-md sm:w-md sm:h-sm md:w-lg md:h-lg lg:w-xl lg:h-xl xl:w-2xl border border-gray-300 flex rounded-full overflow-hidden bg-[#F5FAF5] shadow-md focus-within:border-transparent focus-within:ring-2 focus-within:ring-offset-0 focus-within:ring-green-900">
                 <input
                     type="text"
                     placeholder="What do you need help with?"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1 text-base md:text-lg px-6 py-4 focus:outline-none bg-[#F5FAF5] text-black placeholder-gray-500"
+                    className="flex-1 text-base sm:text-xs md:text-lg px-6 py-4 focus:outline-none bg-[#F5FAF5] text-black placeholder-gray-500"
                 />
                 <div className="bg-green-900 px-6 flex items-center justify-center">
                     <Search className="text-white w-6 h-6" />
@@ -82,9 +98,17 @@ const HomeHeroSection = () => {
             </div>
 
             {/* Service Buttons */}
-            <div className="grid grid-cols-2 px-20 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-10">
+            <div className="
+                            grid grid-cols-2 px-5 gap-2 
+                            sm:grid-cols-2 sm:mt-5 
+                            md:grid-cols-4 md:gap-4 md:mt-10 
+                            lg:grid-cols-6 lg:mt-10 
+                            xl:grid-cols-6 xl:mt-10 
+                            2xl:gap-6
+                            "
+            >
                 {!notFound ? (
-                    services?.slice(0, 12).map((service) => (
+                    services?.slice(0, visibleCount).map((service) => (
                         <button
                             onClick={() => HandleSelectedService(service)}
                             key={service.id}

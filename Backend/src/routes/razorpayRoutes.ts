@@ -10,32 +10,39 @@ import logger from "../utilities/logger";
 import { Wallet } from "../model/wallet/wallet.model";
 import Worker from "../model/worker/worker.model";
 
-router.post("/create-order", async (req, res) => {
+
+router.post("/create-order", async (req: Request, res: Response): Promise<any> => {
     try {
         const { amount, workId } = req.body;
+
+        const work = await Work.findById(workId);
+        if (!work) return res.status(404).json({ error: "Work not found" });
+
+        if (work.paymentStatus === "Completed") {
+            return res.status(400).json({ error: "Already Paid" });
+        }
 
         const options = {
             amount: amount * 100,
             currency: "INR",
-            receipt: `receipt_order_${Date.now()}`
+            receipt: `receipt_order_${Date.now()}`,
         };
 
         const order = await razorpay.orders.create(options);
-        const work = await Work.findById(workId);
-        if (!work) {
-            throw new Error("Work not found");
+
+        const existingPayment = await Payment.findOne({ workId, transactionId: order.id });
+        if (existingPayment) {
+            return res.status(400).json({ error: "Payment already initiated" });
         }
-        const payment = await Payment.findOne({ workId, transactionId: order.id });
-        if (!payment) {
-            await Payment.create({
-                workId,
-                userId: work.userId,
-                workerId: work.workerId,
-                amount,
-                transactionId: order.id,
-                status: "Pending"
-            });
-        }
+
+        await Payment.create({
+            workId,
+            userId: work.userId,
+            workerId: work.workerId,
+            amount,
+            transactionId: order.id,
+            status: "Pending"
+        });
 
         res.json(order);
     } catch (err) {
@@ -43,6 +50,7 @@ router.post("/create-order", async (req, res) => {
         res.status(500).json({ error: "Unable to create order" });
     }
 });
+
 
 
 interface VerifyPaymentBody {
@@ -56,7 +64,6 @@ router.post<{}, any, VerifyPaymentBody>(
     "/verify-payment",
     async (req: Request<{}, any, VerifyPaymentBody>, res: Response): Promise<void> => {
         try {
-            console.log("Hello")
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature, workId } = req.body;
 
             const key_secret = process.env.RAZORPAY_KEY_SECRET as string;
@@ -86,6 +93,11 @@ router.post<{}, any, VerifyPaymentBody>(
             if (!work) {
                 throw new Error("Work not found");
             }
+
+            if (work.paymentStatus == "Completed" || payment.status == "Paid") {
+                throw new Error("Already paid");
+            }
+
             work.paymentStatus = "Completed";
             work.paymentId = payment.id;
             await work.save();

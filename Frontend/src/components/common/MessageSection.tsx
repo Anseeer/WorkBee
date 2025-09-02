@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { IWorker } from "../../types/IWorker";
 import type { Iuser } from "../../types/IUser";
 import { socket } from "../../utilities/socket";
+import { toast } from "react-toastify";
 
 interface Props {
   users: (IWorker | Iuser)[];
@@ -11,29 +12,50 @@ interface Props {
 }
 
 type ChatMessage = {
-  room: string;
+  room?: string;
   sender: string;
   receiver: string;
   content: string;
   timestamp?: string | Date;
 };
 
-export default function MessageSection({ users, roomId, me }: Props) {
+export default function MessageSection({ users, me }: Props) {
+  const [roomId, setRoomId] = useState('');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<IWorker | Iuser | null>(null);
   const [message, setMessage] = useState("");
   const joinedRef = useRef(false);
+
+
   const [lastMessages, setLastMessages] = useState<Record<string, string>>({});
+  const [unread, setUnread] = useState<Record<string, number>>({});
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const otherUserId = selectedUser?.id;
-  roomId = otherUserId ? [me, otherUserId].sort().join("_") : '';
+  useEffect(() => {
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted");
+        }
+      });
+    }
+  }, []);
 
+  useEffect(() => {
+    if (selectedUser) {
+      const room = [me, selectedUser.id].sort().join("_");
+      setRoomId(room);
+      setUnread((prev) => ({
+        ...prev,
+        [selectedUser.id]: 0,
+      }));
 
+    }
+  }, [selectedUser, me]);
 
   useEffect(() => {
     if (!socket.connected) socket.connect();
@@ -43,53 +65,73 @@ export default function MessageSection({ users, roomId, me }: Props) {
       joinedRef.current = true;
     }
 
+
     const onMessage = (msg: ChatMessage) => {
-      setChatMessages((prev) => [...prev, msg]);
+      if (roomId == msg.room) {
+        setChatMessages((prev) => [...prev, msg]);
+      }
 
       const otherId = msg.sender === me ? msg.receiver : msg.sender;
       setLastMessages((prev) => ({
         ...prev,
         [otherId]: msg.content,
       }));
+
+      if (msg.receiver === me && (!selectedUser || selectedUser.id !== msg.sender)) {
+        setUnread((prev) => ({
+          ...prev,
+          [msg.sender]: (prev[msg.sender] || 0) + 1,
+        }));
+      }
     };
 
+    const onNotification = ({ content }: { content: string }) => {
+      toast.info(`new message ${content}`)
+    };
 
-    const onPrevious = (prevMsgs: ChatMessage[]) => {
-      setChatMessages(prevMsgs);
-
-      if (prevMsgs.length > 0 && selectedUser) {
+    const onPrevious = (prevMsgs: ChatMessage[], room: string) => {
+      if (roomId == room) {
+        setChatMessages(prevMsgs);
+      }
+      if (prevMsgs.length > 0) {
         const lastMsg = prevMsgs[prevMsgs.length - 1];
+        const otherId =
+          lastMsg.sender === me ? lastMsg.receiver : lastMsg.sender;
         setLastMessages((prev) => ({
           ...prev,
-          [selectedUser.id]: lastMsg.content,
+          [otherId]: lastMsg.content,
         }));
       }
     };
 
 
     socket.on("message", onMessage);
+    socket.on("notification", onNotification);
     socket.on("previousMessages", onPrevious);
 
     return () => {
-      socket.emit("leaveRoom", roomId);
+      users.forEach((user) => {
+        const room = [me, user.id].sort().join("_");
+        socket.emit("leaveRoom", room);
+      });
       socket.off("message", onMessage);
+      socket.off("notification", onNotification);
       socket.off("previousMessages", onPrevious);
-      joinedRef.current = false;
+      socket.emit('unreadedMessage', unread);
+      joinedRef.current = [];
     };
-  }, [roomId, me]);
+  }, [users, me, roomId]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = message.trim();
-    if (!trimmed) return;
-
-    if (!selectedUser) return;
+    if (!trimmed || !selectedUser) return;
 
     socket.emit("sendMessage", {
       room: [me, selectedUser.id].sort().join("_"),
       sender: me,
       receiver: selectedUser.id,
-      content: trimmed
+      content: trimmed,
     });
     setMessage("");
   };
@@ -100,13 +142,18 @@ export default function MessageSection({ users, roomId, me }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
+  const onSelect = (selectedUser: Iuser | IWorker | null) => {
+    setSelectedUser(selectedUser);
+    const room = [me, selectedUser?.id].sort().join("_");
+    socket.emit("prevMessage", room);
+  }
+
 
   return (
-    <div className="border-2 border-green-700 rounded-xl m-8 p-5 flex h-full ">
+    <div className="border-2 border-green-700 rounded-xl m-8 p-5 flex h-full">
       {/* Sidebar */}
       <div className="w-1/3">
-        <div className="bg-[#65A276] w-80 h-full overflow-y rounded-r rounded-xl p-4 flex flex-col gap-4">
-          {/* Search Bar */}
+        <div className="bg-[#65A276]  h-full overflow-y rounded-r rounded-xl p-4 flex flex-col gap-5 mr-10">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-500" />
@@ -116,29 +163,36 @@ export default function MessageSection({ users, roomId, me }: Props) {
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-100 rounded-lg py-4 pl-12 pr-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all"
+              className="w-full bg-gray-100 rounded-lg sm:py-3 py-4 pl-12 pr-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all"
             />
           </div>
 
-          {/* User List */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:gap-2 gap-3">
             {filteredUsers.map((user) => (
               <div
-                onClick={() => setSelectedUser(user)}
+                onClick={() => onSelect(user)}
                 key={user.id}
-                className="bg-gray-100 rounded-lg p-4 flex items-center gap-4 hover:bg-white transition-all cursor-pointer"
+                className="bg-gray-100 rounded-lg p-4 sm:p-2 sm:gap-3 flex items-center gap-4 hover:bg-white transition-all cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="md:w-12 md:h-12 sm:w-7 sm:h-7 rounded-full flex items-center justify-center flex-shrink-0">
                   <img
                     src={user.profileImage as string}
-                    className="w-12 h-12 rounded-full"
+                    className=" w-7 h-7 md:w-12 md:h-12 sm:w-7 sm:h-7 rounded-full"
                     alt=""
                   />
                 </div>
-
                 <div className="flex flex-col min-w-0">
-                  <h3 className="font-semibold text-gray-900 text-base">{user.name}</h3>
-                  <p className="text-gray-600 text-sm truncate"> {lastMessages[user.id] ?? "No messages yet"}</p>
+                  <h3 className="font-semibold text-gray-900 md:text-base sm:text-sm flex items-center gap-2">
+                    {user.name}
+                    {unread && unread[user.id] > 0 && (
+                      <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        {unread[user.id]}
+                      </span>
+                    )}
+                  </h3>
+                  <p className="text-gray-600 md:text-sm sm:text-xs truncate">
+                    {lastMessages[user.id] ?? "No messages yet"}
+                  </p>
                 </div>
               </div>
             ))}
@@ -156,7 +210,6 @@ export default function MessageSection({ users, roomId, me }: Props) {
       <div className="w-2/3 bg-white">
         {selectedUser ? (
           <div className="flex flex-col h-full">
-            {/* Header */}
             <div className="bg-[#65A276] px-6 py-4 flex rounded-xl rounded-b items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
@@ -166,13 +219,11 @@ export default function MessageSection({ users, roomId, me }: Props) {
                     alt="Profile image"
                   />
                 </div>
-
                 <div className="flex flex-col">
                   <h2 className="text-black font-semibold text-lg">{selectedUser.name}</h2>
                   <p className="text-xs text-gray-700">{selectedUser.phone ?? "No phone available"}</p>
                 </div>
               </div>
-
               <div className="flex items-center gap-4">
                 <button className="p-2 hover:bg-white-600 rounded-lg transition-colors">
                   <Phone className="h-5 w-5 text-black" />
@@ -183,7 +234,6 @@ export default function MessageSection({ users, roomId, me }: Props) {
               </div>
             </div>
 
-            {/* message */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {chatMessages.map((msg, i) => {
                 const time = new Date(msg.timestamp as string).toLocaleTimeString([], {
@@ -212,14 +262,9 @@ export default function MessageSection({ users, roomId, me }: Props) {
                   </div>
                 );
               })}
-
-              {/* invisible anchor to scroll to */}
               <div ref={bottomRef} />
             </div>
 
-
-
-            {/* Input */}
             <div className="bg-[#65A276] px-6 py-3 rounded-xl rounded-t">
               <form onSubmit={handleSendMessage} className="flex items-center gap-4">
                 <input
@@ -250,7 +295,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
             >
               <source src="/bee.mp4" type="video/mp4" />
             </video>
-            <div className="absolute inset-0 "></div>
+            <div className="absolute inset-0"></div>
             <div className="relative text-center space-y-4 text-white">
               <div className="flex-shrink-0">
                 <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
@@ -260,6 +305,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
           </div>
         )}
       </div>
+
     </div>
   );
 }

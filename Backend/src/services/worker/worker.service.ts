@@ -280,8 +280,10 @@ export class WorkerService implements IWorkerService {
             existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
             existingAvailability = mapAvailabilityToDTO(existingAvailability as IAvailability)
             if (!existingAvailability) {
+
                 throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
             }
+            existingAvailability = found;
         }
 
         const accessToken = generate_Access_Token(existingWorker.id.toString(), existingWorker.role);
@@ -303,5 +305,30 @@ export class WorkerService implements IWorkerService {
         const wallet =  await this._walletRepository.findByUser(workerId as string);
         return await mapWalletToDTO(wallet as IWallet);
     }
+
+    async fetchData(workerId: string): Promise<{ availability?: IAvailability; worker: IWorkerDTO; wallet: IWallet | null }> {
+        if (!workerId) {
+            throw new Error("Cant find workerId");
+        }
+
+        const workerData = await this._workerRepository.findById(workerId);
+        const wallet = await this._walletRepository.findByUser(workerId);
+        const worker = mapWorkerToDTO(workerData as IWorker);
+
+        let availability: IAvailability | undefined;
+
+        if (workerData?.isAccountBuilt) {
+            const found = await this._availabilityRepository.findByWorkerId(workerId);
+
+            if (!found) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
+            }
+
+            availability = found; 
+        }
+
+        return { availability, worker, wallet };
+    }
+
 
 }

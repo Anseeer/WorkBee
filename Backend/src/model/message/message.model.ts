@@ -6,6 +6,7 @@ const MessageSchema: Schema = new Schema({
     receiver: { type: String, required: true },
     content: { type: String, required: true },
     room: { type: String, required: true },
+    isRead: { type: Boolean, default: false }, 
     timestamp: { type: Date, default: Date.now },
 });
 

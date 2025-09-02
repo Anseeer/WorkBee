@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import axios from "../../services/axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Store";
+import { toast } from "react-toastify";
 
 interface Props {
     onClose: () => void;
@@ -13,11 +14,15 @@ interface Props {
 const PaymentModal = ({ onClose, Amount, workId }: Props) => {
 
     const wallet = useSelector((state: RootState) => state.user.wallet);
-    console.log("UserWallet", wallet)
 
     const handlePayment = async (amount: number) => {
         try {
             const { data } = await axios.post("rzp/create-order", { amount, workId });
+
+            if (data?.error) {
+                alert(data.error);
+                return;
+            }
 
             const script = document.createElement("script");
             script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -32,34 +37,64 @@ const PaymentModal = ({ onClose, Amount, workId }: Props) => {
                     name: "WorkBee",
                     description: "Service Payment",
                     order_id: data.id,
-                    handler: async function (response: { razorpay_order_id: any; razorpay_payment_id: any; razorpay_signature: any; }) {
-                        await axios.post("/rzp/verify-payment", {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            workId
-                        })
-                            .then((res) => {
-                                onClose()
-                                console.log(res)
-                            })
-                            .catch((err) => console.log(err))
+
+                    handler: async function (response: {
+                        razorpay_order_id: string;
+                        razorpay_payment_id: string;
+                        razorpay_signature: string;
+                    }) {
+                        try {
+                            const res = await axios.post("/rzp/verify-payment", {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                workId,
+                            });
+
+                            if (res.data.success) {
+                                toast.success("Payment successful!");
+                                onClose();
+                            } else {
+                                toast.error(" Payment failed: " + res.data.message);
+                            }
+                        } catch (err: any) {
+                            console.error("Payment verification failed:", err);
+                            toast.error(" Payment failed: Already paid or invalid transaction");
+                        }
                     },
+
                     prefill: {
                         name: "Ansi",
                         email: "ansi@example.com",
                         contact: "7736222757",
                     },
                     theme: { color: "#399e6f" },
+
+                    modal: {
+                        ondismiss: function () {
+                            toast("Payment popup closed without completing.");
+                        },
+                    },
                 };
 
                 const rzp = new (window as any).Razorpay(options);
+
+                rzp.on("payment.failed", function (response: any) {
+                    toast.error("Payment failed: " + response.error.description);
+                });
+
                 rzp.open();
             };
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
+            if (err.response && err.response.data?.error) {
+                toast.error(err.response.data.error);
+            } else {
+                toast.error("Something went wrong. Please try again later.");
+            }
         }
     };
+
 
     const formik = useFormik({
         initialValues: {
