@@ -54,7 +54,6 @@ const WorkDetailForm = ({ setStep }: Prop) => {
     };
 
     useEffect(() => {
-        console.log(showDropdown)
         const fetchData = async () => {
             const serviceId = localStorage.getItem('serviceId');
             const categoryId = localStorage.getItem('categoryId');
@@ -103,7 +102,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         },
         onSubmit: async (values) => {
             console.log("Values :", values)
-            await dispatch(workDetails(values));
+            dispatch(workDetails(values));
             setStep(2);
         }
     });

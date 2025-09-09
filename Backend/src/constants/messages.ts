@@ -1,102 +1,76 @@
 export const ADMIN_MESSAGES = {
     LOGIN_SUCCESS: "Admin logged in successfully.",
     LOGIN_FAILED: "Admin login failed. Please check your credentials.",
-
     LOGOUT_SUCCESS: "Admin logged out successfully.",
     LOGOUT_FAILED: "Admin logout failed. Please try again.",
-
     FETCH_USERS_SUCCESS: "User list fetched successfully.",
     FETCH_USERS_FAILED: "Failed to fetch user list.",
-
     FETCH_WORKERS_SUCCESS: "Worker list fetched successfully.",
     FETCH_WORKERS_FAILED: "Failed to fetch worker list.",
-
     UPDATE_USERS_STATUS_SUCCESS: "User status updated successfully.",
     UPDATE_USERS_STATUS_FAILED: "Failed to update user status.",
-
     UPDATE_WORKERS_STATUS_SUCCESS: "Worker status updated successfully.",
     UPDATE_WORKERS_STATUS_FAILED: "Failed to update worker status.",
-
     FETCH_NON_VERIFIED_WORKERS_SUCCESS: "Non-verified workers fetched successfully.",
     FETCH_NON_VERIFIED_WORKERS_FAILED: "Failed to fetch non-verified workers.",
-
     FETCH_AVAILABILITY_SUCCESS: "Availability data fetched successfully.",
     FETCH_AVAILABILITY_FAILED: "Failed to fetch availability data.",
-
     APPROVE_WORKER_SUCCESS: "Worker approved successfully.",
     APPROVE_WORKER_FAILED: "Failed to approve worker.",
-
     REJECT_WORKER_SUCCESS: "Worker rejected successfully.",
     REJECT_WORKER_FAILED: "Failed to reject worker.",
-
     CANT_FIND_ADMIN: "Admin not found.",
     INVALID_PASSWORD: "Invalid password. Please try again.",
     ID_NOT_RECEIVED: "ID not received. Please provide a valid ID.",
     MISSING_CREDENTIALS: "Email and password are required.",
-
 };
 
 
 export const CATEGORY_MESSAGE = {
     GET_ALL_CATEGORIES_SUCCESS: "All categories fetched successfully.",
     GET_ALL_CATEGORIES_FAILED: "Failed to fetch categories.",
-
     CREATE_CATEGORY_SUCCESS: "Category created successfully.",
     CREATE_CATEGORY_FAILED: "Failed to create category.",
-
     UPDATE_CATEGORY_SUCCESS: "Category updated successfully.",
     UPDATE_CATEGORY_FAILED: "Failed to update category.",
-
     DELETE_CATEGORY_SUCCESS: "Category deleted successfully.",
     DELETE_CATEGORY_FAILED: "Failed to delete category.",
-
     UPDATE_CATEGORY_STATUS_SUCCESS: "Category status updated successfully.",
     UPDATE_CATEGORY_STATUS_FAILED: "Failed to update category status.",
-
     GET_CATEGORIES_BY_WORKER_SUCCESS: "Worker's categories fetched successfully.",
     GET_CATEGORIES_BY_WORKER_FAILED: "Failed to fetch categories for the worker.",
-
     CATEGORY_ALREADY_EXISTS: "Category already exists.",
     CATEGORY_NOT_EXIST: "Category does not exist.",
     ID_NOT_RECEIVED: "IDs not received. Please provide a valid IDs.",
-
 };
 
 
 export const SERVICE_MESSAGE = {
     CREATE_SERVICE_SUCCESS: "Service created successfully.",
     CREATE_SERVICE_FAILED: "Failed to create service.",
-
     GET_ALL_SERVICES_SUCCESS: "All services fetched successfully.",
     GET_ALL_SERVICES_FAILED: "Failed to fetch services.",
-
     UPDATE_SERVICE_SUCCESS: "Service updated successfully.",
     UPDATE_SERVICE_FAILED: "Failed to update service.",
-
     UPDATE_SERVICE_STATUS_SUCCESS: "Service status updated successfully.",
     UPDATE_SERVICE_STATUS_FAILED: "Failed to update service status.",
-
     DELETE_SERVICE_SUCCESS: "Service deleted successfully.",
     DELETE_SERVICE_FAILED: "Failed to delete service.",
-
     GET_SERVICE_BY_CATEGORIES_SUCCESS: "Services by category fetched successfully.",
     GET_SERVICE_BY_CATEGORIES_FAILED: "Failed to fetch services by category.",
-
     GET_SERVICE_BY_WORKER_SUCCESS: "Worker's services fetched successfully.",
     GET_SERVICE_BY_WORKER_FAILED: "Failed to fetch services for the worker.",
-
     GET_SERVICE_BY_SEARCH_SUCCESS: "Services fetched based on search query.",
     GET_SERVICE_BY_SEARCH_FAILED: "Failed to fetch services by search.",
-
     SERVICE_ALREADY_EXIST: "Service already exists.",
     SERVICE_NOT_EXIST: "Service does not exist.",
     ID_NOT_RECEIVED: "IDs not received. Please provide a valid IDs.",
     INVALID_SEARCH_KEY: "Search key is required and cannot be empty.",
-
 };
 
-
 export const USERS_MESSAGE = {
+    FETCH_CHAT_SUCCESS: "User chat fetched successfull.",
+    FETCH_CHAT_FAILD: "User chat fetch faild.",
     USER_UPDATE_SUCCESS: "User update successfull.",
     USER_UPDATE_FAILD: "User update faild.",
     FETCH_AVAILABILITY_SUCCESS: "Fetch availability successfull.",
@@ -129,12 +103,11 @@ export const USERS_MESSAGE = {
     INVALID_OTP: "Invalid OTP entered.",
     USER_ID_NOT_GET: "User Id not get.",
     USER_BLOCKED: "User blocked by admin.",
-
 };
 
 export const WORKER_MESSAGE = {
-    GET_WORKERS_SUCCESSFULL:"Workers get successfull",
-    GET_WORKERS_FAILD:"Workers get faild",
+    GET_WORKERS_SUCCESSFULL: "Workers get successfull",
+    GET_WORKERS_FAILD: "Workers get faild",
     EMAIL_AND_PASS_REQUIRED: "Email and password are required.",
     LOGIN_FAILD: "Worker login failed. Please check credentials.",
     LOGIN_SUCCESS: "Worker login successful.",
@@ -198,12 +171,31 @@ export const WORK_MESSAGE = {
 }
 
 export const AUTH_MESSAGE = {
-    ACCESS_DENIED:'Access Denied. No token provided.',
-    NO_REFRESH_TOKEN:'Access Denied. No refresh provided.',
-    USER_BLOCKED:'Access denied: User account is blocked',
+    ACCESS_DENIED: 'Access Denied. No token provided.',
+    NO_REFRESH_TOKEN: 'Access Denied. No refresh provided.',
+    USER_BLOCKED: 'Access denied: User account is blocked',
 }
 
 export const WALLET_MESSAGE = {
-    WALLET_GET_SUCCESSFULL:'Wallet get successfull.',
-    WALLET_GET_FAILD:'Wallet get faild.',
+    WALLET_GET_SUCCESSFULL: 'Wallet get successfull.',
+    WALLET_GET_FAILD: 'Wallet get faild.',
+}
+
+export const CHAT_MESSAGE = {
+    FIND_CHAT_BY_USER_SUCCESS: "Find chat by user success",
+    FIND_CHAT_BY_USER_FAILD: "Find chat by user faild",
+    CHAT_ID_NOT_GET: "ChatId not get",
+    FETCH_LAST_MESSAGE_SUCCESSFULL: "Fetch last message successfull",
+    FETCH_LAST_MESSAGE_FAILD: "Fetch last message faild",
+    CHAT_ID_OR_USER_ID_NOT_GET:"chatId or userId missing",
+    MESSAGE_DATA_NOT_GET:"Cant get message Data",
+    CHAT_DATA_NOT_GET:"Cant get chat Data",
+}
+
+export const SEARCH_TERMS = {
+    TERM_NOT_EXIST:"Search term not exist",
+}
+
+export const AVAILABILITY_MESSAGE = {
+    UPDATE_FAILD:"Failed to update availability",
 }

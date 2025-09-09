@@ -15,6 +15,7 @@ import { IAvailabilityRepository } from "../../repositories/availability/availab
 import { ADMIN_MESSAGES } from "../../constants/messages";
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
 import { mapAvailabilityToDTO } from "../../mappers/availability/availability.map.DTO";
+import { ROLE } from "../../constants/role";
 
 @injectable()
 export class AdminService implements IAdminService {
@@ -37,7 +38,7 @@ export class AdminService implements IAdminService {
             throw new Error(ADMIN_MESSAGES.CANT_FIND_ADMIN);
         }
 
-        if (existingAdmin.role !== "Admin") {
+        if (existingAdmin.role !== ROLE.ADMIN) {
             throw new Error(ADMIN_MESSAGES.CANT_FIND_ADMIN);
         }
 
@@ -87,8 +88,8 @@ export class AdminService implements IAdminService {
         const allWorkers = await this._workerRepository.getAllWorkers();
         const worker = allWorkers.slice(startIndex, endIndex);
         const workers = worker.map((item) => mapWorkerToDTO(item));
-        const totalPage = Math.ceil(allWorkers.length/size);
-        return {workers,totalPage};
+        const totalPage = Math.ceil(allWorkers.length / size);
+        return { workers, totalPage };
     }
 
     async fetchWorkersNonVerified(): Promise<IWorkerDTO[] | undefined> {

@@ -111,3 +111,7 @@ export const findUsersByIds = async (userIds: string[]) => {
     return response.data.data;
 }
 
+export const fetchChat = async (userId: string) => {
+    const response = await axios.get(`chats/fetch-chat?userId=${userId}`);
+    return response.data.data;
+}

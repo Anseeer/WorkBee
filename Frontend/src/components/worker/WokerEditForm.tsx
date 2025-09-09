@@ -62,6 +62,8 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     const [showDropdown, setShowDropdown] = useState(false);
     const [allCategories, setAllCategories] = useState<ICategory[]>([]);
     const [allServices, setAllServices] = useState<IService[]>([]);
+
+
     useEffect(() => {
         console.log(showDropdown);
         const loadGoogleMapsAPI = () => {
@@ -85,7 +87,8 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         };
         document.addEventListener("mousedown", handleOutsideClick);
         return () => document.removeEventListener("mousedown", handleOutsideClick);
-    });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const initializeAutocomplete = () => {
         if (!locationRef.current || !window.google) return;
@@ -196,7 +199,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const res = await fetchCategory(1,1000);
+            const res = await fetchCategory(1, 1000);
             setAllCategories(res.data.data.category);
         };
         fetchCategories();
@@ -223,14 +226,14 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     useEffect(() => {
         if (workerData?.worker) {
             const worker = workerData.worker;
-            formik.setValues({
+            const newValues = {
                 name: worker.name || "",
                 phone: worker.phone || "",
                 age: worker.age?.toString() || "",
                 bio: worker.bio || "",
                 profileImage: typeof worker.profileImage === "string" ? worker.profileImage : "",
                 radius: worker.radius?.toString() || "2",
-                workType: Array.isArray(worker.workType) ? worker.workType : [worker.workType],
+                workType: Array.isArray(worker.workType) ? worker.workType : [worker.workType].filter(Boolean),
                 preferredSchedule: worker.preferredSchedule || [],
                 location: {
                     address: worker.location?.address || "",
@@ -248,10 +251,16 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                     workerData.availability?.availableDates.map(
                         (slot) => new Date(slot.date)
                     ) || [],
+            };
+            formik.setValues((currentValues) => {
+                if (JSON.stringify(currentValues) !== JSON.stringify(newValues)) {
+                    return newValues;
+                }
+                return currentValues;
             });
         }
-    }, [formik, workerData]);
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [workerData]);
 
     const workingHours = [
         { id: "morning", label: "Morning (9am - 1pm)" },

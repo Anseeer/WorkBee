@@ -40,7 +40,6 @@ export class AdminController implements IAdminController {
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.LOGIN_FAILED, errMsg));
         }
-
     }
 
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

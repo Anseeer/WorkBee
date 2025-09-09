@@ -124,7 +124,11 @@ export class WorkerService implements IWorkerService {
         return { accessToken, refreshToken, worker, wallet };
     }
 
-    async buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailabilityDTO }> {
+    async buildAccount(
+        workerId: string,
+        availability: IAvailability,
+        workerData: Partial<IWorker>
+    ): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailabilityDTO | null }> {
 
         const existingWorker = await this._workerRepository.findById(workerId);
         if (!existingWorker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
@@ -144,17 +148,22 @@ export class WorkerService implements IWorkerService {
         const updatedWorkerEntity = await this._workerRepository.findByIdAndUpdate(workerId, updatedFields);
         if (!updatedWorkerEntity) throw new Error(WORKER_MESSAGE.UPDATE_WORKER_SUCCESSFULLY);
 
-        let updatedAvailability: IAvailabilityDTO | null;
+        let updatedAvailability: IAvailabilityDTO | null = null;
         const existingAvailability = await this._workerRepository.findAvailabilityByWorkerId(workerId);
 
         if (existingAvailability) {
             const updatedFields = mapAvailabilityToEntity(availability);
-            updatedAvailability = await this._workerRepository.updateAvailability(workerId, updatedFields);
-            updatedAvailability = mapAvailabilityToDTO(updatedAvailability as IAvailability)
-            if (!updatedAvailability) throw new Error(WORKER_MESSAGE.FAILDTO_UPDATE_AVAILABILITY);
+            const updatedValue = await this._workerRepository.updateAvailability(workerId, updatedFields);
+
+            if (!updatedValue) throw new Error(WORKER_MESSAGE.FAILDTO_UPDATE_AVAILABILITY);
+
+            updatedAvailability = mapAvailabilityToDTO(updatedValue);
         } else {
-            updatedAvailability = await this._workerRepository.setAvailability(availability);
-            if (!updatedAvailability) throw new Error(WORKER_MESSAGE.FAILDTO_CREATE_AVAILABILITY);
+            const createdValue = await this._workerRepository.setAvailability(availability);
+
+            if (!createdValue) throw new Error(WORKER_MESSAGE.FAILDTO_CREATE_AVAILABILITY);
+
+            updatedAvailability = mapAvailabilityToDTO(createdValue);
         }
 
         const updatedWorker: IWorkerDTO = mapWorkerToDTO(updatedWorkerEntity);
@@ -275,10 +284,11 @@ export class WorkerService implements IWorkerService {
         }
 
         let existingAvailability: IAvailabilityDTO | undefined | null;
+        let existingvalue: IAvailability | null;
 
         if (existingWorker.isAccountBuilt) {
-            existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);
-            existingAvailability = mapAvailabilityToDTO(existingAvailability as IAvailability)
+            existingvalue = await this._availabilityRepository.findByWorkerId(existingWorker.id);
+            existingAvailability = mapAvailabilityToDTO(existingvalue as IAvailability)
             if (!existingAvailability) {
                 throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
             }
@@ -300,7 +310,7 @@ export class WorkerService implements IWorkerService {
     }
 
     async findWallet(workerId: string): Promise<IWalletDTO | null> {
-        const wallet =  await this._walletRepository.findByUser(workerId as string);
+        const wallet = await this._walletRepository.findByUser(workerId as string);
         return await mapWalletToDTO(wallet as IWallet);
     }
 

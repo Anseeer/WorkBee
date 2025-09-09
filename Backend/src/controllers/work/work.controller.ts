@@ -118,6 +118,7 @@ export class WorkController implements IWorkController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
+            console.log(error);
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_ACCEPT_FAILD, errMsg));
         }

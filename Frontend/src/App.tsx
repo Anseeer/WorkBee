@@ -27,6 +27,7 @@ import { useAppDispatch } from "./hooks/useAppDispatch";
 import { useEffect } from "react";
 import { fetchData } from "./utilities/fetchData";
 import Message from "./pages/user/messages";
+import { ROLE } from "./constant/roles";
 
 
 const App = () => {
@@ -43,7 +44,7 @@ const App = () => {
         <Routes>
           {/* user */}
           <Route path="/" element={
-            <GuestRoute role="User" >
+            <GuestRoute role={ROLE.USER} >
               <LandingPage />
             </GuestRoute>
           } />
@@ -53,14 +54,14 @@ const App = () => {
           <Route path="/verify-otp" element={<OtpVerification />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/work-details" element={
-            <ProtectedRoute role="User">
+            <ProtectedRoute role={ROLE.USER}>
               <WorkDetails />
             </ProtectedRoute>
           } />
           <Route
             path="/home"
             element={
-              <ProtectedRoute role="User" >
+              <ProtectedRoute role={ROLE.USER} >
                 <Dashboard />
               </ProtectedRoute>
             }
@@ -68,7 +69,7 @@ const App = () => {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute role="User" >
+              <ProtectedRoute role={ROLE.USER} >
                 <Profile />
               </ProtectedRoute>
             }
@@ -76,7 +77,7 @@ const App = () => {
           <Route
             path="/message"
             element={
-              <ProtectedRoute role="User" >
+              <ProtectedRoute role={ROLE.USER} >
                 <Message />
               </ProtectedRoute>
             }
@@ -84,23 +85,23 @@ const App = () => {
 
           {/* worker */}
           <Route path="/workers" element={
-            <GuestRoute role="Worker">
+            <GuestRoute role={ROLE.WORKER}>
               <WorkerLandingPage />
             </GuestRoute>
           } />
           <Route path="/workers/register" element={
-            <GuestRoute role="Worker">
+            <GuestRoute role={ROLE.WORKER}>
               <WorkerRegistrationPage />
             </GuestRoute>
           } />
           <Route path="/workers/login" element={
-            <GuestRoute role="Worker">
+            <GuestRoute role={ROLE.WORKER}>
               <WorkerLoginPage />
             </GuestRoute>
           } />
           <Route path="/workers/dashboard" element={
             <WorkerDetailsProvider>
-              <ProtectedRoute role="Worker">
+              <ProtectedRoute role={ROLE.WORKER}>
                 <WorkerDashBoard />
               </ProtectedRoute>
             </WorkerDetailsProvider>
@@ -113,13 +114,13 @@ const App = () => {
           <Route path="/admins/workers-detail" element={<WorkerDetails />} />
           <Route path="/admins/dashboard" element={
             <WorkerDetailsProvider>
-              <ProtectedRoute role="Admin">
+              <ProtectedRoute role={ROLE.ADMIN}>
                 <AdminDashboard />
               </ProtectedRoute>
             </WorkerDetailsProvider>
           } />
           <Route path="/admins/login" element={
-            <GuestRoute role="Admin">
+            <GuestRoute role={ROLE.ADMIN}>
               <AdminLoginPage />
             </GuestRoute>
           } />

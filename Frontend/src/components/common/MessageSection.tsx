@@ -1,95 +1,120 @@
 import { Phone, Menu, Send, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { IWorker } from "../../types/IWorker";
-import type { Iuser } from "../../types/IUser";
 import { socket } from "../../utilities/socket";
+import type { IChat } from "../../types/IChat";
+import type { IChatMessage } from "../../types/IChatMessage";
 
 interface Props {
-  users: (IWorker | Iuser)[];
-  roomId: string;
+  chats: IChat[];
   me: string;
 }
 
-type ChatMessage = {
-  room: string;
-  sender: string;
-  receiver: string;
-  content: string;
-  timestamp?: string | Date;
-};
-
-export default function MessageSection({ users, roomId, me }: Props) {
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+export default function MessageSection({ chats, me }: Props) {
+  const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
+  const [chat, setChats] = useState<IChat[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUser, setSelectedUser] = useState<IWorker | Iuser | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IChat["participants"][0] | null>(null);
   const [message, setMessage] = useState("");
   const joinedRef = useRef(false);
-  const [lastMessages, setLastMessages] = useState<Record<string, string>>({});
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    setChats(chats);
+  }, [chats]);
+
+  const filteredChats = chat?.filter((chat) =>
+    chat.participants.some((participant) =>
+      participant.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
-
-  const otherUserId = selectedUser?.id;
-  roomId = otherUserId ? [me, otherUserId].sort().join("_") : '';
-
-
+  const selectedChat = selectedUser
+    ? chat?.find((chat) =>
+      chat.participants.some((p) => p._id === selectedUser._id)
+    )
+    : null;
+  const chatId = selectedChat?._id || "";
 
   useEffect(() => {
     if (!socket.connected) socket.connect();
 
-    if (!joinedRef.current) {
-      socket.emit("joinRoom", roomId);
+    if (!joinedRef.current && chatId) {
+      socket.emit("joinChat", { chatId, userId: me });
       joinedRef.current = true;
     }
 
-    const onMessage = (msg: ChatMessage) => {
-      setChatMessages((prev) => [...prev, msg]);
-
-      const otherId = msg.sender === me ? msg.receiver : msg.sender;
-      setLastMessages((prev) => ({
-        ...prev,
-        [otherId]: msg.content,
-      }));
-    };
-
-
-    const onPrevious = (prevMsgs: ChatMessage[]) => {
-      setChatMessages(prevMsgs);
-
-      if (prevMsgs.length > 0 && selectedUser) {
-        const lastMsg = prevMsgs[prevMsgs.length - 1];
-        setLastMessages((prev) => ({
-          ...prev,
-          [selectedUser.id]: lastMsg.content,
-        }));
+    const onMessage = (msg: IChatMessage, updatedChat: IChat) => {
+      if (updatedChat._id === chatId) {
+        setChatMessages((prev) => [...prev, msg]);
       }
+
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat._id === updatedChat._id
+            ? {
+              ...chat,
+              lastMessage: updatedChat.lastMessage,
+              unreadCounts: updatedChat.unreadCounts,
+            }
+            : chat
+        )
+      );
     };
 
+    const onPrevious = (prevMsgs: IChatMessage[]) => {
+      setChatMessages(prevMsgs);
+    };
+
+    const onChatUpdate = ({
+      _id: updatedChatId,
+      lastMessage,
+      unreadCount,
+    }: { _id: string; lastMessage?: IChatMessage; unreadCount: number }) =>
+      setChats((prev: IChat[]) => {
+        if (!prev) return prev;
+        return prev.map((chat) =>
+          chat._id === updatedChatId
+            ? {
+              ...chat,
+              lastMessage: lastMessage || chat.lastMessage,
+              unreadCounts: {
+                ...chat.unreadCounts,
+                [me]: unreadCount,
+              },
+            }
+            : chat
+        );
+      });
 
     socket.on("message", onMessage);
     socket.on("previousMessages", onPrevious);
+    socket.on("chatUpdate", onChatUpdate);
 
     return () => {
-      socket.emit("leaveRoom", roomId);
+      if (chatId) {
+        socket.emit("leaveChat", chatId, me);
+      }
       socket.off("message", onMessage);
       socket.off("previousMessages", onPrevious);
+      socket.off("chatUpdate", onChatUpdate);
       joinedRef.current = false;
     };
-  }, [roomId, me, selectedUser]);
+  }, [chatId, me, selectedUser]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = message.trim();
     if (!trimmed) return;
 
-    if (!selectedUser) return;
+    if (!selectedUser || !chatId) return;
+
+    const receiverId = selectedChat?.participants.find((p) => p._id !== me)?._id;
+    if (!receiverId) return;
 
     socket.emit("sendMessage", {
-      room: [me, selectedUser.id].sort().join("_"),
-      sender: me,
-      receiver: selectedUser.id,
-      content: trimmed
+      chatId,
+      senderId: me,
+      receiverId,
+      content: trimmed,
+      contentType: "text",
     });
     setMessage("");
   };
@@ -99,7 +124,6 @@ export default function MessageSection({ users, roomId, me }: Props) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
-
 
   return (
     <div className="border-2 border-green-700 rounded-xl m-8 p-5 flex h-full ">
@@ -122,29 +146,47 @@ export default function MessageSection({ users, roomId, me }: Props) {
 
           {/* User List */}
           <div className="flex flex-col gap-3">
-            {filteredUsers.map((user) => (
-              <div
-                onClick={() => setSelectedUser(user)}
-                key={user.id}
-                className="bg-gray-100 rounded-lg p-4 flex items-center gap-4 hover:bg-white transition-all cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
-                  <img
-                    src={user.profileImage as string}
-                    className="w-12 h-12 rounded-full"
-                    alt=""
-                  />
-                </div>
+            {filteredChats?.map((chat) => {
+              const otherParticipant = chat.participants.find((p) => p._id !== me);
 
-                <div className="flex flex-col min-w-0">
-                  <h3 className="font-semibold text-gray-900 text-base">{user.name}</h3>
-                  <p className="text-gray-600 text-sm truncate"> {lastMessages[user.id] ?? "No messages yet"}</p>
+              if (!otherParticipant) return null;
+              const unreadCount = chat.unreadCounts?.[me] || 0;
+              console.log("unreadCount ::", unreadCount);
+
+              return (
+                <div
+                  onClick={() => setSelectedUser(otherParticipant)}
+                  key={chat?._id}
+                  className="bg-gray-100 rounded-lg p-4 flex items-center gap-4 hover:bg-white transition-all cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
+                    <img
+                      src={otherParticipant.profileImage}
+                      className="w-12 h-12 rounded-full"
+                      alt={otherParticipant.name}
+                    />
+                  </div>
+
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-gray-900 text-base">{otherParticipant.name}</h3>
+                      {unreadCount > 0 && (
+                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-gray-600 text-sm truncate">
+                      {chat?.lastMessage?.content ?? "No messages yet"}
+                    </p>
+
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {filteredUsers.length === 0 && searchQuery && (
+          {filteredChats?.length === 0 && searchQuery && (
             <div className="text-center py-8">
               <p className="text-white text-sm">No users found</p>
             </div>
@@ -169,7 +211,6 @@ export default function MessageSection({ users, roomId, me }: Props) {
 
                 <div className="flex flex-col">
                   <h2 className="text-black font-semibold text-lg">{selectedUser.name}</h2>
-                  <p className="text-xs text-gray-700">{selectedUser.phone ?? "No phone available"}</p>
                 </div>
               </div>
 
@@ -186,7 +227,7 @@ export default function MessageSection({ users, roomId, me }: Props) {
             {/* message */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {chatMessages.map((msg, i) => {
-                const time = new Date(msg.timestamp as string).toLocaleTimeString([], {
+                const time = new Date(msg.createdAt as string).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: true,
@@ -195,15 +236,15 @@ export default function MessageSection({ users, roomId, me }: Props) {
                 return (
                   <div
                     key={i}
-                    className={`flex ${msg.sender === me ? "justify-end" : "justify-start"}`}
+                    className={`flex ${msg.senderId === me ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`relative max-w-xs lg:max-w-md px-6 py-1 pb-4 rounded-2xl ${msg.sender === me ? "bg-[#65A276] text-black" : "bg-[#65A286] text-black"
+                      className={`relative max-w-xs lg:max-w-md px-6 py-1 pb-4 rounded-2xl ${msg.senderId === me ? "bg-[#65A276] text-black" : "bg-[#65A286] text-black"
                         }`}
                     >
                       <p className="text-md">{msg.content}</p>
                       <span
-                        className={`absolute bottom-1 text-[10px] text-gray-700 ${msg.sender === me ? "right-2" : "left-2"
+                        className={`absolute bottom-1 text-[10px] text-gray-700 ${msg.senderId === me ? "right-2" : "left-2"
                           }`}
                       >
                         {time}
@@ -216,8 +257,6 @@ export default function MessageSection({ users, roomId, me }: Props) {
               {/* invisible anchor to scroll to */}
               <div ref={bottomRef} />
             </div>
-
-
 
             {/* Input */}
             <div className="bg-[#65A276] px-6 py-3 rounded-xl rounded-t">

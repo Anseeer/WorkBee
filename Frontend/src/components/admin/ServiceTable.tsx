@@ -9,7 +9,6 @@ import type { IService } from '../../types/IServiceTypes';
 import { deleteService, fetchCategory, fetchService, setIsActiveService, updateService } from '../../services/adminService';
 import AddingServiceSection from './AddingSectionService';
 
-
 const ServicesTable = () => {
     const [service, setService] = useState<IService[]>([]);
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -23,7 +22,7 @@ const ServicesTable = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const categoryRes = await fetchCategory(1, 1000); // always fetch all categories
+                const categoryRes = await fetchCategory(1, 1000);
                 const formattedCategories = categoryRes.data.data.category.map((cat: any) => ({
                     ...cat,
                     id: cat._id,

@@ -9,12 +9,18 @@ import { USERS_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { AuthRequest } from "../../middlewares/authMiddleware";
+import { IChatService } from "../../services/chatMessage/chatMessage.service.interface";
 
 @injectable()
 export class UserController implements IUserController {
     private _userService: IUserService;
-    constructor(@inject(TYPES.userService) userService: IUserService) {
+    private _chatService: IChatService;
+    constructor(
+        @inject(TYPES.userService) userService: IUserService,
+        @inject(TYPES.chatService) chatService: IChatService
+    ) {
         this._userService = userService
+        this._chatService = chatService
     }
 
     register = async (req: Request, res: Response, next: NextFunction) => {
@@ -207,7 +213,7 @@ export class UserController implements IUserController {
             }
 
             if (!userId) {
-                throw new Error("User ID is required");
+                throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
             }
 
             const { user, wallet } = await this._userService.fetchData(userId as string);
@@ -244,7 +250,7 @@ export class UserController implements IUserController {
         try {
             const { userIds } = req.body
             const result = await this._userService.findUsersByIds(userIds);
-            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.FETCH_USER_SUCCESS, { result });
+            const response = new successResponse(StatusCode.OK, USERS_MESSAGE.FETCH_USER_SUCCESS, { result });
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error) {

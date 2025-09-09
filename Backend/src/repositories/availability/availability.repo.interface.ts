@@ -2,7 +2,7 @@ import { IAvailabilitEntity } from "../../mappers/availability/availability.map.
 import { IAvailability } from "../../model/availablity/availablity.interface";
 
 export interface IAvailabilityRepository {
-    create(user: Partial<IAvailabilitEntity>): Promise<IAvailability>;
+    create(user: Partial<IAvailability>): Promise<IAvailability>;
     findById(id: string): Promise<IAvailability | null>;
     findByWorkerId(id: string): Promise<IAvailability | null>;
     findByEmail(email: string): Promise<IAvailability | null>;

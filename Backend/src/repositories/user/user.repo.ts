@@ -3,6 +3,8 @@ import { Iuser } from "../../model/user/user.interface";
 import User from "../../model/user/user.model";
 import BaseRepository from "../base/base.repo";
 import { IUserRepository } from "./user.repo.interface";
+import { IUserEntity } from "../../mappers/user/user.map.DTO.interface";
+import { USERS_MESSAGE } from "../../constants/messages";
 
 @injectable()
 export class UserRepository extends BaseRepository<Iuser> implements IUserRepository {
@@ -17,7 +19,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
     async setIsActive(id: string): Promise<boolean> {
         const user = await User.findById(id);
         if (!user) {
-            throw new Error("user not find in the id");
+            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
         const newStatus = !user.isActive;
 
@@ -28,15 +30,15 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
     async fetchData(userId: string): Promise<Iuser> {
         const user = await this.model.findById(userId);
         if (!user) {
-            throw new Error("user not find in the id");
+            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
         return user;
     }
 
-    async update(userDetails: Iuser, userId: string): Promise<boolean> {
+    async update(userDetails: IUserEntity, userId: string): Promise<boolean> {
         const existingUser = await this.model.findById(userId);
         if (!existingUser) {
-            throw new Error("Cant find the user");
+            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
         const updatedFields = {
             name: userDetails.name,
