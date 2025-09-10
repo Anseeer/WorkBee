@@ -25,7 +25,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
     }
 
     async findByName(name: string): Promise<ICategory | null> {
-        return await this.model.findOne({ name })
+        return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
     }
 
     async setIsActive(id: string): Promise<boolean> {

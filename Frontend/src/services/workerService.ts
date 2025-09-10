@@ -57,16 +57,25 @@ export const resetPass = async (email: string, password: string) => {
 }
 
 export const getServiceByCategory = async (categoryIds: string[]) => {
+  if (!categoryIds) {
+    return ("categoryIds not get")
+  }
   const response = await axios.post('services/by-categories', { categoryIds });
   return response;
 }
 
 export const fetchWorkerCategory = async (categoryIds: string[]) => {
+  if (!categoryIds) {
+    return ("CategoryIds not get")
+  }
   const response = await axios.post('categories/by-worker', { categoryIds });
   return response;
 }
 
 export const fetchWorkerService = async (serviceIds: string[]) => {
+  if (!serviceIds) {
+    return ("serviceIds not get")
+  }
   const response = await axios.post('services/by-worker', { serviceIds });
   return response;
 }
@@ -92,7 +101,7 @@ export const fetchWorkerByWorkDetails = async (details:
   return data;
 };
 
-export const fetchWorkHistory = async (workerId: string,currentPage:number,pagesize:number) => {
+export const fetchWorkHistory = async (workerId: string, currentPage: number, pagesize: number) => {
   if (!workerId) {
     throw new Error("Cant Get WorkerId");
   }
@@ -110,23 +119,23 @@ export const acceptWork = async (workId: string) => {
   return response.data.data;
 }
 
-export const isCompletWork = async (workId: string,workerId:string) => {
+export const isCompletWork = async (workId: string, workerId: string) => {
   const response = await axios.patch(`works/is-completed?workId=${workId}&workerId=${workerId}`)
   return response.data.data;
 }
 
-export const findWorkersByIds = async (workerIds:string[]) => {
-  if(!workerIds){
+export const findWorkersByIds = async (workerIds: string[]) => {
+  if (!workerIds) {
     return ("WorkerIds not get")
   }
-  const response = await axios.post(`workers/find-workers-byId`,{workerIds});
+  const response = await axios.post(`workers/find-workers-byId`, { workerIds });
   return response.data.data;
 }
 
 
-export const fetchWallet = async (workerId:string) => {
-  if(!workerId){
-    return("WorkerId not get")
+export const fetchWallet = async (workerId: string) => {
+  if (!workerId) {
+    return ("WorkerId not get")
   }
   const response = await axios.get(`workers/wallet?workerId=${workerId}`);
   return response.data.data;

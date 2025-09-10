@@ -15,7 +15,7 @@ export class AvailabilityService implements IAvailabilityService {
         this._availabilityRepository = availabilityRepo;
     }
 
-    getAvailabilityByworkerId = async (id: string): Promise<IAvailabilityDTO> => {
+    getAvailabilityByworkerId = async (id: string): Promise<IAvailabilityDTO|null> => {
         const findAvailability = await this._availabilityRepository.findByWorkerId(id);
         const availability = mapAvailabilityToDTO(findAvailability as IAvailability);
         return availability;

@@ -16,6 +16,7 @@ import { IChatRepositoy } from "../../repositories/chat/chat.repo.interface";
 import { mapChatToEntity } from "../../mappers/chatMessage/chat.map.DTO";
 import { IChat } from "../../model/chatMessage/IChat";
 import { ROLE } from "../../constants/role";
+import { toISTDateOnly } from "../../utilities/toISTDate";
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -122,7 +123,6 @@ export class WorkService implements IWorkService {
         if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET)
         const work = await this._workRepositoy.findById(workId);
         if (!work) throw new Error(WORK_MESSAGE.WORK_NOT_EXIST);
-        console.log("user id in the work is :", work.userId)
 
         const workerId = work.workerId;
         const date = work.sheduleDate;
@@ -133,10 +133,6 @@ export class WorkService implements IWorkService {
 
         const availability = await this._availabilityRepositoy.findByWorkerId(workerId.toString());
         if (!availability) throw new Error("Availability not found for worker");
-
-        function toISTDateOnly(d: Date): string {
-            return d.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-        }
 
         const targetDateStr = toISTDateOnly(new Date(date));
 
@@ -162,7 +158,7 @@ export class WorkService implements IWorkService {
             jobId: work._id as mongoose.Types.ObjectId
         });
 
-        await availability.save();
+        await this._availabilityRepositoy.markBookedSlot(availability);
 
         const chatExisting = await this._chatRepositoy.findChat([work.userId.toString(), work.workerId.toString()])
         console.log("ChatExisting :", chatExisting)

@@ -72,6 +72,7 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
+            console.log("Error ::", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg));
         }
@@ -211,6 +212,7 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
 
         } catch (error: unknown) {
+            console.log("Error :", error);
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD, errMsg));
         }

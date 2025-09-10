@@ -43,6 +43,11 @@ export class ServiceService implements IServiceService {
     }
 
     update = async (service: IServices, serviceId: string): Promise<boolean> => {
+        const existingCategory = await this._serviceRepository.findByName(service.name);
+
+        if (existingCategory && existingCategory.id !== serviceId) {
+            throw new Error(SERVICE_MESSAGE.SERVICE_ALREADY_EXIST);
+        }
         const serviceEntity = mapServiceToEntity(service);
         await this._serviceRepository.update(serviceEntity, serviceId);
         return true;

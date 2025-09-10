@@ -47,11 +47,14 @@ export default function BuildAccount() {
     const fetchData = async () => {
       const categories = worker?.categories;
       const servicesByCategory = await getServiceByCategory(categories as string[]);
-      const formattedServices = servicesByCategory.data.data.map((srv: any) => ({
-        id: srv._id,
-        name: srv.name,
-        price: srv.wage,
-      }));
+      const formattedServices =
+        typeof servicesByCategory !== "string"
+          ? servicesByCategory.data?.data.map((srv: any) => ({
+            id: srv._id,
+            name: srv.name,
+            price: srv.wage,
+          }))
+          : [];
 
       setService(formattedServices);
     }

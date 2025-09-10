@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { registerUserThunk } from "../../slice/userSlice";
@@ -9,10 +9,9 @@ import { useFormik } from "formik";
 import { Eye, EyeOff } from "lucide-react";
 import { API_ROUTES } from "../../constant/api.routes";
 
-
 const RegistrationPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  // const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const Dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -36,7 +35,7 @@ const RegistrationPage = () => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        console.log(values)
+        console.log("values", values)
         await Dispatch(registerUserThunk(values)).unwrap()
         toast.success("Registration successful!");
         navigate(API_ROUTES.USER.HOME, { replace: true })
@@ -91,17 +90,22 @@ const RegistrationPage = () => {
       if (!values.location.address) {
         errors.location = { address: "Location is required" };
       }
-
-
       return errors;
     },
   })
 
-  useEffect(() => {
-    const initializeAutocomplete = () => {
-      if (!inputRef.current || !window.google) return;
+  const updateLocation = useCallback((locationData: typeof formik.values.location) => {
+    formik.setFieldValue('location', locationData);
+  }, [formik]);
 
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(
+  useEffect(() => {
+    let autocompleteInstance: google.maps.places.Autocomplete | null = null;
+    let scriptLoaded = false;
+
+    const initializeAutocomplete = () => {
+      if (!inputRef.current || !window.google || autocompleteInstance) return;
+
+      autocompleteInstance = new window.google.maps.places.Autocomplete(
         inputRef.current,
         {
           types: ['address'],
@@ -110,8 +114,8 @@ const RegistrationPage = () => {
         }
       );
 
-      autocompleteRef.current.addListener("place_changed", () => {
-        const place = autocompleteRef.current?.getPlace();
+      google.maps.event.addListener(autocompleteInstance, "place_changed", () => {
+        const place = autocompleteInstance?.getPlace();
 
         if (!place || !place.geometry) return;
 
@@ -128,15 +132,13 @@ const RegistrationPage = () => {
         const lat = place.geometry.location?.lat() || 0;
         const lng = place.geometry.location?.lng() || 0;
 
-        formik.setFieldValue("location", {
+        updateLocation({
           address: place.formatted_address || "",
           pincode,
           lat,
           lng,
         });
       });
-
-
     };
 
     const loadGoogleMapsAPI = () => {
@@ -145,16 +147,27 @@ const RegistrationPage = () => {
         return;
       }
 
+      if (scriptLoaded) return;
+
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places`;
       script.async = true;
       script.defer = true;
-      script.onload = initializeAutocomplete;
+      script.onload = () => {
+        scriptLoaded = true;
+        initializeAutocomplete();
+      };
       document.head.appendChild(script);
     };
 
     loadGoogleMapsAPI();
-  }, [formik]);
+
+    return () => {
+      if (autocompleteInstance) {
+        google.maps.event.clearInstanceListeners(autocompleteInstance);
+      }
+    };
+  }, [updateLocation]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 fixed w-full">
@@ -197,18 +210,23 @@ const RegistrationPage = () => {
                     )}
                   </div>
                   <input
+                    onKeyDown={(e) => {
+                      const keysToPrevent = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Tab', 'Enter'];
+                      if (keysToPrevent.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                     name="location.address"
                     value={formik.values.location.address}
                     onChange={(e) => {
                       formik.setFieldValue("location.address", e.target.value);
                     }}
-                    onBlur={formik.handleBlur}
                     ref={inputRef}
                     type="text"
                     placeholder="Location"
                     className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                         border-0 border-b-2 border-gray-300 focus:border-green-600 
-                         focus:outline-none bg-transparent"
+         border-0 border-b-2 border-gray-300 focus:border-green-600 
+         focus:outline-none bg-transparent"
                   />
                 </div>
               </div>

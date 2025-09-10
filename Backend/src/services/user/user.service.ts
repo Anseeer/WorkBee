@@ -14,14 +14,14 @@ import { IUserRepository } from "../../repositories/user/user.repo.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
-import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { mapAvailabilityToDTO } from "../../mappers/availability/availability.map.DTO";
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
-import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
+import { mapWalletToDTO, mapWalletToEntity } from "../../mappers/wallet/map.wallet.DTO";
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { ROLE } from "../../constants/role";
+import { Types } from "mongoose";
 
 const client = new OAuth2Client();
 
@@ -55,12 +55,15 @@ export class UserService implements IUserService {
         const userEntity = await mapToUserEntity(userData);
         const newUser = await this._userRepository.create(userEntity);
 
-        await Wallet.create({
-            userId: newUser._id,
+        const initializeWallet = {
+            userId: new Types.ObjectId(newUser?._id),
             balance: 0,
             currency: "INR",
             transactions: []
-        })
+        }
+
+        const walletEntity = mapWalletToEntity(initializeWallet)
+        await this._walletRepository.create(walletEntity)
 
         const walletData = await this._walletRepository.findByUser(newUser.id);
 

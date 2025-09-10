@@ -8,7 +8,7 @@ import WorkersIcon from "../../assets/workers-icon.png";
 import JobsIcon from "../../assets/jobs-icon.png";
 import CategoryAndServicesIcon from "../../assets/category&services.png";
 import RevenueIcon from "../../assets/reveneu.png";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "../../services/adminService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { API_ROUTES } from "../../constant/api.routes";
 
 interface props {
-    handleTab: (tab: string) => void;
+    handleTab: (tab: string, defaultSubTab?:string) => void;
 }
 
 export default function AdminSidebar({ handleTab }: props) {
@@ -26,17 +26,12 @@ export default function AdminSidebar({ handleTab }: props) {
     const dispatch = useAppDispatch();
 
     const handleClick = useCallback(
-        (tab: string) => {
+        (tab: string, defaultSubTab?: string) => {
             setActiveTab(tab);
-            handleTab(tab);
+            handleTab(tab, defaultSubTab);
         },
         [handleTab]
     );
-
-    useEffect(() => {
-        handleClick(activeTab);
-    }, [activeTab, handleClick]);
-
 
     const handleLogout = async () => {
         try {
@@ -70,7 +65,6 @@ export default function AdminSidebar({ handleTab }: props) {
                     </span>
                 </div>
 
-
                 {/* Users */}
                 <div
                     onClick={() => handleClick("users")}
@@ -87,7 +81,7 @@ export default function AdminSidebar({ handleTab }: props) {
 
                 {/* Workers */}
                 <div
-                    onClick={() => handleClick("workers")}
+                    onClick={() => handleClick("workers", "worker")}
                     className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
                     ${activeTab === "workers"
                             ? "bg-[#8FC39D] bg-opacity-70 text-black"
@@ -115,7 +109,7 @@ export default function AdminSidebar({ handleTab }: props) {
 
                 {/* Category & Services*/}
                 <div
-                    onClick={() => handleClick("category & Services")}
+                    onClick={() => handleClick("category & Services", "category")}
                     className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
                     ${activeTab === "category & Services"
                             ? "bg-[#8FC39D] bg-opacity-70 text-black"
@@ -192,8 +186,6 @@ export default function AdminSidebar({ handleTab }: props) {
                     <span className="text-md text-gray-400 font-medium">Logout</span>
                 </div>
             </div>
-
-
         </div>
     );
 }

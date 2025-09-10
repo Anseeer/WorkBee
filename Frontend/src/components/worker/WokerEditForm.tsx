@@ -20,8 +20,8 @@ import { getServiceByCategory } from "../../services/workerService";
 import type { IWorker } from "../../types/IWorker";
 import type { IAvailability } from "../../types/IAvailability";
 import { uploadToCloud } from "../../utilities/uploadToCloud";
-import { startOfMonth } from "date-fns";
-
+import { startOfDay } from "date-fns";
+import type { AxiosResponse } from "axios";
 
 interface WorkerFormData {
     name: string;
@@ -208,12 +208,14 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     useEffect(() => {
         const fetchServices = async () => {
             if (formik.values.categories.length > 0) {
-                const res = await getServiceByCategory(formik.values.categories);
-                const mappedServices = res.data.data.map((srv: any) => ({
-                    ...srv,
-                    id: srv._id,
-                }));
-                setAllServices(mappedServices);
+                const res: AxiosResponse<{ data: IService[] }> | string = await getServiceByCategory(formik.values.categories);
+                if (res && typeof res !== "string") {
+                    const mappedServices = res.data.data.map((srv: any) => ({
+                        ...srv,
+                        id: srv._id,
+                    }));
+                    setAllServices(mappedServices);
+                }
             } else {
                 setAllServices([]);
             }
@@ -285,8 +287,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         formik.setFieldValue(field, updated);
     };
 
-    const today = new Date();
-    const startOfCurrentMonth = startOfMonth(today);
+    const today = startOfDay(new Date());
 
     return (
         <div className="fixed inset-0 bg-transparent backdrop-blur-md flex items-center justify-center p-4 z-50">
@@ -433,7 +434,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                                     formik.setFieldValue("workType", updated);
                                                 }}
                                                 className={`flex items-center justify-center px-3 py-2 border rounded-lg transition 
-                    ${formik.values.workType.includes(type.id)
+                                                        ${formik.values.workType.includes(type.id)
                                                         ? "bg-green-100 border-green-400"
                                                         : "hover:bg-green-50"
                                                     }`}
@@ -498,7 +499,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 mode="multiple"
                                 selected={formik.values.availability}
                                 onSelect={(dates) => formik.setFieldValue("availability", dates)}
-                                fromMonth={startOfCurrentMonth}
+                                fromMonth={today}
                                 disabled={[
                                     { before: today },
                                 ]}
@@ -506,7 +507,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     selected: "bg-green-700 text-white rounded-full",
                                 }}
                             />
-
 
                         </div>
 

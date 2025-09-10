@@ -14,16 +14,14 @@ import { WORKER_MESSAGE } from "../../constants/messages";
 import { IWork } from "../../model/work/work.interface";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
-import { IServiceRepository } from "../../repositories/services/service.repo.interface";
-import { ICategoryRepository } from "../../repositories/category/category.repo.interface";
-import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { OAuth2Client } from "google-auth-library";
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
-import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
+import { mapWalletToDTO, mapWalletToEntity } from "../../mappers/wallet/map.wallet.DTO";
 import { mapAvailabilityToDTO, mapAvailabilityToEntity } from "../../mappers/availability/availability.map.DTO";
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
+import { Types } from "mongoose";
 
 const client = new OAuth2Client();
 
@@ -32,19 +30,13 @@ export class WorkerService implements IWorkerService {
     private _workerRepository: IWorkerRepository
     private _availabilityRepository: IAvailabilityRepository
     private _walletRepository: IWalletRepository
-    private _serviceRepository: IServiceRepository
-    private _categoryRepository: ICategoryRepository
     constructor(
         @inject(TYPES.workerRepository) workerRepo: IWorkerRepository,
         @inject(TYPES.availabilityRepository) availibilityRepo: IAvailabilityRepository,
-        @inject(TYPES.serviceRepository) serviceRepo: IServiceRepository,
-        @inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository,
         @inject(TYPES.walletRepository) walletRepo: IWalletRepository,
     ) {
         this._workerRepository = workerRepo;
         this._availabilityRepository = availibilityRepo;
-        this._serviceRepository = serviceRepo;
-        this._categoryRepository = categoryRepo;
         this._walletRepository = walletRepo;
     }
 
@@ -108,12 +100,15 @@ export class WorkerService implements IWorkerService {
         const newWorker = await this._workerRepository.create(workerEntity);
         const worker = mapWorkerToDTO(newWorker as IWorker);
 
-        await Wallet.create({
-            userId: newWorker._id,
+        const initializeWallet = {
+            userId: new Types.ObjectId(newWorker?._id?.toString()),
             balance: 0,
             currency: "INR",
             transactions: []
-        })
+        };
+
+        const walletEntity = mapWalletToEntity(initializeWallet)
+        await this._walletRepository.create(walletEntity)
 
         const newWallet = await this._walletRepository.findByUser(newWorker.id);
         const wallet = mapWalletToDTO(newWallet as IWallet);

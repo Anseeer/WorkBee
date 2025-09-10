@@ -10,6 +10,10 @@ import WorkerEditForm from '../worker/WokerEditForm';
 import type { IWorker } from '../../types/IWorker';
 import type { IAvailability } from '../../types/IAvailability';
 import { toast } from 'react-toastify';
+import { fetchWorkerDetails } from '../../slice/workerSlice';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+dayjs.extend(isSameOrAfter);
 
 interface Prop {
     isEdit?: boolean;
@@ -29,8 +33,17 @@ const Calendar = ({ availability }: CalendarProps) => {
     const getAvailableDaysForMonth = (date: dayjs.Dayjs): number[] => {
         const month = date.month();
         const year = date.year();
+        const today = dayjs().startOf('day');
+
         return (availability?.availableDates || [])
-            .filter(d => dayjs(d.date).year() === year && dayjs(d.date).month() === month)
+            .filter(d => {
+                const availableDate = dayjs(d.date).startOf('day');
+                return (
+                    availableDate.year() === year &&
+                    availableDate.month() === month &&
+                    availableDate.isSameOrAfter(today)
+                );
+            })
             .map(d => dayjs(d.date).date());
     };
 
@@ -65,6 +78,7 @@ const Calendar = ({ availability }: CalendarProps) => {
     const month = currentDate.format("MMMM");
     const year = currentDate.format("YYYY");
     const availableDays = getAvailableDaysForMonth(currentDate);
+
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6  top-6">
@@ -110,7 +124,7 @@ const Calendar = ({ availability }: CalendarProps) => {
                                 ? ""
                                 : availableDays.includes(day)
                                     ? "bg-green-700 text-white shadow-sm"
-                                    : "text-gray-400"
+                                    : "text-gray-400 cursor-not-allowed"
                                 }`}
                         >
                             {day !== null ? day : ""}
@@ -151,6 +165,8 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
 
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [services, setServices] = useState<IService[]>([]);
+    const dispatch = useAppDispatch();
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -160,8 +176,9 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                 const catRes = await fetchWorkerCategory(worker.categories || []);
                 const servRes = await fetchWorkerService(worker.services || []);
 
-                setCategories(catRes.data.data || []);
-                setServices(servRes.data.data || []);
+                setCategories(typeof catRes === "string" ? [] : catRes.data?.data || []);
+                setServices(typeof servRes === "string" ? [] : servRes.data?.data || []);
+
             } catch (error) {
                 console.error("Failed to fetch worker data:", error);
             }
@@ -178,15 +195,20 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
 
     const onSave = async (updatedData: { worker: Partial<IWorker>; availability: IAvailability }) => {
         try {
-            console.log("Updated :", updatedData);
+            console.log("Updated Data:", updatedData);
             await updateWorkerData(updatedData);
+
+            if (!updatedData.worker._id) throw new Error("Worker ID is missing");
+
+            await dispatch(fetchWorkerDetails(updatedData.worker._id.toString()));
             toast.success("Updated Successfully.");
+
             if (setEdit) setEdit();
         } catch (error) {
-            console.log(error);
-            toast.error("Failed To update");
+            console.error(error);
+            toast.error("Failed to update");
         }
-    }
+    };
 
     return (
         <div className="h-[560px] bg-gray-50 overflow-hidden">

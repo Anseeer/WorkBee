@@ -25,4 +25,10 @@ export class AvailabilityRepository extends BaseRepository<IAvailability> implem
         return result.modifiedCount > 0;
     }
 
+    markBookedSlot = async (availability: IAvailability): Promise<IAvailability> => {
+        return await availability.save();
+    }
+
+
+
 }

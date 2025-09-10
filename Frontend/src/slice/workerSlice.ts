@@ -118,7 +118,6 @@ export const buildAccountWorkerThunk = createAsyncThunk(
     }
 );
 
-
 export const fetchWorkerDetails = createAsyncThunk(
     "workers/fetch-details",
     async (workerId: string, { rejectWithValue }) => {

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { IWalletDTO, IWalletEntity } from "./map.wallet.DTO.interface";
 
@@ -11,11 +12,11 @@ export const mapWalletToDTO = (wallet: IWallet): IWalletDTO => {
     }
 }
 
-export const mapWalletToEntity = (wallet: IWallet): IWalletEntity => {
+export const mapWalletToEntity = (wallet: Partial<IWallet>): IWalletEntity => {
     return {
-        userId: wallet.userId,
-        balance: wallet.balance,
-        transactions: wallet.transactions,
+        userId: new Types.ObjectId(wallet.userId),
+        balance: Number(wallet.balance),
+        transactions: wallet.transactions ?? [],
         createdAt: wallet.createdAt
     }
 }

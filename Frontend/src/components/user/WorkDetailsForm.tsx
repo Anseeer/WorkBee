@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChevronDown } from 'lucide-react';
-import { useRef, useEffect, useState } from 'react';
+// import { ChevronDown } from 'lucide-react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { workDetails } from '../../slice/workDraftSlice';
@@ -32,17 +32,22 @@ interface Prop {
 const WorkDetailForm = ({ setStep }: Prop) => {
     const dispatch = useAppDispatch();
     const [activeStep, setActiveStep] = useState<number>(0);
-    const locationRef = useRef<HTMLInputElement>(null);
-    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const [serviceId, setServiceId] = useState<string | null>(null);
     const [categoryId, setCategoryId] = useState<string | null>(null);
     const [service, setService] = useState<IService | null>(null);
     const [category, setCategory] = useState<ICategory | null>(null);
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [locationData, setLocationData] = useState({
+        address: '',
+        pincode: '',
+        lat: 0,
+        lng: 0,
+    });
+
 
 
     const initialValues: WorkFormValues = {
-        location: { address: '', pincode: '', lat: 0, lng: 0 },
+        location: locationData,
         taskSize: '',
         workType: 'one-time',
         description: '',
@@ -73,7 +78,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         };
 
         fetchData();
-    }, [showDropdown]);
+    }, []);
 
 
     const formik = useFormik<WorkFormValues>({
@@ -108,46 +113,83 @@ const WorkDetailForm = ({ setStep }: Prop) => {
     });
 
 
-    useEffect(() => {
-        const init = () => {
-            if (!locationRef.current) return;
-            autocompleteRef.current = new google.maps.places.Autocomplete(locationRef.current, {
-                types: ['address'],
-                componentRestrictions: { country: 'IN' },
-                fields: ['formatted_address', 'geometry', 'address_components']
-            });
+    const updateLocation = useCallback((location: typeof locationData) => {
+        setLocationData(location);
+        formik.setFieldValue('location', location);
+    }, [formik]);
 
-            autocompleteRef.current.addListener('place_changed', () => {
-                const place = autocompleteRef.current?.getPlace();
+
+    useEffect(() => {
+        let autocompleteInstance: google.maps.places.Autocomplete | null = null;
+        let scriptLoaded = false;
+
+        const initializeAutocomplete = () => {
+            if (!inputRef.current || !window.google || autocompleteInstance) return;
+
+            autocompleteInstance = new window.google.maps.places.Autocomplete(
+                inputRef.current,
+                {
+                    types: ['address'],
+                    componentRestrictions: { country: 'IN' },
+                    fields: ['formatted_address', 'geometry', 'address_components', 'name']
+                }
+            );
+
+            google.maps.event.addListener(autocompleteInstance, "place_changed", () => {
+                const place = autocompleteInstance?.getPlace();
+
                 if (!place || !place.geometry) return;
 
-                let pincode = '';
-                place.address_components?.forEach(component => {
-                    if (component.types.includes('postal_code')) {
-                        pincode = component.long_name;
-                    }
-                });
+                const addressComponents = place.address_components || [];
+                let pincode = "";
 
-                formik.setFieldValue('location', {
-                    address: place.formatted_address || '',
+                for (const component of addressComponents) {
+                    if (component.types.includes("postal_code")) {
+                        pincode = component.long_name;
+                        break;
+                    }
+                }
+
+                const lat = place.geometry.location?.lat() || 0;
+                const lng = place.geometry.location?.lng() || 0;
+
+                updateLocation({
+                    address: place.formatted_address || "",
                     pincode,
-                    lat: place.geometry.location?.lat() || 0,
-                    lng: place.geometry.location?.lng() || 0
+                    lat,
+                    lng,
                 });
             });
         };
 
-        if (window.google && window.google.maps && window.google.maps.places) {
-            init();
-        } else {
+        const loadGoogleMapsAPI = () => {
+            if (window.google && window.google.maps) {
+                initializeAutocomplete();
+                return;
+            }
+
+            if (scriptLoaded) return;
+
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places`;
             script.async = true;
             script.defer = true;
-            script.onload = init;
+            script.onload = () => {
+                scriptLoaded = true;
+                initializeAutocomplete();
+            };
             document.head.appendChild(script);
-        }
-    }, [formik, showDropdown]);
+        };
+
+        loadGoogleMapsAPI();
+
+        return () => {
+            if (autocompleteInstance) {
+                google.maps.event.clearInstanceListeners(autocompleteInstance);
+            }
+        };
+    }, [updateLocation]);
+
 
     return (
         <form
@@ -168,15 +210,23 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                     {activeStep === 1 || formik.errors.location?.address ? (
                         <div>
                             <input
-                                type="text"
-                                ref={locationRef}
+                                onKeyDown={(e) => {
+                                    const keysToPrevent = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Tab', 'Enter'];
+                                    if (keysToPrevent.includes(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
                                 name="location.address"
                                 value={formik.values.location.address}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                onFocus={() => setShowDropdown(true)}
-                                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-700 mb-2 text-base"
+                                onChange={(e) => {
+                                    const newAddress = e.target.value;
+                                    const newLocation = { ...locationData, address: newAddress };
+                                    updateLocation(newLocation);
+                                }}
+                                ref={inputRef}
+                                type="text"
                                 placeholder="Enter your location..."
+                                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-700 mb-2 text-base"
                             />
                             {formik.touched.location?.address && formik.errors.location?.address && (
                                 <p className="text-red-500 text-sm">{formik.errors.location.address}</p>
@@ -221,7 +271,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                 </div>
                             </div>
 
-                            <div className="mb-8">
+                            {/* <div className="mb-8">
                                 <h3 className="font-semibold mb-4 text-gray-900">How often do you need this service?</h3>
                                 <div className="relative">
                                     <select
@@ -239,7 +289,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                         <p className="text-red-500 text-sm">{formik.errors.workType}</p>
                                     )}
                                 </div>
-                            </div>
+                            </div> */}
                         </>
                     ) : null}
                 </div>
