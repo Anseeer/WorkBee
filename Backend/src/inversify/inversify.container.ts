@@ -18,6 +18,7 @@ import { AvailabilityRepository } from "../repositories/availability/availabilit
 import { AvailabilityService } from "../services/availability/availability.service";
 import { WalletRepository } from "../repositories/wallet/wallet.repo";
 import { WalletService } from "../services/wallet/wallet.service";
+import { ChatRepository } from "../repositories/chat/chat.repo";
 // Interfaces
 import { IUserRepository } from "../repositories/user/user.repo.interface";
 import { IUserService } from "../services/user/user.service.interface";
@@ -46,6 +47,13 @@ import { IWorkRepository } from "../repositories/work/work.repo.interface";
 import { WorkRepository } from "../repositories/work/work.repo";
 import { WorkService } from "../services/work/work.service";
 import { WorkController } from "../controllers/work/work.controller";
+import { IChatRepositoy } from "../repositories/chat/chat.repo.interface";
+import { ChatService } from "../services/chatMessage/chatMessage.service";
+import { IChatService } from "../services/chatMessage/chatMessage.service.interface";
+import { ChatController } from "../controllers/chatMessage/chatMessage.controller";
+import { IChatController } from "../controllers/chatMessage/chatMessage.controller.interface";
+import { MessageRepository } from "../repositories/message/message.repo";
+import { IMessageRepository } from "../repositories/message/message.repo.interface";
 
 const container = new Container();
 
@@ -78,6 +86,9 @@ container.bind<IAvailabilityService>(TYPES.availabilityService).to(AvailabilityS
 container.bind<IWalletRepository>(TYPES.walletRepository).to(WalletRepository);
 container.bind<IWalletService>(TYPES.walletService).to(WalletService);
 
-
+container.bind<IChatRepositoy>(TYPES.chatRepository).to(ChatRepository);
+container.bind<IChatService>(TYPES.chatService).to(ChatService);
+container.bind<IChatController>(TYPES.chatController).to(ChatController);
+container.bind<IMessageRepository>(TYPES.messageRepository).to(MessageRepository);
 
 export default container;

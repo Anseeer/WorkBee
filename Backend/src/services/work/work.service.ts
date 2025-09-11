@@ -9,9 +9,14 @@ import { IWorkRepository } from "../../repositories/work/work.repo.interface";
 import { IWork } from "../../model/work/work.interface";
 import { CATEGORY_MESSAGE, SERVICE_MESSAGE, USERS_MESSAGE, WORK_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { IWorkDTO } from "../../mappers/work/work.map.DTO.interface";
 import { mapWorkToDTO, mapWorkToEntity } from "../../mappers/work/work.map.DTO";
+import { IChatRepositoy } from "../../repositories/chat/chat.repo.interface";
+import { mapChatToEntity } from "../../mappers/chatMessage/chat.map.DTO";
+import { IChat } from "../../model/chatMessage/IChat";
+import { ROLE } from "../../constants/role";
+import { toISTDateOnly } from "../../utilities/toISTDate";
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -21,13 +26,15 @@ export class WorkService implements IWorkService {
     private _serviceRepositoy: IServiceRepository;
     private _availabilityRepositoy: IAvailabilityRepository;
     private _categoryRepositoy: ICategoryRepository;
+    private _chatRepositoy: IChatRepositoy;
     constructor(
         @inject(TYPES.workRepository) workRepo: IWorkRepository,
         @inject(TYPES.workerRepository) workerRepo: IWorkerRepository,
         @inject(TYPES.userRepository) userRepo: IUserRepository,
         @inject(TYPES.serviceRepository) serviceRepo: IServiceRepository,
         @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository,
-        @inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository
+        @inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository,
+        @inject(TYPES.chatRepository) chatRepo: IChatRepositoy
     ) {
         this._workRepositoy = workRepo;
         this._workerRepositoy = workerRepo;
@@ -35,6 +42,7 @@ export class WorkService implements IWorkService {
         this._serviceRepositoy = serviceRepo;
         this._availabilityRepositoy = availabilityRepo;
         this._categoryRepositoy = categoryRepo;
+        this._chatRepositoy = chatRepo;
     }
 
     createWork = async (workDetails: IWork): Promise<IWorkDTO> => {
@@ -112,8 +120,7 @@ export class WorkService implements IWorkService {
     }
 
     accept = async (workId: string): Promise<boolean> => {
-        if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
-
+        if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET)
         const work = await this._workRepositoy.findById(workId);
         if (!work) throw new Error(WORK_MESSAGE.WORK_NOT_EXIST);
 
@@ -127,13 +134,11 @@ export class WorkService implements IWorkService {
         const availability = await this._availabilityRepositoy.findByWorkerId(workerId.toString());
         if (!availability) throw new Error("Availability not found for worker");
 
-        const targetDate = new Date(date);
-        targetDate.setUTCHours(0, 0, 0, 0);
+        const targetDateStr = toISTDateOnly(new Date(date));
 
         const dateEntry = availability.availableDates.find(d => {
-            const dbDate = new Date(d.date);
-            dbDate.setUTCHours(0, 0, 0, 0);
-            return dbDate.getTime() === targetDate.getTime();
+            const dbDateStr = toISTDateOnly(new Date(d.date));
+            return dbDateStr === targetDateStr;
         });
 
         if (!dateEntry) throw new Error("No availability on this date");
@@ -153,7 +158,26 @@ export class WorkService implements IWorkService {
             jobId: work._id as mongoose.Types.ObjectId
         });
 
-        await availability.save();
+        await this._availabilityRepositoy.markBookedSlot(availability);
+
+        const chatExisting = await this._chatRepositoy.findChat([work.userId.toString(), work.workerId.toString()])
+        console.log("ChatExisting :", chatExisting)
+        if (!chatExisting || chatExisting.length < 1) {
+            const chat: Partial<IChat> = {
+                participants: [
+                    { participantId: new Types.ObjectId(work.userId.toString()), participantModel: ROLE.USER },
+                    { participantId: new Types.ObjectId(work.workerId.toString()), participantModel: ROLE.WORKER }
+                ],
+                unreadCounts: new Map<string, number>([
+                    [work.userId.toString(), 0],
+                    [work.workerId.toString(), 0]
+                ])
+            };
+
+            const chatEntity = mapChatToEntity(chat);
+
+            await this._chatRepositoy.create(chatEntity);
+        }
 
         return await this._workRepositoy.accept(workId);
     };

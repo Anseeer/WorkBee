@@ -14,7 +14,7 @@ export interface IWorkerService {
         wallet: IWalletDTO | null,
         availability?: IAvailabilityDTO
     }>;
-    buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailabilityDTO }>;
+    buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailabilityDTO|null }>;
     forgotPass(email: string): Promise<string>;
     resendOtp(email: string): Promise<string>;
     getUserById(id: string): Promise<IWorkerDTO | null>;

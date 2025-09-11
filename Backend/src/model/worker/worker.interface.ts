@@ -1,4 +1,4 @@
-import mongoose, { Document, Types } from "mongoose"
+import { Document, Types } from "mongoose"
 import { ILocation } from "../location/location.interface"
 
 export interface IWorker extends Document {

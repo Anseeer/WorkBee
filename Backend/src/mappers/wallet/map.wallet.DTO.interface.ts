@@ -15,7 +15,6 @@ export interface IWalletDTO {
 }
 
 export interface IWalletEntity {
-    _id?: string,
     userId: Types.ObjectId;
     balance: number;
     transactions: {

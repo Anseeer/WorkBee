@@ -20,8 +20,8 @@ import { getServiceByCategory } from "../../services/workerService";
 import type { IWorker } from "../../types/IWorker";
 import type { IAvailability } from "../../types/IAvailability";
 import { uploadToCloud } from "../../utilities/uploadToCloud";
-import { startOfMonth } from "date-fns";
-
+import { startOfDay } from "date-fns";
+import type { AxiosResponse } from "axios";
 
 interface WorkerFormData {
     name: string;
@@ -62,6 +62,8 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     const [showDropdown, setShowDropdown] = useState(false);
     const [allCategories, setAllCategories] = useState<ICategory[]>([]);
     const [allServices, setAllServices] = useState<IService[]>([]);
+
+
     useEffect(() => {
         console.log(showDropdown);
         const loadGoogleMapsAPI = () => {
@@ -85,7 +87,8 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         };
         document.addEventListener("mousedown", handleOutsideClick);
         return () => document.removeEventListener("mousedown", handleOutsideClick);
-    });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const initializeAutocomplete = () => {
         if (!locationRef.current || !window.google) return;
@@ -160,7 +163,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 updatedAt: new Date().toISOString(),
             };
 
-
             const workerPayload: Partial<IWorker> = {
                 _id: workerData?.worker?._id || "",
                 name: values.name,
@@ -197,7 +199,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const res = await fetchCategory(1,1000);
+            const res = await fetchCategory(1, 1000);
             setAllCategories(res.data.data.category);
         };
         fetchCategories();
@@ -206,12 +208,14 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     useEffect(() => {
         const fetchServices = async () => {
             if (formik.values.categories.length > 0) {
-                const res = await getServiceByCategory(formik.values.categories);
-                const mappedServices = res.data.data.map((srv: any) => ({
-                    ...srv,
-                    id: srv._id,
-                }));
-                setAllServices(mappedServices);
+                const res: AxiosResponse<{ data: IService[] }> | string = await getServiceByCategory(formik.values.categories);
+                if (res && typeof res !== "string") {
+                    const mappedServices = res.data.data.map((srv: any) => ({
+                        ...srv,
+                        id: srv._id,
+                    }));
+                    setAllServices(mappedServices);
+                }
             } else {
                 setAllServices([]);
             }
@@ -224,14 +228,14 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     useEffect(() => {
         if (workerData?.worker) {
             const worker = workerData.worker;
-            formik.setValues({
+            const newValues = {
                 name: worker.name || "",
                 phone: worker.phone || "",
                 age: worker.age?.toString() || "",
                 bio: worker.bio || "",
                 profileImage: typeof worker.profileImage === "string" ? worker.profileImage : "",
                 radius: worker.radius?.toString() || "2",
-                workType: Array.isArray(worker.workType) ? worker.workType : [worker.workType],
+                workType: Array.isArray(worker.workType) ? worker.workType : [worker.workType].filter(Boolean),
                 preferredSchedule: worker.preferredSchedule || [],
                 location: {
                     address: worker.location?.address || "",
@@ -249,10 +253,16 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                     workerData.availability?.availableDates.map(
                         (slot) => new Date(slot.date)
                     ) || [],
+            };
+            formik.setValues((currentValues) => {
+                if (JSON.stringify(currentValues) !== JSON.stringify(newValues)) {
+                    return newValues;
+                }
+                return currentValues;
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [workerData]);
-
 
     const workingHours = [
         { id: "morning", label: "Morning (9am - 1pm)" },
@@ -277,8 +287,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         formik.setFieldValue(field, updated);
     };
 
-    const today = new Date();
-    const startOfCurrentMonth = startOfMonth(today);
+    const today = startOfDay(new Date());
 
     return (
         <div className="fixed inset-0 bg-transparent backdrop-blur-md flex items-center justify-center p-4 z-50">
@@ -425,7 +434,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                                     formik.setFieldValue("workType", updated);
                                                 }}
                                                 className={`flex items-center justify-center px-3 py-2 border rounded-lg transition 
-                    ${formik.values.workType.includes(type.id)
+                                                        ${formik.values.workType.includes(type.id)
                                                         ? "bg-green-100 border-green-400"
                                                         : "hover:bg-green-50"
                                                     }`}
@@ -490,7 +499,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 mode="multiple"
                                 selected={formik.values.availability}
                                 onSelect={(dates) => formik.setFieldValue("availability", dates)}
-                                fromMonth={startOfCurrentMonth}
+                                fromMonth={today}
                                 disabled={[
                                     { before: today },
                                 ]}
@@ -498,7 +507,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     selected: "bg-green-700 text-white rounded-full",
                                 }}
                             />
-
 
                         </div>
 

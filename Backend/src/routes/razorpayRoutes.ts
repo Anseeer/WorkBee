@@ -44,98 +44,88 @@ router.post("/create-order", async (req, res) => {
     }
 });
 
+router.post("/verify-payment", async (req: Request, res: Response): Promise<void> => {
+    try {
+        console.log("Hello")
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, workId } = req.body;
 
-interface VerifyPaymentBody {
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-    workId: string;
-}
+        const key_secret = process.env.RAZORPAY_KEY_SECRET as string;
 
-router.post<{}, any, VerifyPaymentBody>(
-    "/verify-payment",
-    async (req: Request<{}, any, VerifyPaymentBody>, res: Response): Promise<void> => {
-        try {
-            console.log("Hello")
-            const { razorpay_order_id, razorpay_payment_id, razorpay_signature, workId } = req.body;
+        const hmac = crypto.createHmac("sha256", key_secret);
+        hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+        const generated_signature = hmac.digest("hex");
 
-            const key_secret = process.env.RAZORPAY_KEY_SECRET as string;
-
-            const hmac = crypto.createHmac("sha256", key_secret);
-            hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-            const generated_signature = hmac.digest("hex");
-
-            if (generated_signature !== razorpay_signature) {
-                res.status(400).json({ success: false, message: "Payment verification failed" });
-                return;
-            }
-
-            const payment = await Payment.findOne({ workId, transactionId: razorpay_order_id });
-            if (!payment) {
-                throw new Error("Payment record not found");
-            }
-
-            const worker = await Worker.findById(payment.workerId);
-            if (!worker) throw new Error("Worker not found");
-
-            worker.completedWorks += 1;
-            await worker.save();
-
-
-            const work = await Work.findById(workId);
-            if (!work) {
-                throw new Error("Work not found");
-            }
-            work.paymentStatus = "Completed";
-            work.paymentId = payment.id;
-            await work.save();
-
-            payment.status = "Paid";
-            payment.transactionId = await generateTransactionId(razorpay_payment_id);
-            payment.paidAt = new Date();
-            payment.notes = `Paid to ${work.service}`;
-            await payment.save();
-
-            const workerTransaction = {
-                transactionId: payment.transactionId,
-                type: "CREDIT",
-                amount: payment.amount,
-                description: `${work.service} wage`,
-                createdAt: new Date()
-            }
-
-            const userTransaction = {
-                transactionId: payment.transactionId,
-                type: "DEBIT",
-                amount: payment.amount,
-                description: payment.notes,
-                createdAt: new Date()
-            }
-
-            await Wallet.updateOne(
-                { userId: work.userId },
-                {
-                    $inc: { balance: -userTransaction.amount },
-                    $push: { transactions: userTransaction }
-                }
-            );
-
-            await Wallet.updateOne(
-                { userId: work.workerId },
-                {
-                    $inc: { balance: workerTransaction.amount },
-                    $push: { transactions: workerTransaction }
-                }
-            );
-
-            res.json({ success: true, message: "Payment verified successfully" });
-        } catch (error) {
-            logger.error(error);
-            console.error(error);
-            const message = error instanceof Error ? error.message : "Something went wrong";
-            res.status(500).json({ success: false, message });
+        if (generated_signature !== razorpay_signature) {
+            res.status(400).json({ success: false, message: "Payment verification failed" });
+            return;
         }
+
+        const payment = await Payment.findOne({ workId, transactionId: razorpay_order_id });
+        if (!payment) {
+            throw new Error("Payment record not found");
+        }
+
+        const worker = await Worker.findById(payment.workerId);
+        if (!worker) throw new Error("Worker not found");
+
+        worker.completedWorks += 1;
+        await worker.save();
+
+
+        const work = await Work.findById(workId);
+        if (!work) {
+            throw new Error("Work not found");
+        }
+        work.paymentStatus = "Completed";
+        work.paymentId = payment.id;
+        await work.save();
+
+        payment.status = "Paid";
+        payment.transactionId = await generateTransactionId(razorpay_payment_id);
+        payment.paidAt = new Date();
+        payment.notes = `Paid to ${work.service}`;
+        await payment.save();
+
+        const workerTransaction = {
+            transactionId: payment.transactionId,
+            type: "CREDIT",
+            amount: payment.amount,
+            description: `${work.service} wage`,
+            createdAt: new Date()
+        }
+
+        const userTransaction = {
+            transactionId: payment.transactionId,
+            type: "DEBIT",
+            amount: payment.amount,
+            description: payment.notes,
+            createdAt: new Date()
+        }
+
+        await Wallet.updateOne(
+            { userId: work.userId },
+            {
+                $inc: { balance: -userTransaction.amount },
+                $push: { transactions: userTransaction }
+            }
+        );
+
+        await Wallet.updateOne(
+            { userId: work.workerId },
+            {
+                $inc: { balance: workerTransaction.amount },
+                $push: { transactions: workerTransaction }
+            }
+        );
+
+        res.json({ success: true, message: "Payment verified successfully" });
+    } catch (error) {
+        logger.error(error);
+        console.error(error);
+        const message = error instanceof Error ? error.message : "Something went wrong";
+        res.status(500).json({ success: false, message });
     }
+}
 );
 
 router.post("/create-wallet-order", async (req: Request, res: Response): Promise<void> => {

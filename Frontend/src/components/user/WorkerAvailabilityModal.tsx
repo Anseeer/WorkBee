@@ -40,7 +40,6 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
         return date.toLocaleDateString("en-CA");
     };
 
-
     const handleDateChange = (date: Date) => {
         const dateStr = formatDate(date);
         setSelectedDate(dateStr);
@@ -67,7 +66,6 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
         }));
     };
 
-
     const availableSlots = selectedDate ? getAvailableSlotsForDate(selectedDate) : [];
     const isConfirmDisabled = !selectedDate || !selectedSlot;
 
@@ -84,14 +82,19 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
 
     const isDateAvailable = (date: Date) => {
         if (!availability?.availableDates) return false;
+        const today = new Date();
         const dateStr = formatDate(date);
-        return availability.availableDates.some(av => formatDate(new Date(av.date)) === dateStr);
+        return (
+            date >= today &&
+            availability.availableDates.some(
+                av => formatDate(new Date(av.date)) === dateStr
+            )
+        );
     };
 
     const isDateSelected = (date: Date) => {
         return selectedDate === formatDate(date);
     };
-
 
     const getDaysInMonth = () => {
         const year = currentDate.getFullYear();

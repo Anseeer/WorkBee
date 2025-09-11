@@ -18,13 +18,12 @@ const Dashboard = () => {
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
     const wallet = workerData.wallet;
-
     useEffect(() => {
         const workerID = localStorage.getItem("workerId");
         if (workerID) {
             dispatch(fetchWorkerDetails(workerID));
         }
-    }, [dispatch, isEdit]);
+    }, [dispatch]);
 
     useEffect(() => {
         setSelectedDetails(workerData);
@@ -92,7 +91,7 @@ const Dashboard = () => {
                                     manage your dashboard.
                                 </p>
                                 <button
-                                    onClick={() => setActiveTab('account')}
+                                    onClick={(e) => { e.preventDefault(); handleTab('account') }}
                                     className="bg-green-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-green-800 transition-colors"
                                 >
                                     Build Account

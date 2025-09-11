@@ -70,11 +70,12 @@ const PaymentModal = ({ onClose, Amount, workId }: Props) => {
             if (!values.amount) {
                 errors.amount = "Amount is required";
             } else if (values.amount < Amount) {
-                errors.amount = `Amount should be greater than or equal to ₹${Amount}`;
+                errors.amount = `Amount should be equal to ₹${Amount}`;
+            } else if (values.amount > Amount) {
+                errors.amount = `Amount should be equal to ₹${Amount}`;
             } else if (Amount > (wallet?.balance ?? 0)) {
                 errors.amount = `Insufficient balance. Your wallet balance is ₹${wallet?.balance ?? 0}`;
             }
-
             return errors;
         },
         onSubmit: (values) => {

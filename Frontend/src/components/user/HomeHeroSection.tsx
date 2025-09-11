@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import type { IService } from "../../types/IServiceTypes";
@@ -30,7 +29,7 @@ const HomeHeroSection = () => {
         const delayDebounce = setTimeout(async () => {
             if (searchTerm.trim() === "") {
                 const response = await fetchService();
-                console.log("Res:",response.data.data.services)
+                console.log("Res:", response.data.data.services)
                 setServices(response.data.data.services);
                 setNotFound(false);
             } else {

@@ -3,7 +3,6 @@ import BaseRepository from "../base/base.repo";
 import { IWork } from "../../model/work/work.interface";
 import { IWorkRepository } from "./work.repo.interface";
 import Work from "../../model/work/work.model";
-import Payment from "../../model/payment/payment.model";
 import { WORK_MESSAGE } from "../../constants/messages";
 import { IWorkEntity } from "../../mappers/work/work.map.DTO.interface";
 

@@ -36,12 +36,17 @@ export class CategoryService implements ICategoryService {
             throw new Error(CATEGORY_MESSAGE.CATEGORY_ALREADY_EXISTS);
         }
         const categoryEntity = mapCategoryToEntity(category);
-        const newCategory = await this._categoryRepository.create(category);
+        const newCategory = await this._categoryRepository.create(categoryEntity);
         const cat = mapCategoryToDTO(newCategory);
         return cat;
     };
 
     update = async (category: ICategory, categoryId: string): Promise<boolean> => {
+        const existingCategory = await this._categoryRepository.findByName(category.name);
+
+        if (existingCategory && existingCategory.id !== categoryId) {
+            throw new Error(CATEGORY_MESSAGE.CATEGORY_ALREADY_EXISTS);
+        }
         const categoryEntity = mapCategoryToEntity(category);
         await this._categoryRepository.update(categoryEntity, categoryId);
         return true;

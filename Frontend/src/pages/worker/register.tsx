@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -15,88 +15,11 @@ import { API_ROUTES } from "../../constant/api.routes";
 const WorkerRegistrationPage = () => {
     const Dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const locationRef = useRef<HTMLInputElement>(null);
-    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-
+    const inputRef = useRef<HTMLInputElement>(null);
     const [categoriesList, setCategoriesList] = useState<ICategory[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState(true);
-
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const res = await getAllCategories();
-            const formatted = res.map((cat: ICategory) => ({
-                ...cat,
-                id: cat._id,
-            }));
-            setCategoriesList(formatted);
-        };
-        fetchCategories();
-    }, []);
-
-
-    useEffect(() => {
-        const loadGoogleMapsAPI = () => {
-            if (window.google && window.google.maps) {
-                initializeAutocomplete();
-                return;
-            }
-            const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY
-                }&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = initializeAutocomplete;
-            document.head.appendChild(script);
-        };
-        loadGoogleMapsAPI();
-
-        const handleOutsideClick = (e: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-                setShowDropdown(false);
-            }
-        };
-        document.addEventListener("mousedown", handleOutsideClick);
-        return () => document.removeEventListener("mousedown", handleOutsideClick);
-    }, []);
-
-    const initializeAutocomplete = () => {
-        if (!locationRef.current || !window.google) return;
-
-        autocompleteRef.current = new window.google.maps.places.Autocomplete(locationRef.current, {
-            types: ["address"],
-            componentRestrictions: { country: "IN" },
-            fields: ["formatted_address", "geometry", "address_components", "name"],
-        });
-
-        autocompleteRef.current.addListener("place_changed", () => {
-            const place = autocompleteRef.current?.getPlace();
-            if (!place || !place.geometry) return;
-
-            const addressComponents = place.address_components || [];
-            let pincode = "";
-
-            for (const component of addressComponents) {
-                if (component.types.includes("postal_code")) {
-                    pincode = component.long_name;
-                    break;
-                }
-            }
-
-            const lat = place.geometry.location?.lat() || 0;
-            const lng = place.geometry.location?.lng() || 0;
-
-            formik.setFieldValue("location", {
-                address: place.formatted_address || "",
-                pincode,
-                lat,
-                lng,
-            });
-        });
-    };
 
     const formik = useFormik({
         initialValues: {
@@ -169,6 +92,94 @@ const WorkerRegistrationPage = () => {
         },
     });
 
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const res = await getAllCategories();
+            const formatted = res.map((cat: ICategory) => ({
+                ...cat,
+                id: cat._id,
+            }));
+            setCategoriesList(formatted);
+        };
+        fetchCategories();
+    }, []);
+
+    const updateLocation = useCallback((locationData: typeof formik.values.location) => {
+        formik.setFieldValue('location', locationData);
+    }, [formik]);
+
+    useEffect(() => {
+        let autocompleteInstance: google.maps.places.Autocomplete | null = null;
+        let scriptLoaded = false;
+
+        const initializeAutocomplete = () => {
+            if (!inputRef.current || !window.google || autocompleteInstance) return;
+
+            autocompleteInstance = new window.google.maps.places.Autocomplete(
+                inputRef.current,
+                {
+                    types: ['address'],
+                    componentRestrictions: { country: 'IN' },
+                    fields: ['formatted_address', 'geometry', 'address_components', 'name']
+                }
+            );
+
+            google.maps.event.addListener(autocompleteInstance, "place_changed", () => {
+                const place = autocompleteInstance?.getPlace();
+
+                if (!place || !place.geometry) return;
+
+                const addressComponents = place.address_components || [];
+                let pincode = "";
+
+                for (const component of addressComponents) {
+                    if (component.types.includes("postal_code")) {
+                        pincode = component.long_name;
+                        break;
+                    }
+                }
+
+                const lat = place.geometry.location?.lat() || 0;
+                const lng = place.geometry.location?.lng() || 0;
+
+                updateLocation({
+                    address: place.formatted_address || "",
+                    pincode,
+                    lat,
+                    lng,
+                });
+            });
+        };
+
+        const loadGoogleMapsAPI = () => {
+            if (window.google && window.google.maps) {
+                initializeAutocomplete();
+                return;
+            }
+
+            if (scriptLoaded) return;
+
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places`;
+            script.async = true;
+            script.defer = true;
+            script.onload = () => {
+                scriptLoaded = true;
+                initializeAutocomplete();
+            };
+            document.head.appendChild(script);
+        };
+
+        loadGoogleMapsAPI();
+
+        return () => {
+            if (autocompleteInstance) {
+                google.maps.event.clearInstanceListeners(autocompleteInstance);
+            }
+        };
+    }, [updateLocation]);
+
+
     const handleCategorySelect = (categoryId: string) => {
         const newSelection = formik.values.categories.includes(categoryId)
             ? formik.values.categories.filter((c) => c !== categoryId)
@@ -217,16 +228,23 @@ const WorkerRegistrationPage = () => {
                                         )}
                                     </div>
                                     <input
+                                        onKeyDown={(e) => {
+                                            const keysToPrevent = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Tab', 'Enter'];
+                                            if (keysToPrevent.includes(e.key)) {
+                                                e.preventDefault();
+                                            }
+                                        }}
                                         name="location.address"
                                         value={formik.values.location.address}
-                                        onChange={(e) => formik.setFieldValue("location.address", e.target.value)}
-                                        onBlur={formik.handleBlur}
-                                        ref={locationRef}
+                                        onChange={(e) => {
+                                            formik.setFieldValue("location.address", e.target.value);
+                                        }}
+                                        ref={inputRef}
                                         type="text"
                                         placeholder="Location"
                                         className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                           border-0 border-b-2 border-gray-300 focus:border-green-600 
-                           focus:outline-none bg-transparent"
+                                        border-0 border-b-2 border-gray-300 focus:border-green-600 
+                                        focus:outline-none bg-transparent"
                                     />
                                 </div>
                             </div>

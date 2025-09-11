@@ -56,7 +56,7 @@ export function DataTable<T extends { id: string }>({
                     />
                 </div>
 
-                <div className="overflow-hidden rounded-lg  border border-gray-200">
+                <div className="overflow-x-auto rounded-lg  border border-gray-200">
                     <table className="w-full">
                         <thead className="bg-[#8FC39D]">
                             <tr>

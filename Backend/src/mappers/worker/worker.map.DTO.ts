@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { IWorker } from "../../model/worker/worker.interface";
 import { IWorkerDTO, IWorkerEntity } from "./worker.map.DTO.interface";
 

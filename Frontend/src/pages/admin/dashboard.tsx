@@ -11,25 +11,30 @@ import WorksTable from "../../components/admin/worksTable";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [subTab, setSubTab] = useState<'category' | 'service' | 'worker' | 'workerRequest'>('category');
+  const [subTab, setSubTab] = useState('category');
   const { selectedDetails, setSelectedDetails } = useWorkerDetails();
 
-  const handleTab = (tab: string) => {
+  const handleTab = (tab: string, defaultSubTab?: string) => {
     setActiveTab(tab);
     setSelectedDetails(null);
+
     if (tab === "category & Services") {
       setSubTab("category");
     } else if (tab === "workers") {
-      setSubTab("worker");
+      setSubTab(defaultSubTab || "worker");
     }
   };
 
+  const handleSubTab = (tab: string) => {
+    setSelectedDetails(null);
+    setSubTab(tab);
+  }
 
   const renderCategoryServiceTabs = () => (
     <>
       <div className="flex items-center gap-4 py-2 px-2">
         <button
-          onClick={() => setSubTab('category')}
+          onClick={() => handleSubTab('category')}
           className={`text-2xl font-semibold ${subTab === 'category' ? 'text-green-700' : ''
             }`}
         >
@@ -37,7 +42,7 @@ const AdminDashboard = () => {
         </button>
         <span className="text-2xl font-semibold">&</span>
         <button
-          onClick={() => setSubTab('service')}
+          onClick={() => handleSubTab('service')}
           className={`text-2xl font-semibold ${subTab === 'service' ? 'text-green-700' : ''
             }`}
         >
@@ -53,13 +58,13 @@ const AdminDashboard = () => {
     <>
       <div className="flex items-center gap-4 py-2 px-2">
         <button
-          onClick={() => setSubTab("worker")}
+          onClick={() => handleSubTab("worker")}
           className={`text-2xl font-semibold `}
         >
           Workers
         </button>
         <button
-          onClick={() => setSubTab("workerRequest")}
+          onClick={() => handleSubTab("workerRequest")}
           className={`text-sm rounded font-semibold border border-black text-white p-1 bg-green-700 ml-auto hover:text-black hover:bg-green-500 ${subTab === "workerRequest" ? "text-green-700" : ""
             }`}
         >
@@ -79,7 +84,6 @@ const AdminDashboard = () => {
       )}
     </>
   );
-
 
   return (
     <div className="w-full flex">

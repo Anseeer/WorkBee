@@ -57,7 +57,6 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
 
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
-        secure: COOKIE_CONFIG.SECURE,
         sameSite: COOKIE_CONFIG.SAME_SITE,
         maxAge: COOKIE_CONFIG.MAX_AGE,
       });
@@ -65,6 +64,7 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
       req.user = decoded;
       next();
     } catch (error) {
+      logger.error(error);
       res.status(400).send(AUTH_MESSAGE.NO_REFRESH_TOKEN);
     }
   }

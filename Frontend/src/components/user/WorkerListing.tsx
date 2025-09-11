@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { CheckCircle, ChevronLeft, ChevronRight, MapPin, User } from 'lucide-react';
 import { fetchWorkerByWorkDetails } from '../../services/workerService';
@@ -113,7 +112,7 @@ const WorkerListing = () => {
             setTriggerDraft(false);
             navigate('/home')
         }
-    }, [triggerDraft, workDetails, dispatch]);
+    }, [triggerDraft, workDetails, dispatch, navigate]);
 
     const Confirm = async (date: string, slot: string) => {
         try {

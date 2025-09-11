@@ -17,7 +17,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
     }
 
     async findByName(name: string): Promise<IServices | null> {
-        return await this.model.findOne({ name })
+        return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
     }
 
     async findById(id: string): Promise<IServices> {

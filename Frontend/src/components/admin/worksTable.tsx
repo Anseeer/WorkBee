@@ -5,14 +5,19 @@ import { fetchWorks } from '../../services/adminService';
 import { StatusBadge } from '../../utilities/StatusBadge';
 
 const WorksTable = () => {
-    const [works, setWorks] = useState<IWork[]>([]);
+    const [works, setWorks] = useState<(IWork & { id: string })[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchWorks(currentPage,5);
-            setWorks(res.data.data.paginatedWorks);
+            const res = await fetchWorks(currentPage, 5);
+            const mappedWorks = res.data.data.paginatedWorks.map((work: IWork) => ({
+                ...work,
+                id: work._id || '',
+            }));
+
+            setWorks(mappedWorks);
             setTotalPage(res.data.data.totalPage);
         };
         fetchData();

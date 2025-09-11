@@ -42,7 +42,7 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
             }
         }
         fetchData();
-    }, [])
+    }, [workId])
 
 
     const getStatusColor = (status: string) => {

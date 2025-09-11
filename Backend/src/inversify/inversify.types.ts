@@ -28,7 +28,13 @@ const TYPES = {
     workController: Symbol.for("workController"),
 
     walletRepository: Symbol.for("walletRepository"),
-    walletService: Symbol.for("walletService")
+    walletService: Symbol.for("walletService"),
+
+    chatRepository: Symbol.for("chatRepository"),
+    chatService: Symbol.for("chatService"),
+    chatController: Symbol.for("chatController"),
+
+    messageRepository: Symbol.for("messageRepository"),
 };
 
 export default TYPES;

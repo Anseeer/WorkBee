@@ -6,7 +6,7 @@ import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { IWorkerService } from "../../services/worker/worker.service.interface";
 import { IAvailabilityService } from "../../services/availability/availability.service.interface";
-import { WALLET_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
+import { SEARCH_TERMS, WALLET_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { IWalletService } from "../../services/wallet/wallet.service.interface";
@@ -21,9 +21,9 @@ export class WorkerController implements IWorkerController {
         @inject(TYPES.walletService) walletService: IWalletService,
         @inject(TYPES.availabilityService) availabilityService: IAvailabilityService
     ) {
-        this._workerService = workerService,
-            this._walletService = walletService,
-            this._availabilityService = availabilityService
+        this._workerService = workerService;
+        this._walletService = walletService;
+        this._availabilityService = availabilityService;
     }
 
     login = async (req: Request, res: Response, next: NextFunction) => {
@@ -72,6 +72,7 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
+            console.log("Error ::", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg));
         }
@@ -211,6 +212,7 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
 
         } catch (error: unknown) {
+            console.log("Error :", error);
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD, errMsg));
         }
@@ -243,7 +245,7 @@ export class WorkerController implements IWorkerController {
         try {
             const searchTerms = req.body;
             if (!searchTerms) {
-                throw new Error("Search term not exitst");
+                throw new Error(SEARCH_TERMS.TERM_NOT_EXIST);
             }
 
             const workers = await this._workerService.searchWorker(searchTerms);

@@ -9,9 +9,8 @@ import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
 import { Types } from "mongoose";
 import { WORKER_MESSAGE } from "../../constants/messages";
-import { IWallet } from "../../model/wallet/wallet.interface.model";
-
-
+import { IAvailabilitEntity } from "../../mappers/availability/availability.map.DTO.interface";
+import { FilterQuery } from "mongoose";
 
 @injectable()
 export class WorkerRepository extends BaseRepository<IWorker> implements IWorkerRepository {
@@ -35,7 +34,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         return await Availability.create(availability);
     }
 
-    async updateAvailability(workerId: string, availability: IAvailability): Promise<IAvailability | null> {
+    async updateAvailability(workerId: string, availability: IAvailabilitEntity): Promise<IAvailability | null> {
         return await Availability.findOneAndUpdate(
             { workerId },
             { $set: availability },
@@ -115,7 +114,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     }
 
     async search(searchTerms: Partial<IWork>): Promise<IWorker[]> {
-        const query: any = {
+        const query: FilterQuery<IWorker> = {
             workType: { $in: searchTerms.workType },
             isAccountBuilt: true,
             isActive: true,

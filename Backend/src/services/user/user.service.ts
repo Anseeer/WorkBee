@@ -14,13 +14,14 @@ import { IUserRepository } from "../../repositories/user/user.repo.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
-import { Wallet } from "../../model/wallet/wallet.model";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { mapAvailabilityToDTO } from "../../mappers/availability/availability.map.DTO";
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
-import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
+import { mapWalletToDTO, mapWalletToEntity } from "../../mappers/wallet/map.wallet.DTO";
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
+import { ROLE } from "../../constants/role";
+import { Types } from "mongoose";
 
 const client = new OAuth2Client();
 
@@ -54,12 +55,15 @@ export class UserService implements IUserService {
         const userEntity = await mapToUserEntity(userData);
         const newUser = await this._userRepository.create(userEntity);
 
-        await Wallet.create({
-            userId: newUser._id,
+        const initializeWallet = {
+            userId: new Types.ObjectId(newUser?._id),
             balance: 0,
             currency: "INR",
             transactions: []
-        })
+        }
+
+        const walletEntity = mapWalletToEntity(initializeWallet)
+        await this._walletRepository.create(walletEntity)
 
         const walletData = await this._walletRepository.findByUser(newUser.id);
 
@@ -74,7 +78,7 @@ export class UserService implements IUserService {
 
     async loginUser(email: string, password: string): Promise<{ user: IUserDTO; accessToken: string; refreshToken: string; wallet: IWalletDTO | null }> {
         let findUser = await this._userRepository.findByEmail(email);
-        if (!findUser || findUser.role !== "User") {
+        if (!findUser || findUser.role !== ROLE.USER) {
             throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 
@@ -161,7 +165,7 @@ export class UserService implements IUserService {
         if (!payload?.email) throw new Error(USERS_MESSAGE.GOOGLE_LOGIN_FAILED);
 
         const existingUser = await this._userRepository.findByEmail(payload.email);
-        if (!existingUser || existingUser.role !== "User") {
+        if (!existingUser || existingUser.role !== ROLE.USER) {
             throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 
@@ -198,7 +202,7 @@ export class UserService implements IUserService {
     }
 
     async update(userDetails: Iuser, userId: string): Promise<boolean> {
-        const userData = await mapToUserEntity(userDetails);
+        const userData = mapToUserEntity(userDetails);
         return await this._userRepository.update(userData, userId);
     }
 

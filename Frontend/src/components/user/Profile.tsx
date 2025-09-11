@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "react-toastify";
 import { fetchWorkHistory, logoutUser } from "../../services/userService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -57,7 +56,7 @@ const ProfileSection = () => {
             setTotalPage(workHistory.data.data.totalPages)
         }
         fetchData();
-    }, [isEdit, isPaymentModal, isAddMoneyModal, isWorkInfoModal, currentPage]);
+    }, [isEdit, isPaymentModal, isAddMoneyModal, isWorkInfoModal, currentPage, dispatch, user?.id]);
 
     const handleLogout = async () => {
         try {

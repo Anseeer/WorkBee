@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import axios from "../../services/axios";
 import Loader from "./Loader";
 import { API_ROUTES } from "../../constant/api.routes";
+import { ROLE, type Role } from "../../constant/roles";
 
 interface GuestRouteProps {
   children: JSX.Element;
-  role: "User" | "Worker" | "Admin";
+  role: Role;
 }
 const GuestRoute = ({ children, role }: GuestRouteProps) => {
   const [authInfo, setAuthInfo] = useState<{ isAuthenticated: boolean; userRole: string | null }>({
@@ -35,9 +36,9 @@ const GuestRoute = ({ children, role }: GuestRouteProps) => {
 
 
   if (authInfo.isAuthenticated && authInfo.userRole?.toLowerCase() === role.toLowerCase()) {
-    if (role === "User") return <Navigate to={API_ROUTES.USER.HOME} replace />;
-    if (role === "Worker") return <Navigate to={API_ROUTES.WORKER.DASHBOARD} replace />;
-    if (role === "Admin") return <Navigate to={API_ROUTES.ADMIN.DASHBOARD} replace />;
+    if (role === ROLE.USER) return <Navigate to={API_ROUTES.USER.HOME} replace />;
+    if (role === ROLE.WORKER) return <Navigate to={API_ROUTES.WORKER.DASHBOARD} replace />;
+    if (role === ROLE.ADMIN) return <Navigate to={API_ROUTES.ADMIN.DASHBOARD} replace />;
   }
 
   return children;
