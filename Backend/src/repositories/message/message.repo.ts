@@ -11,15 +11,21 @@ export class MessageRepository extends BaseRepository<IMessage> implements IMess
     constructor() {
         super(Message);
     }
-
     async findLastMessage(chatId: string): Promise<IMessage[] | null> {
-        if (!chatId) {
-            throw new Error(CHAT_MESSAGE.CHAT_ID_NOT_GET)
+        try {
+            if (!chatId) {
+                throw new Error(CHAT_MESSAGE.CHAT_ID_NOT_GET);
+            }
+
+            return await this.model.find({ chatId })
+                .sort({ createdAt: -1 })
+                .limit(50)
+                .lean();
+        } catch (error) {
+            console.error('Error in findLastMessage:', error);
+            throw new Error('Error in findLastMessage');
         }
-        return await this.model.find({ chatId })
-            .sort({ createdAt: -1 })
-            .limit(50)
-            .lean();
     }
+
 
 }

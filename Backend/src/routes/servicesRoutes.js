@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const inversify_types_1 = __importDefault(require("../inversify/inversify.types"));
+const inversify_container_1 = __importDefault(require("../inversify/inversify.container"));
+const serviceController = inversify_container_1.default.get(inversify_types_1.default.serviceController);
+const Router = express_1.default.Router();
+Router.post('/create-service', serviceController.createService);
+Router.get("/getAll-services", serviceController.getAllservices);
+Router.post("/by-categories", serviceController.getByCategories);
+Router.get("/set-active", serviceController.setIsActive);
+Router.post("/update", serviceController.update);
+Router.delete("/delete", serviceController.delete);
+Router.post("/by-worker", serviceController.getByWorker);
+Router.post("/by-search", serviceController.getBySearch);
+Router.post("/by-Id", serviceController.getById);
+exports.default = Router;

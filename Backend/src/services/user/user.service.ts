@@ -20,8 +20,8 @@ import { mapAvailabilityToDTO } from "../../mappers/availability/availability.ma
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
 import { mapWalletToDTO, mapWalletToEntity } from "../../mappers/wallet/map.wallet.DTO";
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
-import { ROLE } from "../../constants/role";
 import { Types } from "mongoose";
+import { Role } from "../../constants/role";
 
 const client = new OAuth2Client();
 
@@ -78,7 +78,7 @@ export class UserService implements IUserService {
 
     async loginUser(email: string, password: string): Promise<{ user: IUserDTO; accessToken: string; refreshToken: string; wallet: IWalletDTO | null }> {
         let findUser = await this._userRepository.findByEmail(email);
-        if (!findUser || findUser.role !== ROLE.USER) {
+        if (!findUser || findUser.role !== Role.USER) {
             throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 
@@ -165,7 +165,7 @@ export class UserService implements IUserService {
         if (!payload?.email) throw new Error(USERS_MESSAGE.GOOGLE_LOGIN_FAILED);
 
         const existingUser = await this._userRepository.findByEmail(payload.email);
-        if (!existingUser || existingUser.role !== ROLE.USER) {
+        if (!existingUser || existingUser.role !== Role.USER) {
             throw new Error(USERS_MESSAGE.CANT_FIND_USER);
         }
 

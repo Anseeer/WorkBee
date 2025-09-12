@@ -1,13 +1,10 @@
+import { Role } from "../../constants/role";
 import { IChat } from "../../model/chatMessage/IChat";
 import { IChatDTO, IChatEntity } from "./chat.map.DTO.interface";
 import { Types } from "mongoose";
 
 export const mapChatToDTO = (chat: IChat): IChatDTO => {
     const otherParticipants = chat.participants
-        // .filter(p => {
-        //     const id = typeof p.participantId === 'object' ? p.participantId._id : p.participantId;
-        //     return id?.toString() !== userId;
-        // })
         .map(p => {
             const participant = p.participantId as {
                 _id: Types.ObjectId;
@@ -36,7 +33,7 @@ export const mapChatToEntity = (chat: Partial<IChat>): IChatEntity => {
     return {
         participants: (chat.participants ?? []).map(p => ({
             participantId: new Types.ObjectId(p.participantId.toString()),
-            participantModel: p.participantModel as "User" | "Worker"
+            participantModel: p.participantModel as Role.USER | Role.WORKER
         })),
         lastMessage: chat.lastMessage ?? undefined,
         unreadCounts: chat.unreadCounts ?? new Map<string, number>(),

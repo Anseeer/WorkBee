@@ -11,55 +11,99 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         super(Category)
     }
 
-    async create(item: Partial<ICategoryEntity>): Promise<ICategory> {
-        const newItem = new this.model(item);
-        return await newItem.save();
+    async create(item: Partial<ICategory>): Promise<ICategory> {
+        try {
+            const newItem = new this.model(item);
+            return await newItem.save();
+        } catch (error) {
+            console.error('Error in create:', error);
+            throw new Error('Error in create');
+        }
     }
 
     async findById(id: string): Promise<ICategory> {
-        return await this.model.findById(id) as ICategory;
+        try {
+            return await this.model.findById(id) as ICategory;
+        } catch (error) {
+            console.error('Error in findById:', error);
+            throw new Error('Error in findById');
+        }
     }
 
     async getAll(): Promise<ICategory[]> {
-        return await this.model.find().sort({ createdAt: -1 });
+        try {
+            return await this.model.find().sort({ createdAt: -1 });
+        } catch (error) {
+            console.error('Error in getAll:', error);
+            throw new Error('Error in getAll');
+        }
     }
 
     async findByName(name: string): Promise<ICategory | null> {
-        return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
+        try {
+            return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
+        } catch (error) {
+            console.error('Error in findByName:', error);
+            throw new Error('Error in findByName');
+        }
     }
 
     async setIsActive(id: string): Promise<boolean> {
-        const category = await this.model.findById(id);
-        if (!category) return false;
-        const updatedStatus = !category.isActive;
-        await this.model.updateOne(
-            { _id: id },
-            { $set: { isActive: updatedStatus } }
-        );
-        return true;
+        try {
+            const category = await this.model.findById(id);
+            if (!category) return false;
+
+            const updatedStatus = !category.isActive;
+            await this.model.updateOne(
+                { _id: id },
+                { $set: { isActive: updatedStatus } }
+            );
+
+            return true;
+        } catch (error) {
+            console.error('Error in setIsActive:', error);
+            throw new Error('Error in setIsActive');
+        }
     }
 
     update = async (category: ICategoryEntity, categoryId: string): Promise<boolean> => {
-        const result = await this.model.updateOne(
-            { _id: categoryId },
-            {
-                $set: {
-                    name: category.name,
-                    description: category.description,
-                    imageUrl: category.imageUrl
+        try {
+            const result = await this.model.updateOne(
+                { _id: categoryId },
+                {
+                    $set: {
+                        name: category.name,
+                        description: category.description,
+                        imageUrl: category.imageUrl
+                    }
                 }
-            }
-        );
-        return result.modifiedCount > 0;
+            );
+
+            return result.modifiedCount > 0;
+        } catch (error) {
+            console.error('Error in update:', error);
+            throw new Error('Error in update');
+        }
     };
 
     delete = async (id: string): Promise<boolean> => {
-        const result = await this.model.deleteOne({ _id: id });
-        return result.deletedCount > 0;
+        try {
+            const result = await this.model.deleteOne({ _id: id });
+            return result.deletedCount > 0;
+        } catch (error) {
+            console.error('Error in delete:', error);
+            throw new Error('Error in delete');
+        }
     };
 
     getByWorker = async (categoryIds: string[]): Promise<ICategory[]> => {
-        return await this.model.find({ _id: { $in: categoryIds } })
-    }
+        try {
+            return await this.model.find({ _id: { $in: categoryIds } });
+        } catch (error) {
+            console.error('Error in getByWorker:', error);
+            throw new Error('Error in getByWorker');
+        }
+    };
+
 
 }

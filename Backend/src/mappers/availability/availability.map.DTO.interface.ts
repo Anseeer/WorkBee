@@ -15,7 +15,6 @@ export interface IAvailabilityDTO {
 }
 
 export interface IAvailabilitEntity {
-    _id?: string,
     workerId: mongoose.Schema.Types.ObjectId;
     availableDates: ISlotDTO[];
 }

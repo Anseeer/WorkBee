@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const inversify_container_1 = __importDefault(require("../inversify/inversify.container"));
+const inversify_types_1 = __importDefault(require("../inversify/inversify.types"));
+const authMiddleware_1 = require("../middlewares/authMiddleware");
+const Router = express_1.default.Router();
+const WorkController = inversify_container_1.default.get(inversify_types_1.default.workController);
+Router.post("/creat-work", authMiddleware_1.auth, WorkController.createWork);
+Router.get("/users", authMiddleware_1.auth, WorkController.fetchWorkHistoryByUser);
+Router.get("/workers", authMiddleware_1.auth, WorkController.fetchWorkHistoryByWorker);
+Router.patch("/cancel", authMiddleware_1.auth, WorkController.cancelWork);
+Router.patch("/accept", authMiddleware_1.auth, WorkController.acceptWork);
+Router.patch("/is-completed", authMiddleware_1.auth, WorkController.completedWork);
+Router.get("/details", authMiddleware_1.auth, WorkController.workDetailsById);
+Router.get("/works", authMiddleware_1.auth, WorkController.getAllWorks);
+exports.default = Router;

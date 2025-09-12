@@ -63,7 +63,7 @@ const CategorySection: React.FC = () => {
             try {
                 const serv = await getServiceByCategory([selectedCategory]);
                 console.log("Services fetched :", serv)
-                setServices(serv.data.data);
+                if (typeof serv !== 'string') setServices(serv.data.data);
             } catch (error) {
                 console.error("Failed to fetch services:", error);
             }

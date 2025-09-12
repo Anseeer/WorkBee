@@ -52,7 +52,7 @@ export class WorkerService implements IWorkerService {
         }
 
         let existingAvailability: IAvailability | undefined | null;
-        let availability: IAvailabilityDTO | undefined;
+        let availability: IAvailabilityDTO | null = null;
 
         if (existingWorker.isAccountBuilt) {
             existingAvailability = await this._availabilityRepository.findByWorkerId(existingWorker.id);

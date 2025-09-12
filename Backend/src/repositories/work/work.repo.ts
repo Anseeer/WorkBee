@@ -4,65 +4,109 @@ import { IWork } from "../../model/work/work.interface";
 import { IWorkRepository } from "./work.repo.interface";
 import Work from "../../model/work/work.model";
 import { WORK_MESSAGE } from "../../constants/messages";
-import { IWorkEntity } from "../../mappers/work/work.map.DTO.interface";
 
 @injectable()
 export class WorkRepository extends BaseRepository<IWork> implements IWorkRepository {
     constructor() {
         super(Work);
     }
-
-    async create(item: Partial<IWorkEntity>): Promise<IWork> {
-        const newItem = new this.model(item);
-        return await newItem.save();
+    async create(item: Partial<IWork>): Promise<IWork> {
+        try {
+            const newItem = new this.model(item);
+            return await newItem.save();
+        } catch (error) {
+            console.error('Error in create:', error);
+            throw new Error('Error in create');
+        }
     }
 
     async findByUser(userId: string): Promise<IWork[]> {
-        return await this.model.find({ userId }).sort({ createdAt: -1 });
+        try {
+            return await this.model.find({ userId }).sort({ createdAt: -1 });
+        } catch (error) {
+            console.error('Error in findByUser:', error);
+            throw new Error('Error in findByUser');
+        }
     }
+
     async findByWorker(workerId: string): Promise<IWork[]> {
-        return await this.model.find({ workerId }).sort({ createdAt: -1 });
+        try {
+            return await this.model.find({ workerId }).sort({ createdAt: -1 });
+        } catch (error) {
+            console.error('Error in findByWorker:', error);
+            throw new Error('Error in findByWorker');
+        }
     }
 
     async cancel(workId: string): Promise<boolean> {
-        const res = await this.model.updateOne({ _id: workId }, { $set: { status: "Canceled" } });
-        return res.modifiedCount > 0;
+        try {
+            const res = await this.model.updateOne(
+                { _id: workId },
+                { $set: { status: "Canceled" } }
+            );
+            return res.modifiedCount > 0;
+        } catch (error) {
+            console.error('Error in cancel:', error);
+            throw new Error('Error in cancel');
+        }
     }
 
     async accept(workId: string): Promise<boolean> {
-        const res = await this.model.updateOne({ _id: workId }, { $set: { status: "Accepted" } });
-        return res.modifiedCount > 0;
+        try {
+            const res = await this.model.updateOne(
+                { _id: workId },
+                { $set: { status: "Accepted" } }
+            );
+            return res.modifiedCount > 0;
+        } catch (error) {
+            console.error('Error in accept:', error);
+            throw new Error('Error in accept');
+        }
     }
 
     async findById(workId: string): Promise<IWork> {
-        const workDetails = await this.model.findById(workId);
-        if (!workDetails) {
-            throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
+        try {
+            const workDetails = await this.model.findById(workId);
+            if (!workDetails) {
+                throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
+            }
+            return workDetails;
+        } catch (error) {
+            console.error('Error in findById:', error);
+            throw new Error('Error in findById');
         }
-        return workDetails;
     }
 
     async setIsWorkCompleted(workId: string): Promise<boolean> {
-        const work = await this.model.findById(workId);
-        if (!work) {
-            throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
+        try {
+            const work = await this.model.findById(workId);
+            if (!work) {
+                throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
+            }
+
+            if (work.isCompleted) {
+                throw new Error(WORK_MESSAGE.WORK_ALREADY_MARK_COMPLETED);
+            }
+
+            work.isCompleted = true;
+            work.status = "Completed";
+            work.paymentStatus = "Pending";
+
+            await work.save();
+            return true;
+        } catch (error) {
+            console.error('Error in setIsWorkCompleted:', error);
+            throw new Error('Error in setIsWorkCompleted');
         }
-
-        if (work.isCompleted) {
-            throw new Error(WORK_MESSAGE.WORK_ALREADY_MARK_COMPLETED);
-        }
-
-        work.isCompleted = true;
-        work.status = "Completed";
-
-        work.paymentStatus = "Pending";
-
-        await work.save();
-        return true;
     }
 
     async getAllWorks(): Promise<IWork[]> {
-        return await this.model.find().sort({ createdAt: -1 });
+        try {
+            return await this.model.find().sort({ createdAt: -1 });
+        } catch (error) {
+            console.error('Error in getAllWorks:', error);
+            throw new Error('Error in getAllWorks');
+        }
     }
 
 }

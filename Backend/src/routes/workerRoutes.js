@@ -1,0 +1,27 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const inversify_container_1 = __importDefault(require("../inversify/inversify.container"));
+const inversify_types_1 = __importDefault(require("../inversify/inversify.types"));
+const authorizeMiddleware_1 = require("../middlewares/authorizeMiddleware");
+const authMiddleware_1 = require("../middlewares/authMiddleware");
+const Router = express_1.default.Router();
+const workerController = inversify_container_1.default.get(inversify_types_1.default.workerController);
+Router.post("/login", workerController.login);
+Router.post("/logout", authMiddleware_1.auth, (0, authorizeMiddleware_1.authorize)(["Worker"]), workerController.logout);
+Router.post("/register", workerController.register);
+Router.post("/build-account", authMiddleware_1.auth, (0, authorizeMiddleware_1.authorize)(["Worker"]), workerController.buildAccount);
+Router.get("/fetch-details", authMiddleware_1.auth, workerController.fetchDetails);
+Router.post("/forgot-password", workerController.forgotPass);
+Router.post("/resend-otp", workerController.resendOtp);
+Router.post("/verify-otp", workerController.verifyOtp);
+Router.post("/reset-password", workerController.resetPassword);
+Router.put("/update", authMiddleware_1.auth, (0, authorizeMiddleware_1.authorize)(["Worker"]), workerController.updateWorker);
+Router.post("/search", authMiddleware_1.auth, workerController.searchWorker);
+Router.post("/find-workers-byId", authMiddleware_1.auth, workerController.findWorkersByIds);
+Router.post('/google-login', workerController.googleLogin);
+Router.get('/wallet', authMiddleware_1.auth, workerController.findWallet);
+exports.default = Router;

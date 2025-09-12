@@ -15,7 +15,7 @@ import { IAvailabilityRepository } from "../../repositories/availability/availab
 import { ADMIN_MESSAGES } from "../../constants/messages";
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
 import { mapAvailabilityToDTO } from "../../mappers/availability/availability.map.DTO";
-import { ROLE } from "../../constants/role";
+import { Role } from "../../constants/role";
 
 @injectable()
 export class AdminService implements IAdminService {
@@ -38,7 +38,7 @@ export class AdminService implements IAdminService {
             throw new Error(ADMIN_MESSAGES.CANT_FIND_ADMIN);
         }
 
-        if (existingAdmin.role !== ROLE.ADMIN) {
+        if (existingAdmin.role !== Role.ADMIN) {
             throw new Error(ADMIN_MESSAGES.CANT_FIND_ADMIN);
         }
 

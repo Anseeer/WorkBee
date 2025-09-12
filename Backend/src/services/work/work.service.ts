@@ -15,8 +15,8 @@ import { mapWorkToDTO, mapWorkToEntity } from "../../mappers/work/work.map.DTO";
 import { IChatRepositoy } from "../../repositories/chat/chat.repo.interface";
 import { mapChatToEntity } from "../../mappers/chatMessage/chat.map.DTO";
 import { IChat } from "../../model/chatMessage/IChat";
-import { ROLE } from "../../constants/role";
 import { toISTDateOnly } from "../../utilities/toISTDate";
+import { Role } from "../../constants/role";
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -165,8 +165,8 @@ export class WorkService implements IWorkService {
         if (!chatExisting || chatExisting.length < 1) {
             const chat: Partial<IChat> = {
                 participants: [
-                    { participantId: new Types.ObjectId(work.userId.toString()), participantModel: ROLE.USER },
-                    { participantId: new Types.ObjectId(work.workerId.toString()), participantModel: ROLE.WORKER }
+                    { participantId: new Types.ObjectId(work.userId.toString()), participantModel: Role.USER },
+                    { participantId: new Types.ObjectId(work.workerId.toString()), participantModel: Role.WORKER }
                 ],
                 unreadCounts: new Map<string, number>([
                     [work.userId.toString(), 0],
