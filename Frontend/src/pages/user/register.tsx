@@ -170,20 +170,23 @@ const RegistrationPage = () => {
   }, [updateLocation]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 fixed w-full">
-      <div className="absolute top-7.5 left-7.5">
-        <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
+    <div className="bg-gray-50 w-full min-h-screen relative px-4 sm:px-6">
+      {/* Logo */}
+      <div className="absolute top-4 left-4 sm:top-8 sm:left-8">
+        <h1 className="merienda-text text-2xl sm:text-3xl text-green-900">WorkBee</h1>
       </div>
 
-      <div className="flex items-center justify-center m-25">
-        <div className="w-full max-w-xl">
-          <div className="bg-white rounded-3xl border-2 min-h-[400px] border-green-600 p-6 shadow-md">
-            <h2 className="text-xl font-semibold text-gray-800 text-center mb-6">
+      {/* Centered Form */}
+      <div className="flex items-center justify-center py-12">
+        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl">
+          <div className="bg-white rounded-3xl border-2 border-green-600 shadow-md p-6 sm:p-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 text-center mb-6">
               Let's get you started
             </h2>
 
-            <form onSubmit={formik.handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <form onSubmit={formik.handleSubmit} className="space-y-6 sm:space-y-8">
+              {/* Username & Location */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <div className="h-5">
                     {formik.touched.name && formik.errors.name && (
@@ -197,9 +200,7 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type="text"
                     placeholder="Username"
-                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                         border-0 border-b-2 border-gray-300 focus:border-green-600 
-                         focus:outline-none bg-transparent"
+                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
                   />
                 </div>
 
@@ -219,19 +220,18 @@ const RegistrationPage = () => {
                     name="location.address"
                     value={formik.values.location.address}
                     onChange={(e) => {
-                      formik.setFieldValue("location.address", e.target.value);
+                      formik.setFieldValue('location.address', e.target.value);
                     }}
                     ref={inputRef}
                     type="text"
                     placeholder="Location"
-                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-         border-0 border-b-2 border-gray-300 focus:border-green-600 
-         focus:outline-none bg-transparent"
+                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Email & Phone */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <div className="h-5">
                     {formik.touched.email && formik.errors.email && (
@@ -245,9 +245,7 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type="email"
                     placeholder="Email"
-                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                         border-0 border-b-2 border-gray-300 focus:border-green-600 
-                         focus:outline-none bg-transparent"
+                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
                   />
                 </div>
 
@@ -264,14 +262,13 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type="tel"
                     placeholder="Phone"
-                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                         border-0 border-b-2 border-gray-300 focus:border-green-600 
-                         focus:outline-none bg-transparent"
+                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Password & Confirm Password */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="relative">
                   <div className="h-5">
                     {formik.touched.password && formik.errors.password && (
@@ -283,11 +280,9 @@ const RegistrationPage = () => {
                     value={formik.values.password}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    type={showPassword ? "password" : "text"}
+                    type={showPassword ? 'text' : 'password'}
                     placeholder="Password"
-                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-               border-0 border-b-2 border-gray-300 focus:border-green-600 
-               focus:outline-none bg-transparent pr-8"
+                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent pr-8 text-sm sm:text-base"
                   />
                   <button
                     type="button"
@@ -309,11 +304,9 @@ const RegistrationPage = () => {
                     value={formik.values.confirmPassword}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    type={showConfirmPassword ? "password" : "text"}
+                    type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm Password"
-                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-               border-0 border-b-2 border-gray-300 focus:border-green-600 
-               focus:outline-none bg-transparent pr-8"
+                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent pr-8 text-sm sm:text-base"
                   />
                   <button
                     type="button"
@@ -325,23 +318,23 @@ const RegistrationPage = () => {
                 </div>
               </div>
 
+              {/* Submit Button */}
               <div className="pt-4">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-900 h-[30px] hover:bg-green-600 
-                       text-white font-semibold py-3 pt-1 px-4 
-                       rounded-full transition-colors duration-200"
+                  className="w-full bg-green-900 hover:bg-green-600 text-white font-semibold py-2 sm:py-3 rounded-full transition-colors duration-200"
                 >
-                  {loading ? "Signing..." : "Sign up"}
+                  {loading ? 'Signing...' : 'Sign up'}
                 </button>
               </div>
 
+              {/* Sign In Link */}
               <div className="text-center pt-2">
-                <p className="text-gray-600 text-sm">
-                  Already have account?{" "}
+                <p className="text-gray-600 text-sm sm:text-base">
+                  Already have account?{' '}
                   <span
-                    onClick={() => navigate("/login", { replace: true })}
+                    onClick={() => navigate('/login', { replace: true })}
                     className="text-green-600 hover:text-green-700 font-medium cursor-pointer"
                   >
                     Sign in

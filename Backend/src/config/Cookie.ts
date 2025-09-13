@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+dotenv.config({ path: envFile });
 
 export const COOKIE_CONFIG = {
   MAX_AGE: Number(process.env.TOKEN_MAX_AGE) * 1000,

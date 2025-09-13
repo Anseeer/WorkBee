@@ -6,7 +6,8 @@ export interface IMessageDTO {
     senderId: string;
     receiverId: string;
     content: string;
-    contentType: string
+    contentType: string;
+    createdAt:string;
 }
 
 

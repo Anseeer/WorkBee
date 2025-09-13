@@ -45,32 +45,34 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
-
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="absolute top-7.5 left-7.5">
-          <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
-        </div>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 relative">
+      {/* Logo */}
+      <div className="absolute top-4 left-4 sm:top-7 sm:left-7">
+        <h1 className="merienda-text text-2xl sm:text-3xl text-green-900">WorkBee</h1>
+      </div>
 
-        <div className="bg-white rounded-3xl border-2 border-green-600 p-8 shadow-md">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-8">
+      {/* Form Card */}
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-3xl border-2 border-green-600 shadow-md p-6 sm:p-8">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 text-center mb-6 sm:mb-8">
             Set a new password for your account.
           </h2>
 
           <form onSubmit={formik.handleSubmit} className="space-y-6">
+            {/* Password Field */}
             <div className="relative">
               {formik.touched.password && formik.errors.password && (
-                <span className="text-sm text-red-500">{formik.errors.password}</span>
+                <span className="text-sm sm:text-base text-red-500">{formik.errors.password}</span>
               )}
               <input
-                type={showPassword ? "password" : "text"}
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 placeholder="Password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full px-0 py-3 pr-10 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
+                className="w-full px-2 py-3 sm:px-3 sm:py-3 pr-10 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none text-sm sm:text-base"
               />
               <span
                 onClick={togglePasswordVisibility}
@@ -80,18 +82,19 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
               </span>
             </div>
 
+            {/* Confirm Password Field */}
             <div className="relative">
               {formik.touched.confirmPass && formik.errors.confirmPass && (
-                <span className="text-sm text-red-500">{formik.errors.confirmPass}</span>
+                <span className="text-sm sm:text-base text-red-500">{formik.errors.confirmPass}</span>
               )}
               <input
-                type={showConfirmPassword ? "password" : "text"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 name="confirmPass"
                 placeholder="Confirm Password"
                 value={formik.values.confirmPass}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full px-0 py-3 pr-10 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none"
+                className="w-full px-2 py-3 sm:px-3 sm:py-3 pr-10 text-gray-600 placeholder-gray-400 bg-transparent border-0 border-b border-gray-300 focus:border-green-500 focus:outline-none text-sm sm:text-base"
               />
               <span
                 onClick={toggleConfirmPasswordVisibility}
@@ -101,10 +104,10 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
               </span>
             </div>
 
-
+            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-green-900 hover:bg-green-600 text-white h-10 font-medium rounded-lg transition-colors duration-200"
+              className="w-full bg-green-900 hover:bg-green-600 text-white h-10 sm:h-12 font-medium rounded-lg transition-colors duration-200 text-sm sm:text-base"
             >
               Reset
             </button>

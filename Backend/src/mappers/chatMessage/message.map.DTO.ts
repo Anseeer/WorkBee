@@ -1,16 +1,19 @@
 import { IMessage } from "../../model/chatMessage/IMessage";
 import { IMessageDTO, IMessageEntity } from "./message.map.DTO.interface";
 
+
 export const mapMessageToDTO = (message: IMessage): IMessageDTO => {
     return {
-        id:message.id,
+        id: message.id,
         chatId: message.chatId,
-        senderId: message.senderId.toString(),
-        receiverId: message.receiverId.toString(),
+        senderId: message.senderId?.toString() || "",
+        receiverId: message.receiverId?.toString() || "",
         content: message.content,
-        contentType: message.contentType
+        contentType: message.contentType,
+        createdAt: message.createdAt?.toString() || ""
     }
 }
+
 
 export const mapMessageToEntity = (message: IMessage): IMessageEntity => {
     return {

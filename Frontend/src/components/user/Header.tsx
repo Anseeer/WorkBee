@@ -68,39 +68,48 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex-shrink-0">
-                        <h1 onClick={() => navigate('/')} className="merienda-text text-3xl cursor-pointer text-green-900">WorkBee</h1>
+                        <h1
+                            onClick={() => navigate('/')}
+                            className="merienda-text text-2xl sm:text-3xl cursor-pointer text-green-900"
+                        >
+                            WorkBee
+                        </h1>
                     </div>
 
-                    <div className="hidden md:flex items-center space-x-6">
+                    <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
                         {isLogged === null ? (
                             <Loader />
                         ) : !isLogged ? (
                             <>
                                 <button
                                     onClick={() => handleNavigate(API_ROUTES.USER.LOGIN)}
-                                    className="text-gray-700 hover:text-green-700 font-medium transition-colors">
+                                    className="text-gray-700 hover:text-green-700 font-medium transition-colors"
+                                >
                                     Sign up / Login
                                 </button>
                                 <button
                                     onClick={() => handleNavigate(API_ROUTES.WORKER.LANDING)}
-                                    className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200">
+                                    className="bg-white border-2 border-green-700 text-gray-700 px-4 py-2 rounded-full text-sm sm:text-base font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200"
+                                >
                                     Become Worker
                                 </button>
                             </>
                         ) : (
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-3 sm:space-x-4">
                                 <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
-                                    <Bell className="h-6 w-6 cursor-pointer" />
+                                    <Bell className="h-5 w-5 sm:h-6 sm:w-6 cursor-pointer" />
                                 </button>
                                 <button
                                     onClick={handleMessage}
-                                    className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
-                                    <MessageSquare className="h-6 w-6 cursor-pointer" />
+                                    className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                                >
+                                    <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 cursor-pointer" />
                                 </button>
                                 <button
                                     onClick={handleProfile}
-                                    className="p-2 cursor-pointer text-gray-600 hover:text-gray-900 transition-colors">
-                                    <User className="h-6 w-6" />
+                                    className="p-2 cursor-pointer text-gray-600 hover:text-gray-900 transition-colors"
+                                >
+                                    <User className="h-5 w-5 sm:h-6 sm:w-6" />
                                 </button>
                             </div>
                         )}
@@ -121,18 +130,20 @@ export default function Header() {
                 </div>
 
                 {isMobileMenuOpen && (
-                    <div className="md:hidden absolute top-16 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 w-60">
+                    <div className="md:hidden absolute top-16 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 w-56 sm:w-64">
                         <div className="flex flex-col space-y-4">
                             {!isLogged ? (
                                 <>
                                     <button
                                         onClick={() => handleNavigate(API_ROUTES.USER.LOGIN)}
-                                        className="text-gray-700 hover:text-green-700 font-medium text-left transition-colors">
+                                        className="text-gray-700 hover:text-green-700 font-medium text-left transition-colors"
+                                    >
                                         Sign up / Login
                                     </button>
                                     <button
                                         onClick={() => handleNavigate(API_ROUTES.WORKER.LANDING)}
-                                        className="bg-white border-2 border-green-700 text-gray-700 px-6 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200 w-fit">
+                                        className="bg-white border-2 border-green-700 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:border-green-550 hover:bg-gray-50 transition-all duration-200 w-fit"
+                                    >
                                         Become Worker
                                     </button>
                                 </>
@@ -148,7 +159,8 @@ export default function Header() {
                                     </button>
                                     <button
                                         onClick={handleLogout}
-                                        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
+                                        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
+                                    >
                                         <User className="h-5 w-5" />
                                         <span>Logout</span>
                                     </button>
@@ -160,4 +172,5 @@ export default function Header() {
             </div>
         </header>
     );
+
 }
