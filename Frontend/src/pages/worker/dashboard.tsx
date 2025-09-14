@@ -38,15 +38,13 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="w-full flex">
+        <div className="w-full h-screen flex">
             <WorkerSidebar handleTab={handleTab} />
-
-            <div className="w-full">
+            <div className="w-full h-full flex flex-col">
                 <div className="flex items-center justify-between py-2 px-2">
                     <h3 className="text-2xl font-semibold">
                         {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                     </h3>
-
                     {activeTab === "account" && workerData.worker?.isAccountBuilt && (
                         <button
                             className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
@@ -56,66 +54,70 @@ const Dashboard = () => {
                         </button>
                     )}
                 </div>
-
                 <hr className="border border-green-900" />
-
-                {activeTab === "dashboard" ? (
-                    workerData.worker?.isAccountBuilt ? (
-                        <div className="flex items-center justify-center h-[550px] relative overflow-hidden">
-                            <video
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
-                            >
-                                <source src="/bee.mp4" type="video/mp4" />
-                            </video>
-
-                            <div className="absolute inset-0 "></div>
-                            <div className="relative text-center space-y-4 text-white">
-                                <div className="flex-shrink-0">
-                                    <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
-                                </div>
-                                <p className="text-black text-lg text-semibold">Dashboard</p>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex justify-center mt-40">
-                            <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
-                                <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                                    Build Your Account
-                                </h2>
-                                <p className="text-gray-600 text-sm mb-6">
-                                    Complete your account setup to start receiving work opportunities and
-                                    manage your dashboard.
-                                </p>
-                                <button
-                                    onClick={(e) => { e.preventDefault(); handleTab('account') }}
-                                    className="bg-green-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-green-800 transition-colors"
+                <div className="flex-1 min-h-0 overflow-auto">
+                    {activeTab === "dashboard" ? (
+                        workerData.worker?.isAccountBuilt ? (
+                            <div className="relative flex items-center justify-center h-full overflow-hidden">
+                                <video
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className="absolute inset-0 w-full h-full object-cover opacity-30"
                                 >
-                                    Build Account
-                                </button>
+                                    <source src="/bee.mp4" type="video/mp4" />
+                                </video>
+                                <div className="absolute inset-0"></div>
+                                <div className="relative text-center space-y-4 text-white">
+                                    <div className="flex-shrink-0">
+                                        <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
+                                    </div>
+                                    <p className="text-black text-lg text-semibold">Dashboard</p>
+                                </div>
                             </div>
-                        </div>
-                    )
-                ) : activeTab === "account" ? (
-                    workerData.worker?.isAccountBuilt ? (
-                        <>
+                        ) : (
+                            <div className="flex justify-center h-full items-center">
+                                <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
+                                    <h2 className="text-xl font-semibold text-gray-800 mb-3">
+                                        Build Your Account
+                                    </h2>
+                                    <p className="text-gray-600 text-sm mb-6">
+                                        Complete your account setup to start receiving work opportunities and
+                                        manage your dashboard.
+                                    </p>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleTab('account');
+                                        }}
+                                        className="bg-green-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-green-800 transition-colors"
+                                    >
+                                        Build Account
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    ) : activeTab === "account" ? (
+                        workerData.worker?.isAccountBuilt ? (
                             <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
-                        </>
-                    ) : (
-                        <BuildAccount />
-                    )
-                ) : activeTab === "history" ? (
-                    <WorkHistory />
-                ) : activeTab === "wallet" ? (
-                    <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700">
-                        <Wallet workerId={workerData.worker?._id as string} historyPrev={wallet?.transactions} balancePrev={wallet?.balance} />
-                    </div>
-                ) : activeTab === "message" ? (
-                    <Message />
-                ) : null}
+                        ) : (
+                            <BuildAccount />
+                        )
+                    ) : activeTab === "history" ? (
+                        <WorkHistory />
+                    ) : activeTab === "wallet" ? (
+                        <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700 h-full">
+                            <Wallet
+                                workerId={workerData.worker?._id as string}
+                                historyPrev={wallet?.transactions}
+                                balancePrev={wallet?.balance}
+                            />
+                        </div>
+                    ) : activeTab === "message" ? (
+                        <Message />
+                    ) : null}
+                </div>
             </div>
         </div>
     );

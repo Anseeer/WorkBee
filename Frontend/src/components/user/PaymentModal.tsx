@@ -84,27 +84,31 @@ const PaymentModal = ({ onClose, Amount, workId }: Props) => {
     });
 
     return (
-        <div className="fixed inset-0 bg-transparent bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-transparent bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
             <form
                 onSubmit={formik.handleSubmit}
-                className="bg-white border-2 border-green-700 rounded-lg shadow-lg p-6 w-96 relative animate-fadeIn"
+                className="bg-white border-2 border-green-700 rounded-lg shadow-lg p-4 sm:p-5 md:p-6 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] relative animate-fadeIn"
             >
                 {/* Close Icon */}
                 <button
                     type="button"
                     onClick={onClose}
-                    className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                    className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 text-gray-500 hover:text-gray-700"
+                    aria-label="Close payment modal"
                 >
-                    ✖
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
 
                 {/* Title */}
-                <h2 className="text-lg font-semibold mb-2 text-center">Complete Your Payment</h2>
+                <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-1 sm:mb-2 text-center">
+                    Complete Your Payment
+                </h2>
 
                 {/* Comfort Message */}
-                <p className="text-sm text-gray-600 mb-4 text-center">
-                    Please enter the amount based on the service.
-                    We ensure your payment is safe & secure.
+                <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 md:mb-4 text-center break-words">
+                    Please enter the amount based on the service. We ensure your payment is safe & secure.
                 </p>
 
                 {/* Input */}
@@ -115,7 +119,7 @@ const PaymentModal = ({ onClose, Amount, workId }: Props) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     placeholder="Enter amount"
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700 mb-2 ${formik.touched.amount && formik.errors.amount
+                    className={`w-full border rounded px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-700 mb-2 sm:mb-3 ${formik.touched.amount && formik.errors.amount
                         ? "border-red-500"
                         : "border-gray-300"
                         }`}
@@ -123,14 +127,14 @@ const PaymentModal = ({ onClose, Amount, workId }: Props) => {
 
                 {/* Error Message */}
                 {formik.touched.amount && formik.errors.amount && (
-                    <p className="text-red-500 text-sm mb-4">{formik.errors.amount}</p>
+                    <p className="text-red-500 text-xs sm:text-sm mb-2 sm:mb-3 break-words">{formik.errors.amount}</p>
                 )}
 
                 {/* Pay Button */}
                 <div className="flex justify-center">
                     <button
                         type="submit"
-                        className="px-6 py-2 rounded bg-green-700 text-white hover:bg-green-500 transition-all duration-300"
+                        className="px-4 sm:px-5 md:px-6 py-1 sm:py-2 text-xs sm:text-sm md:text-base rounded bg-green-700 text-white hover:bg-green-500 transition-all duration-300 w-full sm:w-auto"
                     >
                         Pay Now
                     </button>

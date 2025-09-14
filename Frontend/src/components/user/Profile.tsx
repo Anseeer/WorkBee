@@ -113,12 +113,245 @@ const ProfileSection = () => {
 
     }
 
+    // return (
+    //     <div className="flex h-[530px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
+    //         {/* Sidebar */}
+    //         <div className="w-52 bg-white border-r-2 rounded-l-3xl border-gray-300">
+    //             <div className="p-6">
+    //                 <nav className="space-y-4">
+    //                     {[
+    //                         { label: "Profile", key: "Profile" },
+    //                         { label: "MyWorks", key: "MyWorks" },
+    //                         { label: "Wallet", key: "Wallet" }
+    //                     ].map((item) => (
+    //                         <div
+    //                             key={item.key}
+    //                             onClick={() => handleSectionClick(item.key)}
+    //                             className={`text-lg font-medium cursor-pointer px-3 py-2 rounded-lg transition-all duration-200 
+    //                     ${isActiveTab === item.key
+    //                                     ? "text-green-700 font-bold bg-green-100 border-l-4 border-green-600 shadow-md shadow-green-500/30"
+    //                                     : "hover:bg-gray-100"
+    //                                 }`}
+    //                         >
+    //                             {item.label}
+    //                         </div>
+    //                     ))}
+    //                 </nav>
+    //             </div>
+    //         </div>
+
+
+    //         {/* Main Content */}
+    //         <div className="flex-1 bg-gray-50 rounded-bl rounded-2xl ">
+    //             {/* Header */}
+    //             <div className="bg-white border-b rounded-tr-2xl border-gray-300 px-8 py-4 flex justify-between items-center">
+    //                 <h1 className="text-2xl font-semibold text-black">{isActiveTab == "Profile" ? "Account" : isActiveTab == "MyWorks" ? "Work History" : isActiveTab == "Wallet" ? "Wallet" : null}</h1>
+    //                 {isActiveTab == "Profile" ? (
+    //                     <button
+    //                         onClick={handleEdit}
+    //                         className="px-8 py-2 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
+    //         transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
+    //                     >
+    //                         Edit
+    //                     </button>
+    //                 ) : isActiveTab == "Wallet" ? (
+    //                     <button
+    //                         onClick={handleAddMoney}
+    //                         className="px-3 py-1 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
+    //         transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
+    //                     >
+    //                         Add Money
+    //                     </button>
+    //                 ) : null}
+    //             </div>
+
+    //             {/* Profile Content */}
+    //             {isActiveTab == "Profile" ? (
+    //                 <div className="p-8">
+    //                     <div className="flex items-start space-x-12">
+    //                         {/* Profile Picture */}
+    //                         <div className="flex-shrink-0">
+    //                             <div className="w-32 h-32 rounded-full flex items-center justify-center">
+    //                                 <img src={Profile} alt="Profile img" className="w-32 h-32 bg-gray-300 object-cover rounded-full border-4 border-black " />
+    //                             </div>
+    //                         </div>
+
+    //                         {/* Profile Information */}
+    //                         <div className="flex-1 space-y-6">
+    //                             {/* Name */}
+    //                             <div className="flex items-center space-x-4">
+    //                                 <div className="w-6 h-6 flex items-center justify-center">
+    //                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+    //                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    //                                         <circle cx="12" cy="7" r="4"></circle>
+    //                                     </svg>
+    //                                 </div>
+    //                                 <span className="text-lg font-medium text-black">{user?.name}</span>
+    //                             </div>
+
+    //                             {/* Email */}
+    //                             <div className="flex items-center space-x-4">
+    //                                 <div className="w-6 h-6 flex items-center justify-center">
+    //                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+    //                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+    //                                         <polyline points="22,6 12,13 2,6"></polyline>
+    //                                     </svg>
+    //                                 </div>
+    //                                 <span className="text-lg text-black">{user?.email}</span>
+    //                             </div>
+
+    //                             {/* Location */}
+    //                             <div className="flex items-center space-x-4">
+    //                                 <div className="w-6 h-6 flex items-center justify-center">
+    //                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+    //                                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+    //                                         <circle cx="12" cy="10" r="3"></circle>
+    //                                     </svg>
+    //                                 </div>
+    //                                 <span className="text-lg text-black">{user?.location.address.split(" ").slice(0, 7).join(" ")}
+    //                                 </span>
+    //                             </div>
+
+    //                             {/* Phone */}
+    //                             <div className="flex items-center space-x-4">
+    //                                 <div className="w-6 h-6 flex items-center justify-center">
+    //                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+    //                                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    //                                     </svg>
+    //                                 </div>
+    //                                 <span className="text-lg text-black">{user?.phone}</span>
+    //                             </div>
+
+    //                             {/* Logout Button */}
+    //                             <div className="pt-6">
+    //                                 <button
+    //                                     onClick={handleLogout}
+    //                                     className="px-8 py-3 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
+    //         transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
+    //                                 >
+    //                                     Logout
+    //                                 </button>
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             ) : isActiveTab == "MyWorks" ? (
+    //                 <div className="w-full p-5">
+    //                     {/* Header */}
+    //                     <div className="grid grid-cols-6 border-b pb-2 font-semibold text-lg">
+    //                         <div>Work</div>
+    //                         <div>Date</div>
+    //                         <div>Worker</div>
+    //                         <div>Status</div>
+    //                         <div>Payment</div>
+    //                         <div>Action</div>
+    //                     </div>
+    //                     {/* Row or Empty Message */}
+    //                     {workHistory.length > 0 ? (
+    //                         workHistory.map((work) => (
+    //                             <div
+    //                                 key={work._id}
+    //                                 className="grid grid-cols-6 items-center bg-gray-50 rounded-lg p-3 my-3 shadow-sm"
+    //                             >
+    //                                 <div className="font-bold">{work.service.split(" ").slice(0, 3).join(" ")}</div>
+    //                                 <div>
+    //                                     {work.createdAt
+    //                                         ? new Date(work.createdAt).toLocaleDateString("en-US", {
+    //                                             weekday: "short",
+    //                                             month: "short",
+    //                                             day: "numeric",
+    //                                         })
+    //                                         : "No date"}
+    //                                 </div>
+    //                                 <div>{work.workerName || "Name"}</div>
+    //                                 <div
+    //                                     className={`px-3 py-1 text-sm font-medium rounded-full w-fit
+    // ${work.status === "Pending" ? "bg-orange-100 text-orange-700" :
+    //                                             work.status === "Canceled" ? "bg-red-100 text-red-700" :
+    //                                                 work.status === "Accepted" ? "bg-blue-100 text-blue-700" :
+    //                                                     work.status === "Rejected" ? "bg-red-100 text-red-700" :
+    //                                                         work.status === "Completed" ? "bg-green-100 text-green-700" :
+    //                                                             "bg-gray-100 text-gray-700"}`}
+    //                                 >
+    //                                     {work.status || "Pending"}
+    //                                 </div>
+    //                                 <div>{work.wage || "InitialPayment"}</div>
+    //                                 {work.status == "Completed" && work.paymentStatus == "Pending" ? (
+    //                                     <button
+    //                                         onClick={() => HandlePay(work._id as string, work.wage)}
+    //                                         className="px-3 py-1 rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+    //                                     >
+    //                                         Pay
+    //                                     </button>
+    //                                 ) : (
+    //                                     <button
+    //                                         onClick={() => HandleWorkInfo(work._id as string)}
+    //                                         className="px-3 py-1 rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+    //                                     >
+    //                                         Info
+    //                                     </button>
+    //                                 )}
+    //                             </div>
+    //                         ))
+    //                     ) : (
+    //                         <div className="text-center text-gray-500 py-8">No work history found.</div>
+    //                     )}
+
+    //                     {/* Pagination */}
+    //                     {totalPage > 1 && workHistory.length > 0 && (
+    //                         <div className="flex justify-center items-center mb-1 mt-2 space-x-2">
+    //                             <button
+    //                                 onClick={() => handlePageChange(currentPage - 1)}
+    //                                 disabled={currentPage === 1}
+    //                                 className="px-1 rounded disabled:opacity-50"
+    //                             >
+    //                                 &lt;
+    //                             </button>
+
+    //                             {Array.from({ length: totalPage }, (_, idx) => idx + 1).map((page) => (
+    //                                 <button
+    //                                     key={page}
+    //                                     onClick={() => handlePageChange(page)}
+    //                                     className={`px-2 border rounded-full ${currentPage === page ? "bg-gray-900 text-white" : ""
+    //                                         }`}
+    //                                 >
+    //                                     {page}
+    //                                 </button>
+    //                             ))}
+
+    //                             <button
+    //                                 onClick={() => handlePageChange(currentPage + 1)}
+    //                                 disabled={currentPage === totalPage}
+    //                                 className="px-2 py-1 rounded disabled:opacity-50"
+    //                             >
+    //                                 &gt;
+    //                             </button>
+    //                         </div>
+    //                     )}
+    //                 </div>
+
+    //             ) : isActiveTab == "Edit" ? (
+    //                 <EditUserModal onClose={Close} setEdit={setIsEdit} />
+    //             ) : isActiveTab == "Wallet" ? (
+    //                 <Wallet historyPrev={wallet?.transactions} workerId={userId as string} reload={reloadWallet} balancePrev={wallet?.balance} />
+    //             ) : null}
+    //             {isPaymentModal ? (
+    //                 <PaymentModal Amount={amount as number} workId={workId as string} onClose={closeModal} />
+    //             ) : isAddMoneyModal ? (
+    //                 <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />
+    //             ) : isWorkInfoModal ? (
+    //                 <WorkInfoModal workId={workId as string} closeModal={closeModal} />
+    //             ) : null}
+    //         </div>
+    //     </div>
+    // );
+
     return (
-        <div className="flex h-[530px] mx-50 my-10 border border-green-900 border-3 rounded-xl bg-white">
+        <div className="flex flex-col md:flex-row h-auto min-h-[400px] mx-[10%]   my-6 md:my-10 border border-green-900 border-3 rounded-xl bg-white overflow-hidden">
             {/* Sidebar */}
-            <div className="w-52 bg-white border-r-2 rounded-l-3xl border-gray-300">
-                <div className="p-6">
-                    <nav className="space-y-4">
+            <div className="w-full md:w-44 lg:w-52 bg-white border-b-2 md:border-b-0 md:border-r-2 rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-gray-300">
+                <div className="p-3 sm:p-4 md:p-6">
+                    <nav className="space-y-2 sm:space-y-3 md:space-y-4">
                         {[
                             { label: "Profile", key: "Profile" },
                             { label: "MyWorks", key: "MyWorks" },
@@ -127,8 +360,8 @@ const ProfileSection = () => {
                             <div
                                 key={item.key}
                                 onClick={() => handleSectionClick(item.key)}
-                                className={`text-lg font-medium cursor-pointer px-3 py-2 rounded-lg transition-all duration-200 
-                        ${isActiveTab === item.key
+                                className={`text-sm sm:text-base md:text-lg font-medium cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 md:py-2 rounded-lg transition-all duration-200 
+                                ${isActiveTab === item.key
                                         ? "text-green-700 font-bold bg-green-100 border-l-4 border-green-600 shadow-md shadow-green-500/30"
                                         : "hover:bg-gray-100"
                                     }`}
@@ -140,94 +373,83 @@ const ProfileSection = () => {
                 </div>
             </div>
 
-
             {/* Main Content */}
-            <div className="flex-1 bg-gray-50 rounded-bl rounded-2xl ">
+            <div className="flex-1 bg-gray-50 rounded-b-2xl md:rounded-bl-2xl md:rounded-tr-2xl overflow-hidden p-2 sm:p-3 md:p-5 lg:min-h-[500px] lg:p-6">
                 {/* Header */}
-                <div className="bg-white border-b rounded-tr-2xl border-gray-300 px-8 py-4 flex justify-between items-center">
-                    <h1 className="text-2xl font-semibold text-black">{isActiveTab == "Profile" ? "Account" : isActiveTab == "MyWorks" ? "Work History" : isActiveTab == "Wallet" ? "Wallet" : null}</h1>
-                    {isActiveTab == "Profile" ? (
+                <div className="bg-white border-b rounded-tr-2xl md:rounded-tr-none border-gray-300 px-2 sm:px-3 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 md:gap-4">
+                    <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-black truncate">
+                        {isActiveTab === "Profile" ? "Account" : isActiveTab === "MyWorks" ? "Work History" : isActiveTab === "Wallet" ? "Wallet" : null}
+                    </h1>
+                    {(isActiveTab === "Profile" || isActiveTab === "Wallet") && (
                         <button
-                            onClick={handleEdit}
-                            className="px-8 py-2 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
-            transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
+                            onClick={isActiveTab === "Profile" ? handleEdit : handleAddMoney}
+                            className="px-2 sm:px-3 md:px-4 lg:px-5 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-base border-2 border-black rounded-full text-black font-medium transition-all duration-300 hover:bg-gray-300 hover:shadow-lg hover:scale-105"
                         >
-                            Edit
+                            {isActiveTab === "Profile" ? "Edit" : "Add Money"}
                         </button>
-                    ) : isActiveTab == "Wallet" ? (
-                        <button
-                            onClick={handleAddMoney}
-                            className="px-3 py-1 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
-            transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
-                        >
-                            Add Money
-                        </button>
-                    ) : null}
+                    )}
                 </div>
 
                 {/* Profile Content */}
-                {isActiveTab == "Profile" ? (
-                    <div className="p-8">
-                        <div className="flex items-start space-x-12">
+                {isActiveTab === "Profile" ? (
+                    <div className="p-2 sm:p-3 md:p-5 lg:p-6">
+                        <div className="flex flex-col items-center space-y-3 sm:space-y-4 md:flex-row md:items-start md:space-x-4 lg:space-x-6 md:space-y-0">
                             {/* Profile Picture */}
-                            <div className="flex-shrink-0">
-                                <div className="w-32 h-32 rounded-full flex items-center justify-center">
-                                    <img src={Profile} alt="Profile img" className="w-32 h-32 bg-gray-300 object-cover rounded-full border-4 border-black " />
+                            <div className="flex-shrink-0 flex justify-center">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center">
+                                    <img
+                                        src={Profile}
+                                        alt="Profile img"
+                                        className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-gray-300 object-cover rounded-full border-3 border-black"
+                                    />
                                 </div>
                             </div>
 
                             {/* Profile Information */}
-                            <div className="flex-1 space-y-6">
-                                {/* Name */}
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-6 h-6 flex items-center justify-center">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                            <div className="flex-1 space-y-2 sm:space-y-3 md:space-y-4 text-xs sm:text-sm md:text-base min-w-0">
+                                <div className="flex items-center space-x-2 sm:space-x-3">
+                                    <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex items-center justify-center flex-shrink-0">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
                                         </svg>
                                     </div>
-                                    <span className="text-lg font-medium text-black">{user?.name}</span>
+                                    <span className="text-black break-words">{user?.name}</span>
                                 </div>
 
-                                {/* Email */}
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-6 h-6 flex items-center justify-center">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                                <div className="flex items-center space-x-2 sm:space-x-3">
+                                    <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex items-center justify-center flex-shrink-0">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
                                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                             <polyline points="22,6 12,13 2,6"></polyline>
                                         </svg>
                                     </div>
-                                    <span className="text-lg text-black">{user?.email}</span>
+                                    <span className="text-black break-words">{user?.email}</span>
                                 </div>
 
-                                {/* Location */}
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-6 h-6 flex items-center justify-center">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                                <div className="flex items-center space-x-2 sm:space-x-3">
+                                    <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex items-center justify-center flex-shrink-0">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
                                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                             <circle cx="12" cy="10" r="3"></circle>
                                         </svg>
                                     </div>
-                                    <span className="text-lg text-black">{user?.location.address.split(" ").slice(0, 7).join(" ")}
-                                    </span>
+                                    <span className="text-black break-words">{user?.location.address}</span>
                                 </div>
 
-                                {/* Phone */}
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-6 h-6 flex items-center justify-center">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                                <div className="flex items-center space-x-2 sm:space-x-3">
+                                    <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex items-center justify-center flex-shrink-0">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
                                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                                         </svg>
                                     </div>
-                                    <span className="text-lg text-black">{user?.phone}</span>
+                                    <span className="text-black break-words">{user?.phone}</span>
                                 </div>
 
-                                {/* Logout Button */}
-                                <div className="pt-6">
+                                <div className="pt-2 sm:pt-3 md:pt-4">
                                     <button
                                         onClick={handleLogout}
-                                        className="px-8 py-3 cursor-pointer hover:bg-gray-300 hover:z-[100] hover:shadow-xl  hover:scale-105 
-            transition-all duration-300 ease-in-out border-2 border-black rounded-full text-black font-medium hover:bg-gray-50 transition-colors"
+                                        className="px-2 sm:px-3 md:px-4 lg:px-5 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-base border-2 border-black rounded-full text-black font-medium hover:bg-gray-300 hover:shadow-lg hover:scale-105 transition-all duration-300"
                                     >
                                         Logout
                                     </button>
@@ -235,58 +457,54 @@ const ProfileSection = () => {
                             </div>
                         </div>
                     </div>
-                ) : isActiveTab == "MyWorks" ? (
-                    <div className="w-full p-5">
-                        {/* Header */}
-                        <div className="grid grid-cols-6 border-b pb-2 font-semibold text-lg">
+                ) : isActiveTab === "MyWorks" ? (
+                    <div className="w-full p-2 sm:p-3 md:p-4 lg:p-5 overflow-x-auto">
+                        {/* Table header becomes stackable */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3 border-b pb-1 sm:pb-2 font-semibold text-xs sm:text-sm md:text-base">
                             <div>Work</div>
                             <div>Date</div>
-                            <div>Worker</div>
+                            <div className="hidden sm:block">Worker</div>
                             <div>Status</div>
-                            <div>Payment</div>
+                            <div className="hidden md:block">Payment</div>
                             <div>Action</div>
                         </div>
-                        {/* Row or Empty Message */}
+
                         {workHistory.length > 0 ? (
                             workHistory.map((work) => (
                                 <div
                                     key={work._id}
-                                    className="grid grid-cols-6 items-center bg-gray-50 rounded-lg p-3 my-3 shadow-sm"
+                                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 items-center bg-gray-50 rounded-lg p-2 sm:p-3 my-1 sm:my-2 shadow-sm gap-2"
                                 >
-                                    <div className="font-bold">{work.service.split(" ").slice(0, 3).join(" ")}</div>
-                                    <div>
-                                        {work.createdAt
-                                            ? new Date(work.createdAt).toLocaleDateString("en-US", {
-                                                weekday: "short",
-                                                month: "short",
-                                                day: "numeric",
-                                            })
-                                            : "No date"}
-                                    </div>
-                                    <div>{work.workerName || "Name"}</div>
-                                    <div
-                                        className={`px-3 py-1 text-sm font-medium rounded-full w-fit
-    ${work.status === "Pending" ? "bg-orange-100 text-orange-700" :
+                                    <div className="font-medium text-xs sm:text-sm md:text-base break-words">{work.service}</div>
+                                    <div className="text-xs sm:text-sm">{work.createdAt ? new Date(work.createdAt).toLocaleDateString("en-US", {
+                                        weekday: "short",
+                                        month: "short",
+                                        day: "numeric",
+                                    }) : "No date"}</div>
+                                    <div className="hidden sm:block text-xs sm:text-sm break-words">{work.workerName || "Name"}</div>
+                                    <div className="text-xs sm:text-sm">
+                                        <span className={`px-1 sm:px-2 py-0.5 text-xs sm:text-sm font-medium rounded-full w-fit
+                                        ${work.status === "Pending" ? "bg-orange-100 text-orange-700" :
                                                 work.status === "Canceled" ? "bg-red-100 text-red-700" :
                                                     work.status === "Accepted" ? "bg-blue-100 text-blue-700" :
                                                         work.status === "Rejected" ? "bg-red-100 text-red-700" :
                                                             work.status === "Completed" ? "bg-green-100 text-green-700" :
-                                                                "bg-gray-100 text-gray-700"}`}
-                                    >
-                                        {work.status || "Pending"}
+                                                                "bg-gray-100 text-gray-700"}`}>
+                                            {work.status || "Pending"}
+                                        </span>
                                     </div>
-                                    <div>{work.wage || "InitialPayment"}</div>
-                                    {work.status == "Completed" && work.paymentStatus == "Pending" ? (
+                                    <div className="hidden md:block text-xs sm:text-sm break-words">{work.wage || "InitialPayment"}</div>
+                                    {work.status === "Completed" && work.paymentStatus === "Pending" ? (
                                         <button
                                             onClick={() => HandlePay(work._id as string, work.wage)}
-                                            className="px-3 py-1 rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                            className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
                                             Pay
                                         </button>
                                     ) : (
                                         <button
                                             onClick={() => HandleWorkInfo(work._id as string)}
-                                            className="px-3 py-1 rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                            className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
                                         >
                                             Info
                                         </button>
@@ -294,16 +512,16 @@ const ProfileSection = () => {
                                 </div>
                             ))
                         ) : (
-                            <div className="text-center text-gray-500 py-8">No work history found.</div>
+                            <div className="text-center text-gray-500 py-4 sm:py-6 md:py-8 text-xs sm:text-sm md:text-base">No work history found.</div>
                         )}
 
                         {/* Pagination */}
                         {totalPage > 1 && workHistory.length > 0 && (
-                            <div className="flex justify-center items-center mb-1 mt-2 space-x-2">
+                            <div className="flex justify-center items-center mb-1 mt-2 space-x-1 sm:space-x-2">
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
-                                    className="px-1 rounded disabled:opacity-50"
+                                    className="px-1 sm:px-2 py-0.5 sm:py-1 rounded disabled:opacity-50 text-xs sm:text-sm"
                                 >
                                     &lt;
                                 </button>
@@ -312,8 +530,7 @@ const ProfileSection = () => {
                                     <button
                                         key={page}
                                         onClick={() => handlePageChange(page)}
-                                        className={`px-2 border rounded-full ${currentPage === page ? "bg-gray-900 text-white" : ""
-                                            }`}
+                                        className={`px-1 sm:px-2 py-0.5 sm:py-1 border rounded-full text-xs sm:text-sm ${currentPage === page ? "bg-gray-900 text-white" : ""}`}
                                     >
                                         {page}
                                     </button>
@@ -322,17 +539,16 @@ const ProfileSection = () => {
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
                                     disabled={currentPage === totalPage}
-                                    className="px-2 py-1 rounded disabled:opacity-50"
+                                    className="px-1 sm:px-2 py-0.5 sm:py-1 rounded disabled:opacity-50 text-xs sm:text-sm"
                                 >
                                     &gt;
                                 </button>
                             </div>
                         )}
                     </div>
-
-                ) : isActiveTab == "Edit" ? (
+                ) : isActiveTab === "Edit" ? (
                     <EditUserModal onClose={Close} setEdit={setIsEdit} />
-                ) : isActiveTab == "Wallet" ? (
+                ) : isActiveTab === "Wallet" ? (
                     <Wallet historyPrev={wallet?.transactions} workerId={userId as string} reload={reloadWallet} balancePrev={wallet?.balance} />
                 ) : null}
                 {isPaymentModal ? (
@@ -345,6 +561,8 @@ const ProfileSection = () => {
             </div>
         </div>
     );
+
+
 };
 
 
