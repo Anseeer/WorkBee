@@ -65,7 +65,7 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
     };
 
     const HandleRejected = async () => {
-        await cancelWork(workDetails?._id as string);
+        await cancelWork(workDetails?._id as string, userDetails?.id as string);
         const work = await fetchWorkDetails(workId);
         setWorkDetails(work.data);
         toast.success("Cancelation successfull")

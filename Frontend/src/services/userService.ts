@@ -96,8 +96,8 @@ export const update = async (userDetails: Partial<Iuser>, userId: string) => {
     return response;
 }
 
-export const cancelWork = async (workId: string) => {
-    await axios.patch(`works/cancel?workId=${workId}`);
+export const cancelWork = async (workId: string,id:string) => {
+    await axios.patch(`works/cancel?workId=${workId}&id=${id}`);
     return;
 }
 

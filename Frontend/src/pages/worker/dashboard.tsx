@@ -10,6 +10,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import WorkHistory from "../../components/worker/WorkHistory";
 import Wallet from "../../components/common/Wallet";
 import Message from "./message";
+import Notifications from "./notification";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -116,7 +117,9 @@ const Dashboard = () => {
                         </div>
                     ) : activeTab === "message" ? (
                         <Message />
-                    ) : null}
+                    ) : activeTab === "notification" ? (
+                        <Notifications/>
+                    ):null}
                 </div>
             </div>
         </div>

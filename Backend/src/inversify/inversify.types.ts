@@ -35,6 +35,9 @@ const TYPES = {
     chatController: Symbol.for("chatController"),
 
     messageRepository: Symbol.for("messageRepository"),
+
+    notificationRepository: Symbol.for("notificationRepository"),
+    notificationService: Symbol.for("notificationService"),
 };
 
 export default TYPES;

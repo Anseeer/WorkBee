@@ -9,6 +9,8 @@ import { generateTransactionId } from "../utilities/generateTransactionId";
 import logger from "../utilities/logger";
 import { Wallet } from "../model/wallet/wallet.model";
 import Worker from "../model/worker/worker.model";
+import { mapNotificationToEntity } from "../mappers/notification/mapNotificationToEntity";
+import Notification from "../model/notification/notification.model";
 
 router.post("/create-order", async (req, res) => {
     try {
@@ -117,6 +119,25 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
                 $push: { transactions: workerTransaction }
             }
         );
+
+        const notification = {
+            recipient: work?.workerId.toString(),
+            recipientModel: "Worker",
+            actor: work.userId.toString(),
+            actorModel: "User",
+            type: "job_paid",
+            title: work?.service,
+            body: `The payment of ${work?.wage} has been completed by ${work?.workerName}.
+                    Job description: ${work?.description}`,
+            read: false,
+        };
+
+        const notificationEntity = mapNotificationToEntity(notification);
+
+        const newNotification = await Notification.create(notificationEntity);
+        if (!newNotification) {
+            throw new Error("Faild to create notification")
+        }
 
         res.json({ success: true, message: "Payment verified successfully" });
     } catch (error) {

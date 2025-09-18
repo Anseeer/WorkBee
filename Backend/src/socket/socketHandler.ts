@@ -4,6 +4,7 @@ import container from "../inversify/inversify.container";
 import TYPES from "../inversify/inversify.types";
 import { IChatService } from "../services/chatMessage/chatMessage.service.interface";
 import { IMessage } from "../model/chatMessage/IMessage";
+import { INotificationService } from '../services/notification/notification.service.interface';
 
 interface IUpdateChatData {
     chatId: string;
@@ -19,6 +20,7 @@ export const initializeSocket = (io: Server) => {
     const activeUsersInChat: Map<string, Set<string>> = new Map();
     const userSocketMap = new Map<string, string>();
     const chatService = container.get<IChatService>(TYPES.chatService);
+    const notificationService = container.get<INotificationService>(TYPES.notificationService);
 
     io.on('connection', (socket: CustomSocket) => {
         logger.info(`A user connected! Socket ID: ${socket.id}`);
@@ -141,6 +143,22 @@ export const initializeSocket = (io: Server) => {
             } else {
                 logger.error(`Target user ${targetUserId} not found`);
             }
+        });
+
+        socket.on("push-notification", async ({ notification }) => {
+            if (!notification || !notification.recipient) return;
+            try {
+                const newNotification = await notificationService.create(notification);
+                io.to(notification.recipient).emit("new-notification", newNotification);
+            } catch (err) {
+                console.error("Error creating notification:", err);
+            }
+        });
+
+        socket.on("get-notifications", async ({ userId }) => {
+            if (!userId) return;
+            const notifications = await notificationService.getUserNotification(userId);
+            socket.emit("notifications_list", notifications);
         });
 
         socket.on('disconnect', () => {

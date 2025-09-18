@@ -13,6 +13,7 @@ export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMessageOpen, setIsMessageOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [isLogged, setIsLogged] = useState<boolean | null>(null);
 
     const navigate = useNavigate();
@@ -48,6 +49,17 @@ export default function Header() {
             setIsProfileOpen(false);
         }
     };
+
+    const handleNotification = () => {
+        if (!isNotificationsOpen) {
+            navigate('/notifications', { replace: true });
+            setIsNotificationsOpen(true)
+        } else {
+            navigate('/', { replace: true });
+            setIsNotificationsOpen(false);
+        }
+    };
+
     const handleMessage = () => {
         if (!isMessageOpen) {
             navigate('/message', { replace: true });
@@ -96,7 +108,9 @@ export default function Header() {
                             </>
                         ) : (
                             <div className="flex items-center space-x-3 sm:space-x-4">
-                                <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                                <button
+                                    onClick={handleNotification}
+                                    className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
                                     <Bell className="h-5 w-5 sm:h-6 sm:w-6 cursor-pointer" />
                                 </button>
                                 <button

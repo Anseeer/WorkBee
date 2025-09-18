@@ -54,6 +54,10 @@ import { ChatController } from "../controllers/chatMessage/chatMessage.controlle
 import { IChatController } from "../controllers/chatMessage/chatMessage.controller.interface";
 import { MessageRepository } from "../repositories/message/message.repo";
 import { IMessageRepository } from "../repositories/message/message.repo.interface";
+import { NotificationRepository } from "../repositories/notification/notification.repo";
+import { NotificationServices } from "../services/notification/notification.service";
+import { INotificationService } from "../services/notification/notification.service.interface";
+import { INotificationRepository } from "../repositories/notification/notification.repo.interface";
 
 const container = new Container();
 
@@ -85,6 +89,9 @@ container.bind<IAvailabilityService>(TYPES.availabilityService).to(AvailabilityS
 
 container.bind<IWalletRepository>(TYPES.walletRepository).to(WalletRepository);
 container.bind<IWalletService>(TYPES.walletService).to(WalletService);
+
+container.bind<INotificationRepository>(TYPES.notificationRepository).to(NotificationRepository);
+container.bind<INotificationService>(TYPES.notificationService).to(NotificationServices);
 
 container.bind<IChatRepositoy>(TYPES.chatRepository).to(ChatRepository);
 container.bind<IChatService>(TYPES.chatService).to(ChatService);

@@ -28,7 +28,8 @@ import { useEffect } from "react";
 import { fetchData } from "./utilities/fetchData";
 import Message from "./pages/user/messages";
 import { ROLE } from "./constant/roles";
-
+import { Notifications } from "./pages/user/notifications";
+import WorkerNotifications from "./pages/worker/notification";
 
 const App = () => {
 
@@ -75,6 +76,14 @@ const App = () => {
             }
           />
           <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute role={ROLE.USER} >
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/message"
             element={
               <ProtectedRoute role={ROLE.USER} >
@@ -103,6 +112,13 @@ const App = () => {
             <WorkerDetailsProvider>
               <ProtectedRoute role={ROLE.WORKER}>
                 <WorkerDashBoard />
+              </ProtectedRoute>
+            </WorkerDetailsProvider>
+          } />
+          <Route path="/workers/notifications" element={
+            <WorkerDetailsProvider>
+              <ProtectedRoute role={ROLE.WORKER}>
+                <WorkerNotifications />
               </ProtectedRoute>
             </WorkerDetailsProvider>
           } />
