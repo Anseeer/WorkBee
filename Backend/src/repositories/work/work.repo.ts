@@ -109,4 +109,26 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
+    async getPendingWorks(workerId: string): Promise<IWork[]> {
+        try {
+            return await this.model
+                .find({ workerId: workerId, status: "Pending" })
+                .sort({ createdAt: -1 });
+        } catch (error) {
+            console.error("Error fetching pending works:", error);
+            throw error;
+        }
+    }
+
+    async getAssignedWorks(workerId: string): Promise<IWork[]> {
+        try {
+            return await this.model
+                .find({ workerId: workerId, status: "Accepted" })
+                .sort({ createdAt: -1 });
+        } catch (error) {
+            console.error("Error fetching pending works:", error);
+            throw error;
+        }
+    }
+
 }

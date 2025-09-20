@@ -339,4 +339,29 @@ export class WorkService implements IWorkService {
         return { paginatedWorks, totalPage }
     }
 
+    getPendingWork = async (workerId: string): Promise<IWork[]> => {
+        try {
+            if (!workerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+            return await this._workRepositoy.getPendingWorks(workerId);
+        } catch (error) {
+            console.log("Error:", error);
+            return []; 
+        }
+    };
+
+    getAssignedWorks = async (workerId: string): Promise<IWork[]> => {
+        try {
+            if (!workerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+            return await this._workRepositoy.getAssignedWorks(workerId);
+        } catch (error) {
+            console.log("Error:", error);
+            return []; 
+        }
+    };
+
+
 }

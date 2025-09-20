@@ -9,4 +9,6 @@ export interface IWorkRepository {
     findById(workId: string): Promise<IWork | null>;
     setIsWorkCompleted(workId: string): Promise<boolean>;
     getAllWorks(): Promise<IWork[]>;
+    getPendingWorks(workerId: string): Promise<IWork[]>;
+    getAssignedWorks(workerId: string): Promise<IWork[]>;
 }

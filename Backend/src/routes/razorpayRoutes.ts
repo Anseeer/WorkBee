@@ -11,6 +11,7 @@ import { Wallet } from "../model/wallet/wallet.model";
 import Worker from "../model/worker/worker.model";
 import { mapNotificationToEntity } from "../mappers/notification/mapNotificationToEntity";
 import Notification from "../model/notification/notification.model";
+import axios from "axios";
 
 router.post("/create-order", async (req, res) => {
     try {
@@ -212,5 +213,78 @@ router.post("/verify-wallet-payment", async (req: Request, res: Response): Promi
 });
 
 
+// router.post("/withdraw-money", async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const { accountHolderName, accountNumber, ifscCode, withdrawAmount } = req.body;
+
+//         if (!accountHolderName || !accountNumber || !ifscCode || !withdrawAmount) {
+//             return res.status(400).json({ error: "Missing required fields" });
+//         }
+
+//         // Use RazorpayX base URL
+//         const baseUrl = "https://api.razorpayx.com/v1";
+//         const auth = {
+//             username: process.env.RAZORPAY_KEY_ID!, // Use RazorpayX key_id
+//             password: process.env.RAZORPAY_KEY_SECRET!, // Use RazorpayX key_secret
+//         };
+
+//         // 1️⃣ Create Contact
+//         const contactRes = await axios.post(
+//             `${baseUrl}/contacts`,
+//             { name: accountHolderName, type: "employee" }, // Or "vendor" if applicable
+//             { auth }
+//         );
+//         console.log("Contact created:", contactRes.data.id); // Debug log
+
+//         // 2️⃣ Create Fund Account
+//         const fundRes = await axios.post(
+//             `${baseUrl}/fund_accounts`,
+//             {
+//                 contact_id: contactRes.data.id,
+//                 account_type: "bank_account",
+//                 bank_account: {
+//                     name: accountHolderName,
+//                     ifsc: ifscCode,
+//                     account_number: accountNumber,
+//                 },
+//             },
+//             { auth }
+//         );
+//         console.log("Fund account created:", fundRes.data.id); // Debug log
+
+//         // 3️⃣ Create Payout
+//         const payoutAmountInPaise = Number(withdrawAmount) * 100; // Ensure positive integer
+//         if (payoutAmountInPaise <= 0) {
+//             return res.status(400).json({ error: "Withdraw amount must be positive" });
+//         }
+
+//         const payoutRes = await axios.post(
+//             `${baseUrl}/payouts`,
+//             {
+//                 account_number: process.env.RAZORPAYX_ACCOUNT!, // Your RazorpayX account number
+//                 fund_account_id: fundRes.data.id,
+//                 amount: payoutAmountInPaise,
+//                 currency: "INR",
+//                 mode: "IMPS", // Or "NEFT"/"UPI" based on time/bank
+//                 purpose: "payout",
+//                 queue_if_low_balance: true,
+//                 // Optional: reference_id: "your-unique-ref", narration: "Withdraw from app"
+//             },
+//             { auth }
+//         );
+
+//         res.json({ success: true, payout: payoutRes.data });
+
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     } catch (error: any) {
+//         console.error("Withdraw error at step:", error.config?.url || "unknown", error.response?.data || error.message || error);
+//         // More specific status based on error
+//         if (error.response?.status === 400) {
+//             res.status(400).json({ error: "Invalid request - check account details" });
+//         } else {
+//             res.status(500).json({ error: error.response?.data?.description || error.message });
+//         }
+//     }
+// });
 
 export default router;

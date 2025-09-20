@@ -156,4 +156,30 @@ export class WorkController implements IWorkController {
         }
     }
 
+    getPendingWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const workerId = req.query.workerId;
+            const pendingWorks  = await this._workService.getPendingWork(workerId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { pendingWorks });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
+    getAssignedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const workerId = req.query.workerId;
+            const assignedWorks  = await this._workService.getAssignedWorks(workerId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { assignedWorks });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
 }

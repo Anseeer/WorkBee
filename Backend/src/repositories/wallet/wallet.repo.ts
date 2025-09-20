@@ -3,7 +3,7 @@ import { IWallet } from "../../model/wallet/wallet.interface.model";
 import BaseRepository from "../base/base.repo";
 import { IWalletRepository } from "./wallet.repo.interface";
 import { Wallet } from "../../model/wallet/wallet.model";
-import { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 
 @injectable()
 export class WalletRepository extends BaseRepository<IWallet> implements IWalletRepository {
@@ -43,6 +43,50 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
             throw new Error('Error in findByUser');
         }
     }
+
+    async getEarnings(userId: string, filter: string) {
+        try {
+            let startDate: Date;
+            let endDate: Date = new Date();
+
+            const now = new Date();
+
+            if (filter === "monthly") {
+                startDate = new Date(now.getFullYear(), 0, 1);
+            } else if (filter === "yearly") {
+                startDate = new Date(now.getFullYear() - 5, 0, 1);
+            } else {
+                throw new Error("Invalid filter");
+            }
+
+            const earnings = await Wallet.aggregate([
+                { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+                { $unwind: "$transactions" },
+                {
+                    $match: {
+                        "transactions.type": "CREDIT",
+                        "transactions.createdAt": { $gte: startDate, $lte: endDate }
+                    }
+                },
+                {
+                    $group: {
+                        _id:
+                            filter === "monthly"
+                                ? { month: { $month: "$transactions.createdAt" } }
+                                : { year: { $year: "$transactions.createdAt" } },
+                        totalEarnings: { $sum: "$transactions.amount" }
+                    }
+                },
+                { $sort: { "_id": 1 } }
+            ]);
+
+            return earnings;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
 
 
 }

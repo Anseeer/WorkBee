@@ -11,10 +11,15 @@ import WorkHistory from "../../components/worker/WorkHistory";
 import Wallet from "../../components/common/Wallet";
 import Message from "./message";
 import Notifications from "./notification";
+import WorkerDashboard from "../../components/worker/WorkerDashboard";
+import type { IWallet } from "../../types/IWallet";
+import type { IAvailability } from "../../types/IAvailability";
+// import BankForm from "../../components/worker/WithdrawMoney";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isEdit, setIsEdit] = useState(false);
+    // const [isWithraw, setIsWithraw] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
@@ -38,6 +43,10 @@ const Dashboard = () => {
         setIsEdit((prev) => !prev);
     }
 
+    // const handleWithrawMoney = () => {
+    //     setIsWithraw((prev) => !prev);
+    // }
+
     return (
         <div className="w-full h-screen flex">
             <WorkerSidebar handleTab={handleTab} />
@@ -54,29 +63,22 @@ const Dashboard = () => {
                             Edit
                         </button>
                     )}
+                    {/* {activeTab == "wallet" && (
+                        <button
+                            className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
+                            onClick={() => handleWithrawMoney()}
+                        >
+                            Withraw Money
+                        </button>
+                    )} */}
                 </div>
                 <hr className="border border-green-900" />
                 <div className="flex-1 min-h-0 overflow-auto">
                     {activeTab === "dashboard" ? (
                         workerData.worker?.isAccountBuilt ? (
-                            <div className="relative flex items-center justify-center h-full overflow-hidden">
-                                <video
-                                    autoPlay
-                                    loop
-                                    muted
-                                    playsInline
-                                    className="absolute inset-0 w-full h-full object-cover opacity-30"
-                                >
-                                    <source src="/bee.mp4" type="video/mp4" />
-                                </video>
-                                <div className="absolute inset-0"></div>
-                                <div className="relative text-center space-y-4 text-white">
-                                    <div className="flex-shrink-0">
-                                        <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
-                                    </div>
-                                    <p className="text-black text-lg text-semibold">Dashboard</p>
-                                </div>
-                            </div>
+                            <>
+                                <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability} />
+                            </>
                         ) : (
                             <div className="flex justify-center h-full items-center">
                                 <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
@@ -118,8 +120,9 @@ const Dashboard = () => {
                     ) : activeTab === "message" ? (
                         <Message />
                     ) : activeTab === "notification" ? (
-                        <Notifications/>
-                    ):null}
+                        <Notifications />
+                    ) : null}
+                    {/* {isWithraw && <BankForm closeModal={closeWithdraw} />} */}
                 </div>
             </div>
         </div>

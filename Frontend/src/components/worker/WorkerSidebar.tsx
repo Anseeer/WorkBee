@@ -99,7 +99,7 @@ export default function WorkerSidebar({ handleTab }: prop) {
             className={`flex items-center space-x-3 p-3 rounded-md cursor-pointer mt-2 transition duration-150
               ${activeTab === tab
                 ? 'bg-gray-500 bg-opacity-70 w-full text-white'
-                : 'text-gray-300 hover:bg-gray-500 hover:bg-opacity-50'}
+                : 'text-gray-300 hover:bg-gray-500 w-full hover:bg-opacity-50'}
             `}
           >
             <img src={icon} alt={label} className="w-5 h-5" />
