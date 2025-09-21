@@ -316,5 +316,23 @@ export class WorkerController implements IWorkerController {
             next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, errMsg));
         }
     }
+
+    getEarnings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const workerId = req.query.workerId;
+            const filter = req.query.filter;
+            if (!workerId || !filter) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+
+            const earnings = await this._walletService.getEarnings(workerId as string, filter as string);
+            const response = new successResponse(StatusCode.OK, WALLET_MESSAGE.WALLET_GET_SUCCESSFULL, { earnings });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, errMsg));
+        }
+    }
 }
 

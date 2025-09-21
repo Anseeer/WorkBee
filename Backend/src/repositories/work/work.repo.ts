@@ -109,4 +109,22 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
+    async getAssignedWorks(workerId: string): Promise<IWork[]> {
+        try {
+            return await this.model.find({ workerId, status: "Accepted" }).sort({ createdAt: -1 });
+        } catch (error) {
+            console.error('Error in getAssignedWorks:', error);
+            throw new Error('Error in getAssignedWorks');
+        }
+    }
+
+    async getRequestedWorks(workerId: string): Promise<IWork[]> {
+        try {
+            return await this.model.find({ workerId, status: "Pending" }).sort({ createdAt: -1 });
+        } catch (error) {
+            console.error('Error in getRequestedWorks:', error);
+            throw new Error('Error in getRequestedWorks');
+        }
+    }
+
 }

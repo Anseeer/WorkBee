@@ -6,8 +6,10 @@ export interface IWorkService {
     workDetails(workId: string): Promise<IWorkDTO>;
     fetchWorkHistoryByUser(userId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPages: number }>;
     fetchWorkHistoryByWorker(workerId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorkHistory: IWorkDTO[], totalPage: number }>;
-    cancel(workId: string,id:string): Promise<boolean>;
+    cancel(workId: string, id: string): Promise<boolean>;
     accept(workId: string): Promise<boolean>;
     completed(workId: string, workerId: string): Promise<boolean>;
     getAllWorks(currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPage: number }>;
+    getAssignedWorks(workerId: string): Promise<IWorkDTO[]|undefined>;
+    getRequestedWorks(workerId: string): Promise<IWorkDTO[]|undefined>;
 } 

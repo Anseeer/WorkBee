@@ -339,4 +339,26 @@ export class WorkService implements IWorkService {
         return { paginatedWorks, totalPage }
     }
 
+    getAssignedWorks = async (workerId: string): Promise<IWorkDTO[] | undefined> => {
+        try {
+            const response = await this._workRepositoy.getAssignedWorks(workerId);
+            const res = response.map((work) => mapWorkToDTO(work));
+            return res;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            throw new Error(errMsg);
+        }
+    }
+
+    getRequestedWorks = async (workerId: string): Promise<IWorkDTO[] | undefined> => {
+        try {
+            const response = await this._workRepositoy.getRequestedWorks(workerId);
+            const res = response.map((work) => mapWorkToDTO(work));
+            return res;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            throw new Error(errMsg);
+        }
+    }
+
 }

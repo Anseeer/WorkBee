@@ -11,6 +11,9 @@ import WorkHistory from "../../components/worker/WorkHistory";
 import Wallet from "../../components/common/Wallet";
 import Message from "./message";
 import Notifications from "./notification";
+import WorkerDashboard from "../../components/worker/Dashboard";
+import type { IAvailability } from "../../types/IAvailability";
+import type { IWallet } from "../../types/IWallet";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -59,24 +62,7 @@ const Dashboard = () => {
                 <div className="flex-1 min-h-0 overflow-auto">
                     {activeTab === "dashboard" ? (
                         workerData.worker?.isAccountBuilt ? (
-                            <div className="relative flex items-center justify-center h-full overflow-hidden">
-                                <video
-                                    autoPlay
-                                    loop
-                                    muted
-                                    playsInline
-                                    className="absolute inset-0 w-full h-full object-cover opacity-30"
-                                >
-                                    <source src="/bee.mp4" type="video/mp4" />
-                                </video>
-                                <div className="absolute inset-0"></div>
-                                <div className="relative text-center space-y-4 text-white">
-                                    <div className="flex-shrink-0">
-                                        <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
-                                    </div>
-                                    <p className="text-black text-lg text-semibold">Dashboard</p>
-                                </div>
-                            </div>
+                            <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability}/>
                         ) : (
                             <div className="flex justify-center h-full items-center">
                                 <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
@@ -118,8 +104,8 @@ const Dashboard = () => {
                     ) : activeTab === "message" ? (
                         <Message />
                     ) : activeTab === "notification" ? (
-                        <Notifications/>
-                    ):null}
+                        <Notifications />
+                    ) : null}
                 </div>
             </div>
         </div>
