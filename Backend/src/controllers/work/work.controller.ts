@@ -182,4 +182,16 @@ export class WorkController implements IWorkController {
         }
     }
 
+    getTopThree = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const getTopThree = await this._workService.getTopThree();
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { getTopThree });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
 }

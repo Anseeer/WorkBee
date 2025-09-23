@@ -19,6 +19,8 @@ Router.get('/workers-nonVerify', auth, authorize(["Admin"]), adminController.fet
 Router.get('/fetch-availability', auth, authorize(["Admin"]), adminController.fetchAvailability)
 Router.get('/approve-worker', auth, authorize(["Admin"]), adminController.approveWorker)
 Router.get('/reject-worker', auth, authorize(["Admin"]), adminController.rejectedWorker)
+Router.get('/earnings', auth, authorize(["Admin"]), adminController.fetchEarnings)
+Router.get('/wallet', auth, authorize(["Admin"]), adminController.platformWallet)
 
 
 export default Router;

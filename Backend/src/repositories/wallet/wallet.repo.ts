@@ -46,13 +46,10 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
         }
     }
 
-    async getEarnings(userId: string, filter: string): Promise<EarningResult[]> {
+    async getEarnings(userId: string | null, filter: string): Promise<EarningResult[]> {
         try {
-            if (!isValidObjectId(userId)) {
-                throw new Error("Invalid Wallet ID provided.");
-            }
-
             let groupStage: any = {};
+            let earnings: EarningResult[];
 
             if (filter === "monthly") {
                 groupStage = {
@@ -68,13 +65,23 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
                 throw new Error("Invalid filter. Use 'monthly' or 'yearly'.");
             }
 
-            const earnings = await this.model.aggregate([
-                { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-                { $unwind: "$transactions" },
-                { $match: { "transactions.type": "CREDIT" } },
-                { $group: groupStage },
-                { $sort: { "_id": 1 } }
-            ]);
+            if (userId) {
+                earnings = await this.model.aggregate([
+                    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+                    { $unwind: "$transactions" },
+                    { $match: { "transactions.type": "CREDIT" } },
+                    { $group: groupStage },
+                    { $sort: { "_id": 1 } }
+                ]);
+            } else {
+                earnings = await this.model.aggregate([
+                    { $match: { walletType: "PLATFORM" } },
+                    { $unwind: "$transactions" },
+                    { $match: { "transactions.type": "CREDIT" } },
+                    { $group: groupStage },
+                    { $sort: { "_id": 1 } }
+                ]);
+            }
 
             return earnings;
         } catch (error) {
@@ -82,4 +89,23 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
             throw new Error("Error in getEarnings");
         }
     }
+
+    async platformWallet(): Promise<IWallet | null> {
+        try {
+
+            const wallet = await this.model.findOne({ walletType: "PLATFORM" }).lean();
+
+            if (wallet) {
+                wallet.transactions.sort(
+                    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                );
+            }
+
+            return wallet;
+        } catch (error) {
+            console.error('Error in platformWallet:', error);
+            throw new Error('Error in platformWallet');
+        }
+    }
+
 }

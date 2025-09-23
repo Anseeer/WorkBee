@@ -3,5 +3,5 @@ import { EarningResult } from "../../utilities/earningsType";
 
 export interface IWalletService {
     findByUser(userId: string): Promise<IWalletDTO | null>;
-    getEarnings(userId: string,filter:string): Promise<EarningResult[]>;
+    getEarnings(userId: string | null, filter: string): Promise<EarningResult[]>;
 }

@@ -11,4 +11,5 @@ export interface IWorkController {
     getAllWorks(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAssignedWorks(req: Request, res: Response, next: NextFunction): Promise<void>;
     getRequestedWorks(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getTopThree(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

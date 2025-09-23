@@ -11,4 +11,6 @@ export interface IAdminController {
     fetchAvailability(req: Request, res: Response, next: NextFunction): Promise<void>;
     approveWorker(req: Request, res: Response, next: NextFunction): Promise<void>;
     rejectedWorker(req: Request, res: Response, next: NextFunction): Promise<void>;
+    fetchEarnings(req: Request, res: Response, next: NextFunction): Promise<void>;
+    platformWallet(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

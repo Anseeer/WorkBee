@@ -20,7 +20,8 @@ export class WalletService implements IWalletService {
         return wallet;
     }
 
-    async getEarnings(userId: string, filter: string): Promise<EarningResult[]> {
+
+    async getEarnings(userId: string | null, filter: string): Promise<EarningResult[]> {
         return await this._walletRepository.getEarnings(userId, filter);
     }
 

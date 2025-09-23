@@ -15,7 +15,12 @@ const transactionSchema = new Schema(
 
 const walletSchema = new Schema<IWallet>(
     {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
+        walletType: {
+            type: String,
+            enum: ["USER", "WORKER", "PLATFORM"],
+            default: "USER"
+        },
         balance: { type: Number, default: 0 },
         currency: { type: String, default: "INR" },
         transactions: [transactionSchema]
@@ -23,4 +28,4 @@ const walletSchema = new Schema<IWallet>(
     { timestamps: true }
 );
 
-export  const Wallet = mongoose.model<IWallet>("Wallet", walletSchema);
+export const Wallet = mongoose.model<IWallet>("Wallet", walletSchema);

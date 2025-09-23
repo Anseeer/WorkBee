@@ -21,21 +21,26 @@ const paymentSchema = new mongoose.Schema<IPayment>({
     type: Number,
     required: true
   },
+  platformFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   status: {
     type: String,
     enum: ["Pending", "Paid", "Failed", "Refunded"],
     default: "Pending"
   },
   paymentMethod: {
-    type: String, 
+    type: String,
     default: null
   },
   transactionId: {
-    type: String, 
+    type: String,
     default: null
   },
   notes: {
-    type: String, 
+    type: String,
     default: null
   },
   createdAt: {
@@ -46,7 +51,7 @@ const paymentSchema = new mongoose.Schema<IPayment>({
     type: Date,
     default: null
   }
-},{timestamps:true});
+}, { timestamps: true });
 
 
 const Payment = mongoose.model<IPayment>("Payment", paymentSchema);

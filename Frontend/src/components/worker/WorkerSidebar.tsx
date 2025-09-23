@@ -66,7 +66,7 @@ export default function WorkerSidebar({ handleTab }: prop) {
     ${isExpanded ? 'w-56' : 'w-16'} md:w-[225px]`}
     >
       {/* Top Section: Logo + Navigation */}
-<div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y">        {/* Only show right arrow expand button when collapsed */}
+      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y">        {/* Only show right arrow expand button when collapsed */}
         {!isExpanded && (
           <button
             className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"
@@ -99,7 +99,7 @@ export default function WorkerSidebar({ handleTab }: prop) {
             className={`flex items-center space-x-3 p-3 rounded-md cursor-pointer mt-2 transition duration-150
               ${activeTab === tab
                 ? 'bg-gray-500 bg-opacity-70 w-full text-white'
-                : 'text-gray-300 hover:bg-gray-500 hover:bg-opacity-50'}
+                : 'text-gray-300 hover:bg-gray-500 w-full hover:bg-opacity-50'}
             `}
           >
             <img src={icon} alt={label} className="w-5 h-5" />

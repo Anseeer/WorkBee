@@ -16,20 +16,28 @@ import { ADMIN_MESSAGES } from "../../constants/messages";
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
 import { mapAvailabilityToDTO } from "../../mappers/availability/availability.map.DTO";
 import { Role } from "../../constants/role";
+import { EarningResult } from "../../utilities/earningsType";
+import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
+import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
+import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
+import { IWallet } from "../../model/wallet/wallet.interface.model";
 
 @injectable()
 export class AdminService implements IAdminService {
     private _userRepository: IUserRepository;
     private _workerRepository: IWorkerRepository;
     private _availabilityRepository: IAvailabilityRepository;
+    private _walletRepository: IWalletRepository;
     constructor(
         @inject(TYPES.userRepository) userRepo: IUserRepository,
         @inject(TYPES.workerRepository) workerRepo: IWorkerRepository,
-        @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository
+        @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository,
+        @inject(TYPES.walletRepository) walletRepo: IWalletRepository,
     ) {
         this._userRepository = userRepo;
         this._workerRepository = workerRepo;
         this._availabilityRepository = availabilityRepo;
+        this._walletRepository = walletRepo;
     }
 
     async login(adminData: Partial<Iuser>): Promise<{ accessToken: string, refreshToken: string, admin: IUserDTO }> {
@@ -110,6 +118,16 @@ export class AdminService implements IAdminService {
 
     async rejectedWorker(id: string): Promise<void> {
         await this._workerRepository.rejectedWorker(id);
+    }
+
+    async fetchEarnings(userId: string | null, filter: string): Promise<EarningResult[]> {
+        return await this._walletRepository.getEarnings(null, filter);
+    }
+
+    async platformWallet(): Promise<IWalletDTO | null> {
+        const findWallet = await this._walletRepository.platformWallet();
+        const wallet = mapWalletToDTO(findWallet as IWallet);
+        return wallet;
     }
 
 }

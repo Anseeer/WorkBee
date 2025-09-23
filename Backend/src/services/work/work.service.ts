@@ -19,6 +19,7 @@ import { toISTDateOnly } from "../../utilities/toISTDate";
 import { Role } from "../../constants/role";
 import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
 import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
+import { TopThreeResult } from "../../utilities/topThreeTypes";
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -355,6 +356,16 @@ export class WorkService implements IWorkService {
             const response = await this._workRepositoy.getRequestedWorks(workerId);
             const res = response.map((work) => mapWorkToDTO(work));
             return res;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            throw new Error(errMsg);
+        }
+    }
+
+    getTopThree = async (): Promise<TopThreeResult[] | undefined> => {
+        try {
+            const response = await this._workRepositoy.getTopThree();
+            return response;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             throw new Error(errMsg);
