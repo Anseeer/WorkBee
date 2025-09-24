@@ -42,8 +42,7 @@ export default function AdminSidebar({ handleTab }: props) {
         } catch (error) {
             console.error("Logout failed:", error);
         }
-    };
-
+    }; 
 
     return (
         <div className="bg-[#10451D] h-screen text-black w-[225px] flex flex-col justify-between rounded-r-2xl shadow-lg">
