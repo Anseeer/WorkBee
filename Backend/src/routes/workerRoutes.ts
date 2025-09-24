@@ -24,7 +24,4 @@ Router.post('/google-login', workerController.googleLogin);
 Router.get('/wallet', auth, workerController.findWallet);
 Router.get('/earnings', workerController.getEarnings);
 
-
-
-
 export default Router;

@@ -57,6 +57,14 @@ const Dashboard = () => {
                             Edit
                         </button>
                     )}
+                    {/* {activeTab == "wallet" && (
+                        <button
+                            className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
+                            onClick={() => handleWithrawMoney()}
+                        >
+                            Withraw Money
+                        </button>
+                    )} */}
                 </div>
                 <hr className="border border-green-900" />
                 <div className="flex-1 min-h-0 overflow-auto">

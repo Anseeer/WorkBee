@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import type { IAvailability } from "../types/IAvailability";
 import dayjs from "dayjs";
@@ -117,4 +118,5 @@ export const Calendar = ({ availability }: CalendarProps) => {
             </div>
         </div>
     );
+
 };

@@ -321,6 +321,7 @@ export class WorkerController implements IWorkerController {
         try {
             const workerId = req.query.workerId;
             const filter = req.query.filter;
+
             if (!workerId || !filter) {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
             }
@@ -331,7 +332,8 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, errMsg));
+            next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.EARNINGS_GET_FAILD, errMsg));
+
         }
     }
 }

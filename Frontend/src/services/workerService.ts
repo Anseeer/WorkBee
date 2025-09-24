@@ -132,7 +132,6 @@ export const findWorkersByIds = async (workerIds: string[]) => {
   return response.data.data;
 }
 
-
 export const fetchWallet = async (workerId: string) => {
   if (!workerId) {
     throw new Error("WorkerId not get");

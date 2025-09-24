@@ -110,7 +110,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
-    async getAssignedWorks(workerId: string): Promise<IWork[]> {
+  async getAssignedWorks(workerId: string): Promise<IWork[]> {
         try {
             return await this.model.find({ workerId, status: "Accepted" }).sort({ createdAt: -1 });
         } catch (error) {
@@ -216,5 +216,4 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             }
         ])
     }
-
 }

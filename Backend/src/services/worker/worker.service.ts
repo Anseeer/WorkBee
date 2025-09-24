@@ -309,4 +309,16 @@ export class WorkerService implements IWorkerService {
         return await mapWalletToDTO(wallet as IWallet);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async getEarnings(filter: string, workerId: string): Promise<any[]|undefined> {
+        try {
+            if (!filter || !workerId) {
+                throw new Error("workerId or filter not get");
+            }
+            return await this._walletRepository.getEarnings(workerId, filter);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 }
