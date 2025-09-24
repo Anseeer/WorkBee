@@ -114,11 +114,13 @@ const WorkerListing = () => {
         }
     }, [triggerDraft, workDetails, dispatch, navigate]);
 
-    const Confirm = async (date: string, slot: string) => {
+    const Confirm = async (date: string, slot: string,totalAmount:string,PlatformFee:string) => {
         try {
             const res = await dispatch(workerDetails({
                 date,
                 slot,
+                totalAmount,
+                PlatformFee,
                 workerId: selectedWorker?.id,
                 workerName: selectedWorker?.name,
                 userName: userDetails?.name
@@ -261,6 +263,7 @@ const WorkerListing = () => {
             {/* Modal */}
             {isModalOpen && selectedWorker && (
                 <WorkerAvailabilityModal
+                    work={workDetails}
                     worker={selectedWorker}
                     availability={availability as IAvailability}
                     onClose={Close}

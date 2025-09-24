@@ -156,11 +156,11 @@ export class WorkController implements IWorkController {
         }
     }
 
-    getPendingWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getAssignedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const workerId = req.query.workerId;
-            const pendingWorks  = await this._workService.getPendingWork(workerId as string);
-            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { pendingWorks });
+            const { workerId } = req.query;
+            const assignedWorks = await this._workService.getAssignedWorks(workerId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { assignedWorks });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
@@ -169,11 +169,23 @@ export class WorkController implements IWorkController {
         }
     }
 
-    getAssignedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getRequestedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const workerId = req.query.workerId;
-            const assignedWorks  = await this._workService.getAssignedWorks(workerId as string);
-            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { assignedWorks });
+            const { workerId } = req.query;
+            const requestedWorks = await this._workService.getRequestedWorks(workerId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { requestedWorks });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
+    getTopThree = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const getTopThree = await this._workService.getTopThree();
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { getTopThree });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {

@@ -1,4 +1,5 @@
 import { IWork } from "../../model/work/work.interface";
+import { TopThreeResult } from "../../utilities/topThreeTypes";
 
 export interface IWorkRepository {
     create(workDetails: Partial<IWork>): Promise<IWork>;
@@ -9,6 +10,7 @@ export interface IWorkRepository {
     findById(workId: string): Promise<IWork | null>;
     setIsWorkCompleted(workId: string): Promise<boolean>;
     getAllWorks(): Promise<IWork[]>;
-    getPendingWorks(workerId: string): Promise<IWork[]>;
     getAssignedWorks(workerId: string): Promise<IWork[]>;
+    getRequestedWorks(workerId: string): Promise<IWork[]>;
+    getTopThree(): Promise<TopThreeResult[]>;
 }

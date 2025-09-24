@@ -4,6 +4,7 @@ import { IWork } from "../../model/work/work.interface";
 import { IWorkRepository } from "./work.repo.interface";
 import Work from "../../model/work/work.model";
 import { WORK_MESSAGE } from "../../constants/messages";
+import { TopThreeResult } from "../../utilities/topThreeTypes";
 
 @injectable()
 export class WorkRepository extends BaseRepository<IWork> implements IWorkRepository {
@@ -109,26 +110,110 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
-    async getPendingWorks(workerId: string): Promise<IWork[]> {
+  async getAssignedWorks(workerId: string): Promise<IWork[]> {
         try {
-            return await this.model
-                .find({ workerId: workerId, status: "Pending" })
-                .sort({ createdAt: -1 });
+            return await this.model.find({ workerId, status: "Accepted" }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error("Error fetching pending works:", error);
-            throw error;
+            console.error('Error in getAssignedWorks:', error);
+            throw new Error('Error in getAssignedWorks');
         }
     }
 
-    async getAssignedWorks(workerId: string): Promise<IWork[]> {
+    async getRequestedWorks(workerId: string): Promise<IWork[]> {
         try {
-            return await this.model
-                .find({ workerId: workerId, status: "Accepted" })
-                .sort({ createdAt: -1 });
+            return await this.model.find({ workerId, status: "Pending" }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error("Error fetching pending works:", error);
-            throw error;
+            console.error('Error in getRequestedWorks:', error);
+            throw new Error('Error in getRequestedWorks');
         }
     }
 
+    async getTopThree(): Promise<TopThreeResult[]> {
+        return await this.model.aggregate([
+            {
+                $facet: {
+                    TopServices: [
+                        { $group: { _id: "$serviceId", count: { $sum: 1 } } },
+                        { $sort: { count: -1 } },
+                        { $limit: 3 },
+                        {
+                            $lookup: {
+                                from: "services",
+                                localField: "_id",
+                                foreignField: "_id",
+                                as: "service"
+                            }
+                        },
+                        { $unwind: "$service" },
+                        {
+                            $project: {
+                                _id: 1,
+                                count: 1,
+                                name: "$service.name"
+                            }
+                        }],
+                    TopCategory: [
+                        { $group: { _id: "$categoryId", count: { $sum: 1 } } },
+                        { $sort: { count: -1 } },
+                        { $limit: 3 },
+                        {
+                            $lookup: {
+                                from: "categories",
+                                localField: "_id",
+                                foreignField: "_id",
+                                as: "category"
+                            }
+                        },
+                        { $unwind: "$category" },
+                        {
+                            $project: {
+                                _id: 1,
+                                count: 1,
+                                name: "$category.name"
+                            }
+                        }],
+                    TopWorker: [
+                        { $group: { _id: "$workerId", count: { $sum: 1 } } },
+                        { $sort: { count: -1 } },
+                        { $limit: 3 },
+                        {
+                            $lookup: {
+                                from: "workers",
+                                localField: "_id",
+                                foreignField: "_id",
+                                as: "workers"
+                            }
+                        },
+                        { $unwind: "$workers" },
+                        {
+                            $project: {
+                                _id: 1,
+                                count: 1,
+                                name: "$workers.name"
+                            }
+                        }],
+                    TopUsers: [
+                        { $group: { _id: "$userId", count: { $sum: 1 } } },
+                        { $sort: { count: -1 } },
+                        { $limit: 3 },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "_id",
+                                foreignField: "_id",
+                                as: "users"
+                            }
+                        },
+                        { $unwind: "$users" },
+                        {
+                            $project: {
+                                _id: 1,
+                                count: 1,
+                                name: "$users.name"
+                            }
+                        }]
+                },
+            }
+        ])
+    }
 }

@@ -15,10 +15,11 @@ import axios from "axios";
 
 router.post("/create-order", async (req, res) => {
     try {
-        const { amount, workId } = req.body;
+        const { amount, workId, platFromFee } = req.body;
+        const wage = amount - platFromFee;
 
         const options = {
-            amount: amount * 100,
+            amount: wage * 100,
             currency: "INR",
             receipt: `receipt_order_${Date.now()}`
         };
@@ -28,13 +29,15 @@ router.post("/create-order", async (req, res) => {
         if (!work) {
             throw new Error("Work not found");
         }
+
         const payment = await Payment.findOne({ workId, transactionId: order.id });
         if (!payment) {
             await Payment.create({
                 workId,
                 userId: work.userId,
                 workerId: work.workerId,
-                amount,
+                amount: wage,
+                platformFee: platFromFee,
                 transactionId: order.id,
                 status: "Pending"
             });
@@ -47,11 +50,10 @@ router.post("/create-order", async (req, res) => {
     }
 });
 
+
 router.post("/verify-payment", async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log("Hello")
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, workId } = req.body;
-
         const key_secret = process.env.RAZORPAY_KEY_SECRET as string;
 
         const hmac = crypto.createHmac("sha256", key_secret);
@@ -74,11 +76,11 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         worker.completedWorks += 1;
         await worker.save();
 
-
         const work = await Work.findById(workId);
         if (!work) {
             throw new Error("Work not found");
         }
+
         work.paymentStatus = "Completed";
         work.paymentId = payment.id;
         await work.save();
@@ -95,15 +97,23 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
             amount: payment.amount,
             description: `${work.service} wage`,
             createdAt: new Date()
-        }
+        };
 
         const userTransaction = {
             transactionId: payment.transactionId,
             type: "DEBIT",
-            amount: payment.amount,
+            amount: (payment.amount + payment.platformFee),
             description: payment.notes,
             createdAt: new Date()
-        }
+        };
+
+        const platformTransaction = {
+            transactionId: payment.transactionId,
+            type: "CREDIT",
+            amount: payment.platformFee,
+            description: `Platform fee from ${work.service}`,
+            createdAt: new Date()
+        };
 
         await Wallet.updateOne(
             { userId: work.userId },
@@ -121,6 +131,15 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
             }
         );
 
+        await Wallet.updateOne(
+            { walletType: "PLATFORM" },
+            {
+                $inc: { balance: platformTransaction.amount },
+                $push: { transactions: platformTransaction }
+            },
+            { upsert: true }
+        );
+
         const notification = {
             recipient: work?.workerId.toString(),
             recipientModel: "Worker",
@@ -134,11 +153,8 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         };
 
         const notificationEntity = mapNotificationToEntity(notification);
-
         const newNotification = await Notification.create(notificationEntity);
-        if (!newNotification) {
-            throw new Error("Faild to create notification")
-        }
+        if (!newNotification) throw new Error("Failed to create notification");
 
         res.json({ success: true, message: "Payment verified successfully" });
     } catch (error) {
@@ -147,8 +163,8 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         const message = error instanceof Error ? error.message : "Something went wrong";
         res.status(500).json({ success: false, message });
     }
-}
-);
+});
+
 
 router.post("/create-wallet-order", async (req: Request, res: Response): Promise<void> => {
     try {

@@ -66,7 +66,7 @@ export default function WorkerSidebar({ handleTab }: prop) {
     ${isExpanded ? 'w-56' : 'w-16'} md:w-[225px]`}
     >
       {/* Top Section: Logo + Navigation */}
-<div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y">        {/* Only show right arrow expand button when collapsed */}
+      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y">        {/* Only show right arrow expand button when collapsed */}
         {!isExpanded && (
           <button
             className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"

@@ -276,15 +276,14 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                     {/* Footer Actions */}
                     {workDetails?.status === "Pending" && (
                         <div className="mt-4 sm:mt-6 p-3 sm:p-4">
-                            <div className="flex justify-center">
-                                <button
-                                    className="w-full sm:w-auto px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm md:text-base bg-red-100 hover:bg-red-300 text-black font-bold rounded-lg transition-colors"
-                                    onClick={() => HandleRejected()}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
+                            <button
+                                className="w-full px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm md:text-base bg-red-300 hover:bg-red-700 text-black font-bold rounded-lg transition-colors"
+                                onClick={() => HandleRejected()}
+                            >
+                                Cancel
+                            </button>
                         </div>
+
                     )}
                 </div>
             </div>

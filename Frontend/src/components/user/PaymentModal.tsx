@@ -7,17 +7,18 @@ import type { RootState } from "../../Store";
 interface Props {
     onClose: () => void;
     Amount: number;
+    platFromFee: number;
     workId: string;
 }
 
-const PaymentModal = ({ onClose, Amount, workId }: Props) => {
+const PaymentModal = ({ onClose, Amount, workId, platFromFee }: Props) => {
 
     const wallet = useSelector((state: RootState) => state.user.wallet);
     console.log("UserWallet", wallet)
 
     const handlePayment = async (amount: number) => {
         try {
-            const { data } = await axios.post("rzp/create-order", { amount, workId });
+            const { data } = await axios.post("rzp/create-order", { amount, workId, platFromFee });
 
             const script = document.createElement("script");
             script.src = "https://checkout.razorpay.com/v1/checkout.js";

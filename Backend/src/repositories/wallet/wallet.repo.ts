@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { injectable } from "inversify";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import BaseRepository from "../base/base.repo";
 import { IWalletRepository } from "./wallet.repo.interface";
 import { Wallet } from "../../model/wallet/wallet.model";
 import mongoose, { isValidObjectId } from "mongoose";
+import { EarningResult } from "../../utilities/earningsType";
 
 @injectable()
 export class WalletRepository extends BaseRepository<IWallet> implements IWalletRepository {
@@ -44,49 +46,66 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
         }
     }
 
-    async getEarnings(userId: string, filter: string) {
+    async getEarnings(userId: string | null, filter: string): Promise<EarningResult[]> {
         try {
-            let startDate: Date;
-            let endDate: Date = new Date();
-
-            const now = new Date();
+            let groupStage: any = {};
+            let earnings: EarningResult[];
 
             if (filter === "monthly") {
-                startDate = new Date(now.getFullYear(), 0, 1);
+                groupStage = {
+                    _id: { month: { $month: "$transactions.createdAt" } },
+                    totalEarnings: { $sum: "$transactions.amount" }
+                };
             } else if (filter === "yearly") {
-                startDate = new Date(now.getFullYear() - 5, 0, 1);
+                groupStage = {
+                    _id: { year: { $year: "$transactions.createdAt" } },
+                    totalEarnings: { $sum: "$transactions.amount" }
+                };
             } else {
-                throw new Error("Invalid filter");
+                throw new Error("Invalid filter. Use 'monthly' or 'yearly'.");
             }
 
-            const earnings = await Wallet.aggregate([
-                { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-                { $unwind: "$transactions" },
-                {
-                    $match: {
-                        "transactions.type": "CREDIT",
-                        "transactions.createdAt": { $gte: startDate, $lte: endDate }
-                    }
-                },
-                {
-                    $group: {
-                        _id:
-                            filter === "monthly"
-                                ? { month: { $month: "$transactions.createdAt" } }
-                                : { year: { $year: "$transactions.createdAt" } },
-                        totalEarnings: { $sum: "$transactions.amount" }
-                    }
-                },
-                { $sort: { "_id": 1 } }
-            ]);
+            if (userId) {
+                earnings = await this.model.aggregate([
+                    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+                    { $unwind: "$transactions" },
+                    { $match: { "transactions.type": "CREDIT" } },
+                    { $group: groupStage },
+                    { $sort: { "_id": 1 } }
+                ]);
+            } else {
+                earnings = await this.model.aggregate([
+                    { $match: { walletType: "PLATFORM" } },
+                    { $unwind: "$transactions" },
+                    { $match: { "transactions.type": "CREDIT" } },
+                    { $group: groupStage },
+                    { $sort: { "_id": 1 } }
+                ]);
+            }
 
             return earnings;
         } catch (error) {
-            console.error(error);
-            throw error;
+            console.error("Error in getEarnings:", error);
+            throw new Error("Error in getEarnings");
         }
     }
 
+    async platformWallet(): Promise<IWallet | null> {
+        try {
 
+            const wallet = await this.model.findOne({ walletType: "PLATFORM" }).lean();
+
+            if (wallet) {
+                wallet.transactions.sort(
+                    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                );
+            }
+
+            return wallet;
+        } catch (error) {
+            console.error('Error in platformWallet:', error);
+            throw new Error('Error in platformWallet');
+        }
+    }
 
 }

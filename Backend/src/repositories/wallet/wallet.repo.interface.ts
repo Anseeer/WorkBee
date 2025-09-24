@@ -1,8 +1,9 @@
 import { IWallet } from "../../model/wallet/wallet.interface.model";
+import { EarningResult } from "../../utilities/earningsType";
 
 export interface IWalletRepository {
     create(walletDetails: Partial<IWallet>): Promise<IWallet>;
     findByUser(userId: string): Promise<IWallet | null>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getEarnings(userId: string, filter: string): Promise<any[]>;
+    getEarnings(userId: string | null, filter: string): Promise<EarningResult[]>
+    platformWallet(): Promise<IWallet | null>;
 }

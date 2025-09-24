@@ -1,5 +1,6 @@
 import { IWorkDTO } from "../../mappers/work/work.map.DTO.interface";
 import { IWork } from "../../model/work/work.interface";
+import { TopThreeResult } from "../../utilities/topThreeTypes";
 
 export interface IWorkService {
     createWork(workDetails: IWork): Promise<IWorkDTO>;
@@ -10,6 +11,7 @@ export interface IWorkService {
     accept(workId: string): Promise<boolean>;
     completed(workId: string, workerId: string): Promise<boolean>;
     getAllWorks(currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPage: number }>;
-    getPendingWork(workerId: string): Promise<IWork[]>;
-    getAssignedWorks(workerId: string): Promise<IWork[]>;
+    getAssignedWorks(workerId: string): Promise<IWorkDTO[] | undefined>;
+    getRequestedWorks(workerId: string): Promise<IWorkDTO[] | undefined>;
+    getTopThree(): Promise<TopThreeResult[] | undefined>;
 } 

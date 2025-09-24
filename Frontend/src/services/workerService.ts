@@ -103,7 +103,7 @@ export const fetchWorkerByWorkDetails = async (details:
 
 export const fetchWorkHistory = async (workerId: string, currentPage: number, pagesize: number) => {
   if (!workerId) {
-    throw new Error("Cant Get WorkerId");
+    throw new Error("WorkerId not get");
   }
   const response = await axios.get(`works/workers?workerId=${workerId}&currentPage=${currentPage}&pageSize=${pagesize}`);
   return response.data;
@@ -134,39 +134,34 @@ export const findWorkersByIds = async (workerIds: string[]) => {
 
 export const fetchWallet = async (workerId: string) => {
   if (!workerId) {
-    return ("WorkerId not get")
+    throw new Error("WorkerId not get");
   }
   const response = await axios.get(`workers/wallet?workerId=${workerId}`);
   return response.data.data;
 }
 
-export const withdrawMoney = async (values: { accountHolderName: string; accountNumber: string; ifscCode: string; withdrawAmount: number | string; }) => {
-  if (!values) {
-    throw new Error('withdrawl values not get');
-  }
-  const response = await axios.post('rzp/withdraw-money', values);
-  return response.data;
-}
-
-export const fetchWorkRequest = async (workerId: string) => {
-  if (!workerId) {
-    throw new Error('Cant get workerId');
-  }
-  const response = await axios.get(`works/pending-work?workerId=${workerId}`);
-  return response.data.data;
-}
-
 export const fetchAssignedWorks = async (workerId: string) => {
   if (!workerId) {
-    throw new Error('Cant get workerId');
+    throw new Error("WorkerId not get");
   }
-  const response = await axios.get(`works/assigned-work?workerId=${workerId}`);
+  const response = await axios.get(`works/assigned-works?workerId=${workerId}`);
   return response.data.data;
 }
 
-export const fetchEarnings = async (filter: string, workerId: string) => {
+export const fetchRequestedWorks = async (workerId: string) => {
   if (!workerId) {
-    throw new Error('Cant get workerId');
+    throw new Error("WorkerId not get");
+  }
+  const response = await axios.get(`works/requested-works?workerId=${workerId}`);
+  return response.data.data;
+}
+
+export const fetchWorkerEarnings = async (workerId: string,filter:string) => {
+  if (!workerId) {
+    throw new Error("WorkerId not get");
+  }
+  if (!filter) {
+    throw new Error("filter not get");
   }
   const response = await axios.get(`workers/earnings?workerId=${workerId}&filter=${filter}`);
   return response.data.data;

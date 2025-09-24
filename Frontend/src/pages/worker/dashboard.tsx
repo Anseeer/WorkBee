@@ -11,15 +11,13 @@ import WorkHistory from "../../components/worker/WorkHistory";
 import Wallet from "../../components/common/Wallet";
 import Message from "./message";
 import Notifications from "./notification";
-import WorkerDashboard from "../../components/worker/WorkerDashboard";
-import type { IWallet } from "../../types/IWallet";
+import WorkerDashboard from "../../components/worker/Dashboard";
 import type { IAvailability } from "../../types/IAvailability";
-// import BankForm from "../../components/worker/WithdrawMoney";
+import type { IWallet } from "../../types/IWallet";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isEdit, setIsEdit] = useState(false);
-    // const [isWithraw, setIsWithraw] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
@@ -42,10 +40,6 @@ const Dashboard = () => {
     const handleEdit = () => {
         setIsEdit((prev) => !prev);
     }
-
-    // const handleWithrawMoney = () => {
-    //     setIsWithraw((prev) => !prev);
-    // }
 
     return (
         <div className="w-full h-screen flex">
@@ -76,9 +70,7 @@ const Dashboard = () => {
                 <div className="flex-1 min-h-0 overflow-auto">
                     {activeTab === "dashboard" ? (
                         workerData.worker?.isAccountBuilt ? (
-                            <>
-                                <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability} />
-                            </>
+                            <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability}/>
                         ) : (
                             <div className="flex justify-center h-full items-center">
                                 <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
@@ -122,7 +114,6 @@ const Dashboard = () => {
                     ) : activeTab === "notification" ? (
                         <Notifications />
                     ) : null}
-                    {/* {isWithraw && <BankForm closeModal={closeWithdraw} />} */}
                 </div>
             </div>
         </div>

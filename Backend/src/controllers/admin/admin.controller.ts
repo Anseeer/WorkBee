@@ -5,7 +5,7 @@ import { IAdminController } from "./admin.controller.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { IAdminService } from "../../services/admin/admin.services.interface";
-import { ADMIN_MESSAGES } from "../../constants/messages";
+import { ADMIN_MESSAGES, WALLET_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 
@@ -159,6 +159,36 @@ export class AdminController implements IAdminController {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, ADMIN_MESSAGES.REJECT_WORKER_FAILED, errMsg));
+        }
+    }
+
+    fetchEarnings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const filter = req.query.filter;
+            const userId = null;
+            if (!filter) {
+                throw new Error("Filter is not get");
+            }
+
+            const earnings = await this._adminService.fetchEarnings(userId as null, filter as string);
+            const response = new successResponse(StatusCode.OK, WALLET_MESSAGE.WALLET_GET_SUCCESSFULL, { earnings });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, errMsg));
+        }
+    }
+
+    platformWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const earnings = await this._adminService.platformWallet();
+            const response = new successResponse(StatusCode.OK, WALLET_MESSAGE.WALLET_GET_SUCCESSFULL, { earnings });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, errMsg));
         }
     }
 

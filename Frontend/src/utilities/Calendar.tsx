@@ -1,6 +1,7 @@
-import dayjs from "dayjs";
+
 import { useEffect, useState } from "react";
 import type { IAvailability } from "../types/IAvailability";
+import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CalendarProps {
@@ -117,4 +118,5 @@ export const Calendar = ({ availability }: CalendarProps) => {
             </div>
         </div>
     );
+
 };

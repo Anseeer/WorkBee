@@ -19,6 +19,7 @@ import { toISTDateOnly } from "../../utilities/toISTDate";
 import { Role } from "../../constants/role";
 import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
 import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
+import { TopThreeResult } from "../../utilities/topThreeTypes";
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -339,29 +340,36 @@ export class WorkService implements IWorkService {
         return { paginatedWorks, totalPage }
     }
 
-    getPendingWork = async (workerId: string): Promise<IWork[]> => {
+    getAssignedWorks = async (workerId: string): Promise<IWorkDTO[] | undefined> => {
         try {
-            if (!workerId) {
-                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
-            }
-            return await this._workRepositoy.getPendingWorks(workerId);
+            const response = await this._workRepositoy.getAssignedWorks(workerId);
+            const res = response.map((work) => mapWorkToDTO(work));
+            return res;
         } catch (error) {
-            console.log("Error:", error);
-            return []; 
+            const errMsg = error instanceof Error ? error.message : String(error);
+            throw new Error(errMsg);
         }
-    };
+    }
 
-    getAssignedWorks = async (workerId: string): Promise<IWork[]> => {
+    getRequestedWorks = async (workerId: string): Promise<IWorkDTO[] | undefined> => {
         try {
-            if (!workerId) {
-                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
-            }
-            return await this._workRepositoy.getAssignedWorks(workerId);
+            const response = await this._workRepositoy.getRequestedWorks(workerId);
+            const res = response.map((work) => mapWorkToDTO(work));
+            return res;
         } catch (error) {
-            console.log("Error:", error);
-            return []; 
+            const errMsg = error instanceof Error ? error.message : String(error);
+            throw new Error(errMsg);
         }
-    };
+    }
 
+    getTopThree = async (): Promise<TopThreeResult[] | undefined> => {
+        try {
+            const response = await this._workRepositoy.getTopThree();
+            return response;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            throw new Error(errMsg);
+        }
+    }
 
 }

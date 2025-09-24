@@ -1,13 +1,9 @@
 import dashboardIcon from "../../assets/dashboard-icon.png";
-import notificationIcon from "../../assets/Bell-icon.png";
-import reviewIcon from "../../assets/review-icon.png";
 import logoutIcon from "../../assets/logout-icon.png";
-import SubscriptIcon from "../../assets/stepFour-icon.png";
 import UsersIcon from "../../assets/users-icon.png";
 import WorkersIcon from "../../assets/workers-icon.png";
 import JobsIcon from "../../assets/jobs-icon.png";
 import CategoryAndServicesIcon from "../../assets/category&services.png";
-import RevenueIcon from "../../assets/reveneu.png";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "../../services/adminService";
@@ -17,7 +13,7 @@ import { toast } from "react-toastify";
 import { API_ROUTES } from "../../constant/api.routes";
 
 interface props {
-    handleTab: (tab: string, defaultSubTab?:string) => void;
+    handleTab: (tab: string, defaultSubTab?: string) => void;
 }
 
 export default function AdminSidebar({ handleTab }: props) {
@@ -46,7 +42,7 @@ export default function AdminSidebar({ handleTab }: props) {
 
 
     return (
-        <div className="bg-[#10451D] h-screen text-black w-[225px] flex flex-col justify-between rounded-r-2xl shadow-lg">
+        <div className="bg-[#10451D] h-full text-black w-[225px] flex flex-col justify-between rounded-r-2xl shadow-lg">
             {/* Logo Section */}
             <div className="p-6">
                 <h1 className="merienda-text justyify-center pb-5 text-3xl text-white">WorkBee</h1>
@@ -120,40 +116,10 @@ export default function AdminSidebar({ handleTab }: props) {
                         Category & Services
                     </span>
                 </div>
-
-
-                {/* Review & Ratings */}
-                <div
-                    onClick={() => handleClick("review & Ratings")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "review & Ratings"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={reviewIcon} alt="review&ratings" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "review & Ratings" ? "text-black" : "text-gray-400"}`}>
-                        Review & Ratings
-                    </span>
-                </div>
-
-                {/* Revenue */}
-                <div
-                    onClick={() => handleClick("revenue")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "revenue"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={RevenueIcon} alt="revenue" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "revenue" ? "text-black" : "text-gray-400"}`}>
-                        Revenue
-                    </span>
-                </div>
-                {/* Notifications */}
-                <div
+                {/* <div
                     onClick={() => handleClick("notifications")}
                     className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "notifications"
+                        ${activeTab === "notifications"
                             ? "bg-[#8FC39D] bg-opacity-70 text-black"
                             : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
                     <img src={notificationIcon} alt="notifications" className="w-5 h-5" />
@@ -162,7 +128,32 @@ export default function AdminSidebar({ handleTab }: props) {
                         Notifications
                     </span>
                 </div>
-                {/* Subscription */}
+
+                <div
+                    onClick={() => handleClick("review & Ratings")}
+                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
+                                            ${activeTab === "review & Ratings"
+                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
+                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
+                    <img src={reviewIcon} alt="review&ratings" className="w-5 h-5" />
+                    <span className={`text-md font-medium 
+                                            ${activeTab === "review & Ratings" ? "text-black" : "text-gray-400"}`}>
+                        Review & Ratings
+                    </span>
+                </div>
+
+                <div
+                    onClick={() => handleClick("revenue")}
+                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
+                                            ${activeTab === "revenue"
+                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
+                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
+                    <img src={RevenueIcon} alt="revenue" className="w-5 h-5" />
+                    <span className={`text-md font-medium 
+                                            ${activeTab === "revenue" ? "text-black" : "text-gray-400"}`}>
+                        Revenue
+                    </span>
+                </div>
                 <div
                     onClick={() => handleClick("subscriptions")}
                     className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
@@ -174,7 +165,7 @@ export default function AdminSidebar({ handleTab }: props) {
                     ${activeTab === "subscriptions" ? "text-black" : "text-gray-400"}`}>
                         Subscription
                     </span>
-                </div>
+                </div> */}
             </div>
 
             {/* Logout Section */}

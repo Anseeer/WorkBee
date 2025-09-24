@@ -16,7 +16,8 @@ Router.patch("/accept", auth, WorkController.acceptWork);
 Router.patch("/is-completed", auth, WorkController.completedWork);
 Router.get("/details", auth, WorkController.workDetailsById);
 Router.get("/works", auth, WorkController.getAllWorks);
-Router.get("/pending-work", auth, WorkController.getPendingWorks);
-Router.get("/assigned-work", auth, WorkController.getAssignedWorks);
+Router.get("/assigned-works", auth, WorkController.getAssignedWorks);
+Router.get("/requested-works", auth, WorkController.getRequestedWorks);
+Router.get("/get-top-three", auth, WorkController.getTopThree);
 
 export default Router;

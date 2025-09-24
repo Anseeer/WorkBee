@@ -12,6 +12,8 @@ export interface IWork extends Document {
     workerName:string,
     userName:string,
     wage:string,
+    platformFee:string,
+    totalAmount:string,
     location:ILocation,
     workType:string,
     size:string,

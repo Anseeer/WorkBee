@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { IWorker } from "../../types/IWorker";
+import type { IWork } from "../../types/IWork";
 
 type BookedSlot = string | { slot: string; jobId?: string };
 
@@ -12,10 +13,11 @@ interface IAvailability {
 }
 
 interface WorkerModalProps {
+    work: Partial<IWork>;
     worker: IWorker;
     availability: IAvailability;
     onClose: () => void;
-    onConfirm: (date: string, slot: string) => void;
+    onConfirm: (date: string, slot: string, totalAmount: string,PlatformFee:string) => void;
 }
 
 type AvailableSlot = {
@@ -25,6 +27,7 @@ type AvailableSlot = {
 };
 
 const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
+    work,
     worker,
     availability,
     onClose,
@@ -35,6 +38,12 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
+
+
+    const wage = Number(work?.wage) || 0;
+    const PlatformFee = wage * 0.05;
+    const totalAmount = wage + wage * 0.05;
+
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString("en-CA");
@@ -123,6 +132,7 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     };
 
     const days = getDaysInMonth();
+
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-70 z-50 p-4">
@@ -269,14 +279,50 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                                             <span>Date:</span>
                                             <span className="font-semibold">{new Date(selectedDate).toDateString()}</span>
                                         </div>
+
                                         <div className="flex justify-between">
                                             <span>Time Slot:</span>
-                                            <span className="font-semibold capitalize">{selectedSlot.replace('-', ' ')}</span>
+                                            <span className="font-semibold capitalize">
+                                                {selectedSlot.replace("-", " ")}
+                                            </span>
                                         </div>
+
+                                        <div className="flex justify-between">
+                                            <span>Work:</span>
+                                            <span className="font-semibold">{work.service}</span>
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <span>Type:</span>
+                                            <span className="font-semibold capitalize">{work.workType}</span>
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <span>Worker:</span>
+                                            <span className="font-semibold capitalize">{worker.name}</span>
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <span>Work location:</span>
+                                            <span className="font-semibold capitalize">{work.location?.address}</span>
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <span>Price:</span>
+                                            <span className="font-semibold">₹{wage.toFixed(2)}</span>
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <span>Platform Fee:</span>
+                                            <span className="font-semibold">₹{PlatformFee.toFixed(2)}</span>
+                                        </div>
+
+
                                         <div className="pt-2 border-t border-blue-200">
-                                            <p><strong>Worker:</strong> {worker.name}</p>
+                                            <strong>Total amount: ₹{totalAmount.toFixed(2)}</strong>
                                         </div>
                                     </div>
+
                                 </div>
                             )}
 
@@ -295,7 +341,7 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                             onClick={() =>
                                 selectedDate &&
                                 selectedSlot &&
-                                onConfirm(selectedDate, selectedSlot)
+                                onConfirm(selectedDate, selectedSlot, totalAmount.toString(),PlatformFee.toString())
                             }
                             disabled={isConfirmDisabled}
                             className={`
