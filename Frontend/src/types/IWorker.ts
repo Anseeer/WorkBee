@@ -24,6 +24,10 @@ export interface IWorker {
         lng: number | null
     },
     govId: string | string[],
+    ratings: {
+        average: number,
+        ratingsCount: number
+    },
     services: string[],
     categories: string[],
     subscription: {

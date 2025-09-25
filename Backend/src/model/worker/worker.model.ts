@@ -4,7 +4,6 @@ import { locationSchema } from "../location/location.model";
 
 
 const workerSchema = new Schema<IWorker>({
-    // registration
     name: {
         type: String,
         required: true
@@ -46,7 +45,7 @@ const workerSchema = new Schema<IWorker>({
     completedWorks: {
         type: Number,
         required: false,
-        default:0
+        default: 0
     },
     radius: {
         type: Number,
@@ -88,6 +87,16 @@ const workerSchema = new Schema<IWorker>({
     govId: {
         type: [String],
         required: false
+    },
+    ratings: {
+        average: {
+            type: Number,
+            default: 0
+        },
+        ratingsCount: {
+            type: Number,
+            default: 0
+        }
     },
     subscription: {
         plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', required: false },

@@ -14,6 +14,7 @@ import PaymentModal from "./PaymentModal";
 import Wallet from "../common/Wallet";
 import AddMoneyModal from "./AddMoneyModal";
 import WorkInfoModal from "./WorkInfo";
+import { WorkerRatingModal } from "./WorkerRatingModal";
 
 const ProfileSection = () => {
 
@@ -23,6 +24,7 @@ const ProfileSection = () => {
     const [isEdit, setIsEdit] = useState(false);
     const [reloadWallet, setReloadWallet] = useState(false);
     const [isPaymentModal, setIsPaymentModal] = useState(false);
+    const [isWorkerRatingModal, setWorkerRatingModal] = useState(false);
     const [isAddMoneyModal, setAddMoneyModal] = useState(false);
     const [isWorkInfoModal, setWorkInfoModal] = useState(false);
     const [amount, setAmount] = useState<number | null>(null);
@@ -108,12 +110,10 @@ const ProfileSection = () => {
     }
 
     const HandlePay = (workId: string, wage: number | string, platFromFee: number | string) => {
-        console.log("PlatFromFee :", platFromFee);
         setIsPaymentModal(true);
         setAmount(Number(wage));
         setPlatFromFeet(Number(platFromFee));
         setWorkId(workId);
-
     }
 
     return (
@@ -242,95 +242,98 @@ const ProfileSection = () => {
                         {workHistory.length > 0 ? (
                             workHistory.map((work) => (
                                 < div
-                            key = { work._id }
-                            className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 items-center bg-gray-50 rounded-lg p-2 sm:p-3 my-1 sm:my-2 shadow-sm gap-2"
+                                    key={work._id}
+                                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 items-center bg-gray-50 rounded-lg p-2 sm:p-3 my-1 sm:my-2 shadow-sm gap-2"
                                 >
-                            <div className="font-medium text-xs sm:text-sm md:text-base break-words">{work.service}</div>
-                            <div className="text-xs sm:text-sm">{work.createdAt ? new Date(work.createdAt).toLocaleDateString("en-US", {
-                                weekday: "short",
-                                month: "short",
-                                day: "numeric",
-                            }) : "No date"}</div>
-                            <div className="hidden sm:block text-xs sm:text-sm break-words">{work.workerName || "Name"}</div>
-                            <div className="text-xs sm:text-sm">
-                                <span className={`px-1 sm:px-2 py-0.5 text-xs sm:text-sm font-medium rounded-full w-fit
+                                    <div className="font-medium text-xs sm:text-sm md:text-base break-words">{work.service}</div>
+                                    <div className="text-xs sm:text-sm">{work.createdAt ? new Date(work.createdAt).toLocaleDateString("en-US", {
+                                        weekday: "short",
+                                        month: "short",
+                                        day: "numeric",
+                                    }) : "No date"}</div>
+                                    <div className="hidden sm:block text-xs sm:text-sm break-words">{work.workerName || "Name"}</div>
+                                    <div className="text-xs sm:text-sm">
+                                        <span className={`px-1 sm:px-2 py-0.5 text-xs sm:text-sm font-medium rounded-full w-fit
                                         ${work.status === "Pending" ? "bg-orange-100 text-orange-700" :
-                                        work.status === "Canceled" ? "bg-red-100 text-red-700" :
-                                            work.status === "Accepted" ? "bg-blue-100 text-blue-700" :
-                                                work.status === "Rejected" ? "bg-red-100 text-red-700" :
-                                                    work.status === "Completed" ? "bg-green-100 text-green-700" :
-                                                        "bg-gray-100 text-gray-700"}`}>
-                                    {work.status || "Pending"}
-                                </span>
-                            </div>
-                            <div className="hidden md:block text-xs sm:text-sm break-words">{work.totalAmount || "InitialPayment"}</div>
-                            {
-                                    work.status === "Completed" && work.paymentStatus === "Pending" ? (
-                                        <button
-                                            onClick={() => HandlePay(work._id as string, work.totalAmount, work.platformFee)}
-                                            className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
-                                        >
-                                            Pay
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => HandleWorkInfo(work._id as string)}
-                                            className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
-                                        >
-                                            Info
-                                        </button>
-                                    )
-                                }
-                        </div>
-                ))
-                ) : (
-                <div className="text-center text-gray-500 py-4 sm:py-6 md:py-8 text-xs sm:text-sm md:text-base">No work history found.</div>
+                                                work.status === "Canceled" ? "bg-red-100 text-red-700" :
+                                                    work.status === "Accepted" ? "bg-blue-100 text-blue-700" :
+                                                        work.status === "Rejected" ? "bg-red-100 text-red-700" :
+                                                            work.status === "Completed" ? "bg-green-100 text-green-700" :
+                                                                "bg-gray-100 text-gray-700"}`}>
+                                            {work.status || "Pending"}
+                                        </span>
+                                    </div>
+                                    <div className="hidden md:block text-xs sm:text-sm break-words">{work.totalAmount || "InitialPayment"}</div>
+                                    {
+                                        work.status === "Completed" && work.paymentStatus === "Pending" ? (
+                                            <button
+                                                onClick={() => HandlePay(work._id as string, work.totalAmount, work.platformFee)}
+                                                className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                            >
+                                                Pay
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => HandleWorkInfo(work._id as string)}
+                                                className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded bg-blue-100 hover:bg-blue-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300"
+                                            >
+                                                Info
+                                            </button>
+                                        )
+                                    }
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center text-gray-500 py-4 sm:py-6 md:py-8 text-xs sm:text-sm md:text-base">No work history found.</div>
                         )}
 
-                {/* Pagination */}
-                {totalPage > 1 && workHistory.length > 0 && (
-                    <div className="flex justify-center items-center mb-1 mt-2 space-x-1 sm:space-x-2">
-                        <button
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            className="px-1 sm:px-2 py-0.5 sm:py-1 rounded disabled:opacity-50 text-xs sm:text-sm"
-                        >
-                            &lt;
-                        </button>
+                        {/* Pagination */}
+                        {totalPage > 1 && workHistory.length > 0 && (
+                            <div className="flex justify-center items-center mb-1 mt-2 space-x-1 sm:space-x-2">
+                                <button
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="px-1 sm:px-2 py-0.5 sm:py-1 rounded disabled:opacity-50 text-xs sm:text-sm"
+                                >
+                                    &lt;
+                                </button>
 
-                        {Array.from({ length: totalPage }, (_, idx) => idx + 1).map((page) => (
-                            <button
-                                key={page}
-                                onClick={() => handlePageChange(page)}
-                                className={`px-1 sm:px-2 py-0.5 sm:py-1 border rounded-full text-xs sm:text-sm ${currentPage === page ? "bg-gray-900 text-white" : ""}`}
-                            >
-                                {page}
-                            </button>
-                        ))}
+                                {Array.from({ length: totalPage }, (_, idx) => idx + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        onClick={() => handlePageChange(page)}
+                                        className={`px-1 sm:px-2 py-0.5 sm:py-1 border rounded-full text-xs sm:text-sm ${currentPage === page ? "bg-gray-900 text-white" : ""}`}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
 
-                        <button
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPage}
-                            className="px-1 sm:px-2 py-0.5 sm:py-1 rounded disabled:opacity-50 text-xs sm:text-sm"
-                        >
-                            &gt;
-                        </button>
+                                <button
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPage}
+                                    className="px-1 sm:px-2 py-0.5 sm:py-1 rounded disabled:opacity-50 text-xs sm:text-sm"
+                                >
+                                    &gt;
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-            ) : isActiveTab === "Edit" ? (
-            <EditUserModal onClose={Close} setEdit={setIsEdit} />
-            ) : isActiveTab === "Wallet" ? (
-            <Wallet historyPrev={wallet?.transactions} workerId={userId as string} reload={reloadWallet} balancePrev={wallet?.balance} />
+                ) : isActiveTab === "Edit" ? (
+                    <EditUserModal onClose={Close} setEdit={setIsEdit} />
+                ) : isActiveTab === "Wallet" ? (
+                    <Wallet historyPrev={wallet?.transactions} workerId={userId as string} reload={reloadWallet} balancePrev={wallet?.balance} />
                 ) : null}
-            {isPaymentModal ? (
-                <PaymentModal platFromFee={platFromFee as number} Amount={amount as number} workId={workId as string} onClose={closeModal} />
-            ) : isAddMoneyModal ? (
-                <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />
-            ) : isWorkInfoModal ? (
-                <WorkInfoModal workId={workId as string} closeModal={closeModal} />
-            ) : null}
-        </div>
+                {isPaymentModal ? (
+                    <PaymentModal setRatingModal={setWorkerRatingModal} platFromFee={platFromFee as number} Amount={amount as number} workId={workId as string} onClose={closeModal} />
+                ) : isAddMoneyModal ? (
+                    <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />
+                ) : isWorkInfoModal ? (
+                    <WorkInfoModal workId={workId as string} closeModal={closeModal} />
+                ) : isWorkerRatingModal ? (
+                    <WorkerRatingModal workId={workId as string} onClose={() => setWorkerRatingModal(false)} />
+                ) : null}
+
+            </div>
         </div >
     );
 

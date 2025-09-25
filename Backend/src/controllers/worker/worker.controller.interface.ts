@@ -16,4 +16,5 @@ export interface IWorkerController {
     findWorkersByIds(req: Request, res: Response, next: NextFunction): Promise<void>;
     findWallet(req: Request, res: Response, next: NextFunction): Promise<void>;
     getEarnings(req: Request, res: Response, next: NextFunction): Promise<void>;
+    rateWorkers(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

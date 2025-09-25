@@ -11,6 +11,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { WorkDraftThunk, workerDetails } from '../../slice/workDraftSlice';
+import { StarRatingDisplay } from '../common/StartRating';
 
 interface FilterState {
     selectedDate: string;
@@ -114,7 +115,7 @@ const WorkerListing = () => {
         }
     }, [triggerDraft, workDetails, dispatch, navigate]);
 
-    const Confirm = async (date: string, slot: string,totalAmount:string,PlatformFee:string) => {
+    const Confirm = async (date: string, slot: string, totalAmount: string, PlatformFee: string) => {
         try {
             const res = await dispatch(workerDetails({
                 date,
@@ -194,6 +195,11 @@ const WorkerListing = () => {
                                         {/* Worker Details */}
                                         <div className="flex-1">
                                             <h3 className="text-lg font-semibold text-gray-900">{worker.name}</h3>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-xs text-gray-600">Rating:</span>
+                                                <StarRatingDisplay rating={worker.ratings.average || 0} />
+                                                <span className="text-xs text-gray-600">({worker.ratings.average}/5)</span>
+                                            </div>
 
                                             {/* Info Row */}
                                             <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2">
@@ -210,6 +216,7 @@ const WorkerListing = () => {
                                                     <span>{worker.completedWorks ?? 0} completed works</span>
                                                 </div>
                                             </div>
+
 
                                             {/* Bio */}
                                             <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3">

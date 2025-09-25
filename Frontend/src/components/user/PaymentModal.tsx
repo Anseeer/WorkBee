@@ -6,15 +6,15 @@ import type { RootState } from "../../Store";
 
 interface Props {
     onClose: () => void;
+    setRatingModal: (arg: boolean) => void;
     Amount: number;
     platFromFee: number;
     workId: string;
 }
 
-const PaymentModal = ({ onClose, Amount, workId, platFromFee }: Props) => {
+const PaymentModal = ({ onClose, Amount, workId, platFromFee, setRatingModal }: Props) => {
 
     const wallet = useSelector((state: RootState) => state.user.wallet);
-    console.log("UserWallet", wallet)
 
     const handlePayment = async (amount: number) => {
         try {
@@ -41,8 +41,9 @@ const PaymentModal = ({ onClose, Amount, workId, platFromFee }: Props) => {
                             workId
                         })
                             .then((res) => {
-                                onClose()
-                                console.log(res)
+                                onClose();
+                                setRatingModal(true);
+                                console.log(res);
                             })
                             .catch((err) => console.log(err))
                     },

@@ -22,12 +22,16 @@ export interface IWorker extends Document {
     govId: string[],
     services: Types.ObjectId[],
     categories: Types.ObjectId[],
+    ratings: {
+        average: number,
+        ratingsCount: number
+    },
     subscription: {
         plan: string;
         startDate: Date;
         endDate: Date;
         isActive: boolean;
-    }|null,
+    } | null,
     createdAt: Date,
     updatedAt: Date
     isAccountBuilt: boolean

@@ -336,5 +336,26 @@ export class WorkerController implements IWorkerController {
 
         }
     }
+
+    rateWorkers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            console.log("get in the backend ratings");
+            const workerId = req.query.workerId;
+            const rating = parseInt(req.query.rating as string);
+
+            if (!workerId || !rating) {
+                throw new Error("WorkerId or Ratings is not get");
+            }
+
+            const ratings = await this._workerService.rateWorker(workerId as string, rating as number);
+            const response = new successResponse(StatusCode.OK, WALLET_MESSAGE.WALLET_GET_SUCCESSFULL, { ratings });
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.EARNINGS_GET_FAILD, errMsg));
+
+        }
+    }
 }
 

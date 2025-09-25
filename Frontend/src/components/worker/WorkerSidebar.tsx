@@ -3,7 +3,6 @@ import accountIcon from "../../assets/acount-icon.png";
 import messageIcon from "../../assets/chat-icon.png";
 import historyIcon from "../../assets/history.png";
 import notificationIcon from "../../assets/Bell-icon.png";
-import reviewIcon from "../../assets/review-icon.png";
 import walletIcon from "../../assets/wallet-icon.png";
 import logoutIcon from "../../assets/logout-icon.png";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -66,12 +65,12 @@ export default function WorkerSidebar({ handleTab }: prop) {
     ${isExpanded ? 'w-56' : 'w-16'} md:w-[225px]`}
     >
       {/* Top Section: Logo + Navigation */}
-      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y">        {/* Only show right arrow expand button when collapsed */}
+      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y">        
         {!isExpanded && (
           <button
             className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"
             onClick={(e) => {
-              e.stopPropagation();  // Prevent the outside click from immediately collapsing it
+              e.stopPropagation();  
               setIsExpanded(true);
             }}
           >
@@ -90,7 +89,6 @@ export default function WorkerSidebar({ handleTab }: prop) {
           { icon: messageIcon, label: 'Message', tab: 'message' },
           { icon: historyIcon, label: 'History', tab: 'history' },
           { icon: notificationIcon, label: 'Notifications', tab: 'notification' },
-          { icon: reviewIcon, label: 'Review & Ratings', tab: 'review&ratings' },
           { icon: walletIcon, label: 'Wallet', tab: 'wallet' }
         ].map(({ icon, label, tab }) => (
           <div

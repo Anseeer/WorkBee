@@ -310,14 +310,29 @@ export class WorkerService implements IWorkerService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async getEarnings(filter: string, workerId: string): Promise<any[]|undefined> {
+    async getEarnings(filter: string, workerId: string): Promise<any[] | undefined> {
         try {
             if (!filter || !workerId) {
                 throw new Error("workerId or filter not get");
             }
             return await this._walletRepository.getEarnings(workerId, filter);
         } catch (error) {
-            console.log(error)
+            console.error('Error in getEarnings:', error);
+            throw new Error('Error in getEarnings');
+        }
+    }
+
+    async rateWorker(workerId: string, rating: number): Promise<{ average: number; ratingsCount: number; }> {
+        try {
+            if (!workerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            } else if (!rating) {
+                throw new Error("Rating not get");
+            }
+            return await this._workerRepository.rateWorker(workerId, rating); 
+        } catch (error) {
+            console.error('Error in rateWorker:', error);
+            throw new Error('Error in rateWorker');
         }
     }
 

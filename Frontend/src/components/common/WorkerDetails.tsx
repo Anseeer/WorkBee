@@ -14,6 +14,7 @@ import { fetchWorkerDetails } from '../../slice/workerSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { Calendar } from '../../utilities/Calendar';
+import { StarRatingDisplay } from './StartRating';
 dayjs.extend(isSameOrAfter);
 
 interface Prop {
@@ -120,11 +121,11 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                 )}
                             </div>
                             <div>
-                                <div className="flex items-center space-x-3 mb-1">
+                                <div className="flex items-center space-x-3">
                                     <h1 className="text-xl font-bold text-gray-900">{worker.name}</h1>
                                     <span
                                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                            ${worker.status === "Approved"
+        ${worker.status === "Approved"
                                                 ? "bg-green-100 text-green-800"
                                                 : worker.status === "Rejected"
                                                     ? "bg-red-100 text-red-800"
@@ -137,6 +138,11 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                                 ? "Rejected"
                                                 : "Pending Approval"}
                                     </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <span className="text-xs text-gray-600">Rating:</span>
+                                    <StarRatingDisplay rating={worker.ratings.average || 0} />
+                                    <span className="text-xs text-gray-600">({worker.ratings.average}/5)</span>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
                                     <div className="flex items-center space-x-1">

@@ -244,5 +244,40 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
+    async rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }> {
+        try {
+            const worker = await this.model.findById(workerId);
+            if (!worker) {
+                throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
+            }
+
+            const totalRatings = worker.ratings.ratingsCount || 0;
+            const currentAverage = worker.ratings.average || 0;
+
+            const newRatingsCount = totalRatings + 1;
+            const newAverage = (currentAverage * totalRatings + rating) / newRatingsCount;
+
+            await this.model.updateOne(
+                { _id: workerId },
+                {
+                    $set: {
+                        "ratings.average": newAverage,
+                        "ratings.ratingsCount": newRatingsCount
+                    }
+                }
+            );
+
+            return {
+                average: newAverage,
+                ratingsCount: newRatingsCount
+            };
+
+        } catch (error) {
+            console.error('Error in rateWorker:', error);
+            throw new Error('Error in rateWorker');
+        }
+    }
+
+
 
 }
