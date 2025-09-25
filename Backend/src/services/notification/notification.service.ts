@@ -13,18 +13,31 @@ export class NotificationServices implements INotificationService {
         this._notificationRepository = notificationRepo;
     }
 
-    create(notification: Partial<INotification>): Promise<INotification | null> {
-        if (!notification) {
-            throw new Error("Notification not get ");
+    async create(notification: Partial<INotification>): Promise<INotification | null> {
+        try {
+            if (!notification) {
+                throw new Error("Notification not received");
+            }
+            const notificationData = mapNotificationToEntity(notification);
+            return await this._notificationRepository.create(notificationData);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-        const notificationData = mapNotificationToEntity(notification)
-        return this._notificationRepository.create(notificationData);
     }
-    getUserNotification(userId: string): Promise<INotification[] | null> {
-        if (!userId) {
-            throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
+
+    async getUserNotification(userId: string): Promise<INotification[] | null> {
+        try {
+            if (!userId) {
+                throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
+            }
+            return await this._notificationRepository.getUserNotification(userId);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-        return this._notificationRepository.getUserNotification(userId);
     }
 
 }

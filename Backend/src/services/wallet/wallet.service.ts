@@ -14,14 +14,29 @@ export class WalletService implements IWalletService {
         this._walletRepository = walletRepo;
     }
 
+
     async findByUser(userId: string): Promise<IWalletDTO | null> {
-        const findWallet = await this._walletRepository.findByUser(userId);
-        const wallet = mapWalletToDTO(findWallet as IWallet);
-        return wallet;
+        try {
+            const findWallet = await this._walletRepository.findByUser(userId);
+            if (!findWallet) return null;
+
+            const wallet = mapWalletToDTO(findWallet as IWallet);
+            return wallet;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw new Error(errMsg);
+        }
     }
 
     async getEarnings(userId: string | null, filter: string): Promise<EarningResult[]> {
-        return await this._walletRepository.getEarnings(userId, filter);
+        try {
+            return await this._walletRepository.getEarnings(userId, filter);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw new Error(errMsg);
+        }
     }
 
     async update(updateData: Partial<IWallet>, userId: string): Promise<void> {

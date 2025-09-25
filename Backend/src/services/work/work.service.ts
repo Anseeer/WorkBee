@@ -21,7 +21,6 @@ import { INotificationRepository } from "../../repositories/notification/notific
 import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
 import { TopThreeResult } from "../../utilities/topThreeTypes";
 import { INotification } from "../../model/notification/notification.interface";
-import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 
 @injectable()
 export class WorkService implements IWorkService {
