@@ -6,4 +6,6 @@ export interface IWalletRepository {
     findByUser(userId: string): Promise<IWallet | null>;
     getEarnings(userId: string | null, filter: string): Promise<EarningResult[]>
     platformWallet(): Promise<IWallet | null>;
+    update(updateData: Partial<IWallet>, userId: string): Promise<void>;
+    updatePlatformWallet(updateData: Partial<IWallet>, walletType: string): Promise<void>;
 }

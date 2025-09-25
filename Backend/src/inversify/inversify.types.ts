@@ -38,6 +38,10 @@ const TYPES = {
 
     notificationRepository: Symbol.for("notificationRepository"),
     notificationService: Symbol.for("notificationService"),
+
+
+    paymentRepository: Symbol.for("paymentRepository"),
+    paymentService: Symbol.for("paymentService"),
 };
 
 export default TYPES;

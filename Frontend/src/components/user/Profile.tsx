@@ -119,7 +119,7 @@ const ProfileSection = () => {
     return (
         <div className="flex flex-col md:flex-row h-auto min-h-[400px] mx-[10%]   my-6 md:my-10 border border-green-900 border-3 rounded-xl bg-white overflow-hidden">
             {/* Sidebar */}
-            <div className="w-full md:w-44 lg:w-52 bg-white border-b-2 md:border-b-0 md:border-r-2 rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-gray-300">
+            <div className="w-full md:w-44 lg:w-52 bg-gray-50 border-b-2 md:border-b-0 md:border-r-2 rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-gray-300">
                 <div className="p-3 sm:p-4 md:p-6">
                     <nav className="space-y-2 sm:space-y-3 md:space-y-4">
                         {[
@@ -146,7 +146,7 @@ const ProfileSection = () => {
             {/* Main Content */}
             <div className="flex-1 bg-gray-50 rounded-b-2xl md:rounded-bl-2xl md:rounded-tr-2xl overflow-hidden p-2 sm:p-3 md:p-5 lg:min-h-[500px] lg:p-6">
                 {/* Header */}
-                <div className="bg-white border-b rounded-tr-2xl md:rounded-tr-none border-gray-300 px-2 sm:px-3 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 md:gap-4">
+                <div className="bg-gray-50 border-b rounded-tr-2xl md:rounded-tr-none border-gray-300 px-2 sm:px-3 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 md:gap-4">
                     <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-black truncate">
                         {isActiveTab === "Profile" ? "Account" : isActiveTab === "MyWorks" ? "Work History" : isActiveTab === "Wallet" ? "Wallet" : null}
                     </h1>

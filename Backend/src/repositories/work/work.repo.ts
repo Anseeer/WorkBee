@@ -110,7 +110,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
-  async getAssignedWorks(workerId: string): Promise<IWork[]> {
+    async getAssignedWorks(workerId: string): Promise<IWork[]> {
         try {
             return await this.model.find({ workerId, status: "Accepted" }).sort({ createdAt: -1 });
         } catch (error) {
@@ -127,6 +127,28 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             throw new Error('Error in getRequestedWorks');
         }
     }
+
+    async updatePaymentStatus(workId: string, status: string): Promise<void> {
+        try {
+            if (!workId || !status) {
+                throw new Error("workId or status not provided");
+            }
+
+            const work = await this.model.findById(workId);
+            if (!work) {
+                throw new Error("Work not found");
+            }
+
+            await this.model.updateOne(
+                { _id: workId },
+                { $set: { paymentStatus: status } }
+            );
+        } catch (error) {
+            console.error("Error in updatePaymentStatus:", error);
+            throw new Error("Error in updatePaymentStatus");
+        }
+    }
+
 
     async getTopThree(): Promise<TopThreeResult[]> {
         return await this.model.aggregate([

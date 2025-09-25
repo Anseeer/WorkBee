@@ -108,4 +108,42 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
         }
     }
 
+    async update(updateData: Partial<IWallet>, userId: string): Promise<void> {
+        try {
+            if (!updateData || !userId) {
+                throw new Error("updateData or userId not provided");
+            }
+
+            await this.model.updateOne(
+                { userId },
+                {
+                    $inc: { balance: updateData.balance || 0 },
+                    $push: { transactions: { $each: updateData.transactions || [] } }
+                }
+            );
+        } catch (error) {
+            console.error('Error in updateWallet:', error);
+            throw new Error('Error in updateWallet');
+        }
+    }
+
+    async updatePlatformWallet(updateData: Partial<IWallet>, walletType: string): Promise<void> {
+        try {
+            if (!updateData || !walletType) {
+                throw new Error("updateData or userId not provided");
+            }
+
+            await this.model.updateOne(
+                { walletType },
+                {
+                    $inc: { balance: updateData.balance || 0 },
+                    $push: { transactions: { $each: updateData.transactions || [] } }
+                }
+            );
+        } catch (error) {
+            console.error('Error in updateWallet:', error);
+            throw new Error('Error in updateWallet');
+        }
+    }
+
 }

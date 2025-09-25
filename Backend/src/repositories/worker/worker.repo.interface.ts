@@ -21,4 +21,5 @@ export interface IWorkerRepository {
     search(searchTerms: Partial<IWork>): Promise<IWorker[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorker[]>;
     rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }>;
+    updateCompletedWorks(workerId: string): Promise<void>;
 }

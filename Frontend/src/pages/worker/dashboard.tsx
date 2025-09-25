@@ -70,7 +70,7 @@ const Dashboard = () => {
                 <div className="flex-1 min-h-0 overflow-auto">
                     {activeTab === "dashboard" ? (
                         workerData.worker?.isAccountBuilt ? (
-                            <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability}/>
+                            <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability} />
                         ) : (
                             <div className="flex justify-center h-full items-center">
                                 <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">

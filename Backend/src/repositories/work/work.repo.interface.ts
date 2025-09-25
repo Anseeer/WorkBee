@@ -13,4 +13,5 @@ export interface IWorkRepository {
     getAssignedWorks(workerId: string): Promise<IWork[]>;
     getRequestedWorks(workerId: string): Promise<IWork[]>;
     getTopThree(): Promise<TopThreeResult[]>;
+    updatePaymentStatus(workId: string, status: string): Promise<void>;
 }

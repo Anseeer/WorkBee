@@ -63,7 +63,7 @@ const NotificationSection = ({ user }: props) => {
     }, [user?.id]);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10">
+        <div className="min-h-screen bg-white p-2 xs:p-4 sm:p-6 md:p-8 lg:p-10">
             <div className="max-w-3xl mx-auto">
                 <h2 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 xs:mb-6 sm:mb-8 text-center">
                     Notifications
@@ -71,7 +71,7 @@ const NotificationSection = ({ user }: props) => {
                 <div className="max-h-[calc(100vh-120px)] xs:max-h-[calc(100vh-150px)] sm:max-h-[calc(100vh-180px)] md:max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hidden">
                     {notifications.length > 0 ? (
                         notifications.map((n) => (
-                            <NotificationItem key={n._id } notification={n} />
+                            <NotificationItem key={n._id} notification={n} />
                         ))
                     ) : (
                         <motion.div

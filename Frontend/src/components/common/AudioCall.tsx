@@ -76,7 +76,7 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
                 endCall();
             }
         };
-    }, [user._id, isOutgoing, me, onCallEnd, isCallActive]);
+    }, [user._id, isOutgoing, me, onCallEnd, isCallActive, user.name]);
 
     const handleEndCall = () => {
         console.log('CallComponent: handleEndCall triggered for', user._id);

@@ -3,8 +3,8 @@ import { INotification } from "../../model/notification/notification.interface";
 import { INotificationEntity } from "./mapNotificationToEntity.interface";
 
 export const mapNotificationToEntity = (
-    notification: Partial<INotificationEntity>
-): Partial<INotification> => {
+    notification: Partial<INotification>
+): Partial<INotificationEntity> => {
     return {
         recipient: notification.recipient
             ? new mongoose.Types.ObjectId(notification.recipient)

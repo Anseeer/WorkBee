@@ -1,7 +1,9 @@
+import mongoose from "mongoose";
+
 export interface INotificationEntity {
-    recipient: string;
+    recipient: mongoose.Types.ObjectId;
     recipientModel: string;
-    actor?: string;
+    actor?: mongoose.Types.ObjectId;
     actorModel?: string;
     title: string;
     type: string;

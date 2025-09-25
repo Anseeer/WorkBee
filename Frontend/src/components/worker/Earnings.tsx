@@ -20,28 +20,26 @@ interface EarningsChartProps {
     rawData: any[];
 }
 
-const normalizeEarnings = (
-    rawData: any[],
-    filter: "monthly" | "yearly"
-): Earnings[] => {
+const normalizeEarnings = (rawData: any[], filter: "monthly" | "yearly"): Earnings[] => {
     if (filter === "monthly") {
         return rawData.map((d) => ({
-            label: new Date(0, d._id.month - 1).toLocaleString("default", {
+            label: new Date(0, d._id?.month ? d._id.month - 1 : 0).toLocaleString("default", {
                 month: "short",
             }),
-            value: d.totalEarnings,
+            value: d.totalEarnings || 0,
         }));
     }
 
     if (filter === "yearly") {
         return rawData.map((d) => ({
-            label: d._id.year?.toString(),
-            value: d.totalEarnings,
+            label: d._id?.year?.toString() || "",
+            value: d.totalEarnings || 0,
         }));
     }
 
     return [];
 };
+
 
 const EarningsChart: React.FC<EarningsChartProps> = ({ filter, rawData }) => {
     const data = normalizeEarnings(rawData, filter);

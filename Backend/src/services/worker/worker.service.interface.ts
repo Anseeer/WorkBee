@@ -35,4 +35,5 @@ export interface IWorkerService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getEarnings(filter: string, workerId: string): Promise<any[]|undefined>
     rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }> 
+    updateCompletedWorks(workerId: string): Promise<void>; 
 }

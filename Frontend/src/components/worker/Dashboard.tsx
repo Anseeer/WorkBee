@@ -82,7 +82,7 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                     <div className="grid grid-cols-1 border border-gray-200 p-3 bg-white sm:grid-cols-1 gap-4">
                         <div className="bg-green-100 p-4 rounded-lg shadow text-center">
                             <p className="text-lg text-green-800">Wallet balance</p>
-                            <h2 className="text-2xl font-bold text-green-900">{wallet.balance}</h2>
+                            <h2 className="text-2xl font-bold text-green-900">₹{wallet.balance}</h2>
                         </div>
                     </div>
 

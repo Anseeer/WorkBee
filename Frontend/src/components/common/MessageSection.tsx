@@ -176,6 +176,7 @@ export default function MessageSection({ chats, me }: Props) {
         endCall();
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, me, selectedUser, isCall]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
@@ -406,7 +407,7 @@ export default function MessageSection({ chats, me }: Props) {
               loop
               muted
               playsInline
-              className="absolute pb-20 inset-0 w-full h-full object-cover opacity-30"
+              className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
             >
               <source src="/bee.mp4" type="video/mp4" />
             </video>

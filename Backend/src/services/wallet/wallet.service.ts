@@ -20,9 +20,48 @@ export class WalletService implements IWalletService {
         return wallet;
     }
 
-
     async getEarnings(userId: string | null, filter: string): Promise<EarningResult[]> {
         return await this._walletRepository.getEarnings(userId, filter);
+    }
+
+    async update(updateData: Partial<IWallet>, userId: string): Promise<void> {
+        try {
+            if (!updateData || !userId) {
+                throw new Error("updateData or userId not get");
+            }
+            await this._walletRepository.update(updateData, userId);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw new Error(errMsg);
+        }
+    }
+
+    async updatePlatformWallet(updateData: Partial<IWallet>, walletType: string): Promise<void> {
+        try {
+            if (!updateData || !walletType) {
+                throw new Error("updateData or userId not get");
+            }
+            await this._walletRepository.updatePlatformWallet(updateData, walletType);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw new Error(errMsg);
+        }
+    }
+
+    async create(walletData: Partial<IWallet>): Promise<IWalletDTO | null> {
+        try {
+            if (!walletData) {
+                throw new Error("WalletData not get");
+            }
+            const wallet = await this._walletRepository.create(walletData);
+            return await mapWalletToDTO(wallet);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw new Error(errMsg);
+        }
     }
 
 }

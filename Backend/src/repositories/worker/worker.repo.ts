@@ -7,7 +7,7 @@ import { IWorkerRepository } from "./worker.repo.interface";
 import { Availability } from "../../model/availablity/availablity.model";
 import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { WORKER_MESSAGE } from "../../constants/messages";
 import { FilterQuery } from "mongoose";
 import { Role } from "../../constants/role";
@@ -278,6 +278,16 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-
+    async updateCompletedWorks(workerId: string): Promise<void> {
+        try {
+            await this.model.updateOne(
+                { _id: new mongoose.Types.ObjectId(workerId) },
+                { $inc: { completedWorks: 1 } }
+            );
+        } catch (error) {
+            console.error('Error in updateCompletedWorks:', error);
+            throw new Error('Error in updateCompletedWorks');
+        }
+    }
 
 }

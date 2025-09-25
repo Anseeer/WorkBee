@@ -9,5 +9,5 @@ export interface IAvailabilityRepository {
     resetPassword(email: string, hashedPass: string): Promise<boolean>;
     delete(id: string): Promise<boolean>;
     update(availability: Partial<IAvailabilitEntity>): Promise<boolean>;
-    markBookedSlot(availability: IAvailability): Promise<IAvailability|null>;
+    markBookedSlot(availability: IAvailability): Promise<IAvailability | null>;
 }

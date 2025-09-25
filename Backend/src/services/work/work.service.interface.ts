@@ -4,6 +4,7 @@ import { TopThreeResult } from "../../utilities/topThreeTypes";
 
 export interface IWorkService {
     createWork(workDetails: IWork): Promise<IWorkDTO>;
+    findById(workId: string): Promise<IWorkDTO | null>;
     workDetails(workId: string): Promise<IWorkDTO>;
     fetchWorkHistoryByUser(userId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPages: number }>;
     fetchWorkHistoryByWorker(workerId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorkHistory: IWorkDTO[], totalPage: number }>;
@@ -14,4 +15,5 @@ export interface IWorkService {
     getAssignedWorks(workerId: string): Promise<IWorkDTO[] | undefined>;
     getRequestedWorks(workerId: string): Promise<IWorkDTO[] | undefined>;
     getTopThree(): Promise<TopThreeResult[] | undefined>;
+    updatePaymentStatus(workId: string, status: string): Promise<void>;
 } 

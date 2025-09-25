@@ -142,8 +142,9 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                 <div className="flex items-center space-x-2">
                                     <span className="text-xs text-gray-600">Rating:</span>
                                     <StarRatingDisplay rating={worker.ratings.average || 0} />
-                                    <span className="text-xs text-gray-600">({worker.ratings.average}/5)</span>
-                                </div>
+                                    <span className="text-xs text-gray-600">
+                                        ({worker.ratings.average.toFixed(1)}/5)
+                                    </span>                                </div>
                                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
                                     <div className="flex items-center space-x-1">
                                         <MapPin className="w-3 h-3" />

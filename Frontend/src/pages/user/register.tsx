@@ -11,7 +11,6 @@ import { API_ROUTES } from "../../constant/api.routes";
 
 const RegistrationPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  // const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const Dispatch = useAppDispatch();
   const navigate = useNavigate();
