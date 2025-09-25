@@ -4,7 +4,6 @@ import { Availability } from "../../model/availablity/availablity.model";
 import BaseRepository from "../base/base.repo";
 import { IAvailabilityRepository } from "./availability.repo.interface";
 import mongoose from "mongoose";
-import { IAvailabilitEntity } from "../../mappers/availability/availability.map.DTO.interface";
 
 @injectable()
 export class AvailabilityRepository extends BaseRepository<IAvailability> implements IAvailabilityRepository {
@@ -13,22 +12,36 @@ export class AvailabilityRepository extends BaseRepository<IAvailability> implem
     }
 
     findByWorkerId = async (workerId: string | mongoose.Types.ObjectId): Promise<IAvailability | null> => {
-        return await this.model.findOne({ workerId });
+        try {
+            return await this.model.findOne({ workerId });
+        } catch (error) {
+            console.log('Error in findByWorkerId', error);
+            throw new Error('Error in findByWorkerId');
+        }
     }
 
-    update = async (availability: IAvailabilitEntity): Promise<boolean> => {
-        const result = await this.model.updateOne(
-            { workerId: availability.workerId },
-            { $set: { availableDates: availability.availableDates } }
-        );
+    update = async (availability: IAvailability): Promise<boolean> => {
+        try {
+            const result = await this.model.updateOne(
+                { workerId: availability.workerId },
+                { $set: { availableDates: availability.availableDates } }
+            );
 
-        return result.modifiedCount > 0;
+            return result.modifiedCount > 0;
+        } catch (error) {
+            console.error('Error in update:', error);
+            throw new Error('Error in update');
+        }
     }
 
-    markBookedSlot = async (availability: IAvailability): Promise<IAvailability> => {
-        return await availability.save();
+    markBookedSlot = async (availability: IAvailability): Promise<IAvailability | null> => {
+        try {
+            return await availability.save();
+        } catch (error) {
+            console.error('Error in markBookedSlot:', error);
+            throw new Error('Error in markBookedSlot');
+        }
     }
-
 
 
 }

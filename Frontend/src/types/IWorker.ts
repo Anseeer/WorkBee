@@ -1,12 +1,12 @@
 
 export interface IWorker {
-    id: string, 
-    _id: string,
+    id: string,
+    _id?: string,
     name: string,
     email: string,
     phone: string,
     password: string,
-    age: number|string,
+    age: number | string,
     bio: string,
     profileImage: string | File,
     role: string,
@@ -24,6 +24,10 @@ export interface IWorker {
         lng: number | null
     },
     govId: string | string[],
+    ratings: {
+        average: number,
+        ratingsCount: number
+    },
     services: string[],
     categories: string[],
     subscription: {
@@ -32,7 +36,7 @@ export interface IWorker {
         endDate: Date;
         isActive: boolean;
     },
-    isAccountBuilt:boolean,
-    createdAt: Date|string,
+    isAccountBuilt: boolean,
+    createdAt: Date | string,
     updatedAt: Date
 }

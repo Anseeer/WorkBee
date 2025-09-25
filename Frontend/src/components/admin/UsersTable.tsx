@@ -10,12 +10,12 @@ const UserTable = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchUsers(currentPage,5);
+            const res = await fetchUsers(currentPage, 5);
             setUsers(res.data.data.users);
             setTotalPages(res.data.data.totalPage);
         };
         fetchData();
-    },[currentPage]);
+    }, [currentPage]);
 
     const handleToggle = async (id: string) => {
         try {

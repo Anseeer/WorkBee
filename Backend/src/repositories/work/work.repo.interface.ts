@@ -1,8 +1,8 @@
-import { IWorkEntity } from "../../mappers/work/work.map.DTO.interface";
 import { IWork } from "../../model/work/work.interface";
+import { TopThreeResult } from "../../utilities/topThreeTypes";
 
 export interface IWorkRepository {
-    create(workDetails: Partial<IWorkEntity>): Promise<IWork>;
+    create(workDetails: Partial<IWork>): Promise<IWork>;
     findByUser(userId: string): Promise<IWork[]>;
     findByWorker(workerId: string): Promise<IWork[]>;
     cancel(workId: string): Promise<boolean>;
@@ -10,4 +10,8 @@ export interface IWorkRepository {
     findById(workId: string): Promise<IWork | null>;
     setIsWorkCompleted(workId: string): Promise<boolean>;
     getAllWorks(): Promise<IWork[]>;
+    getAssignedWorks(workerId: string): Promise<IWork[]>;
+    getRequestedWorks(workerId: string): Promise<IWork[]>;
+    getTopThree(): Promise<TopThreeResult[]>;
+    updatePaymentStatus(workId: string, status: string): Promise<void>;
 }

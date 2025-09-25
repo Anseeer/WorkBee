@@ -1,8 +1,7 @@
 import TYPES from "./inversify.types";
 import { Container } from "inversify";
 
-
-// Classes
+// classes
 import { UserRepository } from "../repositories/user/user.repo";
 import { UserService } from "../services/user/user.service";
 import { UserController } from "../controllers/user/user.controller";
@@ -19,7 +18,7 @@ import { AvailabilityService } from "../services/availability/availability.servi
 import { WalletRepository } from "../repositories/wallet/wallet.repo";
 import { WalletService } from "../services/wallet/wallet.service";
 import { ChatRepository } from "../repositories/chat/chat.repo";
-// Interfaces
+// interfaces
 import { IUserRepository } from "../repositories/user/user.repo.interface";
 import { IUserService } from "../services/user/user.service.interface";
 import { IUserController } from "../controllers/user/user.controller.interface";
@@ -54,6 +53,14 @@ import { ChatController } from "../controllers/chatMessage/chatMessage.controlle
 import { IChatController } from "../controllers/chatMessage/chatMessage.controller.interface";
 import { MessageRepository } from "../repositories/message/message.repo";
 import { IMessageRepository } from "../repositories/message/message.repo.interface";
+import { NotificationRepository } from "../repositories/notification/notification.repo";
+import { NotificationServices } from "../services/notification/notification.service";
+import { INotificationService } from "../services/notification/notification.service.interface";
+import { INotificationRepository } from "../repositories/notification/notification.repo.interface";
+import { IPaymentRepository } from "../repositories/payment/payment.repo.interface";
+import { PaymentRepository } from "../repositories/payment/payment.repo";
+import { PaymentService } from "../services/payment/payment.service";
+import { IPaymentService } from "../services/payment/payment.service.interface";
 
 const container = new Container();
 
@@ -86,9 +93,15 @@ container.bind<IAvailabilityService>(TYPES.availabilityService).to(AvailabilityS
 container.bind<IWalletRepository>(TYPES.walletRepository).to(WalletRepository);
 container.bind<IWalletService>(TYPES.walletService).to(WalletService);
 
+container.bind<INotificationRepository>(TYPES.notificationRepository).to(NotificationRepository);
+container.bind<INotificationService>(TYPES.notificationService).to(NotificationServices);
+
 container.bind<IChatRepositoy>(TYPES.chatRepository).to(ChatRepository);
 container.bind<IChatService>(TYPES.chatService).to(ChatService);
 container.bind<IChatController>(TYPES.chatController).to(ChatController);
 container.bind<IMessageRepository>(TYPES.messageRepository).to(MessageRepository);
+
+container.bind<IPaymentRepository>(TYPES.paymentRepository).to(PaymentRepository);
+container.bind<IPaymentService>(TYPES.paymentService).to(PaymentService);
 
 export default container;

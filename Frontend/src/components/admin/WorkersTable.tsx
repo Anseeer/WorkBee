@@ -7,8 +7,8 @@ import type { IAvailability } from '../../types/IAvailability';
 
 const WorkersTable = () => {
     const [workers, setWorkers] = useState<IWorker[]>([]);
-    const [currentPage,setCurrentPage] = useState(1);
-    const [totalPage,setTotalPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(0);
     const { setSelectedDetails } = useWorkerDetails()
 
     const FetchAvailability = async (id: string): Promise<IAvailability> => {
@@ -23,7 +23,7 @@ const WorkersTable = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchWorkers(currentPage,5);
+            const res = await fetchWorkers(currentPage, 5);
             setWorkers(res.data.data.workers);
             setTotalPage(res.data.data.totalPage);
 

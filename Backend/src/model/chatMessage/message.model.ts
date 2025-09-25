@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { IMessage } from "./IMessage";
 
-
 const MessageSchema = new Schema<IMessage>({
     chatId: {
         type: String,
@@ -20,14 +19,15 @@ const MessageSchema = new Schema<IMessage>({
     },
     content: {
         type: String,
-        required: true
+        required: true,
     },
     contentType: {
         type: String,
-        enums: ['text', 'image', 'file'],
-        default: 'text'
+        enum: ['text', 'image', 'file'],
+        default: 'text',
     },
-});
+}, { timestamps: true });
+
 
 const Message = mongoose.model<IMessage>('Message', MessageSchema);
 export default Message;

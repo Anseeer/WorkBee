@@ -8,132 +8,48 @@ import CategoryTable from "../../components/admin/CategoryTable";
 import ServicesTable from "../../components/admin/ServiceTable";
 import WorkerApprovalComponent from "../../components/admin/WorkerRequestSection";
 import WorksTable from "../../components/admin/worksTable";
+import Dashboard from "../../components/admin/Dashboard";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [subTab, setSubTab] = useState('category');
   const { selectedDetails, setSelectedDetails } = useWorkerDetails();
 
-  const handleTab = (tab: string, defaultSubTab?: string) => {
+  const handleTab = (tab: string) => {
     setActiveTab(tab);
     setSelectedDetails(null);
-
-    if (tab === "category & Services") {
-      setSubTab("category");
-    } else if (tab === "workers") {
-      setSubTab(defaultSubTab || "worker");
-    }
   };
-
-  const handleSubTab = (tab: string) => {
-    setSelectedDetails(null);
-    setSubTab(tab);
-  }
-
-  const renderCategoryServiceTabs = () => (
-    <>
-      <div className="flex items-center gap-4 py-2 px-2">
-        <button
-          onClick={() => handleSubTab('category')}
-          className={`text-2xl font-semibold ${subTab === 'category' ? 'text-green-700' : ''
-            }`}
-        >
-          Category
-        </button>
-        <span className="text-2xl font-semibold">&</span>
-        <button
-          onClick={() => handleSubTab('service')}
-          className={`text-2xl font-semibold ${subTab === 'service' ? 'text-green-700' : ''
-            }`}
-        >
-          Service
-        </button>
-      </div>
-      <hr className="border border-green-900" />
-      {subTab === 'category' ? <CategoryTable /> : <ServicesTable />}
-    </>
-  );
 
   const renderWorkersAndVerfyingTab = () => (
     <>
-      <div className="flex items-center gap-4 py-2 px-2">
-        <button
-          onClick={() => handleSubTab("worker")}
-          className={`text-2xl font-semibold `}
-        >
-          Workers
-        </button>
-        <button
-          onClick={() => handleSubTab("workerRequest")}
-          className={`text-sm rounded font-semibold border border-black text-white p-1 bg-green-700 ml-auto hover:text-black hover:bg-green-500 ${subTab === "workerRequest" ? "text-green-700" : ""
-            }`}
-        >
-          Workers Request
-        </button>
-      </div>
-      <hr className="border border-green-900" />
-      {subTab === "worker" && (
+      {activeTab === "workers" && (
         <>
           {selectedDetails ? <WorkerDetails /> : <WorkersTable />}
-        </>
-      )}
-      {subTab === "workerRequest" && (
-        <>
-          <WorkerApprovalComponent />
         </>
       )}
     </>
   );
 
   return (
-    <div className="w-full flex">
+    <div className="w-full h-screen flex">
       <AdminSidebar handleTab={handleTab} />
-      <div className="w-full">
-        {activeTab === "users" && (
-          <>
-            <h3 className="py-2 px-2 text-2xl font-semibold">Users</h3>
-            <hr className="border border-green-900" />
-            <UserTable />
-          </>
-        )}
+      <div className="w-full h-full flex flex-col">
+        <div className="flex items-center justify-between py-2 px-2">
+          <h3 className="text-2xl font-semibold">
+            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+          </h3>
+        </div>
 
-        {activeTab === "workers" && renderWorkersAndVerfyingTab()}
+        <hr className="border border-green-900" />
 
-        {activeTab === "dashboard" && (
-          <>
-            <h3 className="py-2 px-2 text-2xl font-semibold">Dashboard</h3>
-            <hr className="border border-green-900" />
-
-            <div className="flex items-center justify-center h-[550px] relative overflow-hidden">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
-              >
-                <source src="/bee.mp4" type="video/mp4" />
-              </video>
-
-              <div className="absolute inset-0 "></div>
-              <div className="relative text-center space-y-4 text-white">
-                <div className="flex-shrink-0">
-                  <h1 className="merienda-text text-7xl text-green-900">WorkBee</h1>
-                </div>
-                <p className="text-black text-lg text-semibold">Dashboard</p>
-              </div>
-            </div>
-          </>
-        )}
-
-        {activeTab === "category & Services" && renderCategoryServiceTabs()}
-        {activeTab === "jobs" && (
-          <>
-            <h3 className="py-2 px-2 text-2xl font-semibold">Jobs</h3>
-            <hr className="border border-green-900" />
-            <WorksTable />
-          </>
-        )}
+        <div className="flex-1 min-h-0 overflow-auto">
+          {activeTab === "dashboard" && <Dashboard />}
+          {activeTab === "users" && <UserTable />}
+          {activeTab === "workers" && renderWorkersAndVerfyingTab()}
+          {activeTab === "categories" && <CategoryTable />}
+          {activeTab === "services" && <ServicesTable />}
+          {activeTab === "jobs" && <WorksTable />}
+          {activeTab === "workerRequest" && <WorkerApprovalComponent />}
+        </div>
       </div>
     </div>
   );

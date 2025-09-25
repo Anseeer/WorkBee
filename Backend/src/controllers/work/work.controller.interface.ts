@@ -9,4 +9,7 @@ export interface IWorkController {
     completedWork(req: Request, res: Response, next: NextFunction): Promise<void>;
     workDetailsById(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAllWorks(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getAssignedWorks(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getRequestedWorks(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getTopThree(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

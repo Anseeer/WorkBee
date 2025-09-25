@@ -20,8 +20,8 @@ import { mapAvailabilityToDTO } from "../../mappers/availability/availability.ma
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
 import { mapWalletToDTO, mapWalletToEntity } from "../../mappers/wallet/map.wallet.DTO";
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
-import { ROLE } from "../../constants/role";
 import { Types } from "mongoose";
+import { Role } from "../../constants/role";
 
 const client = new OAuth2Client();
 
@@ -41,179 +41,254 @@ export class UserService implements IUserService {
     }
 
     async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }> {
-        if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
-            throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
+        try {
+            if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
+                throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
+            }
+
+            const userExist = await this._userRepository.findByEmail(userData.email);
+            if (userExist) {
+                throw new Error(USERS_MESSAGE.USER_ALREADY_EXISTS_WITH_EMAIL);
+            }
+
+            const hashedPass = await bcrypt.hash(userData.password, 10);
+            userData.password = hashedPass;
+            const userEntity = await mapToUserEntity(userData);
+            const newUser = await this._userRepository.create(userEntity);
+
+            const initializeWallet = {
+                userId: new Types.ObjectId(newUser?._id),
+                balance: 0,
+                currency: "INR",
+                transactions: []
+            }
+
+            const walletEntity = mapWalletToEntity(initializeWallet);
+            await this._walletRepository.create(walletEntity);
+
+            const walletData = await this._walletRepository.findByUser(newUser.id);
+
+            const accessToken = generate_Access_Token(newUser._id.toString(), newUser.role);
+            const refreshToken = generate_Refresh_Token(newUser._id.toString(), newUser.role);
+
+            const user = mapUserToDTO(newUser);
+            const wallet = mapWalletToDTO(walletData as IWallet);
+
+            return { user, accessToken, refreshToken, wallet };
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-
-        const userExist = await this._userRepository.findByEmail(userData.email);
-        if (userExist) {
-            throw new Error(USERS_MESSAGE.USER_ALREADY_EXISTS_WITH_EMAIL);
-        }
-
-        const hashedPass = await bcrypt.hash(userData.password, 10)
-        userData.password = hashedPass;
-        const userEntity = await mapToUserEntity(userData);
-        const newUser = await this._userRepository.create(userEntity);
-
-        const initializeWallet = {
-            userId: new Types.ObjectId(newUser?._id),
-            balance: 0,
-            currency: "INR",
-            transactions: []
-        }
-
-        const walletEntity = mapWalletToEntity(initializeWallet)
-        await this._walletRepository.create(walletEntity)
-
-        const walletData = await this._walletRepository.findByUser(newUser.id);
-
-        const accessToken = generate_Access_Token(newUser._id.toString(), newUser.role);
-        const refreshToken = generate_Refresh_Token(newUser._id.toString(), newUser.role);
-
-        const user = mapUserToDTO(newUser);
-        const wallet = mapWalletToDTO(walletData as IWallet);
-
-        return { user, accessToken, refreshToken, wallet };
     }
 
     async loginUser(email: string, password: string): Promise<{ user: IUserDTO; accessToken: string; refreshToken: string; wallet: IWalletDTO | null }> {
-        let findUser = await this._userRepository.findByEmail(email);
-        if (!findUser || findUser.role !== ROLE.USER) {
-            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+        try {
+            const findUser = await this._userRepository.findByEmail(email);
+            if (!findUser || findUser.role !== Role.USER) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
+
+            const isMatch = await bcrypt.compare(password, findUser.password);
+            if (!isMatch) {
+                throw new Error(USERS_MESSAGE.INVALID_CREDENTIALS);
+            }
+
+            if (findUser.isActive == false) {
+                throw new Error(USERS_MESSAGE.USER_BLOCKED);
+            }
+
+            const walletData = await this._walletRepository.findByUser(findUser.id);
+
+            const accessToken = generate_Access_Token(findUser._id.toString(), findUser.role);
+            const refreshToken = generate_Refresh_Token(findUser._id.toString(), findUser.role);
+
+            const user = mapUserToDTO(findUser);
+            const wallet = mapWalletToDTO(walletData as IWallet);
+
+            return { user, accessToken, refreshToken, wallet };
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-
-        const isMatch = await bcrypt.compare(password, findUser.password);
-        if (!isMatch) {
-            throw new Error(USERS_MESSAGE.INVALID_CREDENTIALS);
-        }
-
-        if (findUser.isActive == false) {
-            throw new Error(USERS_MESSAGE.USER_BLOCKED)
-        }
-
-        const walletData = await this._walletRepository.findByUser(findUser.id);
-
-        const accessToken = generate_Access_Token(findUser._id.toString(), findUser.role);
-        const refreshToken = generate_Refresh_Token(findUser._id.toString(), findUser.role);
-
-        const user = mapUserToDTO(findUser);
-        const wallet = mapWalletToDTO(walletData as IWallet);
-
-        return { user, accessToken, refreshToken, wallet };
     }
 
     async forgotPass(email: string): Promise<string> {
-        const otp = await generateOTP()
-        await emailService(email, otp);
-        saveOtp(email, otp);
-        return otp;
+        try {
+            const otp = await generateOTP();
+            await emailService(email, otp);
+            saveOtp(email, otp);
+            return otp;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async resendOtp(email: string): Promise<string> {
-        deleteOtp(email)
-        return this.forgotPass(email);
+        try {
+            deleteOtp(email);
+            return await this.forgotPass(email);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async getUserById(id: string): Promise<IUserDTO | null> {
-        const userData = await this._userRepository.findById(id);
-        const user = mapUserToDTO(userData as Iuser);
-        return user
+        try {
+            const userData = await this._userRepository.findById(id);
+            const user = mapUserToDTO(userData as Iuser);
+            return user;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async getUserByEmail(email: string): Promise<IUserDTO | null> {
-        const userData = await this._userRepository.findByEmail(email);
-        const user = mapUserToDTO(userData as Iuser);
-        return user
+        try {
+            const userData = await this._userRepository.findByEmail(email);
+            const user = mapUserToDTO(userData as Iuser);
+            return user;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async verifyOtp(email: string, otp: string): Promise<boolean> {
-        const record = await getOtp(email);
+        try {
+            const record = await getOtp(email);
 
-        if (!record) throw new Error(USERS_MESSAGE.NO_OTP_FOUND_FOR_THIS_EMAIL);
-        if (Date.now() > record.expiresAt) {
+            if (!record) throw new Error(USERS_MESSAGE.NO_OTP_FOUND_FOR_THIS_EMAIL);
+            if (Date.now() > record.expiresAt) {
+                deleteOtp(email);
+                throw new Error(USERS_MESSAGE.OTP_EXPIRED);
+            }
+
+            if (record.otp !== otp.toString()) {
+                throw new Error(USERS_MESSAGE.INVALID_OTP);
+            }
+
             deleteOtp(email);
-
-            throw new Error(USERS_MESSAGE.OTP_EXPIRED);
+            return true;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-
-        if (record.otp !== otp.toString()) {
-            throw new Error(USERS_MESSAGE.INVALID_OTP);
-        }
-
-
-        deleteOtp(email);
-        return true;
     }
 
     async resetPass(email: string, password: string): Promise<void> {
-        const hashedPass = await bcrypt.hash(password, 10);
-        await this._userRepository.resetPassword(email, hashedPass);
+        try {
+            const hashedPass = await bcrypt.hash(password, 10);
+            await this._userRepository.resetPassword(email, hashedPass);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async googleLogin(credential: string): Promise<{
         accessToken: string;
         refreshToken: string;
         user: IUserDTO;
-        wallet: IWalletDTO | null
+        wallet: IWalletDTO | null;
     }> {
-        const ticket = await client.verifyIdToken({
-            idToken: credential,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
+        try {
+            const ticket = await client.verifyIdToken({
+                idToken: credential,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
 
-        const payload = ticket.getPayload();
-        if (!payload?.email) throw new Error(USERS_MESSAGE.GOOGLE_LOGIN_FAILED);
+            const payload = ticket.getPayload();
+            if (!payload?.email) throw new Error(USERS_MESSAGE.GOOGLE_LOGIN_FAILED);
 
-        const existingUser = await this._userRepository.findByEmail(payload.email);
-        if (!existingUser || existingUser.role !== ROLE.USER) {
-            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            const existingUser = await this._userRepository.findByEmail(payload.email);
+            if (!existingUser || existingUser.role !== Role.USER) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
+
+            if (existingUser.isActive === false) {
+                throw new Error(USERS_MESSAGE.USER_BLOCKED);
+            }
+
+            const walletData = await this._walletRepository.findByUser(existingUser.id);
+            const jwtAccessToken = generate_Access_Token(existingUser._id.toString(), existingUser.role);
+            const jwtRefreshToken = generate_Refresh_Token(existingUser._id.toString(), existingUser.role);
+            const userDTO: IUserDTO = mapUserToDTO(existingUser);
+            const walletDTO: IWalletDTO = mapWalletToDTO(walletData as IWallet);
+
+            return {
+                accessToken: jwtAccessToken,
+                refreshToken: jwtRefreshToken,
+                user: userDTO,
+                wallet: walletDTO
+            };
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-
-        if (existingUser.isActive === false) {
-            throw new Error(USERS_MESSAGE.USER_BLOCKED);
-        }
-
-        const walletData = await this._walletRepository.findByUser(existingUser.id);
-        const jwtAccessToken = generate_Access_Token(existingUser._id.toString(), existingUser.role);
-        const jwtRefreshToken = generate_Refresh_Token(existingUser._id.toString(), existingUser.role);
-        const userDTO: IUserDTO = mapUserToDTO(existingUser);
-        const walletDTO: IWalletDTO = mapWalletToDTO(walletData as IWallet);
-
-        return {
-            accessToken: jwtAccessToken,
-            refreshToken: jwtRefreshToken,
-            user: userDTO,
-            wallet: walletDTO
-        };
     }
 
     async fetchAvailability(id: string): Promise<IAvailabilityDTO | null> {
-        const availabilityData = await this._availabilityRepository.findByWorkerId(id);
-        const availability = mapAvailabilityToDTO(availabilityData as IAvailability);
-        return availability;
+        try {
+            const availabilityData = await this._availabilityRepository.findByWorkerId(id);
+            const availability = mapAvailabilityToDTO(availabilityData as IAvailability);
+            return availability;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async fetchData(userId: string): Promise<{ user: IUserDTO, wallet: IWalletDTO | null }> {
-        const userData = await this._userRepository.fetchData(userId);
-        const walletData = await this._walletRepository.findByUser(userId);
-        const wallet = mapWalletToDTO(walletData as IWallet)
-        const user = mapUserToDTO(userData);
-        return { user, wallet };
+        try {
+            const userData = await this._userRepository.fetchData(userId);
+            const walletData = await this._walletRepository.findByUser(userId);
+            const wallet = mapWalletToDTO(walletData as IWallet);
+            const user = mapUserToDTO(userData);
+            return { user, wallet };
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async update(userDetails: Iuser, userId: string): Promise<boolean> {
-        const userData = mapToUserEntity(userDetails);
-        return await this._userRepository.update(userData, userId);
+        try {
+            const userData = mapToUserEntity(userDetails);
+            return await this._userRepository.update(userData, userId);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     async findUsersByIds(userIds: string[]): Promise<IUserDTO[]> {
-        if (!userIds) {
-            throw new Error(USERS_MESSAGE.USER_ID_NOT_GET)
+        try {
+            if (!userIds) {
+                throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
+            }
+
+            const users = await this._userRepository.findUsersByIds(userIds);
+            return users.map((user) => mapUserToDTO(user));
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-
-        const users = await this._userRepository.findUsersByIds(userIds);
-
-        return users.map((user) => mapUserToDTO(user));
     }
 
 }

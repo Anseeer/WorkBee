@@ -68,20 +68,34 @@ const WorkHistory = () => {
             {isModal ? (
                 <WorkDetailsModal workId={workId} closeModal={onClsoe} />
             ) : (
-                <DataTable
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    totalPages={totalPage}
-                    data={workHistory.map(w => ({
-                        ...w,
-                        id: w._id ?? ''
-                    }))} columns={columns}
-                    searchKeys={['userName', 'service', 'description', 'wage', 'workType', 'size', 'location', 'sheduleDate', 'sheduleTime', 'status']}
-                />
+                <div className="min-h-screen ">
+                    <DataTable
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalPages={totalPage}
+                        data={workHistory.map(w => ({
+                            ...w,
+                            id: w._id ?? ''
+                        }))}
+                        columns={columns}
+                        searchKeys={[
+                            'userName',
+                            'service',
+                            'description',
+                            'wage',
+                            'workType',
+                            'size',
+                            'location',
+                            'sheduleDate',
+                            'sheduleTime',
+                            'status'
+                        ]}
+                    />
+                </div>
             )}
-
         </>
     );
+
 }
 
 export default WorkHistory;

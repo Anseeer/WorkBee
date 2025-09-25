@@ -69,21 +69,23 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
   };
 
   return (
-    <div className="bg-gray-50 w-full min-h-screen relative">
-      <div className="absolute top-8 left-8">
-        <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
+    <div className="bg-gray-50 w-full min-h-screen relative px-4">
+      {/* Logo */}
+      <div className="absolute top-4 left-4 sm:top-8 sm:left-8">
+        <h1 className="merienda-text text-2xl sm:text-3xl text-green-900">WorkBee</h1>
       </div>
 
+      {/* Centered Form */}
       <div className="flex justify-center items-center min-h-screen">
-        <div className="bg-white rounded-3xl border-2 w-[500px] h-[350px] border-green-600 p-6 shadow-md">
-          <h2 className="text-xl font-semibold text-gray-800 text-center mb-6">
+        <div className="bg-white rounded-3xl border-2 border-green-600 shadow-md w-full max-w-md sm:max-w-lg md:max-w-xl p-4 sm:p-6 md:p-8">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 text-center mb-6">
             Enter the 6-digit OTP sent to your email to verify your identity.
           </h2>
 
-          <form onSubmit={formik.handleSubmit} className="space-y-10 py-10 px-5">
+          <form onSubmit={formik.handleSubmit} className="space-y-6 sm:space-y-8 py-6 sm:py-10 px-2 sm:px-5">
             <div>
               {formik.touched.otp && formik.errors.otp && (
-                <span className="text-sm text-red-500 mt-1">{formik.errors.otp}</span>
+                <span className="text-sm sm:text-base text-red-500 mt-1 block">{formik.errors.otp}</span>
               )}
               <input
                 type="text"
@@ -92,17 +94,17 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
                 value={formik.values.otp}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent"
+                className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
               />
             </div>
 
             {expired ? (
               <div className="text-center space-y-3">
-                <p className="text-red-600 font-semibold">Time expired</p>
+                <p className="text-red-600 font-semibold text-sm sm:text-base">Time expired</p>
                 <button
                   type="button"
                   onClick={handleResend}
-                  className="text-green-700 underline font-medium"
+                  className="text-green-700 underline font-medium text-sm sm:text-base"
                 >
                   Resend OTP
                 </button>
@@ -110,7 +112,7 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
             ) : (
               <button
                 type="submit"
-                className="w-full bg-green-900 py-1 mt-2 text-white font-semibold rounded-full"
+                className="w-full bg-green-900 py-2 sm:py-3 mt-2 sm:mt-4 text-white font-semibold rounded-full text-sm sm:text-base"
               >
                 Verify ({formatTime(timeLeft)})
               </button>
@@ -120,6 +122,7 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
       </div>
     </div>
   );
+
 };
 
 export default VerifyOtpForm;

@@ -63,7 +63,7 @@ const CategorySection: React.FC = () => {
             try {
                 const serv = await getServiceByCategory([selectedCategory]);
                 console.log("Services fetched :", serv)
-                setServices(serv.data.data);
+                if (typeof serv !== 'string') setServices(serv.data.data);
             } catch (error) {
                 console.error("Failed to fetch services:", error);
             }
@@ -98,22 +98,22 @@ const CategorySection: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-6 my-5 min-h-screen">
+        <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 my-5 min-h-screen">
             <div className="mb-8 relative">
                 <button
                     onClick={scrollLeft}
                     disabled={!canScrollLeft}
-                    className={`absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200 ${canScrollLeft
+                    className={`absolute -left-2 sm:-left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200 ${canScrollLeft
                         ? "hover:bg-green-100 text-green-600"
                         : "text-gray-300 cursor-not-allowed"
                         }`}
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
                 <div
                     ref={scrollRef}
-                    className="flex flex-nowrap overflow-x-auto w-full gap-20 justify-center mb-2 px-8 scrollbar-hide"
+                    className="flex flex-nowrap overflow-x-auto w-full gap-6 sm:gap-10 justify-start mb-2 px-4 sm:px-8 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none",
                         msOverflowStyle: "none",
@@ -126,7 +126,7 @@ const CategorySection: React.FC = () => {
                                 setSelectedCategory(category._id);
                                 setSelectedService("");
                             }}
-                            className={`flex flex-col items-center cursor-pointer transition-all duration-200 p-4 rounded-lg ${selectedCategory === category._id
+                            className={`flex flex-col items-center cursor-pointer transition-all duration-200 p-3 sm:p-4 rounded-lg min-w-[100px] sm:min-w-[120px] ${selectedCategory === category._id
                                 ? "text-green-800 bg-white shadow-md"
                                 : "text-gray-600 hover:text-green-600"
                                 }`}
@@ -134,11 +134,13 @@ const CategorySection: React.FC = () => {
                             <div className="mb-2">
                                 <img
                                     src={category.imageUrl}
-                                    alt=""
-                                    className="w-20 h-20 object-cover rounded"
+                                    alt={category.name}
+                                    className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded"
                                 />
                             </div>
-                            <span className="text-sm font-medium">{category.name}</span>
+                            <span className="text-xs sm:text-sm font-medium text-center break-words">
+                                {category.name}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -146,12 +148,12 @@ const CategorySection: React.FC = () => {
                 <button
                     onClick={scrollRight}
                     disabled={!canScrollRight}
-                    className={`absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200 ${canScrollRight
+                    className={`absolute -right-2 sm:-right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-2 z-10 transition-all duration-200 ${canScrollRight
                         ? "hover:bg-green-100 text-green-600"
                         : "text-gray-300 cursor-not-allowed"
                         }`}
                 >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
                 <div className="h-1 bg-green-900 w-full rounded"></div>
@@ -159,18 +161,18 @@ const CategorySection: React.FC = () => {
 
             {currentCategory && (
                 <div className="mb-8">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center">
                         Select a {currentCategory.name} Service
                     </h3>
-                    <div className="flex flex-wrap justify-center gap-4">
+                    <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
                         {services.map((service) => (
                             <button
                                 key={service.id}
                                 onClick={() => {
-                                    setSelectedService(service.name.toLowerCase())
-                                    HandleSelectedService(service)
+                                    setSelectedService(service.name.toLowerCase());
+                                    HandleSelectedService(service);
                                 }}
-                                className={`px-6 py-3 rounded-full border-2 font-medium transition-all duration-200 ${selectedService === service.name.toLowerCase()
+                                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full border-2 font-medium transition-all duration-200 whitespace-normal text-center ${selectedService === service.name.toLowerCase()
                                     ? "bg-green-800 text-white border-green-600 shadow-lg scale-105"
                                     : "bg-white text-gray-700 border-gray-300 hover:border-green-600 hover:text-green-600 hover:shadow-md"
                                     }`}
@@ -183,21 +185,20 @@ const CategorySection: React.FC = () => {
             )}
 
             {currentCategory && (
-                <div className="relative rounded-2xl p-8 h-[600px] shadow-xl transition-all duration-500 flex items-center justify-between">
-
+                <div className="relative rounded-2xl p-4 sm:p-8 min-h-[400px] sm:min-h-[600px] shadow-xl transition-all duration-500 flex flex-col sm:flex-row items-center justify-center sm:justify-between">
                     <img
-                        src={backgroundMap[currentCategory.name] || HomeRepairBanner} // fallback
+                        src={backgroundMap[currentCategory.name] || HomeRepairBanner}
                         alt={`${currentCategory.name} background`}
                         className="absolute inset-0 w-full h-full object-cover rounded-2xl"
                     />
 
-                    <div className="relative bg-white rounded-lg p-6 shadow-2xl min-h-[250px] w-[350px] ml-8 flex flex-col justify-center">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    <div className="relative bg-white rounded-lg p-4 sm:p-6 shadow-2xl min-h-[200px] sm:min-h-[250px] w-full sm:w-[350px] mx-auto sm:ml-8 flex flex-col justify-center text-center sm:text-left">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
                             {currentCategory.name}
                         </h2>
-                        <p className="text-gray-600 text-lg mb-4">
+                        <p className="text-gray-600 text-base sm:text-lg">
                             {selectedService
-                                ? `Professional ${selectedService} services available in your area`
+                                ? `Professional ${selectedService} services available in your area.`
                                 : currentCategory.description}
                         </p>
                     </div>
@@ -205,6 +206,7 @@ const CategorySection: React.FC = () => {
             )}
         </div>
     );
+
 };
 
 export default CategorySection;

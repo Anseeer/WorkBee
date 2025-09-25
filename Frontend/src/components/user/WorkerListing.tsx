@@ -11,6 +11,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { WorkDraftThunk, workerDetails } from '../../slice/workDraftSlice';
+import { StarRatingDisplay } from '../common/StartRating';
 
 interface FilterState {
     selectedDate: string;
@@ -114,11 +115,13 @@ const WorkerListing = () => {
         }
     }, [triggerDraft, workDetails, dispatch, navigate]);
 
-    const Confirm = async (date: string, slot: string) => {
+    const Confirm = async (date: string, slot: string, totalAmount: string, PlatformFee: string) => {
         try {
             const res = await dispatch(workerDetails({
                 date,
                 slot,
+                totalAmount,
+                PlatformFee,
                 workerId: selectedWorker?.id,
                 workerName: selectedWorker?.name,
                 userName: userDetails?.name
@@ -140,122 +143,144 @@ const WorkerListing = () => {
     const paginatedWorkers = filteredWorkers.slice(startIndex, startIndex + itemsPerPage);
 
     return (
-        <div className="flex justify-between py-10 px-20 bg-gray-50 min-h-screen">
-            {/* Sidebar */}
-            <div className="w-80 flex-shrink-0 mr-6">
-                <div className="bg-white border-2 border-green-600 rounded-3xl p-6">
-                    <h3 className="text-lg font-semibold mb-4 text-green-700">Time of day</h3>
-                    <div className="space-y-3">
-                        {timeSlots.map((slot) => (
-                            <label key={slot.value} className="flex items-center space-x-3 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={filters.selectedTimeSlots.includes(slot.value)}
-                                    onChange={() => handleTimeSlotChange(slot.value)}
-                                    className="w-4 h-4 border-2 border-gray-300 rounded focus:ring-green-500 text-green-600"
-                                />
-                                <span className="text-sm text-gray-700">{slot.label}</span>
-                            </label>
-                        ))}
+        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-10">
+            <div className="flex flex-col md:flex-row justify-between gap-6">
+
+                {/* Sidebar */}
+                <div className="w-full md:w-80 flex-shrink-0">
+                    <div className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6">
+                        <h3 className="text-lg font-semibold mb-4 text-green-700">Time of day</h3>
+                        <div className="space-y-3">
+                            {timeSlots.map((slot) => (
+                                <label key={slot.value} className="flex items-center space-x-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.selectedTimeSlots.includes(slot.value)}
+                                        onChange={() => handleTimeSlotChange(slot.value)}
+                                        className="w-4 h-4 border-2 border-gray-300 rounded focus:ring-green-500 text-green-600"
+                                    />
+                                    <span className="text-sm text-gray-700">{slot.label}</span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Worker List */}
-            <div className="flex-1">
-                <div className="max-w-3xl space-y-4">
-                    {paginatedWorkers.length > 0 ? (
-                        paginatedWorkers.map((worker) => (
-                            <div
-                                key={worker.id}
-                                className="bg-white border-2 border-green-600 rounded-3xl p-6"
-                            >
-                                <div className="flex items gap-6">
-                                    {/* Profile Image + Button */}
-                                    <div className="flex flex-col items-center   flex-shrink-0">
-                                        <img
-                                            src={worker.profileImage as string}
-                                            className="w-20 h-20 bg-gray-300 rounded-full object-cover"
-                                            alt={worker.name}
-                                        />
-                                        <button
-                                            onClick={() => handleSelectWorker(worker)}
-                                            className="bg-green-800 mt-3 text-white px-5 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition-colors"
-                                        >
-                                            Select
-                                        </button>
-                                    </div>
+                {/* Worker List */}
+                <div className="flex-1">
+                    <div className="max-w-full space-y-4">
+                        {paginatedWorkers.length > 0 ? (
+                            paginatedWorkers.map((worker) => (
+                                <div
+                                    key={worker.id}
+                                    className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6"
+                                >
+                                    <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
 
-                                    {/* Worker Details */}
-                                    <div className="flex-1">
-                                        <h3 className="text-lg font-semibold text-gray-900">
-                                            {worker.name}
-                                        </h3>
-
-                                        {/* Info Row */}
-                                        <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2">
-                                            <div className="flex items-center pace-y-1">
-                                                <MapPin className="w-3 h-3" />
-                                                <span>{worker.location.address}</span>
-                                            </div>
-                                            <div className="flex items-center space-y-1">
-                                                <User className="w-3 h-3" />
-                                                <span>{worker.age} years old</span>
-                                            </div>
-                                            <div className="flex items-center space-x-1">
-                                                <CheckCircle className="w-3 h-3 text-green-600" />
-                                                <span>{worker.completedWorks ?? 0} completed works</span>
-                                            </div>
+                                        {/* Profile Image + Button */}
+                                        <div className="flex flex-col items-center flex-shrink-0">
+                                            <img
+                                                src={worker.profileImage as string}
+                                                className="w-20 h-20 bg-gray-300 rounded-full object-cover"
+                                                alt={worker.name}
+                                            />
+                                            <button
+                                                onClick={() => handleSelectWorker(worker)}
+                                                className="bg-green-800 mt-3 text-white px-4 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition-colors"
+                                            >
+                                                Select
+                                            </button>
                                         </div>
 
-                                        {/* Bio */}
-                                        <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3">
-                                            <p className="text-sm font-medium text-gray-900 mb-1">
-                                                How Can I Help:
-                                            </p>
-                                            <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                                                {worker.bio}
-                                            </p>
+                                        {/* Worker Details */}
+                                        <div className="flex-1">
+                                            <h3 className="text-lg font-semibold text-gray-900">{worker.name}</h3>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-xs text-gray-600">Rating:</span>
+                                                <StarRatingDisplay rating={worker.ratings.average || 0} />
+                                                <span className="text-xs text-gray-600">
+                                                    ({worker.ratings.average.toFixed(1)}/5)
+                                                </span>                                            </div>
+
+                                            {/* Info Row */}
+                                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2">
+                                                <div className="flex items-center space-x-1">
+                                                    <MapPin className="w-3 h-3" />
+                                                    <span>{worker.location.address}</span>
+                                                </div>
+                                                <div className="flex items-center space-x-1">
+                                                    <User className="w-3 h-3" />
+                                                    <span>{worker.age} years old</span>
+                                                </div>
+                                                <div className="flex items-center space-x-1">
+                                                    <CheckCircle className="w-3 h-3 text-green-600" />
+                                                    <span>{worker.completedWorks ?? 0} completed works</span>
+                                                </div>
+                                            </div>
+
+
+                                            {/* Bio */}
+                                            <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3">
+                                                <p className="text-sm font-medium text-gray-900 mb-1">
+                                                    How Can I Help:
+                                                </p>
+                                                <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                                                    {worker.bio}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-gray-500 text-center py-10">
-                            No workers found matching your criteria.
-                        </p>
+                            ))
+                        ) : (
+                            <p className="text-gray-500 text-center py-10">
+                                No workers found matching your criteria.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center space-x-2 mt-6">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                            >
+                                <ChevronLeft className="w-5 h-5 text-gray-600" />
+                            </button>
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={`w-8 h-8 rounded-full ${currentPage === i + 1 ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                            >
+                                <ChevronRight className="w-5 h-5 text-gray-600" />
+                            </button>
+                        </div>
                     )}
                 </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="flex justify-center items-center space-x-2 mt-8">
-                        <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                            <ChevronLeft className="w-5 h-5 text-gray-600" />
-                        </button>
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setCurrentPage(i + 1)}
-                                className={`w-8 h-8 rounded-full ${currentPage === i + 1 ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                        <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                            <ChevronRight className="w-5 h-5 text-gray-600" />
-                        </button>
-                    </div>
-                )}
             </div>
 
             {/* Modal */}
             {isModalOpen && selectedWorker && (
-                <WorkerAvailabilityModal worker={selectedWorker} availability={availability as IAvailability} onClose={Close} onConfirm={Confirm} />
+                <WorkerAvailabilityModal
+                    work={workDetails}
+                    worker={selectedWorker}
+                    availability={availability as IAvailability}
+                    onClose={Close}
+                    onConfirm={Confirm}
+                />
             )}
         </div>
     );
+
 };
 
 export default WorkerListing;

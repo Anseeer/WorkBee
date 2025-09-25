@@ -22,3 +22,9 @@ input:-webkit-autofill {
   /* Optional: tailwind text-gray-600 */
   transition: background-color 5000s ease-in-out 0s;
 }
+
+@media (max-width: 300px) {
+    .hide-below-300 {
+        display: none;
+    }
+}
