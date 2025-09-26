@@ -15,75 +15,123 @@ export class ServiceService implements IServiceService {
     }
 
     create = async (service: IServices): Promise<IServiceDTO> => {
-        const existingService = await this._serviceRepository.findByName(service.name);
-        if (existingService) {
-            throw new Error(SERVICE_MESSAGE.SERVICE_ALREADY_EXIST);
+        try {
+            const existingService = await this._serviceRepository.findByName(service.name);
+            if (existingService) {
+                throw new Error(SERVICE_MESSAGE.SERVICE_ALREADY_EXIST);
+            }
+            const serviceEntity = mapServiceToEntity(service);
+            const newService = await this._serviceRepository.create(serviceEntity);
+            return mapServiceToDTO(newService);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-        const serviceEntity = mapServiceToEntity(service);
-        const newService = await this._serviceRepository.create(serviceEntity);
-        const serv = mapServiceToDTO(newService);
-        return serv;
     }
 
     getAllServices = async (currentPage: string, pageSize: string): Promise<{ services: IServiceDTO[], totalPage: number }> => {
-        const page = parseInt(currentPage);
-        const size = parseInt(pageSize);
-        const startIndex = (page - 1) * size;
-        const endIndex = page * size;
-        const service = await this._serviceRepository.getAllService();
-        const serv = service.slice(startIndex, endIndex);
-        const services = serv.map((serv) => mapServiceToDTO(serv))
-        const totalPage = Math.ceil(service.length / size);
-        return { services, totalPage }
-    };
+        try {
+            const page = parseInt(currentPage);
+            const size = parseInt(pageSize);
+            const startIndex = (page - 1) * size;
+            const endIndex = page * size;
+            const allServices = await this._serviceRepository.getAllService();
+            const paged = allServices.slice(startIndex, endIndex);
+            const services = paged.map((serv) => mapServiceToDTO(serv));
+            const totalPage = Math.ceil(allServices.length / size);
+            return { services, totalPage };
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
+    }
 
     setIsActive = async (serviceId: string): Promise<boolean> => {
-        await this._serviceRepository.setIsActive(serviceId);
-        return true;
+        try {
+            await this._serviceRepository.setIsActive(serviceId);
+            return true;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     update = async (service: IServices, serviceId: string): Promise<boolean> => {
-        const existingCategory = await this._serviceRepository.findByName(service.name);
-
-        if (existingCategory && existingCategory.id !== serviceId) {
-            throw new Error(SERVICE_MESSAGE.SERVICE_ALREADY_EXIST);
+        try {
+            const existingService = await this._serviceRepository.findByName(service.name);
+            if (existingService && existingService.id !== serviceId) {
+                throw new Error(SERVICE_MESSAGE.SERVICE_ALREADY_EXIST);
+            }
+            const serviceEntity = mapServiceToEntity(service);
+            await this._serviceRepository.update(serviceEntity, serviceId);
+            return true;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-        const serviceEntity = mapServiceToEntity(service);
-        await this._serviceRepository.update(serviceEntity, serviceId);
-        return true;
     }
 
     delete = async (serviceId: string): Promise<boolean> => {
-        const existingService = await this._serviceRepository.findById(serviceId);
-        if (!existingService) {
-            throw new Error(SERVICE_MESSAGE.SERVICE_NOT_EXIST);
+        try {
+            const existingService = await this._serviceRepository.findById(serviceId);
+            if (!existingService) {
+                throw new Error(SERVICE_MESSAGE.SERVICE_NOT_EXIST);
+            }
+            await this._serviceRepository.delete(serviceId);
+            return true;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-        await this._serviceRepository.delete(serviceId);
-        return true;
     }
 
     getByCategories = async (categoryIds: string[]): Promise<IServiceDTO[]> => {
-        const serv = await this._serviceRepository.getByCategories(categoryIds);
-        const services = serv.map((serv) => mapServiceToDTO(serv));
-        return services;
+        try {
+            const serv = await this._serviceRepository.getByCategories(categoryIds);
+            return serv.map((s) => mapServiceToDTO(s));
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     getByWorker = async (serviceIds: string[]): Promise<IServiceDTO[]> => {
-        const serv = await this._serviceRepository.getByWorker(serviceIds);
-        const services = serv.map((serv) => mapServiceToDTO(serv));
-        return services;
+        try {
+            const serv = await this._serviceRepository.getByWorker(serviceIds);
+            return serv.map((s) => mapServiceToDTO(s));
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     }
 
     getBySearch = async (searchKey: string): Promise<IServiceDTO[]> => {
-        const serv = await this._serviceRepository.getBySearch(searchKey);
-        const services = serv.map((serv) => mapServiceToDTO(serv));
-        return services;
-    };
+        try {
+            const serv = await this._serviceRepository.getBySearch(searchKey);
+            return serv.map((s) => mapServiceToDTO(s));
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
+    }
 
     getById = async (id: string): Promise<IServiceDTO | null> => {
-        const serv = await this._serviceRepository.findById(id);
-        const services = mapServiceToDTO(serv as IServices);
-        return services;
-    };
+        try {
+            const serv = await this._serviceRepository.findById(id);
+            return mapServiceToDTO(serv as IServices);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
+    }
 
 }

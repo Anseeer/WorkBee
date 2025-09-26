@@ -8,6 +8,7 @@ import { COOKIE_CONFIG } from '../config/Cookie';
 import { generate_Access_Token } from '../utilities/generateToken';
 import { AUTH_MESSAGE } from '../constants/messages';
 import logger from '../utilities/logger';
+import { Role } from '../constants/role';
 
 export interface AuthRequest extends Request {
   user?: JwtPayload & { role?: string };
@@ -27,13 +28,13 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET as string) as JwtPayload & { role: string; id: string };
     req.user = decoded;
 
-    if (decoded.role === 'User') {
+    if (decoded.role === Role.USER) {
       const user = await User.findById(decoded.id);
       if (!user || user.isActive === false) {
         res.status(403).json({ message: AUTH_MESSAGE.USER_BLOCKED });
         return;
       }
-    } else if (decoded.role === 'Worker') {
+    } else if (decoded.role === Role.WORKER) {
       const worker = await Worker.findById(decoded.id);
       if (!worker || worker.isActive === false) {
         res.status(403).json({ message: AUTH_MESSAGE.USER_BLOCKED });

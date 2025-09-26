@@ -3,58 +3,87 @@ import { Iuser } from "../../model/user/user.interface";
 import User from "../../model/user/user.model";
 import BaseRepository from "../base/base.repo";
 import { IUserRepository } from "./user.repo.interface";
-import { IUserEntity } from "../../mappers/user/user.map.DTO.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
+import { IUserEntity } from "../../mappers/user/user.map.DTO.interface";
 
 @injectable()
 export class UserRepository extends BaseRepository<Iuser> implements IUserRepository {
     constructor() {
         super(User);
     }
-    getAllUsers(): Promise<Iuser[] | null> {
-        const users = User.find({ role: "User" }).sort({ createdAt: -1 });
-        return users;
+    async getAllUsers(): Promise<Iuser[] | null> {
+        try {
+            return await User.find({ role: "User" }).sort({ createdAt: -1 });
+        } catch (error) {
+            console.error('Error in getAllUsers:', error);
+            throw new Error('Error in getAllUsers');
+        }
     }
 
     async setIsActive(id: string): Promise<boolean> {
-        const user = await User.findById(id);
-        if (!user) {
-            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
-        }
-        const newStatus = !user.isActive;
+        try {
+            const user = await User.findById(id);
+            if (!user) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
 
-        await User.updateOne({ _id: id }, { $set: { isActive: newStatus } });
-        return true;
+            const newStatus = !user.isActive;
+            await User.updateOne({ _id: id }, { $set: { isActive: newStatus } });
+
+            return true;
+        } catch (error) {
+            console.error('Error in setIsActive:', error);
+            throw new Error('Error in setIsActive');
+        }
     }
 
     async fetchData(userId: string): Promise<Iuser> {
-        const user = await this.model.findById(userId);
-        if (!user) {
-            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+        try {
+            const user = await this.model.findById(userId);
+            if (!user) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
+
+            return user;
+        } catch (error) {
+            console.error('Error in fetchData:', error);
+            throw new Error('Error in fetchData');
         }
-        return user;
     }
 
     async update(userDetails: IUserEntity, userId: string): Promise<boolean> {
-        const existingUser = await this.model.findById(userId);
-        if (!existingUser) {
-            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+        try {
+            const existingUser = await this.model.findById(userId);
+            if (!existingUser) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
+
+            const updatedFields = {
+                name: userDetails.name,
+                phone: userDetails.phone,
+                profileImage: userDetails.profileImage,
+                location: userDetails.location
+            };
+
+            const res = await this.model.updateOne(
+                { _id: existingUser.id },
+                { $set: updatedFields }
+            );
+
+            return res.modifiedCount > 0;
+        } catch (error) {
+            console.error('Error in update:', error);
+            throw new Error('Error in update');
         }
-        const updatedFields = {
-            name: userDetails.name,
-            phone: userDetails.phone,
-            profileImage: userDetails.profileImage,
-            location: userDetails.location
-        };
-
-        const res = await this.model.updateOne({ _id: existingUser.id }, { $set: updatedFields });
-
-        return res.modifiedCount > 0;
     }
 
     async findUsersByIds(userIds: string[]): Promise<Iuser[]> {
-        const users = await this.model.find({ _id: { $in: userIds } });
-        return users;
+        try {
+            return await this.model.find({ _id: { $in: userIds } });
+        } catch (error) {
+            console.error('Error in findUsersByIds:', error);
+            throw new Error('Error in findUsersByIds');
+        }
     }
 
 }

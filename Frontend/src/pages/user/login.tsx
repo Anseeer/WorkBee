@@ -9,7 +9,6 @@ import { API_ROUTES } from "../../constant/api.routes";
 import axios from "../../services/axios";
 import type { CredentialResponse } from "@react-oauth/google";
 
-
 const LoginPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -82,7 +81,7 @@ const LoginPage = () => {
     console.error("Google Login Failed");
     toast.error("Google login failed");
   };
- 
+
   return <LoginForm Submit={handleLogin} handleGoogleLogin={handleGoogleLogin} handleGoogleError={handleGoogleError} loading={loading} role="User" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
 };
 

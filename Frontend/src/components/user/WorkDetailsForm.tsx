@@ -270,26 +270,6 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                     )}
                                 </div>
                             </div>
-
-                            {/* <div className="mb-8">
-                                <h3 className="font-semibold mb-4 text-gray-900">How often do you need this service?</h3>
-                                <div className="relative">
-                                    <select
-                                        name="workType"
-                                        value={formik.values.workType}
-                                        onChange={formik.handleChange}
-                                        className="w-full p-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 text-base appearance-none bg-white pr-12"
-                                    >
-                                        <option value="one-time">One Time</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="monthly">Monthly</option>
-                                    </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                                    {formik.touched.workType && formik.errors.workType && (
-                                        <p className="text-red-500 text-sm">{formik.errors.workType}</p>
-                                    )}
-                                </div>
-                            </div> */}
                         </>
                     ) : null}
                 </div>

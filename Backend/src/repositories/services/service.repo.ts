@@ -11,106 +11,151 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         super(Services);
     }
 
-    async create(item: Partial<IServiceEntity>): Promise<IServices> {
-        const newItem = await new this.model(item);
-        return await newItem.save();
+    async create(item: Partial<IServices>): Promise<IServices> {
+        try {
+            const newItem = new this.model(item);
+            return await newItem.save();
+        } catch (error) {
+            console.error('Error in create:', error);
+            throw new Error('Error in create');
+        }
     }
 
     async findByName(name: string): Promise<IServices | null> {
-        return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
+        try {
+            return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
+        } catch (error) {
+            console.error('Error in findByName:', error);
+            throw new Error('Error in findByName');
+        }
     }
 
     async findById(id: string): Promise<IServices> {
-        return await this.model.findById(id) as IServices;
+        try {
+            return await this.model.findById(id) as IServices;
+        } catch (error) {
+            console.error('Error in findById:', error);
+            throw new Error('Error in findById');
+        }
     }
 
     async getAllService(): Promise<IServices[]> {
-        return await this.model.find().sort({ createdAt: 1 });
+        try {
+            return await this.model.find().sort({ createdAt: 1 });
+        } catch (error) {
+            console.error('Error in getAllService:', error);
+            throw new Error('Error in getAllServices');
+        }
     }
 
-
     async setIsActive(id: string): Promise<boolean> {
-        const service = await this.model.findById(id);
-        if (!service) return false;
-        const updatedStatus = !service.isActive;
-        await this.model.updateOne(
-            { _id: id },
-            { $set: { isActive: updatedStatus } }
-        );
-        return true;
+        try {
+            const service = await this.model.findById(id);
+            if (!service) return false;
+
+            const updatedStatus = !service.isActive;
+            await this.model.updateOne(
+                { _id: id },
+                { $set: { isActive: updatedStatus } }
+            );
+
+            return true;
+        } catch (error) {
+            console.error('Error in setIsActive:', error);
+            throw new Error('Error in setISActive');
+        }
     }
 
     update = async (service: IServiceEntity, serviceId: string): Promise<boolean> => {
-        const result = await this.model.updateOne(
-            { _id: serviceId },
-            { $set: { name: service.name, wage: service.wage, category: service.category } }
-        );
-        return result.modifiedCount > 0;
+        try {
+            const result = await this.model.updateOne(
+                { _id: serviceId },
+                { $set: { name: service.name, wage: service.wage, category: service.category } }
+            );
+
+            return result.modifiedCount > 0;
+        } catch (error) {
+            console.error('Error in update:', error);
+            throw new Error('Error in update');
+        }
     };
 
     delete = async (id: string): Promise<boolean> => {
-        const result = await this.model.deleteOne({ _id: id });
-        return result.deletedCount > 0;
+        try {
+            const result = await this.model.deleteOne({ _id: id });
+            return result.deletedCount > 0;
+        } catch (error) {
+            console.error('Error in delete:', error);
+            throw new Error('Error in delete');
+        }
     };
 
     getByCategories = async (categoryIds: string[]): Promise<IServices[]> => {
-        const services = await this.model.find({ category: { $in: categoryIds } });
-        return services;
-    }
-
-    getByWorker = async (serviceIds: string[]): Promise<IServices[]> => {
-        const services = await this.model.find({ _id: { $in: serviceIds } });
-        return services;
-    }
-
-    getBySearch = async (searchKey: string): Promise<IServices[]> => {
-        const terms = searchKey.trim().split(/\s+/);
-        const regexArray = terms.map(term => new RegExp(term, "i"));
-
-        return await this.model.aggregate([
-            {
-                $match: {
-                    $or: [
-                        { name: { $in: regexArray } },
-                        { description: { $in: regexArray } },
-                        { _id: { $in: regexArray } }
-                    ]
-                }
-            },
-            {
-                $addFields: {
-                    matchScore: {
-                        $add: [
-                            {
-                                $size: {
-                                    $filter: {
-                                        input: regexArray,
-                                        as: "term",
-                                        cond: { $regexMatch: { input: "$name", regex: "$$term" } }
-                                    }
-                                }
-                            },
-                            {
-                                $size: {
-                                    $filter: {
-                                        input: regexArray,
-                                        as: "term",
-                                        cond: { $regexMatch: { input: "$description", regex: "$$term" } }
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                }
-            },
-            { $sort: { matchScore: -1 } },
-            { $limit: 12 }
-        ]);
+        try {
+            return await this.model.find({ category: { $in: categoryIds } });
+        } catch (error) {
+            console.error('Error in getByCategories:', error);
+            throw new Error('Error in getByCategories');
+        }
     };
 
+    getByWorker = async (serviceIds: string[]): Promise<IServices[]> => {
+        try {
+            return await this.model.find({ _id: { $in: serviceIds } });
+        } catch (error) {
+            console.error('Error in getByWorker:', error);
+            throw new Error('Error in getByWorker');
+        }
+    };
 
+    getBySearch = async (searchKey: string): Promise<IServices[]> => {
+        try {
+            const terms = searchKey.trim().split(/\s+/);
+            const regexArray = terms.map(term => new RegExp(term, "i"));
 
-
-
+            return await this.model.aggregate([
+                {
+                    $match: {
+                        $or: [
+                            { name: { $in: regexArray } },
+                            { description: { $in: regexArray } },
+                            { _id: { $in: regexArray } }
+                        ]
+                    }
+                },
+                {
+                    $addFields: {
+                        matchScore: {
+                            $add: [
+                                {
+                                    $size: {
+                                        $filter: {
+                                            input: regexArray,
+                                            as: "term",
+                                            cond: { $regexMatch: { input: "$name", regex: "$$term" } }
+                                        }
+                                    }
+                                },
+                                {
+                                    $size: {
+                                        $filter: {
+                                            input: regexArray,
+                                            as: "term",
+                                            cond: { $regexMatch: { input: "$description", regex: "$$term" } }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                { $sort: { matchScore: -1 } },
+                { $limit: 12 }
+            ]);
+        } catch (error) {
+            console.error('Error in getBySearch:', error);
+            throw new Error('Error in getBySearch');
+        }
+    };
 
 }

@@ -27,6 +27,10 @@ export interface IWorkerDTO {
     bio: string;
     profileImage: string;
     govId: string[];
+    ratings: {
+        average: number,
+        ratingsCount: number
+    };
     subscription: {
         plan: string;
         startDate: Date;

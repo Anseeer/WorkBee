@@ -15,29 +15,41 @@ export class AvailabilityService implements IAvailabilityService {
         this._availabilityRepository = availabilityRepo;
     }
 
-    getAvailabilityByworkerId = async (id: string): Promise<IAvailabilityDTO|null> => {
-        const findAvailability = await this._availabilityRepository.findByWorkerId(id);
-        const availability = mapAvailabilityToDTO(findAvailability as IAvailability);
-        return availability;
+    getAvailabilityByworkerId = async (id: string): Promise<IAvailabilityDTO | null> => {
+        try {
+            const findAvailability = await this._availabilityRepository.findByWorkerId(id);
+            const availability = mapAvailabilityToDTO(findAvailability as IAvailability);
+            return availability;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
     };
 
     updateAvailability = async (availability: IAvailability): Promise<boolean> => {
-        const existingAvailability = await this._availabilityRepository.findByWorkerId(
-            availability.workerId.toString()
-        );
+        try {
+            const existingAvailability = await this._availabilityRepository.findByWorkerId(
+                availability.workerId.toString()
+            );
 
-        if (!existingAvailability) {
-            throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
+            if (!existingAvailability) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_AVAILABILITY);
+            }
+
+            const updatedFields = mapAvailabilityToEntity(availability);
+
+            const updated = await this._availabilityRepository.update(updatedFields);
+
+            if (!updated) {
+                throw new Error(AVAILABILITY_MESSAGE.UPDATE_FAILD);
+            }
+            return true;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
         }
-
-        const updatedFields = mapAvailabilityToEntity(availability);
-
-        const updated = await this._availabilityRepository.update(updatedFields);
-
-        if (!updated) {
-            throw new Error(AVAILABILITY_MESSAGE.UPDATE_FAILD);
-        }
-        return true;
     };
 
 }

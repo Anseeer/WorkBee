@@ -6,7 +6,7 @@ import { StatusCode } from "../../constants/status.code";
 import logger from "../../utilities/logger";
 import { IWorkController } from "./work.controller.interface";
 import { IWorkService } from "../../services/work/work.service.interface";
-import { WORK_MESSAGE } from "../../constants/messages";
+import { WORK_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
@@ -72,12 +72,14 @@ export class WorkController implements IWorkController {
 
     cancelWork = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workId } = req.query;
+            const { workId, id } = req.query;
             if (!workId) {
                 throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
+            } else if (!id) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID)
             }
 
-            const result = await this._workService.cancel(workId as string);
+            const result = await this._workService.cancel(workId as string, id as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_CANCEL_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);
@@ -146,6 +148,44 @@ export class WorkController implements IWorkController {
             const { currentPage, pageSize } = req.query;
             const { paginatedWorks, totalPage } = await this._workService.getAllWorks(currentPage as string, pageSize as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { paginatedWorks, totalPage });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
+    getAssignedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { workerId } = req.query;
+            const assignedWorks = await this._workService.getAssignedWorks(workerId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { assignedWorks });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
+    getRequestedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { workerId } = req.query;
+            const requestedWorks = await this._workService.getRequestedWorks(workerId as string);
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { requestedWorks });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
+    getTopThree = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const getTopThree = await this._workService.getTopThree();
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { getTopThree });
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {

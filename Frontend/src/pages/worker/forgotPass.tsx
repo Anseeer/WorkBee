@@ -4,6 +4,7 @@ import ForgotPasswordForm from "../../components/common/ForgotPassForm";
 import { forgotPassUserThunk } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { API_ROUTES } from "../../constant/api.routes";
+import { emailRegex } from "../../regexs";
 
 const WorkerForgotPasswordPage = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +16,6 @@ const WorkerForgotPasswordPage = () => {
         throw new Error("Please enter an email address");
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         throw new Error("Please enter a valid email address");
       }

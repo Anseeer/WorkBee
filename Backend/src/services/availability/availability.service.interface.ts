@@ -2,6 +2,6 @@ import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DT
 import { IAvailability } from "../../model/availablity/availablity.interface";
 
 export interface IAvailabilityService {
-  getAvailabilityByworkerId(id: string): Promise<IAvailabilityDTO|null>;
+  getAvailabilityByworkerId(id: string): Promise<IAvailabilityDTO | null>;
   updateAvailability(availability: IAvailability): Promise<boolean>;
 }

@@ -58,11 +58,10 @@ const HomeHeroSection = () => {
     const user = useSelector((state: RootState) => state?.user.user);
     console.log("UserData in redux :", user)
 
-
     return (
-        <div className="w-full h-[500px] flex flex-col items-center justify-center py-12 px-4">
+        <div className="w-full min-h-[500px] flex flex-col items-center justify-center py-12 px-4">
             {/* Title */}
-            <h1 className="text-3xl lg:text-5xl font-semibold text-black py-10">
+            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-semibold text-black text-center py-6 sm:py-10">
                 Find Help Now
             </h1>
 
@@ -73,21 +72,21 @@ const HomeHeroSection = () => {
                     placeholder="What do you need help with?"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1 text-base md:text-lg px-6 py-4 focus:outline-none bg-[#F5FAF5] text-black placeholder-gray-500"
+                    className="flex-1 text-base md:text-lg px-4 sm:px-6 py-3 sm:py-4 focus:outline-none bg-[#F5FAF5] text-black placeholder-gray-500"
                 />
-                <div className="bg-green-900 px-6 flex items-center justify-center">
-                    <Search className="text-white w-6 h-6" />
+                <div className="bg-green-900 px-4 sm:px-6 flex items-center justify-center">
+                    <Search className="text-white w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
             </div>
 
             {/* Service Buttons */}
-            <div className="grid grid-cols-2 px-20 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-10">
+            <div className="w-full max-w-6xl mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 px-4 sm:px-8">
                 {!notFound ? (
                     services?.slice(0, 12).map((service) => (
                         <button
                             onClick={() => HandleSelectedService(service)}
                             key={service.id}
-                            className="bg-[#F5FAF5] text-black text-sm px-2 py-2 rounded-full font-medium shadow hover:bg-green-100 transition"
+                            className="bg-[#F5FAF5] text-black text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full font-medium shadow hover:bg-green-100 transition break-words text-center"
                         >
                             {service.name}
                         </button>
@@ -100,6 +99,7 @@ const HomeHeroSection = () => {
             </div>
         </div>
     );
+
 };
 
 export default HomeHeroSection;

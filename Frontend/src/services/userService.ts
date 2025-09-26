@@ -96,8 +96,8 @@ export const update = async (userDetails: Partial<Iuser>, userId: string) => {
     return response;
 }
 
-export const cancelWork = async (workId: string) => {
-    await axios.patch(`works/cancel?workId=${workId}`);
+export const cancelWork = async (workId: string, id: string) => {
+    await axios.patch(`works/cancel?workId=${workId}&id=${id}`);
     return;
 }
 
@@ -113,5 +113,10 @@ export const findUsersByIds = async (userIds: string[]) => {
 
 export const fetchChat = async (userId: string) => {
     const response = await axios.get(`chats/fetch-chat?userId=${userId}`);
+    return response.data.data;
+}
+
+export const rateWorker = async (workerId: string, rating: number) => {
+    const response = await axios.get(`workers/ratings?workerId=${workerId}&rating=${rating}`)
     return response.data.data;
 }

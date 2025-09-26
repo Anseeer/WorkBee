@@ -11,6 +11,8 @@ export interface IWork {
     workerName: string,
     userName: string,
     wage: string,
+    platformFee: string,
+    totalAmount: string,
     location: {
         address: string,
         pincode: string,

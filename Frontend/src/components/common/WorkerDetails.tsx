@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MapPin, Phone, Mail, User, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Phone, Mail, User, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { useWorkerDetails } from '../context/WorkerDetailContext';
@@ -13,128 +13,14 @@ import { toast } from 'react-toastify';
 import { fetchWorkerDetails } from '../../slice/workerSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { Calendar } from '../../utilities/Calendar';
+import { StarRatingDisplay } from './StartRating';
 dayjs.extend(isSameOrAfter);
 
 interface Prop {
     isEdit?: boolean;
     setEdit?: () => void;
 }
-
-interface CalendarProps {
-    availability: IAvailability;
-}
-
-const Calendar = ({ availability }: CalendarProps) => {
-    const [currentDate, setCurrentDate] = useState(dayjs());
-    const [calendarDays, setCalendarDays] = useState<(number | null)[]>([]);
-
-    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-    const getAvailableDaysForMonth = (date: dayjs.Dayjs): number[] => {
-        const month = date.month();
-        const year = date.year();
-        const today = dayjs().startOf('day');
-
-        return (availability?.availableDates || [])
-            .filter(d => {
-                const availableDate = dayjs(d.date).startOf('day');
-                return (
-                    availableDate.year() === year &&
-                    availableDate.month() === month &&
-                    availableDate.isSameOrAfter(today)
-                );
-            })
-            .map(d => dayjs(d.date).date());
-    };
-
-    useEffect(() => {
-        const generateCalendar = (date: dayjs.Dayjs) => {
-            const startOfMonth = date.startOf("month");
-            const startDay = startOfMonth.day();
-
-            const daysInMonth = date.daysInMonth();
-            const days: (number | null)[] = [];
-
-            for (let i = 0; i < startDay; i++) {
-                days.push(null);
-            }
-
-            for (let i = 1; i <= daysInMonth; i++) {
-                days.push(i);
-            }
-            setCalendarDays(days);
-        };
-        generateCalendar(currentDate);
-    }, [currentDate, availability]);
-
-    const goToPreviousMonth = () => {
-        setCurrentDate(currentDate.subtract(1, "month"));
-    };
-
-    const goToNextMonth = () => {
-        setCurrentDate(currentDate.add(1, "month"));
-    };
-
-    const month = currentDate.format("MMMM");
-    const year = currentDate.format("YYYY");
-    const availableDays = getAvailableDaysForMonth(currentDate);
-
-
-    return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6  top-6">
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Availability</h3>
-                <div className="flex gap-2">
-                    <button
-                        onClick={goToPreviousMonth}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
-                    >
-                        <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={goToNextMonth}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
-                    >
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
-
-            <div className="border border-gray-200 rounded-lg p-4">
-                <div className="text-center mb-4">
-                    <h4 className="font-semibold text-gray-900">{month} {year}</h4>
-                </div>
-
-                <div className="grid grid-cols-7 gap-1 mb-2">
-                    {daysOfWeek.map((day) => (
-                        <div
-                            key={day}
-                            className="text-center text-xs font-medium p-2 text-gray-600"
-                        >
-                            {day}
-                        </div>
-                    ))}
-                </div>
-
-                <div className="grid grid-cols-7 gap-1">
-                    {calendarDays.map((day, index) => (
-                        <div
-                            key={index}
-                            className={`text-center p-2 text-sm font-medium rounded-lg transition-colors ${day === null
-                                ? ""
-                                : availableDays.includes(day)
-                                    ? "bg-green-700 text-white shadow-sm"
-                                    : "text-gray-400 cursor-not-allowed"
-                                }`}
-                        >
-                            {day !== null ? day : ""}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 const StatCard = ({ icon: Icon, label, value, color = "blue" }: any) => {
     const colorMap: Record<string, { bg: string; text: string }> = {
@@ -235,11 +121,11 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                 )}
                             </div>
                             <div>
-                                <div className="flex items-center space-x-3 mb-1">
+                                <div className="flex items-center space-x-3">
                                     <h1 className="text-xl font-bold text-gray-900">{worker.name}</h1>
                                     <span
                                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                            ${worker.status === "Approved"
+        ${worker.status === "Approved"
                                                 ? "bg-green-100 text-green-800"
                                                 : worker.status === "Rejected"
                                                     ? "bg-red-100 text-red-800"
@@ -253,6 +139,12 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                                 : "Pending Approval"}
                                     </span>
                                 </div>
+                                <div className="flex items-center space-x-2">
+                                    <span className="text-xs text-gray-600">Rating:</span>
+                                    <StarRatingDisplay rating={worker.ratings.average || 0} />
+                                    <span className="text-xs text-gray-600">
+                                        ({worker.ratings.average.toFixed(1)}/5)
+                                    </span>                                </div>
                                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
                                     <div className="flex items-center space-x-1">
                                         <MapPin className="w-3 h-3" />

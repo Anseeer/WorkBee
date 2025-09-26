@@ -179,6 +179,8 @@ export const AUTH_MESSAGE = {
 export const WALLET_MESSAGE = {
     WALLET_GET_SUCCESSFULL: 'Wallet get successfull.',
     WALLET_GET_FAILD: 'Wallet get faild.',
+    EARNINGS_GET_FAILD: 'Earnigs get faild.',
+    EARNINGS_GET_SUCCESS: 'Earnings get successfull.',
 }
 
 export const CHAT_MESSAGE = {

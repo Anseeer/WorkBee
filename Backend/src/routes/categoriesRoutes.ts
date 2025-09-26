@@ -15,6 +15,4 @@ Router.delete("/delete", categoryController.delete);
 Router.post("/by-worker", categoryController.getByWorker);
 Router.post("/by-Id", categoryController.getById);
 
-
-
 export default Router;

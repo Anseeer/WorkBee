@@ -11,11 +11,8 @@ export const mapAvailabilityToDTO = (availability: IAvailability | null): IAvail
     };
 };
 
-
-
 export const mapAvailabilityToEntity = (availability: IAvailability): IAvailabilitEntity => {
     return {
-        _id: availability.id,
         workerId: availability.workerId,
         availableDates: availability.availableDates
     }

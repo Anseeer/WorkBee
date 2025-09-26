@@ -5,5 +5,6 @@ export interface IMessage extends Document {
     senderId: Types.ObjectId;
     receiverId: Types.ObjectId;
     content: string;
-    contentType: string
+    contentType: string;
+    createdAt:Date;
 }

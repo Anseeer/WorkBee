@@ -35,6 +35,10 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
         bio: worker.bio || "",
         profileImage: worker.profileImage || "",
         govId: worker.govId,
+        ratings: {
+            average: worker.ratings.average,
+            ratingsCount: worker.ratings.ratingsCount,
+        },
         subscription: worker.subscription
             ? {
                 plan: worker.subscription.plan

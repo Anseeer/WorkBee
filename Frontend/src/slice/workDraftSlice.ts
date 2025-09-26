@@ -20,6 +20,8 @@ export const initialState: IWork = {
         lat: 0,
         lng: 0,
     },
+    platformFee: "",
+    totalAmount: "",
     workType: "",
     size: "",
     description: "",
@@ -53,6 +55,7 @@ const workDraft = createSlice({
             state.categoryId = action.payload.categoryId;
             state.serviceId = action.payload.serviceId;
             state.wage = action.payload.wage;
+            state.totalAmount = action.payload.totalAmount;
             state.service = action.payload.service;
             state.category = action.payload.category;
             console.log("WorkState :", state);
@@ -64,6 +67,8 @@ const workDraft = createSlice({
             state.sheduleTime = action.payload.slot;
             state.workerName = action.payload.workerName;
             state.userName = action.payload.userName;
+            state.totalAmount = action.payload.totalAmount;
+            state.platformFee = action.payload.PlatformFee;
             console.log("WorkState :", state);
             return;
         }
