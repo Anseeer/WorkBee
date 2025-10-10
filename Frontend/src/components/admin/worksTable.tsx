@@ -6,6 +6,7 @@ import { StatusBadge } from '../../utilities/StatusBadge';
 
 const WorksTable = () => {
     const [works, setWorks] = useState<(IWork & { id: string })[]>([]);
+    const [selectedWork, setSelectedWork] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
 
@@ -23,8 +24,12 @@ const WorksTable = () => {
         fetchData();
     }, [currentPage]);
 
+    const HandleSelectedWork = ()=>{
+        setSelectedWork(true);
+        console.log(selectedWork)
+    }
+
     const columns: Column<IWork>[] = [
-        { key: '_id', label: 'ID', render: (u) => '#' + u?._id?.slice(0, 5).toUpperCase() },
         { key: 'service', label: 'Work', render: (u) => u.service.split(' ').slice(0, 3).join(' ') },
         { key: 'userName', label: 'User' },
         { key: 'workerName', label: 'Worker' },
@@ -38,8 +43,18 @@ const WorksTable = () => {
             render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
         },
         { key: 'sheduleDate', label: 'Date' },
-
-
+        {
+            key: 'id',
+            label: 'Info',
+            render: () => (
+                <button
+                    onClick={() => HandleSelectedWork()}
+                    className="px-2 py-1 bg-green-700 text-white text-xs rounded hover:bg-green-800 transition"
+                >
+                    Work Info
+                </button>
+            ),
+        },
     ];
 
     return (

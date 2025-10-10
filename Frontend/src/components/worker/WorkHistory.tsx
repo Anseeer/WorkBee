@@ -32,13 +32,6 @@ const WorkHistory = () => {
     }
 
     const columns: Column<IWork>[] = [
-        {
-            key: '_id',
-            label: 'ID',
-            render: (u) => u._id
-                ? '#' + u._id.toString().slice(2, 11).toUpperCase()
-                : '-'
-        },
         { key: 'service', label: 'Service' },
         { key: 'location', label: 'Location', render: (u) => u.location?.address.split(' ').slice(0, 2).join(" ") ?? '-' },
         { key: 'sheduleDate', label: 'Date', render: (u) => new Date(u.sheduleDate).toLocaleDateString() },

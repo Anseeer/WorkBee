@@ -157,7 +157,6 @@ const ServicesTable = () => {
     });
 
     const columns: Column<IService>[] = [
-        { key: 'id', label: 'ID', render: u => u.id.slice(0, 10) },
         { key: 'name', label: 'Name' },
         { key: 'categoryName', label: 'Category' },
         { key: 'wage', label: 'Wage' },

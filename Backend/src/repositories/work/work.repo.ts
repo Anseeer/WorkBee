@@ -11,6 +11,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
     constructor() {
         super(Work);
     }
+    
     async create(item: Partial<IWork>): Promise<IWork> {
         try {
             const newItem = new this.model(item);

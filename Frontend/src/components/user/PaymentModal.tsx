@@ -117,6 +117,7 @@ const PaymentModal = ({ onClose, Amount, workId, platFromFee, setRatingModal }: 
                 <input
                     type="number"
                     name="amount"
+                    readOnly
                     value={formik.values.amount}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}

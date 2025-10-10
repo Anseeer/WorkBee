@@ -34,7 +34,6 @@ const UserTable = () => {
 
 
     const columns: Column<Iuser>[] = [
-        { key: 'id', label: 'ID', render: (u) => u.id.slice(0, 10) },
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },
         { key: 'phone', label: 'Phone' },

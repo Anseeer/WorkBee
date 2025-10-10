@@ -79,6 +79,11 @@ export class WorkService implements IWorkService {
                 throw new Error(CATEGORY_MESSAGE.CATEGORY_NOT_EXIST);
             }
 
+            const requestedWork = await this._workRepositoy.getRequestedWorks(workerId.toString());
+            if(requestedWork.length > 2){
+                throw new Error("cant request thois worker . already have some pendings ")
+            }
+
             const workEntity = mapWorkToEntity(workDetails);
             const newWork = await this._workRepositoy.create(workEntity);
             const work = mapWorkToDTO(newWork);

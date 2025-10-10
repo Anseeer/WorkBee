@@ -13,7 +13,7 @@ import EditUserModal from "./UserEditModal";
 import PaymentModal from "./PaymentModal";
 import Wallet from "../common/Wallet";
 import AddMoneyModal from "./AddMoneyModal";
-import WorkInfoModal from "./WorkInfo";
+import WorkInfoModal from "../common/WorkInfo";
 import { WorkerRatingModal } from "./WorkerRatingModal";
 
 const ProfileSection = () => {
