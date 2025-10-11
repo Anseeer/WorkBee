@@ -83,7 +83,7 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 break-words">{workDetails?.service}</h2>
-                            <p className="text-xs sm:text-sm text-gray-600 mt-1">Job ID: #{workDetails?._id?.toString().substr(2, 9).toUpperCase()}</p>
+                            <p className="text-xs sm:text-sm text-gray-600 mt-1">Job ID : #{workDetails?._id?.toString().substr(2, 9).toUpperCase()}</p>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3">
                             <span className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
@@ -99,7 +99,7 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                         </div>
                     </div>
                     <p className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2">
-                        Created on: {workDetails?.createdAt
+                        Created on : {workDetails?.createdAt
                             ? new Date(workDetails.createdAt).toLocaleDateString('en-IN', {
                                 day: '2-digit', month: '2-digit', year: 'numeric'
                             })
@@ -188,6 +188,13 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                                     <span className="text-gray-900 font-bold text-sm sm:text-base text-green-600 flex items-center gap-1">
                                         <FaRupeeSign size={14} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         {workDetails?.wage}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600 font-medium text-xs sm:text-sm">Platform Fee:</span>
+                                    <span className="text-gray-900 font-bold text-sm sm:text-base text-green-600 flex items-center gap-1">
+                                        <FaRupeeSign size={14} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        {workDetails?.platformFee}
                                     </span>
                                 </div>
                             </div>

@@ -10,6 +10,7 @@ import auth from "./routes/authVerifyRoutes";
 import categoriesRoutes from "./routes/categoriesRoutes";
 import servicesRoutes from "./routes/servicesRoutes";
 import workRoutes from "./routes/workRoutes";
+import subscriptionRoutes from "./routes/subscriptionRoutes";
 import chatRoutes from "./routes/chatRoutes";
 import MongooseConnection from "./config/DB";
 import { errorHandler } from "./middlewares/errorHandleMiddleware";
@@ -51,6 +52,7 @@ app.use(cors({
 app.use('/api/users', userRoutes);
 app.use('/api/workers', workerRoutes);
 app.use('/api/admins', adminRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/works', workRoutes);

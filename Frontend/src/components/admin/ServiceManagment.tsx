@@ -7,9 +7,9 @@ import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import type { IService } from '../../types/IServiceTypes';
 import { deleteService, fetchCategory, fetchService, setIsActiveService, updateService } from '../../services/adminService';
-import AddingServiceSection from './AddingSectionService';
+import AddingServiceSection from './ServiceAddingSection';
 
-const ServicesTable = () => {
+const ServiceManagment = () => {
     const [service, setService] = useState<IService[]>([]);
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [added, setAdded] = useState(false);
@@ -313,4 +313,4 @@ const ServicesTable = () => {
     );
 };
 
-export default ServicesTable;
+export default ServiceManagment;

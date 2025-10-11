@@ -4,11 +4,12 @@ import UserTable from "../../components/admin/UsersTable";
 import WorkersTable from "../../components/admin/WorkersTable";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import WorkerDetails from "../../components/common/WorkerDetails";
-import CategoryTable from "../../components/admin/CategoryTable";
-import ServicesTable from "../../components/admin/ServiceTable";
+import CategoryTable from "../../components/admin/CategoryManagment";
+import ServicesTable from "../../components/admin/ServiceManagment";
 import WorkerApprovalComponent from "../../components/admin/WorkerRequestSection";
 import WorksTable from "../../components/admin/worksTable";
 import Dashboard from "../../components/admin/Dashboard";
+import SubscriptionManagment from "../../components/admin/SubscriptionManagment";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -47,6 +48,7 @@ const AdminDashboard = () => {
           {activeTab === "workers" && renderWorkersAndVerfyingTab()}
           {activeTab === "categories" && <CategoryTable />}
           {activeTab === "services" && <ServicesTable />}
+          {activeTab === "subscription" && <SubscriptionManagment />}
           {activeTab === "jobs" && <WorksTable />}
           {activeTab === "workerRequest" && <WorkerApprovalComponent />}
         </div>

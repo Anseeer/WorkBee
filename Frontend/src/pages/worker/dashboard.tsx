@@ -14,6 +14,7 @@ import Notifications from "./notification";
 import WorkerDashboard from "../../components/worker/Dashboard";
 import type { IAvailability } from "../../types/IAvailability";
 import type { IWallet } from "../../types/IWallet";
+import { SubscriptionPlans } from "../../components/worker/Subscription";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -94,11 +95,14 @@ const Dashboard = () => {
                             </div>
                         )
                     ) : activeTab === "account" ? (
-                        workerData.worker?.isAccountBuilt ? (
-                            <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
-                        ) : (
+                        !workerData.worker?.isAccountBuilt ? (
                             <BuildAccount />
+                        ) : !workerData.worker?.subscription ? (
+                            <SubscriptionPlans />
+                        ) : (
+                            <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
                         )
+
                     ) : activeTab === "history" ? (
                         <WorkHistory />
                     ) : activeTab === "wallet" ? (

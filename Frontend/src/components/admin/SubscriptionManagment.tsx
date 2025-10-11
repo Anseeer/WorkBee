@@ -1,33 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { deleteCategory, fetchCategory, setIsActiveCategory, updateCategory } from '../../services/adminService';
 import { DataTable, type Column } from '../common/Table';
-import type { ICategory } from '../../types/ICategory';
 import { Edit, Trash2, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
-import AddingCategorySection from './AddingSectionCategory';
-import { uploadToCloud } from '../../utilities/uploadToCloud';
+import type { ISubscription } from '../../types/ISubscription';
+import { fetchSubscriptionPlans } from '../../services/adminService';
+import SubscriptionPlansAddingSection from './SubscriptionPlanAddingSection';
 
-const CategoryTable = () => {
-    const [category, setCategory] = useState<ICategory[]>([]);
+const SubscriptionManagment = () => {
+    const [subscription, setSubscription] = useState<ISubscription[]>([]);
     const [added, setAdded] = useState(false);
     const [deleted, setDeleted] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editData, setEditData] = useState<ICategory | null>(null);
-    const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
+    const [editData, setEditData] = useState<ISubscription | null>(null);
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPage, setTotalPage] = useState(0)
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchCategory(currentPage, 3);
-            const formatted = res.data.data.category.map((cat: any) => ({
-                ...cat,
-                id: cat._id
-            }));
-            setCategory(formatted);
-            setTotalPage(res.data.data.totalPage);
+            const res = await fetchSubscriptionPlans(currentPage, 3);
+            console.log(res);
+            setSubscription([]);
+            setTotalPage(5);
+            setIsEditing(false);
+            setEditData(null);
         };
         setAdded(false);
         setDeleted(false);
@@ -35,60 +32,36 @@ const CategoryTable = () => {
     }, [added, deleted, currentPage]);
 
     const handleToggle = async (id: string) => {
-        try {
-            await setIsActiveCategory(id);
-            setCategory(prev =>
-                prev.map(category =>
-                    category.id === id ? { ...category, isActive: !category.isActive } : category
-                )
-            );
-        } catch (error) {
-            console.error("Toggle failed:", error);
-        }
+        console.log(id);
     };
 
     const handleDelete = async (id: string) => {
-        if (!id) {
-            toast.error("Failed To Delete, Can't get the id");
-            return;
-        }
-        try {
-            await deleteCategory(id);
-            toast.success("Deleted Successfully");
-            setDeleted(true);
-        } catch (err: any) {
-            const message = err.response?.data?.data || err.response?.data?.message || err.message || "Failed to delete category";
-            toast.error(`Failed to delete category: ${message}`);
-        }
+        console.log(id);
     };
 
-    const handleEditOpen = (cat: ICategory) => {
-        setEditData(cat);
-        setIsEditing(true);
-        setExistingImageUrl(cat.imageUrl || null);
-        formik.setValues({
-            name: cat.name,
-            description: cat.description || '',
-            imageFile: null
-        });
+    const handleEditOpen = (cat: ISubscription) => {
+        console.log(cat);
     };
 
     const handleEditClose = () => {
-        setIsEditing(false);
-        setEditData(null);
-        setExistingImageUrl(null);
+
     };
 
     const formik = useFormik({
         initialValues: {
             name: '',
             description: '',
-            imageFile: null as File | null,
+            amount: '',
+            comission: '',
+            durationInDays: '',
         },
         enableReinitialize: true,
         validate: (values) => {
-            const errors: { name?: string; description?: string } = {};
-            if (!values.name) errors.name = "Category name is required";
+            const errors: { name?: string; description?: string, amount?: string, durationInDays?: string, comission?: string } = {};
+            if (!values.name) errors.name = "Plan name is required";
+            if (!values.comission) errors.comission = "comission is required";
+            if (!values.amount) errors.amount = "amount is required";
+            if (!values.durationInDays) errors.durationInDays = "duration is required";
             if (!values.description) {
                 errors.description = "Description is required";
             } else {
@@ -103,48 +76,29 @@ const CategoryTable = () => {
         onSubmit: async (values) => {
             if (!editData?.id) return;
             try {
-                let imageUrl = existingImageUrl;
-
-                if (values.imageFile) {
-                    imageUrl = await uploadToCloud(values.imageFile);
-                }
-
-                await updateCategory(editData._id, currentPage, 3, {
-                    name: values.name,
-                    description: values.description,
-                    imageUrl: imageUrl as string,
-                });
-
-                toast.success("Category updated successfully");
+                console.log("Values :", values);
+                toast.success("plan updated successfully");
                 setAdded(true);
                 handleEditClose();
             } catch (err: any) {
                 const message = err.response?.data?.data || err.response?.data?.message || err.message;
-                toast.error(`Failed to update category: ${message}`);
+                toast.error(`Failed to update plan: ${message}`);
             }
         }
     });
 
-    const columns: Column<ICategory>[] = [
-        { key: 'name', label: 'Name' },
+    const columns: Column<ISubscription>[] = [
+        { key: 'planName', label: 'Name' },
+        { key: 'amount', label: 'Amount' },
+        { key: 'comission', label: 'Comission' },
+        { key: 'durationInDays', label: 'Duration' },
         { key: 'description', label: 'Description', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
-        {
-            key: 'imageUrl',
-            label: 'Icon',
-            render: (u) => (
-                <img
-                    src={u.imageUrl}
-                    alt={u.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                />
-            )
-        },
         {
             key: 'isActive',
             label: 'Active',
             render: (u) => (
                 <div
-                    onClick={() => handleToggle(u.id)}
+                    onClick={() => handleToggle(u.id as string)}
                     className={`cursor-pointer w-11 h-6 rounded-full flex items-center ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}
                 >
                     <div
@@ -154,7 +108,7 @@ const CategoryTable = () => {
             )
         },
         {
-            key: 'actions' as keyof ICategory,
+            key: 'actions' as keyof ISubscription,
             label: 'Actions',
             render: (u) => (
                 <div className="flex gap-3">
@@ -166,7 +120,7 @@ const CategoryTable = () => {
                         <Edit className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => handleDelete(u.id)}
+                        onClick={() => handleDelete(u.id as string)}
                         className="text-red-500 hover:text-red-700"
                         title="Delete"
                     >
@@ -179,14 +133,14 @@ const CategoryTable = () => {
 
     return (
         <div className="p-4 max-w-7xl mx-auto">
-            <AddingCategorySection setAdded={setAdded} />
+            <SubscriptionPlansAddingSection setAdded={setAdded} />
             <DataTable
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
                 totalPages={totalPage}
-                data={category}
+                data={subscription}
                 columns={columns}
-                searchKeys={['name', 'description']}
+                searchKeys={['planName', 'description']}
             />
 
             {/* Edit Modal */}
@@ -240,42 +194,6 @@ const CategoryTable = () => {
                                 )}
                             </div>
 
-                            {/* Icon Section */}
-                            <div>
-                                <label className="block text-sm mb-1">Icon</label>
-                                <div className="flex items-center gap-3">
-                                    {/* Existing Icon */}
-                                    {existingImageUrl && !formik.values.imageFile && (
-                                        <img
-                                            src={existingImageUrl}
-                                            alt="Current Icon"
-                                            className="w-12 h-12 rounded-full object-cover border border-gray-300"
-                                        />
-                                    )}
-                                    {/* Preview New Icon */}
-                                    {formik.values.imageFile && (
-                                        <img
-                                            src={URL.createObjectURL(formik.values.imageFile)}
-                                            alt="New Preview"
-                                            className="w-12 h-12 rounded-full object-cover border border-gray-300"
-                                        />
-                                    )}
-                                    {/* Upload Button */}
-                                    <input
-                                        type="file"
-                                        name="imageFile"
-                                        accept="image/*"
-                                        onChange={(e) =>
-                                            formik.setFieldValue("imageFile", e.currentTarget.files?.[0] || null)
-                                        }
-                                        className="text-sm"
-                                    />
-                                </div>
-                                {formik.touched.imageFile && formik.errors.imageFile && (
-                                    <span className="text-red-500 text-xs">{formik.errors.imageFile}</span>
-                                )}
-                            </div>
-
                             {/* Actions */}
                             <div className="flex justify-end gap-3 pt-2">
                                 <button
@@ -296,9 +214,8 @@ const CategoryTable = () => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
 
-export default CategoryTable;
+export default SubscriptionManagment;

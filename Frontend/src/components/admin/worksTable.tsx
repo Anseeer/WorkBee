@@ -3,10 +3,11 @@ import { DataTable, type Column } from '../common/Table';
 import type { IWork } from '../../types/IWork';
 import { fetchWorks } from '../../services/adminService';
 import { StatusBadge } from '../../utilities/StatusBadge';
+import WorkInfoModal from '../common/WorkInfo';
 
 const WorksTable = () => {
     const [works, setWorks] = useState<(IWork & { id: string })[]>([]);
-    const [selectedWork, setSelectedWork] = useState<boolean>(false);
+    const [selectedWork, setSelectedWork] = useState<boolean | string>(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
 
@@ -24,9 +25,12 @@ const WorksTable = () => {
         fetchData();
     }, [currentPage]);
 
-    const HandleSelectedWork = ()=>{
-        setSelectedWork(true);
-        console.log(selectedWork)
+    const HandleSelectedWork = (id: string) => {
+        setSelectedWork(id);
+    }
+
+    const closeWorkInfo = () => {
+        setSelectedWork(false);
     }
 
     const columns: Column<IWork>[] = [
@@ -34,22 +38,22 @@ const WorksTable = () => {
         { key: 'userName', label: 'User' },
         { key: 'workerName', label: 'Worker' },
         { key: 'status', label: 'Status', render: (u) => <StatusBadge status={u.status} /> },
-        { key: 'paymentStatus', label: 'Payment', render: (u) => <StatusBadge status={u.paymentStatus} /> },
-        { key: 'wage', label: 'wage', render: (u) => '₹' + u.wage },
+        // { key: 'paymentStatus', label: 'Payment', render: (u) => <StatusBadge status={u.paymentStatus} /> },
+        // { key: 'wage', label: 'wage', render: (u) => '₹' + u.wage },
         { key: 'platformFee', label: 'Fee', render: (u) => <span className="text-green-700 font-semibold">₹{u.platformFee}</span> },
-        {
-            key: 'location',
-            label: 'Location',
-            render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
-        },
+        // {
+        //     key: 'location',
+        //     label: 'Location',
+        //     render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
+        // },
         { key: 'sheduleDate', label: 'Date' },
         {
             key: 'id',
             label: 'Info',
-            render: () => (
+            render: (u) => (
                 <button
-                    onClick={() => HandleSelectedWork()}
-                    className="px-2 py-1 bg-green-700 text-white text-xs rounded hover:bg-green-800 transition"
+                    onClick={() => HandleSelectedWork(u.id as string)}
+                    className="px-2 py-1 bg-green-800 text-white text-xs rounded hover:bg-green-600 transition"
                 >
                     Work Info
                 </button>
@@ -67,6 +71,8 @@ const WorksTable = () => {
                 columns={columns}
                 searchKeys={['service', 'workerName', 'userName', 'location']}
             />
+
+            {selectedWork && <WorkInfoModal closeModal={closeWorkInfo} workId={selectedWork as string} />}
         </div>
     );
 };

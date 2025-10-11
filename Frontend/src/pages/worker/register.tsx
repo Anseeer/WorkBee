@@ -7,7 +7,6 @@ import { getAllCategories } from "../../services/workerService";
 import type { ICategory } from "../../types/ICategory";
 import { emailRegex, passRegex, phoneRegex } from "../../regexs";
 import { useNavigate } from "react-router-dom";
-import type { AxiosError } from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { API_ROUTES } from "../../constant/api.routes";
 
@@ -84,8 +83,8 @@ const WorkerRegistrationPage = () => {
                 toast.success("Registration successful!");
                 navigate(API_ROUTES.WORKER.DASHBOARD, { replace: true });
             } catch (error: unknown) {
-                const err = error as AxiosError<{ data: string }>;
-                toast.error(err.response?.data?.data || "Registration failed");
+                const message = error as string || "Registration failed";
+                toast.error(message);
             } finally {
                 setLoading(false);
             }

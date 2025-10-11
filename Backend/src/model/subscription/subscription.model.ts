@@ -6,6 +6,10 @@ export const subscriptionSchema = new Schema<ISubscription>({
         type: String,
         required: true
     },
+    description: {
+        type: String,
+        required: true
+    },
     comission: {
         type: Number,
         required: true
@@ -19,10 +23,14 @@ export const subscriptionSchema = new Schema<ISubscription>({
         required: true,
         default: false
     },
+    durationInDays: {
+        type: Number,
+        required: true
+    },
     paymentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Payment",
-        required: true
+        required: false
     }
 });
 

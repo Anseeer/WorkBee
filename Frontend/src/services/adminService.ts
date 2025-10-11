@@ -121,3 +121,12 @@ export const fetchWallet = async () => {
     const response = await axios.get(`admins/wallet`);
     return response.data.data;
 }
+
+export const addSubscriptionPlan = async (payload: { planName: string, description: string, amount: string, comission: string, durationInDays: string }) => {
+    const response = await axios.post(`subscription/create-subscription-plan`, payload);
+    return response.data.data;
+}
+
+export const fetchSubscriptionPlans = async (currentPage: number, limit: number) => {
+    console.log(currentPage, limit)
+}

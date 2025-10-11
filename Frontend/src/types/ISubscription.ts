@@ -1,11 +1,12 @@
-import mongoose, { Document } from "mongoose";
 
-export interface ISubscription extends Document {
+
+export interface ISubscription {
+    id:string,
     planName: string,
     description: string,
     comission: number,
     amount: number,
     isActive: boolean,
     durationInDays: number,
-    paymentId: mongoose.Schema.Types.ObjectId
+    paymentId?: string
 }

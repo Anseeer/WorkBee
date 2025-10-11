@@ -4,6 +4,7 @@ import UsersIcon from "../../assets/users-icon.png";
 import WorkersIcon from "../../assets/workers-icon.png";
 import JobsIcon from "../../assets/jobs-icon.png";
 import CategoryAndServicesIcon from "../../assets/category&services.png";
+import subscriptionIcone from "../../assets/subscription-Icon.png";
 import serviceIcon from "../../assets/service-icon.png";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +40,7 @@ export default function AdminSidebar({ handleTab }: props) {
         } catch (error) {
             console.error("Logout failed:", error);
         }
-    }; 
+    };
 
     return (
         <div className="bg-[#10451D] h-full text-black w-[225px] flex flex-col justify-between rounded-r-2xl shadow-lg">
@@ -141,6 +142,20 @@ export default function AdminSidebar({ handleTab }: props) {
                     <span className={`text-md font-medium 
                     ${activeTab === "services" ? "text-black" : "text-gray-400"}`}>
                         Services
+                    </span>
+                </div>
+
+                {/* subscription managment */}
+                <div
+                    onClick={() => handleClick("subscription")}
+                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
+                        ${activeTab === "subscription"
+                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
+                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
+                    <img src={subscriptionIcone} alt="subscription" className="w-5 h-5" />
+                    <span className={`text-md font-medium 
+                    ${activeTab === "subscription" ? "text-black" : "text-gray-400"}`}>
+                        Subscription
                     </span>
                 </div>
 

@@ -35,7 +35,7 @@ export interface IWorker {
         startDate: Date;
         endDate: Date;
         isActive: boolean;
-    },
+    }|null,
     isAccountBuilt: boolean,
     createdAt: Date | string,
     updatedAt: Date
