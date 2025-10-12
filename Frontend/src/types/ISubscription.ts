@@ -1,12 +1,12 @@
 
 
 export interface ISubscription {
-    id:string,
+    id: string,
     planName: string,
     description: string,
-    comission: number,
-    amount: number,
+    comission: number | string,
+    amount: number | string,
     isActive: boolean,
-    durationInDays: number,
+    durationInDays: number | string,
     paymentId?: string
 }

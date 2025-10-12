@@ -21,7 +21,7 @@ export const subscriptionSchema = new Schema<ISubscription>({
     isActive: {
         type: Boolean,
         required: true,
-        default: false
+        default: true
     },
     durationInDays: {
         type: Number,

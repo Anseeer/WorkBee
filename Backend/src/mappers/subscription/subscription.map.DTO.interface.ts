@@ -1,7 +1,8 @@
 import mongoose from "mongoose"
 
 export interface ISubscriptionDTO {
-    name: string,
+    id?:string,
+    planName: string,
     description: string,
     comission: string,
     amount: string,

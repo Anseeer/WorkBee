@@ -5,7 +5,7 @@ import { Edit, Trash2, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import type { ISubscription } from '../../types/ISubscription';
-import { fetchSubscriptionPlans } from '../../services/adminService';
+import { deleteSubscription, fetchSubscriptionPlans, toggleStatus, updateSubscription } from '../../services/adminService';
 import SubscriptionPlansAddingSection from './SubscriptionPlanAddingSection';
 
 const SubscriptionManagment = () => {
@@ -20,9 +20,9 @@ const SubscriptionManagment = () => {
     useEffect(() => {
         const fetchData = async () => {
             const res = await fetchSubscriptionPlans(currentPage, 3);
-            console.log(res);
-            setSubscription([]);
-            setTotalPage(5);
+            setSubscription(res.subscription);
+            console.log("Subscription :", res.subscription);
+            setTotalPage(res.totalPage);
             setIsEditing(false);
             setEditData(null);
         };
@@ -32,33 +32,64 @@ const SubscriptionManagment = () => {
     }, [added, deleted, currentPage]);
 
     const handleToggle = async (id: string) => {
-        console.log(id);
+        try {
+            if (!id) {
+                throw new Error("ID not found");
+            }
+            await toggleStatus(id);
+            setSubscription(prev =>
+                prev.map(sub =>
+                    sub.id === id
+                        ? { ...sub, isActive: !sub.isActive }
+                        : sub
+                )
+            );
+            console.log("Subscription update status successfully");
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.error("IsActive failed:", errMsg);
+            throw new Error(errMsg);
+        }
     };
 
     const handleDelete = async (id: string) => {
-        console.log(id);
+        try {
+            if (!id) {
+                throw new Error("ID not found");
+            }
+            await deleteSubscription(id);
+            setDeleted(true);
+            console.log("Subscription deleted successfully");
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.error("Delete failed:", errMsg);
+            throw new Error(errMsg);
+        }
     };
 
-    const handleEditOpen = (cat: ISubscription) => {
-        console.log(cat);
+
+    const handleEditOpen = (sub: ISubscription) => {
+        setIsEditing(true);
+        setEditData(sub);
+
     };
 
     const handleEditClose = () => {
-
+        setIsEditing(false)
     };
 
     const formik = useFormik({
         initialValues: {
-            name: '',
-            description: '',
-            amount: '',
-            comission: '',
-            durationInDays: '',
+            planName: editData?.planName ?? '',
+            description: editData?.description ?? '',
+            amount: editData?.amount ?? '',
+            comission: editData?.comission ?? '',
+            durationInDays: editData?.durationInDays ?? '',
         },
         enableReinitialize: true,
         validate: (values) => {
-            const errors: { name?: string; description?: string, amount?: string, durationInDays?: string, comission?: string } = {};
-            if (!values.name) errors.name = "Plan name is required";
+            const errors: { planName?: string; description?: string, amount?: string, durationInDays?: string, comission?: string } = {};
+            if (!values.planName) errors.planName = "Plan name is required";
             if (!values.comission) errors.comission = "comission is required";
             if (!values.amount) errors.amount = "amount is required";
             if (!values.durationInDays) errors.durationInDays = "duration is required";
@@ -76,7 +107,7 @@ const SubscriptionManagment = () => {
         onSubmit: async (values) => {
             if (!editData?.id) return;
             try {
-                console.log("Values :", values);
+                await updateSubscription(editData.id, values);
                 toast.success("plan updated successfully");
                 setAdded(true);
                 handleEditClose();
@@ -89,13 +120,13 @@ const SubscriptionManagment = () => {
 
     const columns: Column<ISubscription>[] = [
         { key: 'planName', label: 'Name' },
-        { key: 'amount', label: 'Amount' },
-        { key: 'comission', label: 'Comission' },
-        { key: 'durationInDays', label: 'Duration' },
+        { key: 'amount', label: 'Amount', render: (u) => `₹${u.amount}` },
+        { key: 'comission', label: 'Comission', render: (u) => `${u.comission}%` },
+        { key: 'durationInDays', label: 'Duration', render: (u) => `${u.durationInDays}(days)` },
         { key: 'description', label: 'Description', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
         {
             key: 'isActive',
-            label: 'Active',
+            label: 'Status',
             render: (u) => (
                 <div
                     onClick={() => handleToggle(u.id as string)}
@@ -120,7 +151,7 @@ const SubscriptionManagment = () => {
                         <Edit className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => handleDelete(u.id as string)}
+                        onClick={() => handleDelete(u.id)}
                         className="text-red-500 hover:text-red-700"
                         title="Delete"
                     >
@@ -140,7 +171,7 @@ const SubscriptionManagment = () => {
                 totalPages={totalPage}
                 data={subscription}
                 columns={columns}
-                searchKeys={['planName', 'description']}
+                searchKeys={['planName', 'description', 'amount', 'comission']}
             />
 
             {/* Edit Modal */}
@@ -149,29 +180,29 @@ const SubscriptionManagment = () => {
                     <div className="bg-white rounded-lg border border-green-900 border-2 p-6 w-[420px] shadow-lg">
                         {/* Header */}
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold text-green-700">Edit Category</h2>
+                            <h2 className="text-lg font-semibold text-green-700">Edit Subscription Plan</h2>
                             <button onClick={handleEditClose}>
                                 <X className="w-5 h-5 text-gray-600 hover:text-gray-800" />
                             </button>
                         </div>
 
                         <form onSubmit={formik.handleSubmit} className="space-y-4">
-                            {/* Category Name */}
+                            {/* Plan Name */}
                             <div>
-                                <label className="block text-sm mb-1">Category Name</label>
+                                <label className="block text-sm mb-1">Plan Name</label>
                                 <input
                                     type="text"
                                     name="name"
-                                    value={formik.values.name}
+                                    value={formik.values.planName}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.name && formik.errors.name
+                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.planName && formik.errors.planName
                                         ? 'border-red-500'
                                         : 'border-gray-300'
                                         }`}
                                 />
-                                {formik.touched.name && formik.errors.name && (
-                                    <span className="text-red-500 text-xs">{formik.errors.name}</span>
+                                {formik.touched.planName && formik.errors.planName && (
+                                    <span className="text-red-500 text-xs">{formik.errors.planName}</span>
                                 )}
                             </div>
 
@@ -191,6 +222,63 @@ const SubscriptionManagment = () => {
                                 />
                                 {formik.touched.description && formik.errors.description && (
                                     <span className="text-red-500 text-xs">{formik.errors.description}</span>
+                                )}
+                            </div>
+
+                            {/* Comission */}
+                            <div>
+                                <label className="block text-sm mb-1">Comission</label>
+                                <input
+                                    type="text"
+                                    name="comission"
+                                    value={formik.values.comission}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.comission && formik.errors.comission
+                                        ? 'border-red-500'
+                                        : 'border-gray-300'
+                                        }`}
+                                />
+                                {formik.touched.comission && formik.errors.comission && (
+                                    <span className="text-red-500 text-xs">{formik.errors.comission}</span>
+                                )}
+                            </div>
+
+                            {/* Amount */}
+                            <div>
+                                <label className="block text-sm mb-1">Amount</label>
+                                <input
+                                    type="text"
+                                    name="amount"
+                                    value={formik.values.amount}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.amount && formik.errors.amount
+                                        ? 'border-red-500'
+                                        : 'border-gray-300'
+                                        }`}
+                                />
+                                {formik.touched.amount && formik.errors.amount && (
+                                    <span className="text-red-500 text-xs">{formik.errors.amount}</span>
+                                )}
+                            </div>
+
+                            {/* DurationInDays */}
+                            <div>
+                                <label className="block text-sm mb-1">DurationInDays</label>
+                                <input
+                                    type="text"
+                                    name="durationInDays"
+                                    value={formik.values.durationInDays}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.durationInDays && formik.errors.durationInDays
+                                        ? 'border-red-500'
+                                        : 'border-gray-300'
+                                        }`}
+                                />
+                                {formik.touched.durationInDays && formik.errors.durationInDays && (
+                                    <span className="text-red-500 text-xs">{formik.errors.durationInDays}</span>
                                 )}
                             </div>
 

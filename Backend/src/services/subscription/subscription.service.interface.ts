@@ -3,6 +3,9 @@ import { ISubscription } from "../../model/subscription/subscription.interface";
 
 export interface ISubscriptionService {
     create(item: ISubscription): Promise<boolean>;
-    find(): Promise<ISubscriptionDTO[]>;
+    find(currentPage: string, pageSize: string): Promise<{ subscription: ISubscriptionDTO[], totalPage: number }>;
     findByName(name: string): Promise<ISubscriptionDTO>;
+    delete(subscriptionId: string): Promise<boolean>;
+    toggleStatus(subscriptionId: string): Promise<void>;
+    update(subscriptionId: string,subscriptionData:Partial<ISubscription>): Promise<ISubscriptionDTO>;
 }

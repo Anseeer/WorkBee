@@ -15,18 +15,52 @@ export class SubscriptionRepository extends BaseRepository<ISubscription> implem
         return await this.model.find();
     }
 
-    async findByName(name: string): Promise<ISubscription> {
+    async findByName(name: string): Promise<ISubscription | null> {
         if (!name) {
             throw new Error(SUBSCRIPTION_MESSAGE.NAME_MISSING)
         }
 
-        const sub = await this.model.findOne({ planName: name });
-        if (!sub) {
-            throw new Error(SUBSCRIPTION_MESSAGE.CANT_FIND)
+        return await this.model.findOne({ planName: { $regex: `^${name}$`, $options: 'i' } });
+    }
+
+    async toggleStatus(subscriptionId: string): Promise<void> {
+        if (!subscriptionId) {
+            throw new Error(SUBSCRIPTION_MESSAGE.ID_NOT_FOUND);
         }
 
-        return sub;
+        const sub = await this.model.findById(subscriptionId);
+        if (!sub) {
+            throw new Error(SUBSCRIPTION_MESSAGE.CANT_FIND);
+        }
 
+        const newStatus = !sub.isActive;
+
+        await this.model.updateOne({ _id: subscriptionId }, { isActive: newStatus });
+    }
+
+    async update(subscriptionId: string, subscriptionData: Partial<ISubscription>): Promise<ISubscription> {
+        if (!subscriptionData) throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA);
+        if (!subscriptionId) throw new Error(SUBSCRIPTION_MESSAGE.ID_NOT_FOUND);
+
+        const sub = await this.model.findById(subscriptionId);
+        if (!sub) throw new Error(SUBSCRIPTION_MESSAGE.CANT_FIND);
+
+        const updatedData = {
+            planName: subscriptionData.planName,
+            description: subscriptionData.description,
+            comission: subscriptionData.comission,
+            amount: subscriptionData.amount,
+            durationInDays: subscriptionData.durationInDays,
+        };
+
+        const updatedSub = await this.model.findByIdAndUpdate(
+            subscriptionId,
+            { $set: updatedData },
+            { new: true }
+        );
+
+        if (!updatedSub) throw new Error(SUBSCRIPTION_MESSAGE.UPDATE_FAILD);
+        return updatedSub;
     }
 
 

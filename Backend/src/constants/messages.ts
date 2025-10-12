@@ -208,4 +208,18 @@ export const SUBSCRIPTION_MESSAGE = {
     MISSING_DATA: "Missing subscription data",
     NAME_MISSING: "plan name not get",
     CANT_FIND: "Cant find plan",
+    LIMIT_WARNING: "You can only have up to 3 plans. Remove one to add another.",
+    ALREADY_EXIST: "Already exist.",
+    FETCH_SUCCESS: "Fetch successFully.",
+    FETCH_FAILD: "Fetch faild.",
+    ID_NOT_FOUND: "SubscriptionID not found.",
+    STATUS_UPDATE_SUCCESSFULLY: "Subscription status update successfully.",
+    STATUS_UPDATE_FAILD: "Subscription status update faild.",
+    UPDATE_SUCCESSFULLY: "Subscription update successfully.",
+    UPDATE_FAILD: "Subscription update faild.",
+}
+
+export const COMMON_MESSAGE = {
+    ALREADY_EXIST: "Already exist.",
+    PAGINATION_DATA_NOT_FOUND: "PaginationData not found.",
 }

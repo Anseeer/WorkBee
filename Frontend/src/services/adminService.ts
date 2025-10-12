@@ -1,3 +1,4 @@
+import type { ISubscription } from "../types/ISubscription";
 import axios from "./axios";
 
 export const login = async (credentials: { email: string, password: string }) => {
@@ -128,5 +129,21 @@ export const addSubscriptionPlan = async (payload: { planName: string, descripti
 }
 
 export const fetchSubscriptionPlans = async (currentPage: number, limit: number) => {
-    console.log(currentPage, limit)
+    const response = await axios.get(`subscription/fetch-all?currentPage=${currentPage}&limit=${limit}`);
+    return response.data.data;
+}
+
+export const deleteSubscription = async (subscriptionId: string) => {
+    const response = await axios.delete(`subscription/delete?subscriptionId=${subscriptionId}`);
+    return response.data.data;
+}
+
+export const toggleStatus = async (subscriptionId: string) => {
+    const response = await axios.get(`subscription/toggle-status?subscriptionId=${subscriptionId}`);
+    return response.data.data;
+}
+
+export const updateSubscription = async (id: string, subscriptionData: Partial<ISubscription>) => {
+    const response = await axios.post(`subscription/update?subscriptionId=${id}`, subscriptionData);
+    return response.data.data;
 }
