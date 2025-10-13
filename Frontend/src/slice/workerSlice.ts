@@ -132,7 +132,6 @@ export const fetchWorkerDetails = createAsyncThunk(
     }
 );
 
-
 const workerSlice = createSlice({
     name: "worker",
     initialState,
@@ -156,7 +155,6 @@ const workerSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Register
             .addCase(registerWorkerThunk.fulfilled, (state, action) => {
                 const worker = action.payload.worker;
                 const wallet = action.payload.wallet;

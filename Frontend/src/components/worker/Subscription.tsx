@@ -1,4 +1,13 @@
-import { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from 'react';
+import type { ISubscription } from '../../types/ISubscription';
+import { activateSubscriptionPlan, fetchSubscriptionPlans } from '../../services/workerService';
+import axios from '../../services/axios';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../Store';
+import { toast } from 'react-toastify';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { fetchWorkerDetails } from '../../slice/workerSlice';
 
 interface PlanCardProps {
     title: string;
@@ -45,7 +54,7 @@ const PlanCard = ({
 
             <div className="mb-4">
                 <span className="text-xl font-bold text-gray-900">
-                    Commission {commission}
+                    {` Commission ${commission}%`}
                 </span>
             </div>
 
@@ -56,36 +65,100 @@ const PlanCard = ({
 
 export const SubscriptionPlans = () => {
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+    const [plans, setPlan] = useState<ISubscription[]>([]);
+    const [loading, setIsLoading] = useState(false);
+    const worker = useSelector((state: RootState) => state.worker.worker)
+    const dispatch = useAppDispatch();
 
-    const plans = [
-        {
-            id: 'basic',
-            title: 'Basic',
-            price: 0,
-            commission: '10%',
-            description: 'Perfect for starters. No monthly fee, 10% commission per job',
-        },
-        {
-            id: 'pro',
-            title: 'Pro',
-            price: 200,
-            commission: '5%',
-            description: 'Perfect for intermediates. only 200 monthly fee, 5% commission per job',
-        },
-        {
-            id: 'elite',
-            title: 'Elite',
-            price: 300,
-            commission: '2%',
-            description: 'Perfect for experts. only 300 monthly fee, 2% commission per job',
-        },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            const plans = await fetchSubscriptionPlans(1, 1000, true);
+            setPlan(plans.subscription);
+        }
+        fetchData()
+    }, [])
 
-    const handleStartReceiving = () => {
-        if (selectedPlan) {
-            alert(`Selected plan: ${selectedPlan}`);
-        } else {
-            alert('Please select a plan');
+    const handlePayment = async (amount: number, onSuccess: () => void) => {
+        try {
+            const { data } = await axios.post("rzp/create-subscription-order", { amount });
+
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            document.body.appendChild(script);
+
+            script.onload = () => {
+                const options = {
+                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: "WorkBee",
+                    description: "Service Payment",
+                    order_id: data.id,
+                    handler: async function (response: {
+                        razorpay_order_id: any;
+                        razorpay_payment_id: any;
+                        razorpay_signature: any;
+                    }) {
+                        try {
+                            const res = await axios.post("/rzp/verify-subscription-payment", {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                workerId: worker?.id,
+                                planId: selectedPlan,
+                            });
+
+                            if (res.data.success) {
+                                onSuccess();
+                            }
+                        } catch (err) {
+                            console.error("Payment verification failed:", err);
+                            toast.error("Payment verification failed");
+                        }
+                    },
+                    prefill: {
+                        name: "Ansi",
+                        email: "ansi@example.com",
+                        contact: "7736222757",
+                    },
+                    theme: { color: "#399e6f" },
+                };
+
+                const rzp = new (window as any).Razorpay(options);
+                rzp.open();
+            };
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleStartReceiving = async () => {
+        try {
+            setIsLoading(true);
+            if (!selectedPlan) {
+                setIsLoading(false);
+                return toast.error("Please select a plan");
+            }
+
+            const selectedPlanData = plans.find((plan) => plan.id === selectedPlan);
+            if (!selectedPlanData) throw new Error("Invalid plan");
+
+            if (Number(selectedPlanData.amount) > 0) {
+                await handlePayment(selectedPlanData.amount as number, async () => {
+                    await dispatch(fetchWorkerDetails(worker?.id as string));
+                    toast.success("Plan activated successfully!");
+                    setIsLoading(false);
+                });
+            } else {
+                await activateSubscriptionPlan(worker?.id as string, selectedPlan);
+                await dispatch(fetchWorkerDetails(worker?.id as string));
+                toast.success("Free plan activated successfully!");
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setIsLoading(false);
         }
     };
 
@@ -105,9 +178,9 @@ export const SubscriptionPlans = () => {
                     {plans.map((plan) => (
                         <PlanCard
                             key={plan.id}
-                            title={plan.title}
-                            price={plan.price}
-                            commission={plan.commission}
+                            title={plan.planName}
+                            price={plan.amount as number}
+                            commission={plan.comission as string}
                             description={plan.description}
                             isSelected={selectedPlan === plan.id}
                             onSelect={() => setSelectedPlan(plan.id)}
@@ -120,7 +193,7 @@ export const SubscriptionPlans = () => {
                         onClick={handleStartReceiving}
                         className="bg-green-800 hover:bg-green-900 text-white font-semibold px-12 py-3 rounded-lg transition-colors"
                     >
-                        Start Receiving Jobs
+                        {loading ? 'Processing... ' : 'Start Receiving Jobs'}
                     </button>
                 </div>
             </div>

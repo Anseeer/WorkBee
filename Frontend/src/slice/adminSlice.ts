@@ -3,7 +3,6 @@ import type { AxiosError } from "axios";
 import { login } from "../services/adminService";
 import type { Iuser } from "../types/IUser";
 
-
 interface adminState {
     admin: Iuser | null,
     error: string | null;

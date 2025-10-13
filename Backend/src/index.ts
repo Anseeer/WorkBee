@@ -20,6 +20,7 @@ import { Server } from 'socket.io';
 import http from "http";
 import logger from "./utilities/logger";
 import { initializeSocket } from "./socket/socketHandler";
+import { initCronJobs } from "./utilities/subscriptionExpiryJob";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 MongooseConnection();
@@ -88,6 +89,7 @@ const io = new Server(server, {
 
 
 initializeSocket(io);
+initCronJobs();
 
 app.use(errorHandler)
 

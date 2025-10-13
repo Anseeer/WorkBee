@@ -8,14 +8,24 @@ import { Availability } from "../../model/availablity/availablity.model";
 import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
 import mongoose, { Types } from "mongoose";
-import { WORKER_MESSAGE } from "../../constants/messages";
+import { SUBSCRIPTION_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { FilterQuery } from "mongoose";
 import { Role } from "../../constants/role";
+import { ISubscription } from "../../model/subscription/subscription.interface";
 
 @injectable()
 export class WorkerRepository extends BaseRepository<IWorker> implements IWorkerRepository {
     constructor() {
         super(Worker);
+    }
+
+    async find(): Promise<IWorker[] | []> {
+        try {
+            return this.model.find();
+        } catch (error) {
+            console.error('Error in find:', error);
+            throw new Error('Error in find');
+        }
     }
 
     async findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null> {
@@ -288,6 +298,53 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             console.error('Error in updateCompletedWorks:', error);
             throw new Error('Error in updateCompletedWorks');
         }
+    }
+
+    async setSubscriptionPlan(workerId: string, planData: Partial<ISubscription>): Promise<IWorker> {
+        try {
+            if (!workerId || !planData) {
+                throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA);
+            }
+            const startDate = new Date();
+            const durationDays = planData.durationInDays || 0;
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + durationDays);
+
+            const subscription = {
+                plan: planData._id,
+                startDate,
+                endDate,
+                commission: planData.comission
+            };
+
+            const updatedWorker = await this.model.findOneAndUpdate(
+                { _id: new mongoose.Types.ObjectId(workerId) },
+                { $set: { subscription } },
+                { new: true }
+            );
+
+            if (!updatedWorker) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+            }
+            return updatedWorker;
+        } catch (error) {
+            console.error('Error in setSubscriptionPlan:', error);
+            throw new Error('Error in setSubscriptionPlan');
+        }
+    }
+
+    async setPlanExpired(workerId: string): Promise<boolean> {
+        if (!workerId) {
+            throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+        }
+
+        const result = await this.model.findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(workerId) },
+            { $set: { subscription: null } },
+            { new: true }
+        );
+
+        return !!result;
     }
 
 }

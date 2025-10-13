@@ -58,5 +58,6 @@ export default class BaseRepository<T extends Document> implements Iread<T>, Iwr
             throw new Error('Error in delete');
         }
     }
+    
 
 }

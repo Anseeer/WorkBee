@@ -35,11 +35,11 @@ export class SubscriptionController implements ISubscriptionController {
 
     fetchAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { currentPage, limit } = req.query;
+            const { currentPage, limit, status } = req.query;
             if (!currentPage || !limit) {
                 throw new Error(COMMON_MESSAGE.PAGINATION_DATA_NOT_FOUND)
             }
-            const { subscription, totalPage } = await this._subscriptionService.find(currentPage?.toString(), limit?.toString());
+            const { subscription, totalPage } = await this._subscriptionService.find(currentPage?.toString(), limit?.toString(), status ? status === 'true' : undefined);
             const response = new successResponse(StatusCode.CREATED, SUBSCRIPTION_MESSAGE.FETCH_SUCCESS, { subscription, totalPage });
             logger.info(response);
             res.status(response.status).json(response);
@@ -87,7 +87,7 @@ export class SubscriptionController implements ISubscriptionController {
     updateSubscription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { subscriptionId } = req.query;
-            const  subscriptionData  = req.body;
+            const subscriptionData = req.body;
             if (!subscriptionId) {
                 throw new Error(SUBSCRIPTION_MESSAGE.ID_NOT_FOUND)
             }
@@ -102,6 +102,24 @@ export class SubscriptionController implements ISubscriptionController {
             console.log("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.UPDATE_FAILD, errMsg));
+        }
+    }
+
+    activateSubscriptionPlan = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { workerId, planId } = req.query;
+
+            if (!workerId || !planId) {
+                throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA)
+            }
+            await this._subscriptionService.activateSubscriptionPlan(workerId as string, planId as string, null);
+            const response = new successResponse(StatusCode.CREATED, SUBSCRIPTION_MESSAGE.ACTIVE_PLAN_SUCCESSFULLY, {});
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.log("Error:", error)
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.ACTIVE_PLAN_FAILD, errMsg));
         }
     }
 

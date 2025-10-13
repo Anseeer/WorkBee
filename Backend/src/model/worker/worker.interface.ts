@@ -30,7 +30,7 @@ export interface IWorker extends Document {
         plan: Types.ObjectId;
         startDate: Date;
         endDate: Date;
-        isActive: boolean;
+        commission: string,
     } | null,
     createdAt: Date,
     updatedAt: Date

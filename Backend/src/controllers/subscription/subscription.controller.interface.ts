@@ -6,4 +6,5 @@ export interface ISubscriptionController {
     deleteSubscription(req: Request, res: Response, next: NextFunction): Promise<void>;
     toggleStatus(req: Request, res: Response, next: NextFunction): Promise<void>;
     updateSubscription(req: Request, res: Response, next: NextFunction): Promise<void>;
+    activateSubscriptionPlan(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

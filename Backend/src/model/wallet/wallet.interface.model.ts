@@ -6,7 +6,7 @@ export interface IWallet extends Document {
     balance: number;
     currency: string;
     transactions: {
-        transactionId: string;
+        transactionId: string|null;
         type: "CREDIT" | "DEBIT";
         amount: number;
         description?: string;

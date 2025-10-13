@@ -17,8 +17,8 @@ interface WalletPageProps {
 }
 
 const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps) => {
-  const [balance, setBalance] = useState<number>(balancePrev as number);
-  const [history, setHistory] = useState<Transaction[]>(historyPrev as Transaction[]);
+  const [balance, setBalance] = useState<number>(balancePrev as number ?? 0);
+  const [history, setHistory] = useState<Transaction[]>(historyPrev as Transaction[] ?? []);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
@@ -40,8 +40,8 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
 
   const totalPages = Math.ceil(history.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = history.slice(startIndex, startIndex + itemsPerPage);
- 
+  const currentItems = Array.isArray(history) ? history?.slice(startIndex, startIndex + itemsPerPage) : [];
+
   return (
     <div className="bg-gray-50 flex flex-col items-center p-2 sm:p-3 md:p-4 min-h-[400px]">
       <main className="w-full max-w-4xl">
@@ -93,7 +93,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
                           ₹{tx.amount.toFixed(2)}
                         </td>
                         <td className="p-1 sm:p-2">{tx.type}</td>
-                        <td className="p-1 sm:p-2 hidden sm:table-cell break-words">{tx.transactionId.slice(0, 15).toUpperCase()}</td>
+                        <td className="p-1 sm:p-2 hidden sm:table-cell break-words">{tx.transactionId?.slice(0, 15).toUpperCase()}</td>
                         <td className="p-1 sm:p-2 break-words">
                           {new Date(tx.createdAt).toLocaleDateString("en-GB")}
                         </td>

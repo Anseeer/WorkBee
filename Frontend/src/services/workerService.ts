@@ -14,8 +14,6 @@ export const login = async (credentials: { email: string, password: string }) =>
 }
 
 export const buildAccount = async (workerId: string | undefined, accountData: Partial<IWorker>) => {
-  console.log("Build account service to backedn")
-  console.log("Worker id :", workerId)
   const response = await axios.post(`workers/build-account?workerId=${workerId}`, accountData, { withCredentials: true });
   return response;
 }
@@ -156,7 +154,7 @@ export const fetchRequestedWorks = async (workerId: string) => {
   return response.data.data;
 }
 
-export const fetchWorkerEarnings = async (workerId: string,filter:string) => {
+export const fetchWorkerEarnings = async (workerId: string, filter: string) => {
   if (!workerId) {
     throw new Error("WorkerId not get");
   }
@@ -164,5 +162,15 @@ export const fetchWorkerEarnings = async (workerId: string,filter:string) => {
     throw new Error("filter not get");
   }
   const response = await axios.get(`workers/earnings?workerId=${workerId}&filter=${filter}`);
+  return response.data.data;
+}
+
+export const fetchSubscriptionPlans = async (currentPage: number, limit: number, status: boolean) => {
+  const response = await axios.get(`subscription/fetch-all?currentPage=${currentPage}&limit=${limit}&status=${status}`);
+  return response.data.data;
+}
+
+export const activateSubscriptionPlan = async (workerId: string, planId: string) => {
+  const response = await axios.get(`subscription/activate-plan?workerId=${workerId}&planId=${planId}`);
   return response.data.data;
 }

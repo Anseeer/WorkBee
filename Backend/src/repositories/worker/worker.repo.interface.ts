@@ -1,9 +1,11 @@
 import { IAvailabilitEntity } from "../../mappers/availability/availability.map.DTO.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
+import { ISubscription } from "../../model/subscription/subscription.interface";
 import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 export interface IWorkerRepository {
+    find(): Promise<IWorker[]|[]>;
     create(user: Partial<IWorker>): Promise<IWorker>;
     findById(id: string): Promise<IWorker | null>;
     findByEmail(email: string): Promise<IWorker | null>;
@@ -22,4 +24,6 @@ export interface IWorkerRepository {
     findWorkersByIds(workerIds: string[]): Promise<IWorker[]>;
     rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }>;
     updateCompletedWorks(workerId: string): Promise<void>;
+    setSubscriptionPlan(workerId: string,planData:Partial<ISubscription>): Promise<IWorker>;
+    setPlanExpired(workerId: string): Promise<boolean>;
 }

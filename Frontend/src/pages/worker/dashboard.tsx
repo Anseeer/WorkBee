@@ -97,7 +97,7 @@ const Dashboard = () => {
                     ) : activeTab === "account" ? (
                         !workerData.worker?.isAccountBuilt ? (
                             <BuildAccount />
-                        ) : !workerData.worker?.subscription ? (
+                        ) : workerData.worker?.subscription == null ? (
                             <SubscriptionPlans />
                         ) : (
                             <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />

@@ -4,7 +4,7 @@ import { IWallet } from "./wallet.interface.model";
 
 const transactionSchema = new Schema(
     {
-        transactionId: { type: String, required: true },
+        transactionId: { type: String || null, required: true, default:null },
         type: { type: String, enum: ["CREDIT", "DEBIT"], required: true },
         amount: { type: Number, required: true },
         description: { type: String },

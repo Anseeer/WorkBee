@@ -11,8 +11,12 @@ export class SubscriptionRepository extends BaseRepository<ISubscription> implem
         super(Subscription)
     }
 
-    async find(): Promise<ISubscription[]> {
-        return await this.model.find();
+    async find(status?: boolean): Promise<ISubscription[]> {
+        if (status) {
+            return await this.model.find({ isActive: true }).sort({amount:1});
+        } else {
+            return await this.model.find().sort({amount:1});
+        }
     }
 
     async findByName(name: string): Promise<ISubscription | null> {

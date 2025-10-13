@@ -14,5 +14,6 @@ Router.get('/fetch-all', auth, subscriptionController.fetchAll);
 Router.delete('/delete', auth, authorize(["Admin"]), subscriptionController.deleteSubscription);
 Router.get('/toggle-status', auth, authorize(["Admin"]), subscriptionController.toggleStatus);
 Router.post('/update', auth, authorize(["Admin"]), subscriptionController.updateSubscription);
+Router.get('/activate-plan', auth, subscriptionController.activateSubscriptionPlan);
 
 export default Router;

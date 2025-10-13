@@ -217,6 +217,8 @@ export const SUBSCRIPTION_MESSAGE = {
     STATUS_UPDATE_FAILD: "Subscription status update faild.",
     UPDATE_SUCCESSFULLY: "Subscription update successfully.",
     UPDATE_FAILD: "Subscription update faild.",
+    ACTIVE_PLAN_SUCCESSFULLY: "activateSubscriptionPlan successfully.",
+    ACTIVE_PLAN_FAILD: "activateSubscriptionPlan faild.",
 }
 
 export const COMMON_MESSAGE = {

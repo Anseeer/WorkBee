@@ -103,7 +103,7 @@ const workerSchema = new Schema<IWorker>({
             plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', required: false },
             startDate: { type: Date, required: false },
             endDate: { type: Date, required: false },
-            isActive: { type: Boolean, default: false }
+            commission:{type:String}
         },
         default: null,
     },

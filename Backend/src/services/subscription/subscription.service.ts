@@ -6,21 +6,31 @@ import { ISubscription } from "../../model/subscription/subscription.interface";
 import { mapSubscriptionToDTO, mapSubscriptionToEntity } from "../../mappers/subscription/subscription.map.DTO";
 import { ISubscriptionDTO } from "../../mappers/subscription/subscription.map.DTO.interface";
 import { SUBSCRIPTION_MESSAGE } from "../../constants/messages";
+import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
+import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
 
 @injectable()
 export class SubscriptionService implements ISubscriptionService {
     private _subscriptionRepository: ISubscriptionRepository;
-    constructor(@inject(TYPES.subscriptionRepository) subscriptionRepo: ISubscriptionRepository) {
+    private _workerRepository: IWorkerRepository;
+    private _walletRepository: IWalletRepository;
+    constructor(
+        @inject(TYPES.subscriptionRepository) subscriptionRepo: ISubscriptionRepository,
+        @inject(TYPES.workerRepository) workerRepo: IWorkerRepository,
+        @inject(TYPES.walletRepository) walletRepo: IWalletRepository,
+    ) {
         this._subscriptionRepository = subscriptionRepo;
+        this._workerRepository = workerRepo;
+        this._walletRepository = walletRepo;
     }
 
-    async find(currentPage: string, pageSize: string): Promise<{ subscription: ISubscriptionDTO[], totalPage: number }> {
+    async find(currentPage: string, pageSize: string, status?: boolean): Promise<{ subscription: ISubscriptionDTO[], totalPage: number }> {
         try {
             const page = parseInt(currentPage);
             const size = parseInt(pageSize);
             const startIndex = (page - 1) * size;
             const endIndex = page * size;
-            const allSubscriptions = await this._subscriptionRepository.find();
+            const allSubscriptions = status ? await this._subscriptionRepository.find(true) : await this._subscriptionRepository.find();
             const pagedSub = allSubscriptions.slice(startIndex, endIndex);
             const subscription = pagedSub.map((sub) => mapSubscriptionToDTO(sub));
             const totalPage = Math.ceil(allSubscriptions.length / size);
@@ -93,11 +103,61 @@ export class SubscriptionService implements ISubscriptionService {
             if (!subscriptionId) throw new Error(SUBSCRIPTION_MESSAGE.ID_NOT_FOUND);
             if (!subscriptionData) throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA);
             let sameName = await this._subscriptionRepository.findByName(subscriptionData.planName as string);
-            if (sameName) {
+            if (sameName && sameName.id !== subscriptionId) {
                 throw new Error(SUBSCRIPTION_MESSAGE.ALREADY_EXIST);
             }
             const sub = await this._subscriptionRepository.update(subscriptionId, subscriptionData);
             return mapSubscriptionToDTO(sub);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw error;
+        }
+    }
+
+    async activateSubscriptionPlan(workerId: string, planId: string, transactionId: string | null): Promise<void> {
+        try {
+            if (!workerId || !planId) {
+                throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA);
+            }
+            const planData = await this._subscriptionRepository.findById(planId);
+
+            if (!transactionId) {
+                transactionId = null
+            }
+
+            const workerTransaction = {
+                transactionId,
+                type: "DEBIT" as const,
+                amount: planData.amount,
+                description: planData.description,
+                createdAt: new Date()
+            };
+
+            const platformTransaction = {
+                transactionId,
+                type: "CREDIT" as const,
+                amount: planData.amount,
+                description: `Subscription - ${planData.description}`,
+                createdAt: new Date()
+            };
+
+            const updateWalletDataOfPlatForm = {
+                balance: planData.amount,
+                transactions: [platformTransaction]
+            };
+
+            const updateWalletData = {
+                balance: -planData.amount,
+                transactions: [workerTransaction]
+            };
+
+            await this._workerRepository.setSubscriptionPlan(workerId, planData);
+            if (planData.amount > 0) {
+                await this._walletRepository.updatePlatformWallet(updateWalletDataOfPlatForm, "PLATFORM");
+                await this._walletRepository.update(updateWalletData, workerId);
+            }
+
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             console.log(errMsg);
