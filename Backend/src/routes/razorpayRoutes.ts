@@ -82,6 +82,11 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         }
 
         const worker = await workerService.getUserById(payment.workerId.toString());
+        if (!worker?.subscription) {
+            throw new Error("Worker subscription not found. Cannot calculate commission.");
+        }
+        const commission = parseInt(worker.subscription.commission as string) || 0;
+
         console.log("Worker :", worker);
         if (!worker) throw new Error("Worker not found");
 
@@ -107,7 +112,7 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         const workerTransaction = {
             transactionId: updatedPayment.transactionId,
             type: "CREDIT" as const,
-            amount: payment.amount,
+            amount: payment.amount - (payment.amount * commission) / 100,
             description: `${work.service} wage`,
             createdAt: new Date()
         };
@@ -125,6 +130,14 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
             type: "CREDIT" as const,
             amount: payment.platformFee,
             description: `Platform fee from ${work.service}`,
+            createdAt: new Date()
+        };
+
+        const platformTransactionOfCommission = {
+            transactionId: updatedPayment.transactionId,
+            type: "CREDIT" as const,
+            amount: (payment.amount * commission) / 100,
+            description: `Commission from ${work.service}`,
             createdAt: new Date()
         };
 
@@ -146,8 +159,8 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
 
         await walletService.updatePlatformWallet(
             {
-                balance: platformTransaction.amount,
-                transactions: [platformTransaction]
+                balance: platformTransaction.amount + platformTransactionOfCommission.amount,
+                transactions: [platformTransaction, platformTransactionOfCommission]
             },
             "PLATFORM"
         );
@@ -226,7 +239,7 @@ router.post("/verify-wallet-payment", async (req: Request, res: Response): Promi
         }
 
         const walletUpdate: Partial<IWallet> = {
-            balance: (wallet?.balance ?? 0) + amount,
+            balance: amount,
             transactions: [
                 {
                     amount,

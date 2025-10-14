@@ -32,10 +32,19 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
 
     async findById(id: string): Promise<IServices> {
         try {
-            return await this.model.findById(id) as IServices;
+            if (!id) {
+                throw new Error("Service ID is required");
+            }
+
+            const service = await this.model.findById(id);
+            if (!service) {
+                throw new Error("Service not found");
+            }
+
+            return service as IServices;
         } catch (error) {
             console.error('Error in findById:', error);
-            throw new Error('Error in findById');
+            throw error; 
         }
     }
 

@@ -36,7 +36,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
       }
     };
     loadWallet();
-  }, [workerId, reload]);
+  }, [workerId, reload, balancePrev]);
 
   const totalPages = Math.ceil(history.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;

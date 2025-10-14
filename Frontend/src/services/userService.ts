@@ -62,6 +62,7 @@ export const fetchAvailability = async (id: string | null) => {
 }
 
 export const fetchServiceById = async (id: string) => {
+    console.log("ID",id);
     if (!id) {
         throw new Error('Service Id not get');
     }

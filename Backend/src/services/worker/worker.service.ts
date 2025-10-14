@@ -434,7 +434,7 @@ export class WorkerService implements IWorkerService {
 
     async updateCompletedWorks(workerId: string): Promise<void> {
         try {
-            if(!workerId){
+            if (!workerId) {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID)
             }
             await this._workerRepository.updateCompletedWorks(workerId);

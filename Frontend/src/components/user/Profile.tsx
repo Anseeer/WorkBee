@@ -54,7 +54,6 @@ const ProfileSection = () => {
         const fetchData = async () => {
             await dispatch(fetchUserDataThunk());
             const workHistory = await fetchWorkHistory(user?.id as string, currentPage, 4);
-            console.log("Work History :", workHistory)
             setWorkHistory(workHistory.data.data.paginatedWorks);
             setTotalPage(workHistory.data.data.totalPages)
         }

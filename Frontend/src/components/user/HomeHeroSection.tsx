@@ -51,7 +51,8 @@ const HomeHeroSection = () => {
     const HandleSelectedService = (serv: IService) => {
         localStorage.removeItem("serviceId")
         localStorage.removeItem("categoryId")
-        localStorage.setItem("serviceId", serv._id as string);
+        console.log("Serve :",serv);
+        localStorage.setItem("serviceId", serv._id as string || serv.id as string);
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }

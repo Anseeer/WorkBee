@@ -32,6 +32,7 @@ const Dashboard: React.FC = () => {
   const [filter, setFilter] = useState<Filter>('monthly');
   const [earnings, setEarnings] = useState([]);
   const [Wallet, setWallet] = useState<IWallet>();
+  console.log('Wallet :',Wallet)
 
   useEffect(() => {
     const fetchData = async () => {

@@ -185,17 +185,29 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             const query: FilterQuery<IWorker> = {
                 workType: { $in: searchTerms.workType },
                 isAccountBuilt: true,
+                subscription: { $ne: null },
                 isActive: true,
                 isVerified: true,
             };
 
             if (searchTerms.categoryId) {
-                query.categories = { $in: [new Types.ObjectId(searchTerms.categoryId.toString())] };
+                const categoryId =
+                    typeof searchTerms.categoryId === "string"
+                        ? new Types.ObjectId(searchTerms.categoryId)
+                        : searchTerms.categoryId;
+
+                query.categories = { $in: [categoryId] };
             }
 
             if (searchTerms.serviceId) {
-                query.services = { $in: [new Types.ObjectId(searchTerms.serviceId.toString())] };
+                const serviceId =
+                    typeof searchTerms.serviceId === "string"
+                        ? new Types.ObjectId(searchTerms.serviceId)
+                        : searchTerms.serviceId;
+
+                query.services = { $in: [serviceId] };
             }
+
 
             const workers = await this.model.find(query);
 

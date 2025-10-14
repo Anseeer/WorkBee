@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import type { ISubscription } from '../../types/ISubscription';
@@ -8,6 +9,8 @@ import type { RootState } from '../../Store';
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { fetchWorkerDetails } from '../../slice/workerSlice';
+import type { IWorker } from '../../types/IWorker';
+import type { IWallet } from '../../types/IWallet';
 
 interface PlanCardProps {
     title: string;
@@ -67,8 +70,18 @@ export const SubscriptionPlans = () => {
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const [plans, setPlan] = useState<ISubscription[]>([]);
     const [loading, setIsLoading] = useState(false);
-    const worker = useSelector((state: RootState) => state.worker.worker)
+    const [worker, setWorkerData] = useState<IWorker | null>(null);
+    const [wallet, setWallet] = useState<IWallet | null>(null);
+    const workerData = useSelector((state: RootState) => state.worker.worker);
+    const walletData = useSelector((state: RootState) => state.worker.wallet);
+    console.log(wallet);
+
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        setWorkerData(workerData);
+        setWallet(walletData);
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -112,6 +125,8 @@ export const SubscriptionPlans = () => {
                             if (res.data.success) {
                                 onSuccess();
                             }
+
+                            setIsLoading(false);
                         } catch (err) {
                             console.error("Payment verification failed:", err);
                             toast.error("Payment verification failed");
@@ -127,6 +142,7 @@ export const SubscriptionPlans = () => {
 
                 const rzp = new (window as any).Razorpay(options);
                 rzp.open();
+                setIsLoading(false);
             };
         } catch (err) {
             console.error(err);
@@ -145,6 +161,10 @@ export const SubscriptionPlans = () => {
             if (!selectedPlanData) throw new Error("Invalid plan");
 
             if (Number(selectedPlanData.amount) > 0) {
+                if (wallet?.balance as number < Number(selectedPlanData.amount)) {
+                    setIsLoading(false);
+                    return toast.error("Insufficient wallet balance. Please add money to your wallet.");
+                }
                 await handlePayment(selectedPlanData.amount as number, async () => {
                     await dispatch(fetchWorkerDetails(worker?.id as string));
                     toast.success("Plan activated successfully!");

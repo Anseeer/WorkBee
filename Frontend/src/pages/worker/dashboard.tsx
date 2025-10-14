@@ -15,24 +15,35 @@ import WorkerDashboard from "../../components/worker/Dashboard";
 import type { IAvailability } from "../../types/IAvailability";
 import type { IWallet } from "../../types/IWallet";
 import { SubscriptionPlans } from "../../components/worker/Subscription";
+import AddMoneyModal from "../../components/user/AddMoneyModal";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
+    const [userId, setUserId] = useState<string | null>(null);
     const [isEdit, setIsEdit] = useState(false);
+    const [addMoneyModal, setAddMoneyModal] = useState(false);
+    const [reload, setReloadWallet] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
     const wallet = workerData.wallet;
+
     useEffect(() => {
-        const workerID = localStorage.getItem("workerId");
-        if (workerID) {
-            dispatch(fetchWorkerDetails(workerID));
+        const fetchData = async () => {
+            const workerID = localStorage.getItem("workerId");
+            if (workerID) {
+                dispatch(fetchWorkerDetails(workerID));
+                console.log("first")
+            }
         }
-    }, [dispatch]);
+        fetchData()
+    }, [dispatch, reload]);
 
     useEffect(() => {
         setSelectedDetails(workerData);
-    }, [workerData, setSelectedDetails]);
+        console.log('WorkerData :', workerData.wallet);
+        console.log("Second")
+    }, [workerData, setSelectedDetails, reload]);
 
     const handleTab = (tab: string) => {
         setActiveTab(tab);
@@ -40,6 +51,16 @@ const Dashboard = () => {
 
     const handleEdit = () => {
         setIsEdit((prev) => !prev);
+    }
+
+    const handleAddMoney = () => {
+        setUserId(workerData.worker?._id as string)
+        setAddMoneyModal(true)
+    }
+
+    const closeAddMoneyModal = () => {
+        setReloadWallet((prev) => !prev);
+        setAddMoneyModal(false);
     }
 
     return (
@@ -50,7 +71,7 @@ const Dashboard = () => {
                     <h3 className="text-2xl font-semibold">
                         {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                     </h3>
-                    {activeTab === "account" && workerData.worker?.isAccountBuilt && (
+                    {activeTab === "account" && workerData.worker?.isAccountBuilt && workerData.worker.subscription != null && (
                         <button
                             className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
                             onClick={() => handleEdit()}
@@ -58,14 +79,14 @@ const Dashboard = () => {
                             Edit
                         </button>
                     )}
-                    {/* {activeTab == "wallet" && (
+                    {activeTab == "wallet" && (
                         <button
                             className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
-                            onClick={() => handleWithrawMoney()}
+                            onClick={() => handleAddMoney()}
                         >
-                            Withraw Money
+                            Add Money
                         </button>
-                    )} */}
+                    )}
                 </div>
                 <hr className="border border-green-900" />
                 <div className="flex-1 min-h-0 overflow-auto">
@@ -118,6 +139,8 @@ const Dashboard = () => {
                     ) : activeTab === "notification" ? (
                         <Notifications />
                     ) : null}
+
+                    {addMoneyModal && <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />}
                 </div>
             </div>
         </div>
