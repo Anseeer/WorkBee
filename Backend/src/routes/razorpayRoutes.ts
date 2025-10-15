@@ -129,7 +129,7 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
             transactionId: updatedPayment.transactionId,
             type: "CREDIT" as const,
             amount: payment.platformFee,
-            description: `Platform fee from ${work.service}`,
+            description: `Platform - fee from ${work.service}`,
             createdAt: new Date()
         };
 
@@ -137,7 +137,7 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
             transactionId: updatedPayment.transactionId,
             type: "CREDIT" as const,
             amount: (payment.amount * commission) / 100,
-            description: `Commission from ${work.service}`,
+            description: `Commission - from ${work.service}`,
             createdAt: new Date()
         };
 
@@ -156,6 +156,15 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
             },
             work.workerId.toString()
         );
+
+        const platFormWallet = await walletService.findPlatformWallet();
+        if (!platFormWallet) {
+            await walletService.create({
+                walletType: "PLATFORM",
+                balance: 0,
+                transactions: []
+            });
+        }
 
         await walletService.updatePlatformWallet(
             {

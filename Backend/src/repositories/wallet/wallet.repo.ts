@@ -146,4 +146,15 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
         }
     }
 
+    async findPlatformWallet(): Promise<IWallet | null> {
+        try {
+            const wallet = await this.model.findOne({ walletType: "PLATFORM" }).lean();
+            return wallet;
+        } catch (error) {
+            console.error('Error in updateWallet:', error);
+            throw new Error('Error in updateWallet');
+        }
+    }
+
+
 }

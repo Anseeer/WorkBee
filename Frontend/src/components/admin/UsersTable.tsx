@@ -31,8 +31,6 @@ const UserTable = () => {
         }
     };
 
-
-
     const columns: Column<Iuser>[] = [
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },

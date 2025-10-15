@@ -6,6 +6,7 @@ import JobsIcon from "../../assets/jobs-icon.png";
 import CategoryAndServicesIcon from "../../assets/category&services.png";
 import subscriptionIcone from "../../assets/subscription-Icon.png";
 import serviceIcon from "../../assets/service-icon.png";
+import revenueIcon from "../../assets/reveneu.png";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "../../services/adminService";
@@ -156,6 +157,20 @@ export default function AdminSidebar({ handleTab }: props) {
                     <span className={`text-md font-medium 
                     ${activeTab === "subscription" ? "text-black" : "text-gray-400"}`}>
                         Subscription
+                    </span>
+                </div>
+
+                {/* revenue managment */}
+                <div
+                    onClick={() => handleClick("revenue")}
+                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
+                        ${activeTab === "revenue"
+                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
+                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
+                    <img src={revenueIcon} alt="revenue" className="w-5 h-5" />
+                    <span className={`text-md font-medium 
+                    ${activeTab === "revenue" ? "text-black" : "text-gray-400"}`}>
+                        Revenue
                     </span>
                 </div>
 

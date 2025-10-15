@@ -341,7 +341,7 @@ const WorkerRegistrationPage = () => {
                                     </div>
 
                                     {showDropdown && (
-                                        <div className="absolute mt-1 w-full bg-white border border-gray-300 
+                                        <div className="absolute mt-1 w-full bg-white 
                                        rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                                             {categoriesList.map((cat) => (
                                                 <div

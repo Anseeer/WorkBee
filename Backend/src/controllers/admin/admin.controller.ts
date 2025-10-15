@@ -188,6 +188,7 @@ export class AdminController implements IAdminController {
             res.status(response.status).json(response);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg)
             next(new errorResponse(StatusCode.BAD_REQUEST, WALLET_MESSAGE.WALLET_GET_FAILD, errMsg));
         }
     }

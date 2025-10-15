@@ -189,7 +189,7 @@ export class AdminService implements IAdminService {
     async platformWallet(): Promise<IWalletDTO | null> {
         try {
             const findWallet = await this._walletRepository.platformWallet();
-            const wallet = mapWalletToDTO(findWallet as IWallet);
+            const wallet = findWallet ? mapWalletToDTO(findWallet as IWallet) : null;
             return wallet;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);

@@ -4,6 +4,7 @@ import { EarningResult } from "../../utilities/earningsType";
 
 export interface IWalletService {
     findByUser(userId: string): Promise<IWalletDTO | null>;
+    findPlatformWallet(): Promise<IWalletDTO | null>;
     getEarnings(userId: string | null, filter: string): Promise<EarningResult[]>;
     update(updateData: Partial<IWallet>, userId: string): Promise<void>;
     updatePlatformWallet(updateData: Partial<IWallet>, walletType: string): Promise<void>;

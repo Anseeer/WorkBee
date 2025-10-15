@@ -79,4 +79,15 @@ export class WalletService implements IWalletService {
         }
     }
 
+    async findPlatformWallet(): Promise<IWalletDTO | null> {
+        try {
+            const wallet = await this._walletRepository.findPlatformWallet();
+            return await wallet ? mapWalletToDTO(wallet as IWallet) : null;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log(errMsg);
+            throw new Error(errMsg);
+        }
+    }
+
 }

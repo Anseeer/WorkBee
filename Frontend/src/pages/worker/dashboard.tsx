@@ -91,29 +91,12 @@ const Dashboard = () => {
                 <hr className="border border-green-900" />
                 <div className="flex-1 min-h-0 overflow-auto">
                     {activeTab === "dashboard" ? (
-                        workerData.worker?.isAccountBuilt ? (
-                            <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability} />
+                        !workerData.worker?.isAccountBuilt ? (
+                            <BuildAccount />
+                        ) : workerData.worker?.subscription == null ? (
+                            <SubscriptionPlans />
                         ) : (
-                            <div className="flex justify-center h-full items-center">
-                                <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
-                                    <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                                        Build Your Account
-                                    </h2>
-                                    <p className="text-gray-600 text-sm mb-6">
-                                        Complete your account setup to start receiving work opportunities and
-                                        manage your dashboard.
-                                    </p>
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleTab('account');
-                                        }}
-                                        className="bg-green-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-green-800 transition-colors"
-                                    >
-                                        Build Account
-                                    </button>
-                                </div>
-                            </div>
+                            <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability} />
                         )
                     ) : activeTab === "account" ? (
                         !workerData.worker?.isAccountBuilt ? (

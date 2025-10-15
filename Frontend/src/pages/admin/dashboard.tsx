@@ -10,6 +10,7 @@ import WorkerApprovalComponent from "../../components/admin/WorkerRequestSection
 import WorksTable from "../../components/admin/worksTable";
 import Dashboard from "../../components/admin/Dashboard";
 import SubscriptionManagment from "../../components/admin/SubscriptionManagment";
+import RevenueManagement from "../../components/admin/RevenueManagement";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -36,7 +37,7 @@ const AdminDashboard = () => {
       <div className="w-full h-full flex flex-col">
         <div className="flex items-center justify-between py-2 px-2">
           <h3 className="text-2xl font-semibold">
-            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + ` Management`}
           </h3>
         </div>
 
@@ -51,6 +52,7 @@ const AdminDashboard = () => {
           {activeTab === "subscription" && <SubscriptionManagment />}
           {activeTab === "jobs" && <WorksTable />}
           {activeTab === "workerRequest" && <WorkerApprovalComponent />}
+          {activeTab === "revenue" && <RevenueManagement/>}
         </div>
       </div>
     </div>
