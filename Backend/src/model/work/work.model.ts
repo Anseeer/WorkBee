@@ -50,6 +50,10 @@ const workSchema = new Schema<IWork>({
         type: String,
         required: false
     },
+    commission: {
+        type: String,
+        required: false
+    },
     totalAmount: {
         type: String,
         required: false

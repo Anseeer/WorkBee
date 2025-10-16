@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormik } from "formik";
-import { emailRegex, passRegex } from "../../regexs";
+import { emailRegex, passRegex } from "../../constant/regexs";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import GoogleAuth from "./GoogleSignButton";

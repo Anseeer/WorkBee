@@ -14,6 +14,7 @@ import mongoose from "mongoose";
 import { INotificationService } from "../services/notification/notification.service.interface";
 import { IWallet } from "../model/wallet/wallet.interface.model";
 import { ISubscriptionService } from "../services/subscription/subscription.service.interface";
+import axios from "axios";
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ const workerService = container.get<IWorkerService>(TYPES.workerService);
 const walletService = container.get<IWalletService>(TYPES.walletService);
 const notificationService = container.get<INotificationService>(TYPES.notificationService);
 const subscriptionService = container.get<ISubscriptionService>(TYPES.subscriptionService);
+
 
 router.post("/create-order", async (req: Request, res: Response) => {
     try {
@@ -313,5 +315,102 @@ router.post("/verify-subscription-payment", async (req: Request, res: Response):
         res.status(500).json({ error: "Payment verification failed" });
     }
 });
+
+router.post("/payout/worker", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { workerId, accountName, accountNumber, amount } = req.body;
+        const transactionId = generateTransactionId(accountNumber)
+        console.log("Body data :", req.body);
+
+        if (workerId == "PLATFORM") {
+            const platformTransaction = {
+                transactionId: (await transactionId).toString(),
+                type: "DEBIT" as const,
+                amount: amount as number,
+                description: `Payout of ₹${amount} to ${accountName}`,
+                createdAt: new Date()
+            };
+
+            await walletService.updatePlatformWallet(
+                {
+                    balance: -amount,
+                    transactions: [platformTransaction]
+                },
+                "PLATFORM"
+            );
+        } else {
+            const userTransaction = {
+                transactionId: (await transactionId).toString(),
+                type: "DEBIT" as const,
+                amount: amount as number,
+                description: `Payout of ₹${amount} to ${accountName}`,
+                createdAt: new Date()
+            };
+            await walletService.update(
+                {
+                    balance: -amount,
+                    transactions: [userTransaction]
+                },
+                workerId.toString()
+            );
+        }
+
+        // const worker = await workerService.findById(workerId);
+        // if (!worker) {
+        //     res.status(404).json({ success: false, message: "Worker not found" });
+        //     return
+        // }
+
+        // const { data: contact } = await axios.post(
+        //     "https://api.razorpay.com/v1/contacts",
+        //     {
+        //         name: worker.name,
+        //         email: worker.email,
+        //         contact: worker.phone,
+        //         type: "employee",
+        //         reference_id: `worker_${worker._id}`,
+        //     },
+        //     { auth: { username: process.env.RAZORPAY_KEY_ID!, password: process.env.RAZORPAY_KEY_SECRET! } }
+        // );
+
+        // console.log("Contact created :", contact)
+
+        // const { data: fundAccount } = await axios.post(
+        //     "https://api.razorpay.com/v1/fund_accounts",
+        //     {
+        //         contact_id: contact.id,
+        //         account_type: "bank_account",
+        //         bank_account: {
+        //             name: accountName,
+        //             ifsc: ifscCode,
+        //             account_number: accountNumber,
+        //         },
+        //     },
+        //     { auth: { username: process.env.RAZORPAY_KEY_ID!, password: process.env.RAZORPAY_KEY_SECRET! } }
+        // );
+        // console.log("fundAccount created :", fundAccount)
+
+        // const { data: payout } = await axios.post(
+        //     "https://api.razorpay.com/v1/payouts",
+        //     {
+        //         account_number: process.env.RAZORPAYX_ACCOUNT!,
+        //         fund_account_id: fundAccount.id,
+        //         amount: Number(amount) * 100,
+        //         currency: "INR",
+        //         mode: "UPI",
+        //         purpose: "payout",
+        //         queue_if_low_balance: true,
+        //         narration: `Withdrawal for worker ${worker.name}`,
+        //     },
+        //     { auth: { username: process.env.RAZORPAY_KEY_ID!, password: process.env.RAZORPAY_KEY_SECRET! } }
+        // );
+
+        res.json({ success: true, message: 'Payout success' });
+    } catch (err) {
+        console.error("Error verifying wallet payment:", err);
+        res.status(500).json({ error: "Payment verification failed" });
+    }
+});
+
 
 export default router;

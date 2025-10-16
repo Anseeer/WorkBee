@@ -115,13 +115,14 @@ const WorkerListing = () => {
         }
     }, [triggerDraft, workDetails, dispatch, navigate]);
 
-    const Confirm = async (date: string, slot: string, totalAmount: string, PlatformFee: string) => {
+    const Confirm = async (date: string, slot: string, totalAmount: string, PlatformFee: string, commissionAmount: string) => {
         try {
             const res = await dispatch(workerDetails({
                 date,
                 slot,
                 totalAmount,
                 PlatformFee,
+                commission:commissionAmount,
                 workerId: selectedWorker?.id,
                 workerName: selectedWorker?.name,
                 userName: userDetails?.name

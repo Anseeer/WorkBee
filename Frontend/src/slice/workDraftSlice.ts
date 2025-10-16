@@ -21,6 +21,7 @@ export const initialState: IWork = {
         lng: 0,
     },
     platformFee: "",
+    commission: "",
     totalAmount: "",
     workType: "",
     size: "",
@@ -69,6 +70,7 @@ const workDraft = createSlice({
             state.userName = action.payload.userName;
             state.totalAmount = action.payload.totalAmount;
             state.platformFee = action.payload.PlatformFee;
+            state.commission = action.payload.commission;
             console.log("WorkState :", state);
             return;
         }

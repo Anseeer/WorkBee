@@ -12,6 +12,7 @@ export interface IWork {
     userName: string,
     wage: string,
     platformFee: string,
+    commission: string,
     totalAmount: string,
     location: {
         address: string,

@@ -5,7 +5,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { registerWorkerThunk } from "../../slice/workerSlice";
 import { getAllCategories } from "../../services/workerService";
 import type { ICategory } from "../../types/ICategory";
-import { emailRegex, passRegex, phoneRegex } from "../../regexs";
+import { emailRegex, passRegex, phoneRegex } from "../../constant/regexs";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { API_ROUTES } from "../../constant/api.routes";

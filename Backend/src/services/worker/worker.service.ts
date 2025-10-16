@@ -419,12 +419,17 @@ export class WorkerService implements IWorkerService {
         }
     }
 
-    async findById(id: string): Promise<IWorker | null> {
+    async findById(id: string): Promise<IWorkerDTO | null> {
         try {
             if (!id) {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID)
             }
-            return await this._workerRepository.findById(id);
+            const worker = await this._workerRepository.findById(id);
+            if (worker) {
+                return mapWorkerToDTO(worker)
+            } else {
+                return null;
+            }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             console.error('Error in rateWorker:', errMsg);

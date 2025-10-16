@@ -3,15 +3,27 @@ import { TrendingUp, CreditCard, Download, IndianRupee } from 'lucide-react';
 import { fetchWallet } from '../../services/adminService';
 import type { ITransactions } from '../../types/ITransaction';
 import { DataTable, type Column } from '../common/Table';
+import PayoutModal from '../common/PayoutForm';
 
 const RevenueManagement = () => {
+    const [payoutModal, setPayoutModal] = useState<boolean>(false);
     const [balance, setBalance] = useState<number>(0);
     const [history, setHistory] = useState<ITransactions[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCommission, setCommission] = useState(0);
     const [totalPlatformFees, setPlatformFee] = useState(0);
     const [totalSubscriptionFees, setSubscription] = useState(0);
-    const itemsPerPage = 5;
+    const itemsPerPage = 4;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const walletRes = await fetchWallet();
+            setBalance(walletRes.earnings.balance);
+            setHistory(walletRes.earnings.transactions);
+            console.log("WalletREs :", walletRes.earnings);
+        };
+        fetchData();
+    }, [payoutModal]);
 
     useEffect(() => {
         const calculateTotals = (transactions: ITransactions[]) => {
@@ -39,15 +51,9 @@ const RevenueManagement = () => {
 
         };
 
-        const fetchData = async () => {
-            const walletRes = await fetchWallet();
-            setBalance(walletRes.earnings.balance);
-            setHistory(walletRes.earnings.transactions);
-            console.log("WalletREs :", walletRes.earnings);
-        };
-        fetchData();
         if (history.length > 0) calculateTotals(history);
-    }, [history]);
+
+    }, [history])
 
 
 
@@ -56,8 +62,12 @@ const RevenueManagement = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedTransactions = history.slice(startIndex, startIndex + itemsPerPage);
 
-    const handlePayout = () => {
-        alert('Payout request initiated! This would connect to your payment processor.');
+    const handlePayoutModal = () => {
+        setPayoutModal(true);
+    };
+
+    const closePayoutModal = () => {
+        setPayoutModal(false)
     };
 
     const formatDate = (dateString: string | Date) => {
@@ -87,26 +97,6 @@ const RevenueManagement = () => {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
-                {/* 
-                <div className=" relative bg-gradient-to-r from-green-600 to-blue-600 rounded-lg shadow-lg p-6 mb-8 text-white">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div className="mb-4 md:mb-0">
-                            <p className="text-4xl font-bold flex items-center gap-2">
-                                <CreditCard className="w-8 h-8 text-white" />
-                                <h2 className="text-xl font-semibold mb-2">Available for Payout</h2>
-                            </p>
-                            <p className="text-4xl font-bold">₹{balance.toLocaleString()}</p>
-                            <p className="text-blue-200 text-sm mt-2">Minimum payout amount: ₹100</p>
-                        </div>
-                        <button
-                            onClick={handlePayout}
-                            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
-                        >
-                            <Download className="w-5 h-5" />
-                            Request Payout
-                        </button>
-                    </div>
-                </div> */}
 
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-8">
@@ -135,7 +125,6 @@ const RevenueManagement = () => {
                     </div>
                 </div>
 
-
                 <div className=" relative bg-gradient-to-r from-green-600 to-blue-600 rounded-lg shadow-lg p-4 text-white">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                         <div className="mb-4 md:mb-0">
@@ -147,7 +136,7 @@ const RevenueManagement = () => {
                             <p className="text-blue-200 text-sm mt-2">Minimum payout amount: ₹100</p>
                         </div>
                         <button
-                            onClick={handlePayout}
+                            onClick={handlePayoutModal}
                             className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
                         >
                             <Download className="w-5 h-5" />
@@ -155,7 +144,6 @@ const RevenueManagement = () => {
                         </button>
                     </div>
                 </div>
-
 
                 {/* Transactions Table */}
                 <DataTable
@@ -167,11 +155,13 @@ const RevenueManagement = () => {
                         id: txn.transactionId,
                     }))}
                     columns={columns as unknown as Column<{ id: string }>[]}
-                    searchKeys={['type', 'id']}
+                    searchKeys={['type', 'id', 'description', 'createdAt', 'amount']}
                 />
 
             </div>
+            {payoutModal && <PayoutModal balance={balance} workerID={"PLATFORM"} closeModal={closePayoutModal} />}
         </div>
+
     );
 };
 

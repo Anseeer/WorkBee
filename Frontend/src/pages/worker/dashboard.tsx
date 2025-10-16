@@ -16,12 +16,14 @@ import type { IAvailability } from "../../types/IAvailability";
 import type { IWallet } from "../../types/IWallet";
 import { SubscriptionPlans } from "../../components/worker/Subscription";
 import AddMoneyModal from "../../components/user/AddMoneyModal";
+import PayoutModal from "../../components/common/PayoutForm";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
     const [userId, setUserId] = useState<string | null>(null);
     const [isEdit, setIsEdit] = useState(false);
     const [addMoneyModal, setAddMoneyModal] = useState(false);
+    const [payoutMoneyModal, setPayoutMoneyModal] = useState(false);
     const [reload, setReloadWallet] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
@@ -58,9 +60,19 @@ const Dashboard = () => {
         setAddMoneyModal(true)
     }
 
+    const handlePayoutMoney = () => {
+        setUserId(workerData.worker?._id as string)
+        setPayoutMoneyModal(true)
+    }
+
     const closeAddMoneyModal = () => {
         setReloadWallet((prev) => !prev);
         setAddMoneyModal(false);
+    }
+
+    const closePayoutMoneyModal = () => {
+        setReloadWallet((prev) => !prev);
+        setPayoutMoneyModal(false);
     }
 
     return (
@@ -71,22 +83,34 @@ const Dashboard = () => {
                     <h3 className="text-2xl font-semibold">
                         {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                     </h3>
-                    {activeTab === "account" && workerData.worker?.isAccountBuilt && workerData.worker.subscription != null && (
-                        <button
-                            className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
-                            onClick={() => handleEdit()}
-                        >
-                            Edit
-                        </button>
-                    )}
-                    {activeTab == "wallet" && (
-                        <button
-                            className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
-                            onClick={() => handleAddMoney()}
-                        >
-                            Add Money
-                        </button>
-                    )}
+
+                    <div className="flex gap-2">
+                        {activeTab === "account" && workerData.worker?.isAccountBuilt && workerData.worker.subscription != null && (
+                            <button
+                                className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
+                                onClick={() => handleEdit()}
+                            >
+                                Edit
+                            </button>
+                        )}
+
+                        {activeTab === "wallet" && (
+                            <>
+                                <button
+                                    className="px-4 py-1 text-green-600 border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
+                                    onClick={() => handleAddMoney()}
+                                >
+                                    Add Money
+                                </button>
+                                <button
+                                    className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-gray-400 hover:text-white"
+                                    onClick={() => handlePayoutMoney()}
+                                >
+                                    Payout Money
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
                 <hr className="border border-green-900" />
                 <div className="flex-1 min-h-0 overflow-auto">
@@ -124,6 +148,7 @@ const Dashboard = () => {
                     ) : null}
 
                     {addMoneyModal && <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />}
+                    {payoutMoneyModal && <PayoutModal balance={wallet?.balance as number} closeModal={closePayoutMoneyModal} workerID={userId} />}
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { googleLoginSuccess, loginUserThunk } from "../../slice/userSlice";
 import LoginForm from "../../components/common/LoginForm";
-import { emailRegex, passRegex } from "../../regexs";
+import { emailRegex, passRegex } from "../../constant/regexs";
 import { API_ROUTES } from "../../constant/api.routes";
 import axios from "../../services/axios";
 import type { CredentialResponse } from "@react-oauth/google";
