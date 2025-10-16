@@ -15,7 +15,6 @@ const WorkHistory = () => {
     const [isModal, setIsModalOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
-    console.log(worker);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -70,19 +69,10 @@ const WorkHistory = () => {
                             ...w,
                             id: w._id ?? ''
                         }))}
+                        itemsPerPage={6}
                         columns={columns}
-                        searchKeys={[
-                            'userName',
-                            'service',
-                            'description',
-                            'wage',
-                            'workType',
-                            'size',
-                            'location',
-                            'sheduleDate',
-                            'sheduleTime',
-                            'status'
-                        ]}
+                        searchKeys={['userName', 'service', 'description', 'wage', 'workType', 'size', 'location', 'sheduleDate', 'sheduleTime', 'status']}
+                        advancedFilterKeys={['service', 'location', 'sheduleDate','sheduleTime','wage', 'status']}
                     />
                 </div>
             )}

@@ -4,7 +4,7 @@ export const API_ROUTES = {
     REGISTER: "/register",
     LOGIN: "/login",
     HOME: "/home",
-    LANDING: "/",
+    LANDING: "",
     PROFILE: "/profile",
     VERIFY_OTP: "/verify-otp",
     FORGOT_PASS: "/forgot-password",
@@ -65,27 +65,59 @@ export const API_ROUTES = {
     UPDATE_SUBSCRIPTION: "subscription/update",
   },
 
+  // USER_SERVICE: {
+  //   REGISTER: "users/register",
+  //   LOGIN: "users/login",
+  //   LOGOUT: "users/logout",
+  //   FETCH_USER: "users/fetch-data",
+  //   UPDATE_USER: "users/update",
+  //   FORGOT_PASSWORD: "users/forgot-password",
+  //   RESEND_OTP: "users/resend-otp",
+  //   VERIFY_OTP: "users/verify-otp",
+  //   RESET_PASSWORD: "users/reset-password",
+  //   FETCH_SERVICES: "services/getAll-services",
+  //   FETCH_SERVICE_BY_SEARCH: "services/by-search",
+  //   FETCH_SERVICE_BY_ID: "services/By-Id",
+  //   FETCH_CATEGORY_BY_ID: "categories/By-Id",
+  //   FETCH_AVAILABILITY: "users/fetch-availability",
+  //   CREATE_WORK: "works/creat-work",
+  //   FETCH_WORK_HISTORY: "works/users",
+  //   CANCEL_WORK: "works/cancel",
+  //   FIND_USERS_BY_IDS: "users/find-users-byId",
+  //   FETCH_CHAT: "chats/fetch-chat",
+  //   RATE_WORKER: "workers/ratings",
+  // },
+
   USER_SERVICE: {
     REGISTER: "users/register",
     LOGIN: "users/login",
     LOGOUT: "users/logout",
-    FETCH_USER: "users/fetch-data",
-    UPDATE_USER: "users/update",
     FORGOT_PASSWORD: "users/forgot-password",
     RESEND_OTP: "users/resend-otp",
     VERIFY_OTP: "users/verify-otp",
     RESET_PASSWORD: "users/reset-password",
+
+    FETCH_DATA: "users/fetch-data",
+    UPDATE: "users/update",
+    FETCH_AVAILABILITY: "users/fetch-availability",
+    FIND_BY_IDS: "users/find-users-byId",
+
+    // Work
+    CREATE_WORK: "works/creat-work",
+    CANCEL_WORK: "works/cancel",
+    FETCH_WORK_HISTORY: "works/users",
+
+    // Chat
+    FETCH_CHAT: "chats/fetch-chat",
+
+    // Ratings
+    RATE_WORKER: "workers/ratings",
+
+    // Services & Categories
     FETCH_SERVICES: "services/getAll-services",
-    FETCH_SERVICE_BY_SEARCH: "services/by-search",
     FETCH_SERVICE_BY_ID: "services/By-Id",
     FETCH_CATEGORY_BY_ID: "categories/By-Id",
-    FETCH_AVAILABILITY: "users/fetch-availability",
-    CREATE_WORK: "works/creat-work",
-    FETCH_WORK_HISTORY: "works/users",
-    CANCEL_WORK: "works/cancel",
-    FIND_USERS_BY_IDS: "users/find-users-byId",
-    FETCH_CHAT: "chats/fetch-chat",
-    RATE_WORKER: "workers/ratings",
+    FETCH_SERVICE_BY_SEARCH: "services/by-search",
   },
 
   WORKER_SERVICE: {

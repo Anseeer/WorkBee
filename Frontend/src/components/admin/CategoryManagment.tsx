@@ -21,7 +21,7 @@ const CategoryManagment = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchCategory(currentPage, 3);
+            const res = await fetchCategory(currentPage, 4);
             const formatted = res.data.data.category.map((cat: any) => ({
                 ...cat,
                 id: cat._id
@@ -187,6 +187,7 @@ const CategoryManagment = () => {
                 data={category}
                 columns={columns}
                 searchKeys={['name', 'description']}
+                advancedFilterKeys={['name', 'isActive']}
             />
 
             {/* Edit Modal */}

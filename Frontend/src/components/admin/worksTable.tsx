@@ -13,7 +13,7 @@ const WorksTable = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchWorks(currentPage, 5);
+            const res = await fetchWorks(currentPage, 6);
             const mappedWorks = res.data.data.paginatedWorks.map((work: IWork) => ({
                 ...work,
                 id: work._id || '',
@@ -38,14 +38,8 @@ const WorksTable = () => {
         { key: 'userName', label: 'User' },
         { key: 'workerName', label: 'Worker' },
         { key: 'status', label: 'Status', render: (u) => <StatusBadge status={u.status} /> },
-        // { key: 'paymentStatus', label: 'Payment', render: (u) => <StatusBadge status={u.paymentStatus} /> },
-        // { key: 'wage', label: 'wage', render: (u) => '₹' + u.wage },
         { key: 'platformFee', label: 'Fee', render: (u) => <span className="text-green-700 font-semibold">₹{u.platformFee}</span> },
-        // {
-        //     key: 'location',
-        //     label: 'Location',
-        //     render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
-        // },
+        { key: 'commission', label: 'Comission', render: (u) => <span className="text-green-700 font-semibold">₹{u.commission || 0}</span> },
         { key: 'sheduleDate', label: 'Date' },
         {
             key: 'id',
@@ -70,6 +64,7 @@ const WorksTable = () => {
                 data={works}
                 columns={columns}
                 searchKeys={['service', 'workerName', 'userName', 'location']}
+                advancedFilterKeys={['service', 'workerName', 'userName', 'status','commission','platformFee','sheduleDate']}
             />
 
             {selectedWork && <WorkInfoModal closeModal={closeWorkInfo} workId={selectedWork as string} />}

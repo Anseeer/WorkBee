@@ -39,7 +39,7 @@ const ServiceManagment = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const serviceRes = await fetchService(currrentPage, 3);
+                const serviceRes = await fetchService(currrentPage, 5);
                 const servicesRaw = serviceRes.data.data.services.map((srv: any) => ({
                     ...srv,
                     id: srv._id,
@@ -210,6 +210,7 @@ const ServiceManagment = () => {
                 data={service}
                 columns={columns}
                 searchKeys={['name', 'description', 'wage']}
+                advancedFilterKeys={['name', 'categoryName', 'wage','isActive']}
             />
 
             {/* Edit Modal */}

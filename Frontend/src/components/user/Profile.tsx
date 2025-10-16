@@ -37,7 +37,7 @@ const ProfileSection = () => {
     const wallet = useSelector((state: RootState) => state.user?.wallet);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
-
+    console.log("User :",user);
     useEffect(() => {
         if (user?.profileImage) {
             setSelectedImg(user.profileImage as string);

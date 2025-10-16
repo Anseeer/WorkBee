@@ -156,6 +156,7 @@ const RevenueManagement = () => {
                     }))}
                     columns={columns as unknown as Column<{ id: string }>[]}
                     searchKeys={['type', 'id', 'description', 'createdAt', 'amount']}
+                    advancedFilterKeys={['amount','createdAt','type']}
                 />
 
             </div>

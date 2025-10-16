@@ -48,6 +48,8 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     const { selectedDetails } = useWorkerDetails();
     const worker = selectedDetails?.worker;
     const availability = selectedDetails?.availability;
+    console.log("Worker :", worker)
+    console.log("Availability :", availability)
 
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [services, setServices] = useState<IService[]>([]);

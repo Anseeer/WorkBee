@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { IWork } from "../types/IWork";
-import { DraftWork } from "../services/userService";
 import type { AxiosError } from "axios";
+import { DraftWork } from "../services/userService";
 
 
 export const initialState: IWork = {
