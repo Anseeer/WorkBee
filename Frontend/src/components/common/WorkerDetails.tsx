@@ -204,10 +204,10 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Work Details</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
+                                    {/* <div>
                                         <p className="text-sm text-gray-600 mb-2">Work Type</p>
                                         <p className="font-medium text-gray-900">{worker.workType.join(', ')}</p>
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <p className="text-sm text-gray-600 mb-2">Preferred Schedule</p>
                                         <p className="font-medium text-gray-900">{worker.preferredSchedule.join(', ')}</p>

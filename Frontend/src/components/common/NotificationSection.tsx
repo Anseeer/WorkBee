@@ -6,6 +6,7 @@ import type { INotification } from "../../types/INotification";
 import { NotificationBadge } from "../../utilities/StatusBadge";
 import type { Iuser } from "../../types/IUser";
 import type { IWorker } from "../../types/IWorker";
+import { toast } from "react-toastify";
 
 const NotificationItem = ({ notification }: { notification: INotification }) => {
     const ref = useRef(null);
@@ -51,14 +52,22 @@ const NotificationSection = ({ user }: props) => {
     useEffect(() => {
         if (!user?.id) return;
 
+        socket.emit("join-user-room", user.id);
+
         socket.emit("get-notifications", { userId: user.id });
 
         socket.on("notifications_list", (data: INotification[]) => {
             setNotifications(data || []);
         });
 
+        socket.on("new-notification", (newNotification) => {
+            setNotifications((prev) => [newNotification, ...prev]);
+            toast.info(`🔔 ${newNotification.title}`);
+        });
+
         return () => {
             socket.off("notifications_list");
+            socket.off("new-notification");
         };
     }, [user?.id]);
 

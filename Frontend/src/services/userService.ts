@@ -2,9 +2,11 @@ import axios from "./axios"
 import type { Iuser } from "../types/IUser";
 import type { IWork } from "../types/IWork";
 import { API_ROUTES } from "../constant/api.routes";
+import { getProfileImage } from "../utilities/getProfile";
 
 
 export const register = async (userData: Partial<Iuser>) => {
+    userData.profileImage = getProfileImage(userData.name);
     const response = await axios.post(API_ROUTES.USER_SERVICE.REGISTER, userData, {
         withCredentials: true,
     });

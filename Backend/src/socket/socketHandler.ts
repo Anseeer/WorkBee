@@ -145,16 +145,6 @@ export const initializeSocket = (io: Server) => {
             }
         });
 
-        socket.on("push-notification", async ({ notification }) => {
-            if (!notification || !notification.recipient) return;
-            try {
-                const newNotification = await notificationService.create(notification);
-                io.to(notification.recipient).emit("new-notification", newNotification);
-            } catch (err) {
-                console.error("Error creating notification:", err);
-            }
-        });
-
         socket.on("get-notifications", async ({ userId }) => {
             if (!userId) return;
             const notifications = await notificationService.getUserNotification(userId);

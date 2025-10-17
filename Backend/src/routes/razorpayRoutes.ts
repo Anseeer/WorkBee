@@ -3,7 +3,6 @@ import { razorpay } from "../utilities/razorpayInstance";
 import crypto from "crypto";
 import { generateTransactionId } from "../utilities/generateTransactionId";
 import logger from "../utilities/logger";
-import { mapNotificationToEntity } from "../mappers/notification/mapNotificationToEntity";
 import container from "../inversify/inversify.container";
 import { IWorkService } from "../services/work/work.service.interface";
 import TYPES from "../inversify/inversify.types";
@@ -11,10 +10,11 @@ import { IPaymentService } from "../services/payment/payment.service.interface";
 import { IWorkerService } from "../services/worker/worker.service.interface";
 import { IWalletService } from "../services/wallet/wallet.service.interface";
 import mongoose from "mongoose";
-import { INotificationService } from "../services/notification/notification.service.interface";
 import { IWallet } from "../model/wallet/wallet.interface.model";
 import { ISubscriptionService } from "../services/subscription/subscription.service.interface";
-import axios from "axios";
+import { getIO } from "../socket/socket";
+import { mapNotificationToEntity } from "../mappers/notification/mapNotificationToEntity";
+import { INotificationService } from "../services/notification/notification.service.interface";
 
 const router = express.Router();
 
@@ -22,8 +22,8 @@ const workService = container.get<IWorkService>(TYPES.workService);
 const paymentService = container.get<IPaymentService>(TYPES.paymentService);
 const workerService = container.get<IWorkerService>(TYPES.workerService);
 const walletService = container.get<IWalletService>(TYPES.walletService);
-const notificationService = container.get<INotificationService>(TYPES.notificationService);
 const subscriptionService = container.get<ISubscriptionService>(TYPES.subscriptionService);
+const notificationService = container.get<INotificationService>(TYPES.notificationService);
 
 
 router.post("/create-order", async (req: Request, res: Response) => {
@@ -65,6 +65,7 @@ router.post("/create-order", async (req: Request, res: Response) => {
 
 router.post("/verify-payment", async (req: Request, res: Response): Promise<void> => {
     try {
+        const io = getIO();
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, workId } = req.body;
         const key_secret = process.env.RAZORPAY_KEY_SECRET as string;
 
@@ -191,6 +192,8 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         const notificationEntity = mapNotificationToEntity(notification);
         const newNotification = await notificationService.create(notificationEntity);
         if (!newNotification) throw new Error("Failed to create notification");
+        io.emit("push-notification", newNotification);
+
 
         res.json({ success: true, message: "Payment verified successfully" });
     } catch (error) {

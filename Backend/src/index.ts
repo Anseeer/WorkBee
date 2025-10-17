@@ -16,11 +16,11 @@ import MongooseConnection from "./config/DB";
 import { errorHandler } from "./middlewares/errorHandleMiddleware";
 import nocache from "nocache";
 import cookieParser from "cookie-parser";
-import { Server } from 'socket.io';
 import http from "http";
 import logger from "./utilities/logger";
 import { initializeSocket } from "./socket/socketHandler";
 import { initCronJobs } from "./utilities/subscriptionExpiryJob";
+import { initSocket } from "./socket/socket";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 MongooseConnection();
@@ -35,19 +35,6 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
-
-// const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.indexOf(origin) === -1) {
-//       const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
-//       return callback(new Error(msg), false);
-//     }
-//     return callback(null, true);
-//   },
-//   credentials: true
-// }));
 
 
 app.use('/api/users', userRoutes);
@@ -67,12 +54,31 @@ app.get('/', (_, res) => {
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:5173',
-    credentials: true,
-  },
+const io = initSocket(server);
+initializeSocket(io);
+initCronJobs();
+
+app.use(errorHandler)
+
+server.listen(process.env.PORT, () => {
+  logger.info(`Listening on http://localhost:${process.env.PORT}/`);
 });
+
+
+
+// const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.indexOf(origin) === -1) {
+//       const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
+//       return callback(new Error(msg), false);
+//     }
+//     return callback(null, true);
+//   },
+//   credentials: true
+// }));
+
 
 // const io = new Server(server, {
 //   cors: {
@@ -86,16 +92,3 @@ const io = new Server(server, {
 //     credentials: true
 //   }
 // });
-
-initializeSocket(io);
-initCronJobs();
-
-app.use(errorHandler)
-
-server.listen(process.env.PORT, () => {
-  logger.info(`Listening...`)
-});
-
-app.listen(process.env.PORT, () => {
-  logger.info(`listening on http://localhost:${process.env.PORT}/`)
-}); 

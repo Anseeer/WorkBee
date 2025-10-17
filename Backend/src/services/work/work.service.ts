@@ -17,10 +17,13 @@ import { mapChatToEntity } from "../../mappers/chatMessage/chat.map.DTO";
 import { IChat } from "../../model/chatMessage/IChat";
 import { toISTDateOnly } from "../../utilities/toISTDate";
 import { Role } from "../../constants/role";
-import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
-import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
 import { TopThreeResult } from "../../utilities/topThreeTypes";
 import { INotification } from "../../model/notification/notification.interface";
+import { getIO } from "../../socket/socket";
+import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
+import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
+import { Server } from "socket.io";
+
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -40,7 +43,7 @@ export class WorkService implements IWorkService {
         @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository,
         @inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository,
         @inject(TYPES.chatRepository) chatRepo: IChatRepositoy,
-        @inject(TYPES.notificationRepository) notificationRepo: INotificationRepository
+        @inject(TYPES.notificationRepository) notificationRepo: INotificationRepository,
     ) {
         this._workRepositoy = workRepo;
         this._workerRepositoy = workerRepo;
@@ -54,6 +57,8 @@ export class WorkService implements IWorkService {
 
     createWork = async (workDetails: IWork): Promise<IWorkDTO> => {
         try {
+            const io = getIO();
+
             const { workerId, userId, serviceId, categoryId } = workDetails;
             if (!workDetails) {
                 throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
@@ -79,11 +84,6 @@ export class WorkService implements IWorkService {
                 throw new Error(CATEGORY_MESSAGE.CATEGORY_NOT_EXIST);
             }
 
-            const requestedWork = await this._workRepositoy.getRequestedWorks(workerId.toString());
-            if(requestedWork.length > 2){
-                throw new Error("cant request thois worker . already have some pendings ")
-            }
-
             const workEntity = mapWorkToEntity(workDetails);
             const newWork = await this._workRepositoy.create(workEntity);
             const work = mapWorkToDTO(newWork);
@@ -103,10 +103,8 @@ export class WorkService implements IWorkService {
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
-
-            if (!newNotification) {
-                throw new Error("Failed to create notification");
-            }
+            if (!newNotification) throw new Error("Failed to create notification");
+            io.to(workerId.toString()).emit("new-notification", newNotification);
 
             return work;
 
@@ -175,63 +173,66 @@ export class WorkService implements IWorkService {
 
     cancel = async (workId: string, id: string): Promise<boolean> => {
         try {
+            const io = getIO();
+
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             if (!id) throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
 
             const worker = await this._workerRepositoy.findById(id);
             const user = await this._userRepositoy.findById(id);
-            let canceldPerson;
 
             if (!worker && !user) {
                 throw new Error("Can't find a worker or user with this id");
             }
 
-            canceldPerson = worker ?? user;
+            const canceller = worker ?? user;
 
             const work = await this._workRepositoy.findById(workId);
             if (!work) throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
+
+            // Build notification
+            const recipientIsWorker = canceller?.id.toString() !== work.workerId?.toString();
+
             const notification: Partial<INotification> = {
-                recipient:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? new mongoose.Types.ObjectId(work.userId.toString())
-                        : new mongoose.Types.ObjectId(work.workerId.toString()),
-                recipientModel:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? "User"
-                        : "Worker",
-                actor:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? new mongoose.Types.ObjectId(work.workerId.toString())
-                        : new mongoose.Types.ObjectId(work.userId.toString()),
-                actorModel:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? "Worker"
-                        : "User",
+                recipient: new mongoose.Types.ObjectId(
+                    recipientIsWorker ? work.workerId.toString() : work.userId.toString()
+                ),
+                recipientModel: recipientIsWorker ? "Worker" : "User",
+                actor: new mongoose.Types.ObjectId(canceller?.id.toString()),
+                actorModel: worker ? "Worker" : "User",
                 type: "job_cancelled",
                 title: work?.service,
-                body: `The job ${work?.service} has been cancelled by ${canceldPerson?.name}.
-            Date: ${work.sheduleDate} on ${work.sheduleTime}.
-            Job description: ${work?.description}`,
+                body: `The job "${work?.service}" has been cancelled by ${canceller?.name}.
+      Date: ${work.sheduleDate} on ${work.sheduleTime}.
+      Job description: ${work?.description}`,
                 read: false,
             };
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
+            if (!newNotification) throw new Error("Failed to create notification");
 
-            if (!newNotification) {
-                throw new Error("Failed to create notification");
+            const recipientId = notification.recipient?.toString();
+            if (recipientId) {
+                io.to(recipientId).emit("new-notification", newNotification);
+                console.log("✅ Emitted new-notification to:", recipientId);
+            } else {
+                console.log("⚠️ No recipient ID found for notification");
             }
 
             return await this._workRepositoy.cancel(workId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            console.error("Cancel error:", errMsg);
             throw error;
         }
     };
 
+
     accept = async (workId: string): Promise<boolean> => {
         try {
+            const io = getIO()
+
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             const work = await this._workRepositoy.findById(workId);
             if (!work) throw new Error(WORK_MESSAGE.WORK_NOT_EXIST);
@@ -302,9 +303,8 @@ export class WorkService implements IWorkService {
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
-            if (!newNotification) {
-                throw new Error("Faild to create notification");
-            }
+            if (!newNotification) throw new Error("Failed to create notification");
+            io.to(work.userId.toString()).emit("new-notification", newNotification);
 
             return await this._workRepositoy.accept(workId);
         } catch (error) {
@@ -316,6 +316,8 @@ export class WorkService implements IWorkService {
 
     completed = async (workId: string, workerId: string): Promise<boolean> => {
         try {
+            const io = getIO()
+
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             if (!workerId) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
 
@@ -342,7 +344,8 @@ export class WorkService implements IWorkService {
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
-            if (!newNotification) throw new Error("Faild to create notification");
+            if (!newNotification) throw new Error("Failed to create notification");
+            io.to(work.userId.toString()).emit("new-notification", newNotification);
 
             return await this._workRepositoy.setIsWorkCompleted(workId);
         } catch (error) {

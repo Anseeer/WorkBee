@@ -271,12 +271,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         { id: "full-day", label: "Full Day (9am - 5pm)" },
     ];
 
-    const jobTypes = [
-        { id: "one-time", label: "One Time" },
-        { id: "weekly", label: "Weekly" },
-        { id: "monthly", label: "Monthly" },
-    ];
-
     const handleArrayToggle = (
         field: "services" | "categories" | "preferredSchedule",
         value: string
@@ -414,53 +408,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         onChange={formik.handleChange}
                                         className="w-full px-4 py-3 border rounded-lg"
                                     />
-                                </div>
-
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Work Type
-                                    </label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {jobTypes.map((type) => (
-                                            <button
-                                                key={type.id}
-                                                type="button"
-                                                onClick={() => {
-                                                    const current = formik.values.workType;
-                                                    const updated = current.includes(type.id)
-                                                        ? current.filter((t) => t !== type.id)
-                                                        : [...current, type.id];
-                                                    formik.setFieldValue("workType", updated);
-                                                }}
-                                                className={`flex items-center justify-center px-3 py-2 border rounded-lg transition 
-                                                        ${formik.values.workType.includes(type.id)
-                                                        ? "bg-green-100 border-green-400"
-                                                        : "hover:bg-green-50"
-                                                    }`}
-                                            >
-                                                <span className="text-sm">{type.label}</span>
-                                                {formik.values.workType.includes(type.id) && (
-                                                    <Check className="w-4 h-4 text-green-600 ml-1" />
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    {formik.values.workType.length > 0 && (
-                                        <div className="mt-2 flex flex-wrap gap-1">
-                                            {formik.values.workType.map((wt) => {
-                                                const typeLabel = jobTypes.find((t) => t.id === wt)?.label || wt;
-                                                return (
-                                                    <span
-                                                        key={wt}
-                                                        className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full border border-green-300"
-                                                    >
-                                                        {typeLabel}
-                                                    </span>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
                                 </div>
 
 

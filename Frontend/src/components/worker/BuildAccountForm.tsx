@@ -14,17 +14,12 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { toast } from "react-toastify";
 import { getServiceByCategory } from "../../services/workerService";
 
+
 const workingHours = [
   { id: "morning", label: "Morning (9am - 1pm)" },
   { id: "afternoon", label: "Afternoon (1pm - 5pm)" },
   { id: "evening", label: "Evening (5pm - 9pm)" },
   { id: "full-day", label: "Full Day (9am - 5pm)" },
-];
-
-const jobTypes = [
-  { id: "one-time", label: "One Time" },
-  { id: "weekly", label: "Weekly" },
-  { id: "monthly", label: "Monthly" },
 ];
 
 interface IServiceOption {
@@ -39,7 +34,7 @@ export default function BuildAccount() {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [selectedImg, setSelectedImg] = useState<File | null>(null);
   const Profile = getProfileImage(worker?.name, selectedImg);
-  const [isLoding, setIsLoding] = useState(false)
+  const [isLoading, setIsLoding] = useState(false)
   const [service, setService] = useState<IServiceOption[]>([]);
   const dispatch = useAppDispatch();
 
@@ -87,8 +82,6 @@ export default function BuildAccount() {
         errors.radius = "Select at least five km radius";
       if (values.radius.length < 5)
         errors.radius = "Select distance (in km) you’re willing to travel for work";
-      if (values.jobTypes.length === 0)
-        errors.jobTypes = "Select at least one job type";
       if (values.selectedServices.length === 0)
         errors.selectedServices = "Select at least one service";
       if (selectedDates.length === 0)
@@ -187,278 +180,274 @@ export default function BuildAccount() {
     updated.splice(index, 1);
     formik.setFieldValue("govId", updated);
   };
-
   return (
-    <div className="max-w-5xl mx-auto h-[560px] overflow-y-auto m-3 p-6 bg-gray-50 rounded-3xl border-2 border-green-600">
-      <h1 className="text-2xl font-bold mb-8">Build Your Profile</h1>
+    <div className="min-h-screen w-full flex flex-col items-center justify-start relative bg-gray-50 p-6">
+      {/* Logo in top-left corner */}
+      <div className="absolute top-6 left-6">
+        <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
+      </div>
 
-      <form
-        onSubmit={formik.handleSubmit}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-      >
-        <div className="space-y-6 pr-6 border-r border-gray-300">
-          <div className="flex items-center gap-4">
-            <img
-              src={selectedImg ? URL.createObjectURL(selectedImg) : Profile}
-              alt="Profile"
-              className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center"
-            />
-            <label htmlFor="profile-upload" className="edit-icon cursor-pointer">
-              <FaCamera />
-            </label>
-            <input
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setSelectedImg(file);
-                  formik.setFieldValue("profileImage", file);
-                }
-              }}
-              type="file"
-              id="profile-upload"
-              accept="image/*"
-              hidden
-            />
+      {/* Form Container */}
+      <div className="w-full max-w-6xl bg-white rounded-3xl border-2 border-green-600 shadow-md p-8 mt-20">
+        <h1 className="text-2xl font-bold mb-8 text-start">Build Your Profile</h1>
+        <form
+          onSubmit={formik.handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-12"
+        >
+          {/* Left Column */}
+          <div className="flex flex-col space-y-6">
+            {/* Profile Image */}
+            <div className="flex flex-col items-start gap-4">
+              <div className="relative">
+                <img
+                  src={selectedImg ? URL.createObjectURL(selectedImg) : Profile}
+                  alt="Profile"
+                  className="w-32 h-32 rounded-full bg-gray-300 object-cover"
+                />
+                <label
+                  htmlFor="profile-upload"
+                  className="absolute bottom-0 right-0 bg-black p-2 rounded-full cursor-pointer hover:bg-green-700 transition-colors"
+                >
+                  <FaCamera className="text-white text-sm" />
+                </label>
+              </div>
+              <input
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setSelectedImg(file);
+                    formik.setFieldValue("profileImage", file);
+                  }
+                }}
+                type="file"
+                id="profile-upload"
+                accept="image/*"
+                hidden
+              />
+            </div>
+
+            {/* Age & Gender */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Age</label>
+                <input
+                  type="number"
+                  name="age"
+                  min="18"
+                  onBlur={formik.handleBlur}
+                  value={formik.values.age}
+                  onChange={formik.handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                {formik.errors.age && formik.touched.age && (
+                  <div className="text-red-500 text-sm mt-1">{formik.errors.age}</div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Gender</label>
+                <select
+                  name="gender"
+                  value={formik.values.gender}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="">Select</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+                {formik.errors.gender && formik.touched.gender && (
+                  <div className="text-red-500 text-sm mt-1">{formik.errors.gender}</div>
+                )}
+              </div>
+            </div>
+
+            {/* Government ID Upload */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Upload Government ID (Front and Back Images Required)
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  type="file"
+                  name="govId"
+                  multiple
+                  onBlur={formik.handleBlur}
+                  onChange={handleGovIdChange}
+                  className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 text-green-600 hover:text-green-800 font-bold text-xl"
+                  onClick={() =>
+                    document
+                      .querySelector<HTMLInputElement>('input[name="govId"]')
+                      ?.click()
+                  }
+                >
+                  +
+                </button>
+              </div>
+              {typeof formik.errors.govId === "string" && formik.touched.govId && (
+                <div className="text-red-500 text-sm mt-1">{formik.errors.govId}</div>
+              )}
+              <div className="flex flex-wrap gap-2 mt-3">
+                {formik.values.govId.map((file, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full shadow"
+                  >
+                    <span className="text-sm font-medium">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveGovId(index)}
+                      className="text-red-500 hover:text-red-700 text-xs"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bio */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Bio</label>
+              <textarea
+                name="bio"
+                rows={4}
+                onBlur={formik.handleBlur}
+                value={formik.values.bio}
+                onChange={formik.handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                placeholder="Tell us about yourself..."
+              />
+              {formik.errors.bio && formik.touched.bio && (
+                <div className="text-red-500 text-sm mt-1">{formik.errors.bio}</div>
+              )}
+            </div>
+
+            {/* Availability */}
+            <div onBlur={() => formik.setFieldTouched("availableDates", true)} tabIndex={0}>
+              <h3 className="text-sm font-medium mb-3">Availability</h3>
+              <Calendar
+                onClickDay={(date) => {
+                  handleDateClick(date);
+                  formik.setFieldTouched("availableDates", true);
+                }}
+                value={null}
+                tileDisabled={({ date, view }) => {
+                  if (view === "month") {
+                    const today = new Date();
+                    const todayMidnight = new Date(today.setHours(0, 0, 0, 0));
+                    if (date.getTime() < todayMidnight.getTime()) {
+                      return true;
+                    }
+                  }
+                  return false;
+                }}
+                tileClassName={({ date }) => {
+                  const isSelected = selectedDates.some(
+                    (d) => d.toDateString() === date.toDateString()
+                  );
+                  return isSelected ? "selected-date" : "";
+                }}
+                className="custom-calendar w-full"
+              />
+              {formik.errors.availableDates && formik.touched.availableDates && (
+                <div className="text-red-500 text-sm mt-2">{formik.errors.availableDates}</div>
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Services Offered */}
             <div>
-              <label className="block text-sm mb-2">Age</label>
+              <h3 className="text-sm font-medium mb-3">Services Offered</h3>
+              <div className="space-y-3">
+                {service.map((service: IServiceOption) => (
+                  <label key={service.id} className="flex items-center gap-3 relative group cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formik.values.selectedServices.includes(service.id)}
+                      onChange={() => handleCheckbox("selectedServices", service.id)}
+                      onBlur={formik.handleBlur}
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className="text-sm">{service.name}</span>
+                    <span className="absolute left-full ml-2 bg-green-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity">
+                      ₹{service.price}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {formik.errors.selectedServices && formik.touched.selectedServices && (
+                <div className="text-red-500 text-sm mt-2">{formik.errors.selectedServices}</div>
+              )}
+            </div>
+
+            {/* Travel Radius */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Maximum Travel Distance (km)
+              </label>
               <input
                 type="number"
-                name="age"
-                min="18"
+                name="radius"
+                min="1"
+                max="100"
+                placeholder="e.g., 15"
+                value={formik.values.radius}
                 onBlur={formik.handleBlur}
-                value={formik.values.age}
                 onChange={formik.handleChange}
-                className="w-full p-3 border rounded-lg"
+                className="w-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
-              {formik.errors.age && formik.touched.age ? (
-                <div className="text-red-500 text-sm">{formik.errors.age}</div>
-              ) : null}
+              <p className="text-xs text-gray-500 mt-2">
+                You will only receive work within this distance from your location.
+              </p>
+              {formik.errors.radius && formik.touched.radius && (
+                <div className="text-red-500 text-sm mt-1">{formik.errors.radius}</div>
+              )}
             </div>
-            <div>
-              <label className="block text-sm mb-2">Gender</label>
-              <select
-                name="gender"
-                value={formik.values.gender}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                className="w-full p-3 border rounded-lg"
-              >
-                <option value="">Select</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-              {formik.errors.gender && formik.touched.gender ? (
-                <div className="text-red-500 text-sm">{formik.errors.gender}</div>
-              ) : null}
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-sm mb-2">Upload Government ID (Front and Back Images Required)</label>
-            <div className="relative flex items-center">
-              <input
-                type="file"
-                name="govId"
-                multiple
-                onBlur={formik.handleBlur}
-                onChange={handleGovIdChange}
-                className="w-full p-3 pr-10 border rounded-lg focus:ring-2 focus:ring-green-500"
-              />
+            {/* Working Hours */}
+            <div>
+              <h3 className="text-sm font-medium mb-3">Working Hours</h3>
+              <div className="space-y-3">
+                {workingHours.map((hour) => (
+                  <label key={hour.id} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formik.values.workingHours.includes(hour.id)}
+                      onChange={() => handleCheckbox("workingHours", hour.id)}
+                      onBlur={formik.handleBlur}
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className="text-sm">{hour.label}</span>
+                  </label>
+                ))}
+              </div>
+              {formik.errors.workingHours && formik.touched.workingHours && (
+                <div className="text-red-500 text-sm mt-2">{formik.errors.workingHours}</div>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
               <button
-                type="button"
-                className="absolute right-3 text-green-600 hover:text-green-800"
-                onClick={() => document.querySelector<HTMLInputElement>('input[name="govId"]')?.click()}
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-green-800 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
               >
-                +
+                {isLoading ? "Submitting..." : "Submit"}
               </button>
             </div>
-
-            {typeof formik.errors.govId === "string" && formik.touched.govId ? (
-              <div className="text-red-500 text-sm mt-1">{formik.errors.govId}</div>
-            ) : null}
-
-            <div className="flex flex-wrap gap-2 mt-3">
-              {formik.values.govId.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full shadow"
-                >
-                  <span className="text-sm font-medium">{file.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveGovId(index)}
-                    className="text-red-500 hover:text-red-700 text-xs"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))}
-            </div>
           </div>
-
-
-          <div>
-            <label className="block text-lg mb-3">Bio</label>
-            <textarea
-              name="bio"
-              rows={3}
-              onBlur={formik.handleBlur}
-              value={formik.values.bio}
-              onChange={formik.handleChange}
-              className="w-full p-3 border-b-2 border-gray-300 focus:border-green-500"
-            />
-            {formik.errors.bio && formik.touched.bio ? (
-              <div className="text-red-500 text-sm">{formik.errors.bio}</div>
-            ) : null}
-          </div>
-
-          <div
-            onBlur={() => formik.setFieldTouched("availableDates", true)}
-            tabIndex={0}
-          >
-            <h3 className="text-lg font-semibold mb-3">Availability</h3>
-            <Calendar
-              onClickDay={(date) => {
-                handleDateClick(date);
-                formik.setFieldTouched("availableDates", true);
-              }}
-              value={null}
-              tileDisabled={({ date, view }) => {
-                if (view === "month") {
-                  const today = new Date();
-                  const todayMidnight = new Date(today.setHours(0, 0, 0, 0));
-
-                  if (date.getTime() < todayMidnight.getTime()) {
-                    return true;
-                  }
-                }
-                return false;
-              }}
-
-              tileClassName={({ date }) => {
-                const isSelected = selectedDates.some(
-                  (d) => d.toDateString() === date.toDateString()
-                );
-                return isSelected ? "selected-date" : "";
-              }}
-              className="custom-calendar"
-            />
-            {formik.errors.availableDates && formik.touched.availableDates && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.availableDates}
-              </div>
-            )}
-          </div>
-
-
-        </div>
-
-        <div className="space-y-6 pl-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Services Offered</h3>
-            <div className="space-y-2">
-              {service.map((service: IServiceOption) => (
-                <label
-                  key={service.id}
-                  className="flex items-center gap-3 relative group"
-                >
-                  <input
-                    type="checkbox"
-                    checked={formik.values.selectedServices.includes(service.id)}
-                    onChange={() => handleCheckbox("selectedServices", service.id)}
-                    onBlur={formik.handleBlur}
-                    className="w-4 h-4"
-                  />
-                  <span>{service.name}</span>
-                  <span className="absolute left-40 bg-green-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100">
-                    ₹{service.price}
-                  </span>
-                </label>
-              ))}
-
-            </div>
-            {formik.errors.selectedServices && formik.touched.selectedServices ? (
-              <div className="text-red-500 text-sm">
-                {formik.errors.selectedServices}
-              </div>
-            ) : null}
-          </div>
-
-          <div>
-            <label className="block text-sm mb-2">
-              Enter the maximum distance (in km) you’re willing to travel for work
-            </label>
-            <input
-              type="number"
-              name="radius"
-              min="1"
-              max="100"
-              placeholder="e.g., 15"
-              value={formik.values.radius}
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              className="w-28 p-2 border rounded focus:ring-2 focus:ring-green-500"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              You will only receive work within this distance from your location.
-            </p>
-          </div>
-
-
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Working Hours</h3>
-            {workingHours.map((hour) => (
-              <label key={hour.id} className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={formik.values.workingHours.includes(hour.id)}
-                  onChange={() => handleCheckbox("workingHours", hour.id)}
-                  onBlur={formik.handleBlur}
-                  className="w-4 h-4"
-                />
-                <span>{hour.label}</span>
-              </label>
-            ))}
-            {formik.errors.workingHours && formik.touched.workingHours ? (
-              <div className="text-red-500 text-sm">
-                {formik.errors.workingHours}
-              </div>
-            ) : null}
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Job Types</h3>
-            {jobTypes.map((type) => (
-              <label key={type.id} className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={formik.values.jobTypes.includes(type.id)}
-                  onChange={() => handleCheckbox("jobTypes", type.id)}
-                  onBlur={formik.handleBlur}
-                  className="w-4 h-4"
-                />
-                <span>{type.label}</span>
-              </label>
-            ))}
-            {formik.errors.jobTypes && formik.touched.jobTypes ? (
-              <div className="text-red-500 text-sm">{formik.errors.jobTypes}</div>
-            ) : null}
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="bg-green-800 text-white px-6 py-3 rounded-lg hover:bg-green-700"
-            >
-              {isLoding ? `Submiting....` : `Submit`}
-            </button>
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
+
 }

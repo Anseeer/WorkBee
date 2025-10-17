@@ -176,7 +176,7 @@ export default function MessageSection({ chats, me }: Props) {
         endCall();
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, me, selectedUser, isCall]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
@@ -256,6 +256,7 @@ export default function MessageSection({ chats, me }: Props) {
           <div className="flex flex-col gap-3">
             {filteredChats?.map((chat) => {
               const otherParticipant = chat.participants.find((p) => p._id !== me);
+              console.log("Other :", otherParticipant)
               if (!otherParticipant) return null;
               const unreadCount = chat.unreadCounts?.[me] || 0;
               return (
