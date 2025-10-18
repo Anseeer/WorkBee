@@ -359,4 +359,18 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         return !!result;
     }
 
+    async reApprovalRequest(workerId: string): Promise<boolean> {
+        if (!workerId) {
+            throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+        }
+
+        const result = await this.model.findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(workerId) },
+            { $set: { status: "Re-approval" } },
+            { new: true }
+        );
+
+        return !!result;
+    }
+
 }

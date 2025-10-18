@@ -185,3 +185,8 @@ export const activateSubscriptionPlan = async (workerId: string, planId: string)
   );
   return response.data.data;
 };
+
+export const reApplyWorker = async (workerId: string) => {
+  const response = await axios.get(`${API_ROUTES.WORKER_SERVICE.REAPPROVal}?workerId=${workerId}`);
+  return response.data.data;
+};

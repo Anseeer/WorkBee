@@ -72,7 +72,7 @@ const WorkerApprovalComponent: React.FC = () => {
 
     const handleReject = async (workerId: string) => {
         await rejectedWorker(workerId)
-        toast.success("Rejected")
+        toast.success("Rejected");
         setRejected(true)
     };
 
@@ -136,6 +136,11 @@ const WorkerApprovalComponent: React.FC = () => {
                                             ) : request.status === "Rejected" ? (
                                                 <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-red-100 text-red-800">
                                                     <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                                                    {request.status}
+                                                </div>
+                                            ) : request.status === "Re-approval" ? (
+                                                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                                                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                                                     {request.status}
                                                 </div>
                                             ) : null}

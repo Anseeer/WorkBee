@@ -37,4 +37,5 @@ export interface IWorkerService {
     getEarnings(filter: string, workerId: string): Promise<any[] | undefined>
     rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }>
     updateCompletedWorks(workerId: string): Promise<void>;
+    reApprovalRequest(workerId: string): Promise<void>;
 }

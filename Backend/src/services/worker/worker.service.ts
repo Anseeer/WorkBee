@@ -450,4 +450,17 @@ export class WorkerService implements IWorkerService {
         }
     }
 
+    async reApprovalRequest(workerId: string): Promise<void> {
+        try {
+            if (!workerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID)
+            }
+            await this._workerRepository.reApprovalRequest(workerId);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.error('Error in reApprovalRequest:', errMsg);
+            throw new Error(`Failed to reApprovalRequest: ${errMsg}`);
+        }
+    }
+
 }

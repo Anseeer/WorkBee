@@ -113,7 +113,7 @@ const CategorySection: React.FC = () => {
 
                 <div
                     ref={scrollRef}
-                    className="flex flex-nowrap overflow-x-auto w-full gap-6 sm:gap-10 justify-start mb-2 px-4 sm:px-8 scrollbar-hide"
+                    className="flex flex-nowrap overflow-x-auto w-full gap-6 sm:gap-10 justify-center mb-2 px-4 sm:px-8 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none",
                         msOverflowStyle: "none",

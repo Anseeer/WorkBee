@@ -27,4 +27,5 @@ export interface IWorkerRepository {
     updateCompletedWorks(workerId: string): Promise<void>;
     setSubscriptionPlan(workerId: string, planData: Partial<ISubscription>): Promise<IWorker>;
     setPlanExpired(workerId: string): Promise<boolean>;
+    reApprovalRequest(workerId: string): Promise<boolean>;
 }

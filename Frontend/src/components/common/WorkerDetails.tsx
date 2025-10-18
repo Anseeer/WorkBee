@@ -48,13 +48,10 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     const { selectedDetails } = useWorkerDetails();
     const worker = selectedDetails?.worker;
     const availability = selectedDetails?.availability;
-    console.log("Worker :", worker)
-    console.log("Availability :", availability)
 
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [services, setServices] = useState<IService[]>([]);
     const dispatch = useAppDispatch();
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -125,9 +122,10 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                             <div>
                                 <div className="flex items-center space-x-3">
                                     <h1 className="text-xl font-bold text-gray-900">{worker.name}</h1>
+
                                     <span
                                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-        ${worker.status === "Approved"
+      ${worker.status === "Approved"
                                                 ? "bg-green-100 text-green-800"
                                                 : worker.status === "Rejected"
                                                     ? "bg-red-100 text-red-800"
@@ -138,9 +136,12 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                             ? "Verified"
                                             : worker.status === "Rejected"
                                                 ? "Rejected"
+                                            : worker.status === "Re-approval"
+                                                ? "Requested to re-approval"
                                                 : "Pending Approval"}
                                     </span>
                                 </div>
+
                                 <div className="flex items-center space-x-2">
                                     <span className="text-xs text-gray-600">Rating:</span>
                                     <StarRatingDisplay rating={worker.ratings.average || 0} />

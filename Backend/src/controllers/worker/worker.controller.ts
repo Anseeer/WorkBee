@@ -357,5 +357,23 @@ export class WorkerController implements IWorkerController {
 
         }
     }
+
+    reApprovalRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const workerId = req.query.workerId;
+
+            if (!workerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+
+            await this._workerService.reApprovalRequest(workerId as string);
+            const response = new successResponse(StatusCode.OK, WORKER_MESSAGE.UPDATE_WORKER_SUCCESSFULLY, {});
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.UPDATE_WORKER_FAILD, errMsg));
+        }
+    }
 }
 

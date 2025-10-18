@@ -17,6 +17,7 @@ import type { IWallet } from "../../types/IWallet";
 import { SubscriptionPlans } from "../../components/worker/Subscription";
 import AddMoneyModal from "../../components/user/AddMoneyModal";
 import PayoutModal from "../../components/common/PayoutForm";
+import ReApplyModal from "../../components/worker/ReApprovalComponent";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -24,6 +25,7 @@ const Dashboard = () => {
     const [isEdit, setIsEdit] = useState(false);
     const [addMoneyModal, setAddMoneyModal] = useState(false);
     const [payoutMoneyModal, setPayoutMoneyModal] = useState(false);
+    const [reApplyModal, setReApplyModal] = useState(false);
     const [reload, setReloadWallet] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
@@ -75,6 +77,16 @@ const Dashboard = () => {
         setPayoutMoneyModal(false);
     }
 
+    const handleCloseReApplyModal = () => {
+        setReloadWallet((prev) => !prev);
+        setReApplyModal(false);
+    }
+
+    const handleReApproval = () => {
+        setUserId(workerData.worker?._id as string)
+        setReApplyModal(true)
+    }
+
     return (
         <div className="w-full h-screen flex">
             {workerData.worker?.isAccountBuilt ? (
@@ -88,12 +100,22 @@ const Dashboard = () => {
 
                             <div className="flex gap-2">
                                 {activeTab === "account" && (
-                                    <button
-                                        className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
-                                        onClick={handleEdit}
-                                    >
-                                        Edit
-                                    </button>
+                                    <>
+                                        {workerData.worker.status === "Rejected" && (
+                                            <button
+                                                onClick={() => handleReApproval()}
+                                                className="text-sm border-black rounded px-2 py-1 bg-red-100 cursor-pointer text-red-900 rounded-md hover:bg-blue-200 transition"
+                                            >
+                                                Re-Approval
+                                            </button>
+                                        )}
+                                        <button
+                                            className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
+                                            onClick={handleEdit}
+                                        >
+                                            Edit
+                                        </button>
+                                    </>
                                 )}
 
                                 {activeTab === "wallet" && (
@@ -119,18 +141,20 @@ const Dashboard = () => {
 
                         <div className="flex-1 min-h-0 overflow-auto">
                             {activeTab === "dashboard" ? (
-                                <WorkerDashboard
-                                    worker={workerData.worker}
-                                    wallet={workerData.wallet as IWallet}
-                                    availability={workerData.availability as IAvailability}
-                                />
+                                <>
+                                    {workerData.worker?.isVerified && workerData.worker.status != "Rejected" && workerData.worker.subscription == null ? (
+                                        <SubscriptionPlans />
+                                    ) : (
+                                        <WorkerDashboard
+                                            worker={workerData.worker}
+                                            wallet={workerData.wallet as IWallet}
+                                            availability={workerData.availability as IAvailability}
+                                        />
+                                    )}
+                                </>
                             ) : activeTab === "account" ? (
                                 <>
-                                    {workerData.worker?.subscription !== null ? (
-                                        <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
-                                    ) : (
-                                        <SubscriptionPlans />
-                                    )}
+                                    <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
                                 </>
                             ) : activeTab === "history" ? (
                                 <WorkHistory />
@@ -161,6 +185,10 @@ const Dashboard = () => {
                                     closeModal={closePayoutMoneyModal}
                                     workerID={userId}
                                 />
+                            )}
+
+                            {reApplyModal && (
+                                <ReApplyModal close={handleCloseReApplyModal} workerID={userId as string} handleEdit={handleEdit} />
                             )}
                         </div>
                     </div>
