@@ -60,23 +60,24 @@ export default function WorkerSidebar({ handleTab }: prop) {
   return (
     <div
       ref={sidebarRef}
-      className={`bg-[#10451D] text-white h-full flex flex-col justify-between rounded-r-2xl shadow-lg
+      // REPLACED 'vh-full' with 'h-full' to correctly inherit parent's height
+      // Added 'flex-shrink-0' to prevent the sidebar from resizing when the main content needs space
+      className={`bg-[#10451D] text-white h-full flex flex-col justify-between rounded-r-2xl shadow-lg flex-shrink-0
     transition-all duration-300
     ${isExpanded ? 'w-56' : 'w-16'} md:w-[225px]`}
     >
       {/* Top Section: Logo + Navigation */}
-      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y">        
-        {!isExpanded && (
-          <button
-            className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"
-            onClick={(e) => {
-              e.stopPropagation();  
-              setIsExpanded(true);
-            }}
-          >
-            <FaArrowRight />
-          </button>
-        )}
+      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y-auto">        {!isExpanded && (
+        <button
+          className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(true);
+          }}
+        >
+          <FaArrowRight />
+        </button>
+      )}
 
         <h1 className={`merienda-text text-3xl text-white mb-5 ${isExpanded ? 'block' : 'hidden'} md:block`}>
           WorkBee
@@ -94,7 +95,7 @@ export default function WorkerSidebar({ handleTab }: prop) {
           <div
             key={tab}
             onClick={() => handleClick(tab)}
-            className={`flex items-center space-x-3 p-3 rounded-md cursor-pointer mt-2 transition duration-150
+            className={`flex items-center space-x-3 py-3 px-2 rounded-md cursor-pointer mt-2 transition duration-150
               ${activeTab === tab
                 ? 'bg-gray-500 bg-opacity-70 w-full text-white'
                 : 'text-gray-300 hover:bg-gray-500 w-full hover:bg-opacity-50'}
@@ -112,7 +113,7 @@ export default function WorkerSidebar({ handleTab }: prop) {
       <div className="p-4 border-t border-gray-600">
         <div
           onClick={handleLogout}
-          className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-200 transition duration-150 cursor-pointer w-full"
+          className="flex items-center space-x-3 p-3  rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-200 transition duration-150 cursor-pointer w-full"
         >
           <img src={logoutIcon} alt="Logout" className="w-5 h-5 flex-shrink-0" />
           <span

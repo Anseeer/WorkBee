@@ -60,7 +60,7 @@ const WorkHistory = () => {
             {isModal ? (
                 <WorkDetailsModal workId={workId} closeModal={onClsoe} />
             ) : (
-                <div className="min-h-screen ">
+                <div className="h-screen ">
                     <DataTable
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
@@ -72,7 +72,7 @@ const WorkHistory = () => {
                         itemsPerPage={6}
                         columns={columns}
                         searchKeys={['userName', 'service', 'description', 'wage', 'workType', 'size', 'location', 'sheduleDate', 'sheduleTime', 'status']}
-                        advancedFilterKeys={['service', 'location', 'sheduleDate','sheduleTime','wage', 'status']}
+                        advancedFilterKeys={['service', 'location', 'sheduleDate', 'sheduleTime', 'wage', 'status']}
                     />
                 </div>
             )}

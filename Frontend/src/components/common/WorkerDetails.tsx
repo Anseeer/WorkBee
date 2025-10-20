@@ -96,7 +96,7 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     };
 
     return (
-        <div className="h-[560px] bg-gray-50 overflow-hidden">
+        <div className="h-full bg-gray-50 overflow-hidden">
             <div className="bg-white border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
@@ -136,9 +136,9 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                             ? "Verified"
                                             : worker.status === "Rejected"
                                                 ? "Rejected"
-                                            : worker.status === "Re-approval"
-                                                ? "Requested to re-approval"
-                                                : "Pending Approval"}
+                                                : worker.status === "Re-approval"
+                                                    ? "Requested to re-approval"
+                                                    : "Pending Approval"}
                                     </span>
                                 </div>
 
@@ -168,7 +168,7 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                 </div>
             </div>
 
-            <div className="h-100 overflow-y-auto">
+            <div className="h-full overflow-y-auto">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

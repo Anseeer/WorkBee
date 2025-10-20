@@ -36,19 +36,18 @@ const HeroSection = () => {
     };
 
     const HandleSelectedService = (serv: IService) => {
-        localStorage.removeItem("serviceId")
-        localStorage.removeItem("categoryId")
+        localStorage.removeItem("serviceId");
+        localStorage.removeItem("categoryId");
         localStorage.setItem("serviceId", serv._id as string);
         localStorage.setItem("categoryId", serv.category);
-        navigate('/work-details');
-    }
+        navigate("/work-details");
+    };
 
     return (
-        <section className="bg-white items-center relative">
+        <section className="bg-white items-center relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 grid py-5 grid-cols-1 md:grid-cols-2 gap-10 items-center">
-
                 {/* Left Section */}
-                <div className="space-y-6">
+                <div className="space-y-6 animate-fadeInUp">
                     <h1 className="text-5xl font-bold text-black-900 leading-snug">
                         Welcome To WorkBee
                     </h1>
@@ -60,29 +59,33 @@ const HeroSection = () => {
                     </p>
 
                     {/* Search Bar */}
-                    <div className="relative w-full max-w-md">
-                        <div className="flex rounded-full border border-green-900 overflow-hidden shadow-lg">
+                    {/* Search Bar */}
+                    <div className="relative w-full max-w-md animate-fadeInUp delay-[0.3s]">
+                        <div className="flex rounded-full border border-green-900 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl focus-within:shadow-xl">
                             <input
                                 type="text"
-                                placeholder="What do you need help with ?"
+                                placeholder="What do you need help with?"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full px-5 py-3 text-green-900 placeholder-gray-500 focus:outline-none"
+                                className="w-full px-5 py-3 text-green-900 placeholder-gray-500 focus:outline-none bg-white"
                             />
-                            <button className="bg-green-900 text-white px-4">
+                            <button
+                                className="bg-green-900 text-white px-4 flex items-center justify-center transition-transform duration-300 hover:scale-105"
+                                aria-label="Search"
+                            >
                                 <Search size={20} />
                             </button>
                         </div>
 
                         {/* Service Buttons (Grid) */}
                         {searchTerm && services.length > 0 && (
-                            <div className="absolute mt-3 w-md  p-4 z-10">
+                            <div className="absolute mt-3 w-md p-4 z-10 animate-fadeInUp delay-[0.4s]">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {services?.slice(0, 6).map((service) => (
                                         <button
                                             key={service.id}
                                             onClick={() => HandleSelectedService(service)}
-                                            className="bg-[#F5FAF5] text-black text-sm px-3 py-2 rounded-full font-medium shadow hover:bg-green-100 transition"
+                                            className="bg-[#F5FAF5] text-black text-sm px-3 py-2 rounded-full font-medium shadow hover:bg-green-100 transition-all duration-300 hover:scale-105"
                                         >
                                             {service.name}
                                         </button>
@@ -93,22 +96,22 @@ const HeroSection = () => {
 
                         {/* Not Found */}
                         {searchTerm && !isLoading && services.length === 0 && (
-                            <div className="absolute mt-3 w-full bg-white border border-gray-200 rounded-lg shadow-md p-3 text-gray-500 text-sm">
+                            <div className="absolute mt-3 w-full bg-white border border-gray-200 rounded-lg shadow-md p-3 text-gray-500 text-sm animate-fadeInUp delay-[0.4s]">
                                 No services found
                             </div>
                         )}
                     </div>
+
                 </div>
 
-                {/* Right Section */}
-                <div className="w-full p-5">
+                {/* Right Section (Image with animation) */}
+                <div className="w-full p-5 flex justify-center md:justify-end">
                     <img
                         src={HeroImg}
                         alt="Skilled worker"
-                        className="w-full h-[500px] object-cover rounded-sm shadow-lg"
+                        className="w-full h-[500px] object-cover rounded-sm shadow-lg animate-slideInRight"
                     />
                 </div>
-               
             </div>
         </section>
     );

@@ -237,9 +237,9 @@ export default function MessageSection({ chats, me }: Props) {
   };
 
   return (
-    <div className="border-2 border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row h-screen lg:h-[calc(100vh-4rem)] gap-0 md:gap-4">
+    <div className="border-2 border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row min-h-screen md:h-[calc(100vh-4rem)] gap-0 md:gap-4">
       <audio id="remote-audio" autoPlay playsInline />
-      <div className={`w-full lg:w-1/3 md:w-1/3 ${selectedUser ? 'hidden md:block' : 'block'} h-[95vh] md:h-full`}>
+      <div className={`w-full lg:w-1/3 md:w-1/3 ${selectedUser ? 'hidden md:block' : 'block'} h-full`}>
         <div className="bg-[#65A276] w-full h-full overflow-y-auto rounded-r rounded-xl p-4 flex flex-col gap-4">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -296,133 +296,132 @@ export default function MessageSection({ chats, me }: Props) {
           )}
         </div>
       </div>
-      <div className={`w-full lg:w-2/3 md:w-2/3 bg-white ${selectedUser ? 'block' : 'hidden md:block'} h-[95vh] md:h-full`}>
-        {isCall ? (
-          <CallComponent onCallEnd={onCallEnd} user={user} isOutgoing={isOutgoing} me={me} />
-        ) : incomingCall ? (
-          <div className={`fixed inset-0 flex items-start justify-center z-50`}>
-            <div className="w-full md:w-2/3 lg:w-2/3 bg-white p-6 rounded-lg shadow-lg text-center mx-4">
-              <h2 className="text-xl font-bold mb-4">
-                Incoming Call from {selectedUser?.name || 'User'}
-              </h2>
-              <div className="flex justify-center gap-4">
-                <button
-                  className="bg-green-400 rounded-full border border-green-500 text-white px-4 py-2 rounded"
-                  onClick={handleAcceptCall}
-                >
-                  Accept
-                </button>
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={handleRejectCall}
-                >
-                  Reject
-                </button>
-              </div>
+      <div className={`w-full lg:w-2/3 md:w-2/3 bg-white ${selectedUser ? 'block' : 'hidden md:block'} h-full`}>        {isCall ? (
+        <CallComponent onCallEnd={onCallEnd} user={user} isOutgoing={isOutgoing} me={me} />
+      ) : incomingCall ? (
+        <div className={`fixed inset-0 flex items-start justify-center z-50`}>
+          <div className="w-full md:w-2/3 lg:w-2/3 bg-white p-6 rounded-lg shadow-lg text-center mx-4">
+            <h2 className="text-xl font-bold mb-4">
+              Incoming Call from {selectedUser?.name || 'User'}
+            </h2>
+            <div className="flex justify-center gap-4">
+              <button
+                className="bg-green-400 rounded-full border border-green-500 text-white px-4 py-2 rounded"
+                onClick={handleAcceptCall}
+              >
+                Accept
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={handleRejectCall}
+              >
+                Reject
+              </button>
             </div>
           </div>
-        ) : selectedUser ? (
-          <div className="flex flex-col h-full">
-            <div className="bg-[#65A276] px-4 sm:px-6 py-3 sm:py-4 flex rounded-xl rounded-b-none items-center justify-between">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setSelectedUser(null)}
-                  className="p-2 hover:bg-gray-300 rounded-lg transition-colors md:hidden"
-                >
-                  <ArrowLeft className="h-5 w-5 text-black" />
-                </button>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black rounded-full flex items-center justify-center">
-                  <img
-                    src={selectedUser?.profileImage as string}
-                    className="w-10 h-10 sm:w-12 sm:h-12 bg-black rounded-full"
-                    alt="Profile image"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <h2 className="text-black font-semibold text-base sm:text-lg">{selectedUser?.name}</h2>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => {
-                    console.log('MessageSection: Initiating call to', selectedUser?._id);
-                    setIsOutgoing(true);
-                    setIsCall(true);
-                  }}
-                  className="p-2 hover:bg-gray-300 rounded-lg transition-colors"
-                >
-                  <Phone className="h-5 w-5 text-black" />
-                </button>
-              </div>
-            </div>
-            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
-              {chatMessages.map((msg, i) => {
-                const time = new Date(msg.createdAt as string).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                });
-                return (
-                  <div
-                    key={msg._id || i}
-                    className={`flex ${msg.senderId === me ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`relative max-w-[70%] sm:max-w-xs md:max-w-md lg:max-w-lg px-4 sm:px-8 py-1 pb-4 rounded-2xl ${msg.senderId === me ? 'bg-[#65A276] text-black' : 'bg-[#65A286] text-black'}`}
-                    >
-                      <p className="text-sm sm:text-md">{msg.content}</p>
-                      <span
-                        className={`absolute bottom-1 text-[10px] text-gray-700 ${msg.senderId === me ? 'right-2' : 'left-2'}`}
-                      >
-                        {time}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-              <div ref={bottomRef} />
-            </div>
-            <div className="bg-[#65A276] px-4 sm:px-6 py-3 rounded-xl rounded-t-none">
-              <form onSubmit={handleSendMessage} className="flex items-center gap-4">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Message"
-                  className="flex-1 bg-[#65A276] border-none outline-none text-black placeholder-black text-base sm:text-lg py-2"
+        </div>
+      ) : selectedUser ? (
+        <div className="flex flex-col h-full">
+          <div className="bg-[#65A276] px-4 sm:px-6 py-3 sm:py-4 flex rounded-xl rounded-b-none items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="p-2 hover:bg-gray-300 rounded-lg transition-colors md:hidden"
+              >
+                <ArrowLeft className="h-5 w-5 text-black" />
+              </button>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black rounded-full flex items-center justify-center">
+                <img
+                  src={selectedUser?.profileImage as string}
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-black rounded-full"
+                  alt="Profile image"
                 />
-                <button
-                  type="submit"
-                  className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
-                  disabled={!message.trim()}
-                >
-                  <Send className="h-5 w-5 text-black" />
-                </button>
-              </form>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-full relative overflow-hidden">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
-            >
-              <source src="/bee.mp4" type="video/mp4" />
-            </video>
-            <div className="absolute inset-0"></div>
-            <div className="relative text-center space-y-4 text-white px-4">
-              <div className="flex-shrink-0">
-                <h1 className="merienda-text text-5xl sm:text-6xl md:text-7xl text-green-900">WorkBee</h1>
               </div>
-              <p className="text-black text-base sm:text-lg md:text-lg text-semibold">
-                Select a user from the sidebar to start your conversation.
-              </p>
+              <div className="flex flex-col">
+                <h2 className="text-black font-semibold text-base sm:text-lg">{selectedUser?.name}</h2>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  console.log('MessageSection: Initiating call to', selectedUser?._id);
+                  setIsOutgoing(true);
+                  setIsCall(true);
+                }}
+                className="p-2 hover:bg-gray-300 rounded-lg transition-colors"
+              >
+                <Phone className="h-5 w-5 text-black" />
+              </button>
             </div>
           </div>
-        )}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
+            {chatMessages.map((msg, i) => {
+              const time = new Date(msg.createdAt as string).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+              });
+              return (
+                <div
+                  key={msg._id || i}
+                  className={`flex ${msg.senderId === me ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`relative max-w-[70%] sm:max-w-xs md:max-w-md lg:max-w-lg px-4 sm:px-8 py-1 pb-4 rounded-2xl ${msg.senderId === me ? 'bg-[#65A276] text-black' : 'bg-[#65A286] text-black'}`}
+                  >
+                    <p className="text-sm sm:text-md">{msg.content}</p>
+                    <span
+                      className={`absolute bottom-1 text-[10px] text-gray-700 ${msg.senderId === me ? 'right-2' : 'left-2'}`}
+                    >
+                      {time}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={bottomRef} />
+          </div>
+          <div className="bg-[#65A276] px-4 sm:px-6 py-3 rounded-xl rounded-t-none">
+            <form onSubmit={handleSendMessage} className="flex items-center gap-4">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Message"
+                className="flex-1 bg-[#65A276] border-none outline-none text-black placeholder-black text-base sm:text-lg py-2"
+              />
+              <button
+                type="submit"
+                className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                disabled={!message.trim()}
+              >
+                <Send className="h-5 w-5 text-black" />
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center h-full relative overflow-hidden">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute pb-20 inset-0 w-full h-full object-fit opacity-30"
+          >
+            <source src="/bee.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0"></div>
+          <div className="relative text-center space-y-4 text-white px-4">
+            <div className="flex-shrink-0">
+              <h1 className="merienda-text text-5xl sm:text-6xl md:text-7xl text-green-900">WorkBee</h1>
+            </div>
+            <p className="text-black text-base sm:text-lg md:text-lg text-semibold">
+              Select a user from the sidebar to start your conversation.
+            </p>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
