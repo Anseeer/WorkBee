@@ -118,6 +118,7 @@ export const API_ROUTES = {
     FETCH_SERVICE_BY_ID: "services/By-Id",
     FETCH_CATEGORY_BY_ID: "categories/By-Id",
     FETCH_SERVICE_BY_SEARCH: "services/by-search",
+    FETCH_TOP_SERVICES: "/works/get-top-services",
   },
 
   WORKER_SERVICE: {

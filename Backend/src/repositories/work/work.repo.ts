@@ -5,13 +5,14 @@ import { IWorkRepository } from "./work.repo.interface";
 import Work from "../../model/work/work.model";
 import { WORK_MESSAGE } from "../../constants/messages";
 import { TopThreeResult } from "../../utilities/topThreeTypes";
+import { IServices } from "../../model/service/service.interface";
 
 @injectable()
 export class WorkRepository extends BaseRepository<IWork> implements IWorkRepository {
     constructor() {
         super(Work);
     }
-    
+
     async create(item: Partial<IWork>): Promise<IWork> {
         try {
             const newItem = new this.model(item);
@@ -152,91 +153,149 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
 
 
     async getTopThree(): Promise<TopThreeResult[]> {
-        return await this.model.aggregate([
-            {
-                $facet: {
-                    TopServices: [
-                        { $group: { _id: "$serviceId", count: { $sum: 1 } } },
-                        { $sort: { count: -1 } },
-                        { $limit: 3 },
-                        {
-                            $lookup: {
-                                from: "services",
-                                localField: "_id",
-                                foreignField: "_id",
-                                as: "service"
-                            }
-                        },
-                        { $unwind: "$service" },
-                        {
-                            $project: {
-                                _id: 1,
-                                count: 1,
-                                name: "$service.name"
-                            }
-                        }],
-                    TopCategory: [
-                        { $group: { _id: "$categoryId", count: { $sum: 1 } } },
-                        { $sort: { count: -1 } },
-                        { $limit: 3 },
-                        {
-                            $lookup: {
-                                from: "categories",
-                                localField: "_id",
-                                foreignField: "_id",
-                                as: "category"
-                            }
-                        },
-                        { $unwind: "$category" },
-                        {
-                            $project: {
-                                _id: 1,
-                                count: 1,
-                                name: "$category.name"
-                            }
-                        }],
-                    TopWorker: [
-                        { $group: { _id: "$workerId", count: { $sum: 1 } } },
-                        { $sort: { count: -1 } },
-                        { $limit: 3 },
-                        {
-                            $lookup: {
-                                from: "workers",
-                                localField: "_id",
-                                foreignField: "_id",
-                                as: "workers"
-                            }
-                        },
-                        { $unwind: "$workers" },
-                        {
-                            $project: {
-                                _id: 1,
-                                count: 1,
-                                name: "$workers.name"
-                            }
-                        }],
-                    TopUsers: [
-                        { $group: { _id: "$userId", count: { $sum: 1 } } },
-                        { $sort: { count: -1 } },
-                        { $limit: 3 },
-                        {
-                            $lookup: {
-                                from: "users",
-                                localField: "_id",
-                                foreignField: "_id",
-                                as: "users"
-                            }
-                        },
-                        { $unwind: "$users" },
-                        {
-                            $project: {
-                                _id: 1,
-                                count: 1,
-                                name: "$users.name"
-                            }
-                        }]
-                },
-            }
-        ])
+        try {
+            return await this.model.aggregate([
+                {
+                    $facet: {
+                        TopServices: [
+                            { $group: { _id: "$serviceId", count: { $sum: 1 } } },
+                            { $sort: { count: -1 } },
+                            { $limit: 3 },
+                            {
+                                $lookup: {
+                                    from: "services",
+                                    localField: "_id",
+                                    foreignField: "_id",
+                                    as: "service"
+                                }
+                            },
+                            { $unwind: "$service" },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    count: 1,
+                                    name: "$service.name"
+                                }
+                            }],
+                        TopCategory: [
+                            { $group: { _id: "$categoryId", count: { $sum: 1 } } },
+                            { $sort: { count: -1 } },
+                            { $limit: 3 },
+                            {
+                                $lookup: {
+                                    from: "categories",
+                                    localField: "_id",
+                                    foreignField: "_id",
+                                    as: "category"
+                                }
+                            },
+                            { $unwind: "$category" },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    count: 1,
+                                    name: "$category.name"
+                                }
+                            }],
+                        TopWorker: [
+                            { $group: { _id: "$workerId", count: { $sum: 1 } } },
+                            { $sort: { count: -1 } },
+                            { $limit: 3 },
+                            {
+                                $lookup: {
+                                    from: "workers",
+                                    localField: "_id",
+                                    foreignField: "_id",
+                                    as: "workers"
+                                }
+                            },
+                            { $unwind: "$workers" },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    count: 1,
+                                    name: "$workers.name"
+                                }
+                            }],
+                        TopUsers: [
+                            { $group: { _id: "$userId", count: { $sum: 1 } } },
+                            { $sort: { count: -1 } },
+                            { $limit: 3 },
+                            {
+                                $lookup: {
+                                    from: "users",
+                                    localField: "_id",
+                                    foreignField: "_id",
+                                    as: "users"
+                                }
+                            },
+                            { $unwind: "$users" },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    count: 1,
+                                    name: "$users.name"
+                                }
+                            }]
+                    },
+                }
+            ])
+
+        } catch (error) {
+            console.error("Error in getTopThree:", error);
+            throw new Error("Error in getTopThree");
+        }
     }
+
+    getTopServices = async (limit: number): Promise<IServices[]> => {
+        try {
+            const res = await this.model.aggregate([
+                {
+                    $group: {
+                        _id: "$serviceId",
+                        count: { $sum: 1 }
+                    }
+                },
+                { $sort: { count: -1 } },
+                { $limit: limit },
+                {
+                    $lookup: {
+                        from: "services",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "service"
+                    }
+                },
+                { $unwind: "$service" },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "service.category",
+                        foreignField: "_id",
+                        as: "category"
+                    }
+                },
+                { $unwind: "$category" },
+                {
+                    $project: {
+                        _id: 0,
+                        serviceId: "$_id",
+                        usageCount: "$count",
+                        serviceName: "$service.name",
+                        categoryId: "$service.category",
+                        serviceDescription: "$service.description",
+                        wage: "$service.wage",
+                        categoryName: "$category.name",
+                        categoryIcon: "$category.imageUrl"
+                    }
+                }
+            ]);
+
+            return res ;
+        } catch (error) {
+            console.error("Error in getTopServices:", error);
+            throw new Error("Error in getTopServices");
+        }
+    };
+
 }

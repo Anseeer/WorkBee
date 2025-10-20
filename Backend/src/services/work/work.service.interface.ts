@@ -1,3 +1,4 @@
+import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
 import { IWorkDTO } from "../../mappers/work/work.map.DTO.interface";
 import { IWork } from "../../model/work/work.interface";
 import { TopThreeResult } from "../../utilities/topThreeTypes";
@@ -16,4 +17,5 @@ export interface IWorkService {
     getRequestedWorks(workerId: string): Promise<IWorkDTO[] | undefined>;
     getTopThree(): Promise<TopThreeResult[] | undefined>;
     updatePaymentStatus(workId: string, status: string): Promise<void>;
+    getTopServices(limit: number): Promise<IServiceDTO[]>;
 } 

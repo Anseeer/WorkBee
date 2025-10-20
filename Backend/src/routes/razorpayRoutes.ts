@@ -32,7 +32,7 @@ router.post("/create-order", async (req: Request, res: Response) => {
         const wage = amount - platFromFee;
 
         const options = {
-            amount: wage * 100,
+            amount: amount * 100,
             currency: "INR",
             receipt: `receipt_order_${Date.now()}`
         };

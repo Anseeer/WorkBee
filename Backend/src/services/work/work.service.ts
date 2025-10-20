@@ -23,6 +23,9 @@ import { getIO } from "../../socket/socket";
 import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
 import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
 import { Server } from "socket.io";
+import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
+import { mapServiceToDTO } from "../../mappers/service/service.map.DTO";
+import { IServices } from "../../model/service/service.interface";
 
 
 @injectable()
@@ -447,4 +450,30 @@ export class WorkService implements IWorkService {
             throw new Error(errMsg);
         }
     }
+
+    getTopServices = async (limit: number): Promise<IServiceDTO[]> => {
+        try {
+            const topServices = await this._workRepositoy.getTopServices(limit);
+            console.log("TOP :",topServices)
+
+            const servicesLikeData: Partial<IServices>[] = topServices.map((serv) => ({
+                _id: serv.serviceId?.toString(),
+                categoryName: serv.categoryName as string,
+                categoryIcon: serv.categoryIcon as string,
+                categoryId: serv.categoryId as string,
+                name: serv.serviceName as string,
+                description: serv.serviceDescription || "",
+                wage: serv.wage.toString(),
+                isActive: true,
+            }));
+
+            const serviceDTOs = servicesLikeData.map((serv) => mapServiceToDTO(serv));
+            return serviceDTOs;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.error("Error in getTopServices:", errMsg);
+            throw new Error(errMsg);
+        }
+    };
+
 }

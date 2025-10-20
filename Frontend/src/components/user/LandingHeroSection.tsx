@@ -108,15 +108,7 @@ const HeroSection = () => {
                         className="w-full h-[500px] object-cover rounded-sm shadow-lg"
                     />
                 </div>
-                {/* guide img */}
-                {/* <div className="w-full">
-                <img
-                    sizes="20"
-                    src={GuideImg}
-                    alt="GuideImg"
-                    className="w-[auto]"
-                />
-            </div> */}
+               
             </div>
         </section>
     );

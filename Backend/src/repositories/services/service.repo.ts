@@ -44,7 +44,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
             return service as IServices;
         } catch (error) {
             console.error('Error in findById:', error);
-            throw error; 
+            throw error;
         }
     }
 
@@ -166,5 +166,6 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
             throw new Error('Error in getBySearch');
         }
     };
+
 
 }

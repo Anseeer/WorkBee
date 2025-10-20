@@ -118,14 +118,17 @@ export const cancelWork = async (workId: string, id: string) => {
     await axios.patch(`${API_ROUTES.USER_SERVICE.CANCEL_WORK}?workId=${workId}&id=${id}`);
 };
 
-
 export const fetchChat = async (userId: string) => {
     const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_CHAT}?userId=${userId}`);
     return response.data.data;
 };
 
-
 export const rateWorker = async (workerId: string, rating: number) => {
     const response = await axios.get(`${API_ROUTES.USER_SERVICE.RATE_WORKER}?workerId=${workerId}&rating=${rating}`);
     return response.data.data;
+};
+
+export const fetchTopService = async (limit: number) => {
+    const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_TOP_SERVICES}?limit=${limit}`);
+    return response.data.data.getTopService;
 };

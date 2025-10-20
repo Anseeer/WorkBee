@@ -195,4 +195,17 @@ export class WorkController implements IWorkController {
         }
     }
 
+    getTopService = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            let limit = req.query.limit;
+            const getTopService = await this._workService.getTopServices(Number(limit as string));
+            const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { getTopService });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORK_MESSAGE.WORK_DETAILS_GET_FAILD, errMsg));
+        }
+    }
+
 }

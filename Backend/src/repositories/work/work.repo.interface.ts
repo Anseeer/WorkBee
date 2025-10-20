@@ -1,3 +1,4 @@
+import { IServices } from "../../model/service/service.interface";
 import { IWork } from "../../model/work/work.interface";
 import { TopThreeResult } from "../../utilities/topThreeTypes";
 
@@ -14,4 +15,6 @@ export interface IWorkRepository {
     getRequestedWorks(workerId: string): Promise<IWork[]>;
     getTopThree(): Promise<TopThreeResult[]>;
     updatePaymentStatus(workId: string, status: string): Promise<void>;
+    getTopServices(limit: number): Promise<IServices[]>
+
 }
