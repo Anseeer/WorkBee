@@ -68,11 +68,11 @@ const AddingServiceSection = ({ setAdded }: Props) => {
     });
 
     return (
-        <div className="border mx-8 mt-5 rounded-md border-green-700 p-4 shadow-sm">
+        <div className="border animate-fadeInUp mx-8 mt-5 rounded-md border-green-700 p-4 shadow-sm">
             <h3 className="font-semibold text-green-700 mb-1">Add Services</h3>
             <form onSubmit={formik.handleSubmit} className="flex items-center justify-between px-4">
                 {/* Service Name */}
-                <div className="flex flex-col">
+                <div className="flex animate-fadeInUp flex-col">
                     <div className="flex items-center gap-1">
                         <label className="text-sm w-15">Service</label>
                         <input
@@ -96,7 +96,7 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Wage */}
-                <div className="flex flex-col">
+                <div className=" animate-fadeInUp flex flex-col">
                     <div className="flex items-center gap-2">
                         <label className="text-sm w-15">Wage</label>
                         <input
@@ -120,7 +120,7 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Category Dropdown */}
-                <div className="flex flex-col">
+                <div className="flex animate-fadeInUp flex-col">
                     <div className="flex items-center gap-2">
                         <label className="text-sm w-20">Category</label>
                         <select

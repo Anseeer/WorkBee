@@ -7,20 +7,24 @@ import CategoryAndServicesIcon from "../../assets/category&services.png";
 import subscriptionIcone from "../../assets/subscription-Icon.png";
 import serviceIcon from "../../assets/service-icon.png";
 import revenueIcon from "../../assets/reveneu.png";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "../../services/adminService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { logout } from "../../slice/adminSlice";
 import { toast } from "react-toastify";
 import { API_ROUTES } from "../../constant/api.routes";
+import { FaArrowRight } from "react-icons/fa";
 
-interface props {
+interface AdminSidebarProps {
     handleTab: (tab: string) => void;
 }
 
-export default function AdminSidebar({ handleTab }: props) {
+export default function AdminSidebar({ handleTab }: AdminSidebarProps) {
     const [activeTab, setActiveTab] = useState("dashboard");
+    const [isExpanded, setIsExpanded] = useState(false);
+    const sidebarRef = useRef<HTMLDivElement>(null);
+
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -35,154 +39,96 @@ export default function AdminSidebar({ handleTab }: props) {
     const handleLogout = async () => {
         try {
             await logoutAdmin();
-            dispatch(logout())
-            toast.success("Successfully logout");
+            dispatch(logout());
+            toast.success("Successfully logged out");
             navigate(API_ROUTES.ADMIN.LOGIN, { replace: true });
         } catch (error) {
             console.error("Logout failed:", error);
         }
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+                setIsExpanded(false);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, []);
+
     return (
-        <div className="bg-[#10451D] h-full text-black w-[225px] flex flex-col justify-between rounded-r-2xl shadow-lg">
-            {/* Logo Section */}
-            <div className="p-6">
-                <h1 className="merienda-text justyify-center pb-5 text-3xl text-white">WorkBee</h1>
+        <div
+            ref={sidebarRef}
 
-                {/* Dashboard */}
-                <div
-                    onClick={() => handleClick("dashboard")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "dashboard"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={dashboardIcon} alt="dashboard" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "dashboard" ? "text-black" : "text-gray-400"}`}>
-                        Dashboard
-                    </span>
-                </div>
+            className={`bg-[#10451D] text-white h-full flex flex-col justify-between rounded-r-2xl shadow-lg flex-shrink-0
+    transition-all duration-300 ease-in-out
+   ${isExpanded ? 'w-56 animate-fadeInLeft' : 'w-16 animate-fadeOutLeft'} md:w-[225px]`}
+        >
+            {/* Top Section: Logo + Navigation */}
+            <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+                {!isExpanded && (
+                    <button
+                        className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsExpanded(true);
+                        }}
+                    >
+                        <FaArrowRight />
+                    </button>
+                )}
 
-                {/* Users */}
-                <div
-                    onClick={() => handleClick("users")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "users"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={UsersIcon} alt="Users" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "users" ? "text-black" : "text-gray-400"}`}>
-                        Users
-                    </span>
-                </div>
+                <h1 className={`merienda-text text-3xl text-white animate-fadeIn mb-5 ${isExpanded ? 'block' : 'hidden'} md:block`}>
+                    WorkBee
+                </h1>
 
-                {/* Workers */}
-                <div
-                    onClick={() => handleClick("workers")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "workers"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={WorkersIcon} alt="workers" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "workers" ? "text-black" : "text-gray-400"}`}>
-                        Workers
-                    </span>
-                </div>
-
-                {/* Workers Approval */}
-                <div
-                    onClick={() => handleClick("workerRequest")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "workerRequest"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={WorkersIcon} alt="workerRequest" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "workerRequest" ? "text-black" : "text-gray-400"}`}>
-                        Workers Request
-                    </span>
-                </div>
-
-                {/* Jobs */}
-                <div
-                    onClick={() => handleClick("jobs")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "jobs"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={JobsIcon} alt="jobs" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "jobs" ? "text-black" : "text-gray-400"}`}>
-                        Jobs
-                    </span>
-                </div>
-
-                {/* Category*/}
-                <div
-                    onClick={() => handleClick("categories")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                    ${activeTab === "categories"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={CategoryAndServicesIcon} alt="categories" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "categories" ? "text-black" : "text-gray-400"}`}>
-                        Categories
-                    </span>
-                </div>
-                {/* service */}
-                <div
-                    onClick={() => handleClick("services")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                        ${activeTab === "services"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={serviceIcon} alt="services" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "services" ? "text-black" : "text-gray-400"}`}>
-                        Services
-                    </span>
-                </div>
-
-                {/* subscription managment */}
-                <div
-                    onClick={() => handleClick("subscription")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                        ${activeTab === "subscription"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={subscriptionIcone} alt="subscription" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "subscription" ? "text-black" : "text-gray-400"}`}>
-                        Subscription
-                    </span>
-                </div>
-
-                {/* revenue managment */}
-                <div
-                    onClick={() => handleClick("revenue")}
-                    className={`flex items-center space-x-3 p-2 rounded-md cursor-pointer mt-2 transition duration-150 
-                        ${activeTab === "revenue"
-                            ? "bg-[#8FC39D] bg-opacity-70 text-black"
-                            : "text-gray-800 hover:bg-[#8FC39D] hover:bg-opacity-50"}`}>
-                    <img src={revenueIcon} alt="revenue" className="w-5 h-5" />
-                    <span className={`text-md font-medium 
-                    ${activeTab === "revenue" ? "text-black" : "text-gray-400"}`}>
-                        Revenue
-                    </span>
-                </div>
-
+                {/* Menu Items */}
+                {[
+                    { icon: dashboardIcon, label: "Dashboard", tab: "dashboard" },
+                    { icon: UsersIcon, label: "Users", tab: "users" },
+                    { icon: WorkersIcon, label: "Workers", tab: "workers" },
+                    { icon: WorkersIcon, label: "Workers Request", tab: "workerRequest" },
+                    { icon: JobsIcon, label: "Jobs", tab: "jobs" },
+                    { icon: CategoryAndServicesIcon, label: "Categories", tab: "categories" },
+                    { icon: serviceIcon, label: "Services", tab: "services" },
+                    { icon: subscriptionIcone, label: "Subscription", tab: "subscription" },
+                    { icon: revenueIcon, label: "Revenue", tab: "revenue" },
+                ].map(({ icon, label, tab }) => (
+                    <div
+                        key={tab}
+                        onClick={() => handleClick(tab)}
+                        className={`flex items-center space-x-3 py-3 px-2 rounded-md cursor-pointer mt-2 transition duration-150 w-full
+              ${activeTab === tab
+                                ? "bg-[#8FC39D] bg-opacity-70 text-black"
+                                : "text-gray-300 hover:bg-[#8FC39D] hover:bg-opacity-50"
+                            }`}
+                    >
+                        <img src={icon} alt={label} className="w-5 h-5" />
+                        <span
+                            className={`text-md font-medium transition-all duration-300 ${isExpanded ? "block" : "hidden"
+                                } md:block`}
+                        >
+                            {label}
+                        </span>
+                    </div>
+                ))}
             </div>
 
-            {/* Logout Section */}
-            <div className="px-6 pb-2">
+            {/* Logout */}
+            <div className="p-4 border-t border-gray-600">
                 <div
-                    onClick={() => handleLogout()}
-                    className="flex items-center space-x-3 p-2 rounded-md hover:bg-[#8FC39D] hover:bg-opacity-50 text-gray-800 mt-2 transition duration-150 cursor-pointer">
-                    <img src={logoutIcon} alt="Logout" className="w-5 h-5" />
-                    <span className="text-md text-gray-400 font-medium">Logout</span>
+                    onClick={handleLogout}
+                    className="flex items-center space-x-3 p-3 rounded-md hover:bg-[#8FC39D] hover:bg-opacity-50 text-gray-200 transition duration-150 cursor-pointer w-full"
+                >
+                    <img src={logoutIcon} alt="Logout" className="w-5 h-5 flex-shrink-0" />
+                    <span
+                        className={`text-md font-medium transition-all duration-300 ${isExpanded ? "block" : "hidden"
+                            } md:block`}
+                    >
+                        Logout
+                    </span>
                 </div>
             </div>
         </div>

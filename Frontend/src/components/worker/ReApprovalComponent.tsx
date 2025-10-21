@@ -14,6 +14,7 @@ export default function ReApplyModal({ close, handleEdit, workerID }: props) {
         try {
             await reApplyWorker(workerID);
             toast.success("Re approval sent..!")
+            close()
         } catch (error) {
             console.log(error);
             toast.error("Faild to re-approval request")

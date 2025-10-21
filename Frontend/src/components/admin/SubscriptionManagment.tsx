@@ -172,7 +172,7 @@ const SubscriptionManagment = () => {
                 data={subscription}
                 columns={columns}
                 searchKeys={['planName', 'description', 'amount', 'comission']}
-                advancedFilterKeys={['planName', 'amount', 'durationInDays', 'comission','isActive']}
+                advancedFilterKeys={['planName', 'amount', 'durationInDays', 'comission', 'isActive']}
             />
 
             {/* Edit Modal */}

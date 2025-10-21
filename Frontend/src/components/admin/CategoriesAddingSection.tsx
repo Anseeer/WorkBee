@@ -78,14 +78,14 @@ const AddingCategorySection = ({ setAdded }: Props) => {
     });
 
     return (
-        <div className="border mx-8  rounded-md border-green-700 p-2 shadow-sm">
+        <div className="border mx-8  animate-fadeInUp  rounded-md border-green-700 p-2 shadow-sm">
             <h3 className="font-semibold text-green-700 ">Add Category</h3>
             <form
                 onSubmit={formik.handleSubmit}
                 className="flex items-center justify-between px-4 gap-2 flex-wrap"
             >
                 {/* Category */}
-                <div className="flex py-1 flex-col">
+                <div className="flex py-1 flex-col  animate-fadeInUp">
                     <div className="flex items-center gap-1">
                         <label className="text-sm w-20">Category</label>
                         <input
@@ -109,7 +109,7 @@ const AddingCategorySection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Description */}
-                <div className="flex py-1 flex-col">
+                <div className="flex  animate-fadeInUp py-1 flex-col">
                     <div className="flex items-center gap-2">
                         <label className="text-sm w-24">Description</label>
                         <input
@@ -133,7 +133,7 @@ const AddingCategorySection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Image Upload */}
-                <div className="flex py-1 flex-col">
+                <div className="flex  animate-fadeInUp py-1 flex-col">
                     <div className="flex items-center gap-2">
                         <label className="text-sm w-12">Icon</label>
                         <div className="flex items-center gap-3">

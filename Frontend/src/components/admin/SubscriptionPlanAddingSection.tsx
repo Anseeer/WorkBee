@@ -81,14 +81,14 @@ const SubscriptionPlansAddingSection = ({ setAdded }: Props) => {
     });
 
     return (
-        <div className="border mx-8 rounded-md border-green-700 p-3 shadow-sm bg-white">
+        <div className="border animate-fadeInUp mx-8 rounded-md border-green-700 p-3 shadow-sm bg-white">
             <h3 className="font-semibold text-green-700 text-lg mb-2">
                 Add Subscription Plan
             </h3>
 
             <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
                 {/* Name */}
-                <div className="flex flex-col">
+                <div className="flex animate-fadeInUp flex-col">
                     <label className="text-sm font-medium text-gray-700 mb-1">Name</label>
                     <input
                         className={`px-3 py-1 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.name && formik.errors.name
@@ -108,7 +108,7 @@ const SubscriptionPlansAddingSection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Description */}
-                <div className="flex flex-col">
+                <div className="flex animate-fadeInUp flex-col">
                     <label className="text-sm font-medium text-gray-700 mb-1">Description</label>
                     <input
                         className={`px-3 py-1 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.description && formik.errors.description
@@ -130,7 +130,7 @@ const SubscriptionPlansAddingSection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Amount */}
-                <div className="flex flex-col">
+                <div className="flex animate-fadeInUp flex-col">
                     <label className="text-sm font-medium text-gray-700 mb-1">Amount</label>
                     <input
                         className={`px-3 py-1 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.amount && formik.errors.amount
@@ -150,7 +150,7 @@ const SubscriptionPlansAddingSection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Commission */}
-                <div className="flex flex-col">
+                <div className="flex animate-fadeInUp flex-col">
                     <label className="text-sm font-medium text-gray-700 mb-1">Commission</label>
                     <input
                         className={`px-3 py-1 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.comission && formik.errors.comission
@@ -172,7 +172,7 @@ const SubscriptionPlansAddingSection = ({ setAdded }: Props) => {
                 </div>
 
                 {/* Duration */}
-                <div className="flex flex-col">
+                <div className="flex animate-fadeInUp flex-col">
                     <label className="text-sm font-medium text-gray-700 mb-1">
                         Duration (in Days)
                     </label>

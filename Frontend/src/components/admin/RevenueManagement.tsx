@@ -4,6 +4,7 @@ import { fetchWallet } from '../../services/adminService';
 import type { ITransactions } from '../../types/ITransaction';
 import { DataTable, type Column } from '../common/Table';
 import PayoutModal from '../common/PayoutForm';
+import AnimatedNumber from '../../utilities/AnimatedNumber';
 
 const RevenueManagement = () => {
     const [payoutModal, setPayoutModal] = useState<boolean>(false);
@@ -95,49 +96,50 @@ const RevenueManagement = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-50 p-6 animate-fadeIn">
+            <div className="max-w-7xl mx-auto space-y-8">
 
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-8">
-                    <div className="relative bg-white rounded-lg shadow p-6">
+                    <div className="relative bg-white rounded-lg shadow p-6 transform hover:scale-[1.02] transition-all duration-300 animate-fadeInUp delay-75">
                         <div className="absolute top-4 right-4 p-2 bg-green-100 rounded-lg">
                             <TrendingUp className="w-6 h-6 text-green-600" />
                         </div>
-                        <p className="text-4xl font-bold text-green-700 mb-1">₹{totalCommission.toLocaleString()}</p>
+                        <p className="text-4xl font-bold text-green-700 mb-1">₹{<AnimatedNumber value={Number(totalCommission)} />}</p>
                         <p className="text-sm text-gray-600">Total Commission</p>
                     </div>
 
-                    <div className="relative bg-white rounded-lg shadow p-6">
+                    <div className="relative bg-white rounded-lg shadow p-6 transform hover:scale-[1.02] transition-all duration-300 animate-fadeInUp delay-100">
                         <div className="absolute top-4 right-4 p-2 bg-purple-100 rounded-lg">
                             <IndianRupee className="w-6 h-6 text-purple-600" />
                         </div>
-                        <p className="text-4xl font-bold text-green-700 mb-1">₹{totalPlatformFees.toLocaleString()}</p>
+                        <p className="text-4xl font-bold text-green-700 mb-1">₹{<AnimatedNumber value={Number(totalPlatformFees)} />}</p>
                         <p className="text-sm text-gray-600">Platform Fees</p>
                     </div>
 
-                    <div className="relative bg-white rounded-lg shadow p-6">
+                    <div className="relative bg-white rounded-lg shadow p-6 transform hover:scale-[1.02] transition-all duration-300 animate-fadeInUp delay-150">
                         <div className="absolute top-4 right-4 p-2 bg-orange-100 rounded-lg">
                             <IndianRupee className="w-6 h-6 text-orange-600" />
                         </div>
-                        <p className="text-4xl font-bold text-green-700 mb-1">₹{totalSubscriptionFees.toLocaleString()}</p>
+                        <p className="text-4xl font-bold text-green-700 mb-1">₹{<AnimatedNumber value={Number(totalSubscriptionFees)} />}</p>
                         <p className="text-sm text-gray-600">Subscription Fees</p>
                     </div>
                 </div>
 
-                <div className=" relative bg-gradient-to-r from-green-600 to-blue-600 rounded-lg shadow-lg p-4 text-white">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div className="mb-4 md:mb-0">
-                            <p className="text-4xl font-bold flex items-center gap-2">
+                {/* Available for Payout Card */}
+                <div className="relative bg-gradient-to-r from-green-600 to-blue-600 rounded-lg shadow-lg p-6 text-white animate-fadeInUp delay-200">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2">
                                 <CreditCard className="w-8 h-8 text-white" />
-                                <h2 className="text-xl font-semibold mb-2">Available for Payout</h2>
-                            </p>
-                            <p className="text-4xl font-bold">₹{balance.toLocaleString()}</p>
-                            <p className="text-blue-200 text-sm mt-2">Minimum payout amount: ₹100</p>
+                                <h2 className="text-xl font-semibold">Available for Payout</h2>
+                            </div>
+                            <p className="text-4xl font-bold">₹{<AnimatedNumber value={Number(balance)} />}</p>
+                            <p className="text-blue-200 text-sm">Minimum payout amount: ₹100</p>
                         </div>
                         <button
                             onClick={handlePayoutModal}
-                            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-[1.03]"
                         >
                             <Download className="w-5 h-5" />
                             Payout
@@ -146,24 +148,35 @@ const RevenueManagement = () => {
                 </div>
 
                 {/* Transactions Table */}
-                <DataTable
-                    totalPages={totalPages}
-                    setCurrentPage={setCurrentPage}
-                    currentPage={currentPage}
-                    data={paginatedTransactions.map(txn => ({
-                        ...txn,
-                        id: txn.transactionId,
-                    }))}
-                    columns={columns as unknown as Column<{ id: string }>[]}
-                    searchKeys={['type', 'id', 'description', 'createdAt', 'amount']}
-                    advancedFilterKeys={['amount','createdAt','type']}
-                />
-
+                <div className="animate-fadeInUp delay-300">
+                    <DataTable
+                        totalPages={totalPages}
+                        setCurrentPage={setCurrentPage}
+                        currentPage={currentPage}
+                        data={paginatedTransactions.map(txn => ({
+                            ...txn,
+                            id: txn.transactionId,
+                        }))}
+                        columns={columns as unknown as Column<{ id: string }>[]}
+                        searchKeys={['type', 'id', 'description', 'createdAt', 'amount']}
+                        advancedFilterKeys={['amount', 'createdAt', 'type']}
+                    />
+                </div>
             </div>
-            {payoutModal && <PayoutModal balance={balance} workerID={"PLATFORM"} closeModal={closePayoutModal} />}
-        </div>
 
+            {/* Modal */}
+            {payoutModal && (
+                <div className="animate-fadeIn fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+                    <PayoutModal
+                        balance={balance}
+                        workerID={"PLATFORM"}
+                        closeModal={closePayoutModal}
+                    />
+                </div>
+            )}
+        </div>
     );
+
 };
 
 export default RevenueManagement;

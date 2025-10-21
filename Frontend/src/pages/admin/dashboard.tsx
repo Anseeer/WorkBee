@@ -34,7 +34,8 @@ const AdminDashboard = () => {
   return (
     <div className="w-full h-screen flex">
       <AdminSidebar handleTab={handleTab} />
-      <div className="w-full h-full flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        {/* <div className="w-full h-full flex flex-col"> */}
         <div className="flex items-center justify-between py-2 px-2">
           <h3 className="text-2xl font-semibold">
             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + ` Management`}
@@ -52,7 +53,7 @@ const AdminDashboard = () => {
           {activeTab === "subscription" && <SubscriptionManagment />}
           {activeTab === "jobs" && <WorksTable />}
           {activeTab === "workerRequest" && <WorkerApprovalComponent />}
-          {activeTab === "revenue" && <RevenueManagement/>}
+          {activeTab === "revenue" && <RevenueManagement />}
         </div>
       </div>
     </div>

@@ -62,35 +62,36 @@ export function DataTable<T extends { id: string }>({
     }, [searchedData, sortKey, sortOrder]);
 
     return (
-        <div className="w-full max-w-[95vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl mx-auto p-2 sm:p-4">
-            <div className="border-2 border-green-700 rounded-2xl m-5 p-4">
+        <div className="w-full max-w-[95vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl mx-auto p-2 sm:p-4 animate-fadeInScale">
+            <div className="border-2 border-green-700 rounded-2xl m-5 p-4 animate-fadeInUp">
+
                 {/* 🔍 Search + Advanced Sort */}
-                <div className="mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                <div className="mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 animate-fadeInDown">
                     {/* Search input */}
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <input
                             type="text"
                             placeholder="Search..."
-                            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-700 text-sm"
+                            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-700 text-sm transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
 
-                    {/* ⚙️ Sort Dropdown (only if advancedFilterKeys provided) */}
+                    {/* ⚙️ Sort Dropdown */}
                     {advancedFilterKeys && advancedFilterKeys.length > 0 && (
                         <div className="relative">
                             <button
                                 onClick={() => setShowSortOptions((prev) => !prev)}
-                                className="flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-md text-sm hover:bg-gray-50"
+                                className="flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-md text-sm hover:bg-gray-50 transition-all"
                             >
                                 <ArrowUpDown className="h-4 w-4 text-gray-600" />
                                 Sort
                             </button>
 
                             {showSortOptions && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10 animate-fadeInDown">
                                     <div className="p-2 border-b border-gray-100">
                                         <p className="text-xs text-gray-500 mb-1">Sort by</p>
                                         {advancedFilterKeys.map((key) => (
@@ -100,11 +101,9 @@ export function DataTable<T extends { id: string }>({
                                                     setSortKey(key);
                                                     setShowSortOptions(false);
                                                 }}
-                                                className={`block w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-gray-50 ${sortKey === key ? "bg-green-50 text-green-700" : ""
-                                                    }`}
+                                                className={`block w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-gray-50 ${sortKey === key ? "bg-green-50 text-green-700" : ""}`}
                                             >
-                                                {String(key).charAt(0).toUpperCase() +
-                                                    String(key).slice(1)}
+                                                {String(key).charAt(0).toUpperCase() + String(key).slice(1)}
                                             </button>
                                         ))}
                                     </div>
@@ -115,19 +114,13 @@ export function DataTable<T extends { id: string }>({
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => setSortOrder("asc")}
-                                                    className={`flex-1 px-3 py-1.5 text-sm rounded-md border ${sortOrder === "asc"
-                                                        ? "bg-green-600 text-white border-green-600"
-                                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                                                        }`}
+                                                    className={`flex-1 px-3 py-1.5 text-sm rounded-md border ${sortOrder === "asc" ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}`}
                                                 >
                                                     Asc
                                                 </button>
                                                 <button
                                                     onClick={() => setSortOrder("desc")}
-                                                    className={`flex-1 px-3 py-1.5 text-sm rounded-md border ${sortOrder === "desc"
-                                                        ? "bg-green-600 text-white border-green-600"
-                                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                                                        }`}
+                                                    className={`flex-1 px-3 py-1.5 text-sm rounded-md border ${sortOrder === "desc" ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}`}
                                                 >
                                                     Desc
                                                 </button>
@@ -141,15 +134,12 @@ export function DataTable<T extends { id: string }>({
                 </div>
 
                 {/* 🧾 Table */}
-                <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <div className="overflow-x-auto rounded-lg border border-gray-200 animate-fadeInUp">
                     <table className="w-full">
                         <thead className="bg-[#8FC39D]">
                             <tr>
                                 {columns.map((col) => (
-                                    <th
-                                        key={String(col.key)}
-                                        className="px-4 py-2 text-left text-sm font-semibold text-gray-900"
-                                    >
+                                    <th key={String(col.key)} className="px-4 py-2 text-left text-sm font-semibold text-gray-900">
                                         {col.label}
                                     </th>
                                 ))}
@@ -161,13 +151,13 @@ export function DataTable<T extends { id: string }>({
                                     <tr
                                         onClick={() => onRowClick?.(item)}
                                         key={item.id + "-" + i}
-                                        className="hover:bg-gray-50 cursor-pointer"
+                                        className="hover:bg-gray-50 cursor-pointer animate-fadeInUp"
+                                        style={{ animationDelay: `${i * 0.05}s` }}
                                     >
                                         {columns.map((col, index) => (
                                             <td
                                                 key={String(col.key)}
-                                                className={`px-4 py-2 text-sm text-gray-800 break-words ${index >= 3 ? "hidden sm:table-cell" : ""
-                                                    }`}
+                                                className={`px-4 py-2 text-sm text-gray-800 break-words ${index >= 3 ? "hidden sm:table-cell" : ""}`}
                                             >
                                                 {col.render ? col.render(item) : String(item[col.key] ?? "")}
                                             </td>
@@ -176,10 +166,7 @@ export function DataTable<T extends { id: string }>({
                                 ))
                             ) : (
                                 <tr>
-                                    <td
-                                        colSpan={columns.length}
-                                        className="px-6 py-8 text-center text-gray-500"
-                                    >
+                                    <td colSpan={columns.length} className="px-6 py-8 text-center text-gray-500 animate-fadeInScale">
                                         No data found
                                     </td>
                                 </tr>
@@ -189,7 +176,7 @@ export function DataTable<T extends { id: string }>({
                 </div>
 
                 {/* 📄 Pagination */}
-                <div className="mt-4 flex items-center justify-center sm:justify-between flex-wrap gap-2">
+                <div className="mt-4 flex items-center justify-center sm:justify-between flex-wrap gap-2 animate-fadeInUp">
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -203,10 +190,7 @@ export function DataTable<T extends { id: string }>({
                             <button
                                 key={i + 1}
                                 onClick={() => setCurrentPage(i + 1)}
-                                className={`px-3 py-1.5 rounded-md text-sm border ${currentPage === i + 1
-                                    ? "bg-green-700 text-white"
-                                    : "bg-white text-gray-700 hover:bg-gray-50"
-                                    }`}
+                                className={`px-3 py-1.5 rounded-md text-sm border ${currentPage === i + 1 ? "bg-green-700 text-white" : "bg-white text-gray-700 hover:bg-gray-50"}`}
                             >
                                 {i + 1}
                             </button>
@@ -224,4 +208,5 @@ export function DataTable<T extends { id: string }>({
             </div>
         </div>
     );
+
 }

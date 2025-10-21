@@ -4,6 +4,7 @@ import axios from "../../services/axios";
 
 interface Props {
     onClose: () => void;
+    handleReload?: () => void;
     userId: string,
 }
 
@@ -33,6 +34,7 @@ const AddMoneyModal = ({ onClose, userId }: Props) => {
                             amount
                         })
                             .then((res) => {
+                                // handleReload();
                                 onClose();
                                 console.log("Wallet top-up success:", res);
                             })

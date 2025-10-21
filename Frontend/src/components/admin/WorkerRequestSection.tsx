@@ -93,43 +93,59 @@ const WorkerApprovalComponent: React.FC = () => {
     };
 
     return (
-        <div className="h-[560px] overflow-y-auto p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <p className="text-gray-600">Review and approve worker registration requests</p>
+        <div className="h-[560px] overflow-y-auto p-6 animate-fadeIn">
+            <div className="max-w-7xl mx-auto animate-fadeInUp">
+                <div className="mb-8 text-center md:text-left">
+                    <p className="text-gray-600 animate-fadeIn delay-75">
+                        Review and approve worker registration requests
+                    </p>
                 </div>
 
                 {pendingRequests.length === 0 ? (
-                    <div className="bg-transparent rounded-2xl  p-12 text-center">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-transparent rounded-2xl p-12 text-center animate-fadeInUp">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                             <Check className="w-8 h-8 text-green-600" />
                         </div>
                         <h3 className="text-xl font-semibold text-gray-800 mb-2">All Caught Up!</h3>
-                        <p className="text-gray-600">No pending worker requests to review at the moment.</p>
+                        <p className="text-gray-600">
+                            No pending worker requests to review at the moment.
+                        </p>
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {pendingRequests.map((request) => (
+                        {pendingRequests.map((request, index) => (
                             <div
                                 key={request.id}
-                                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-green-100"
+                                className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-green-100 transform hover:scale-[1.01] animate-fadeInUp`}
+                                style={{ animationDelay: `${index * 100}ms` }}
                             >
                                 <div className="p-6">
+                                    {/* Header */}
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="flex items-center space-x-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
-                                                {request.profileImage !== " " ? (
-                                                    <img className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center" sizes='6' src={request.profileImage as string} alt="" />
-                                                ) : <User className="w-6 h-6 text-white" />}
+                                            <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-inner">
+                                                {request.profileImage.toString()?.trim()  ? (
+                                                    <img
+                                                        className="w-12 h-12 rounded-full object-cover"
+                                                        src={request.profileImage as string}
+                                                        alt=""
+                                                    />
+                                                ) : (
+                                                    <User className="w-6 h-6 text-white" />
+                                                )}
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-semibold text-gray-800">{request.name}</h3>
+                                                <h3 className="text-xl font-semibold text-gray-800">
+                                                    {request.name}
+                                                </h3>
                                                 <p className="text-gray-600">{request.email}</p>
                                             </div>
                                         </div>
+
+                                        {/* Status Badge */}
                                         <div className="text-right">
                                             {request.status === "Pending Approval" ? (
-                                                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800">
+                                                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800 animate-pulse">
                                                     <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
                                                     {request.status}
                                                 </div>
@@ -144,11 +160,11 @@ const WorkerApprovalComponent: React.FC = () => {
                                                     {request.status}
                                                 </div>
                                             ) : null}
-
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    {/* Info Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 animate-fadeInUp delay-100">
                                         <div className="flex items-center space-x-2 text-gray-600">
                                             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                                                 <User className="w-4 h-4 text-green-600" />
@@ -158,6 +174,7 @@ const WorkerApprovalComponent: React.FC = () => {
                                                 <div className="font-medium">{request.phone}</div>
                                             </div>
                                         </div>
+
                                         <div className="flex items-center space-x-2 text-gray-600">
                                             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                                                 <MapPin className="w-4 h-4 text-green-600" />
@@ -167,6 +184,7 @@ const WorkerApprovalComponent: React.FC = () => {
                                                 <div className="font-medium">{request.location.address}</div>
                                             </div>
                                         </div>
+
                                         <div className="flex items-center space-x-2 text-gray-600">
                                             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                                                 <Calendar className="w-4 h-4 text-green-600" />
@@ -177,39 +195,40 @@ const WorkerApprovalComponent: React.FC = () => {
                                                     {formatDate(request.createdAt)}
                                                 </div>
                                             </div>
-
-
                                         </div>
                                     </div>
 
-                                    <div className="mb-6">
+                                    {/* Gov ID Section */}
+                                    <div className="mb-6 animate-fadeInUp delay-200">
                                         <div className="flex items-center space-x-2 mb-4">
                                             <FileText className="w-5 h-5 text-green-600" />
-                                            <h4 className="font-semibold text-gray-800">Government ID Documents</h4>
+                                            <h4 className="font-semibold text-gray-800">
+                                                Government ID Documents
+                                            </h4>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {Array.isArray(request.govId) ? (
-                                                request.govId.map((url, index) => (
+                                                request.govId.map((url, i) => (
                                                     <div
-                                                        key={index}
-                                                        className="bg-gray-50 rounded-xl p-4 border-2 border-dashed border-gray-400 hover:border-green-300 transition-colors"
+                                                        key={i}
+                                                        className="bg-gray-50 rounded-xl p-4 border-2 border-dashed border-gray-400 hover:border-green-300 transition-all duration-300 transform hover:scale-[1.01]"
                                                     >
                                                         <div className="flex items-center justify-between mb-3">
                                                             <span className="text-sm font-medium text-gray-700 capitalize">
-                                                                Government ID - {index + 1}
+                                                                Government ID - {i + 1}
                                                             </span>
                                                         </div>
                                                         <div className="relative group">
                                                             <img
                                                                 src={url}
-                                                                alt={`Government ID ${index + 1}`}
+                                                                alt={`Government ID ${i + 1}`}
                                                                 className="w-full h-32 object-cover rounded-lg blur-sm group-hover:blur-none transition-all duration-300"
                                                             />
                                                             <button
                                                                 onClick={() =>
-                                                                    openImageModal(url, `Government ID - ${index + 1}`)
+                                                                    openImageModal(url, `Government ID - ${i + 1}`)
                                                                 }
-                                                                className="absolute inset-0 bg-transparent bg-blur-50 group-hover:bg-opacity-50 flex items-center justify-center rounded-lg transition-all duration-200"
+                                                                className="absolute inset-0 bg-transparent group-hover:bg-black/40 flex items-center justify-center rounded-lg transition-all duration-300"
                                                             >
                                                                 <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                                             </button>
@@ -222,23 +241,24 @@ const WorkerApprovalComponent: React.FC = () => {
                                         </div>
                                     </div>
 
-
-                                    <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100 animate-fadeInUp delay-300">
                                         <button
                                             onClick={() => handleApprove(request.id)}
-                                            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                                            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                                         >
                                             <Check className="w-5 h-5" />
                                             <span>Approve Worker</span>
                                         </button>
-                                        {request.status !== "Rejected" ?
+                                        {request.status !== "Rejected" && (
                                             <button
                                                 onClick={() => handleReject(request.id)}
-                                                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                                                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                                             >
                                                 <X className="w-5 h-5" />
                                                 <span>Reject Request</span>
-                                            </button> : null}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -247,12 +267,15 @@ const WorkerApprovalComponent: React.FC = () => {
                 )}
             </div>
 
-            <ImageModal
-                isOpen={selectedImage !== null}
-                imageUrl={selectedImage?.url || ''}
-                title={selectedImage?.title || ''}
-                onClose={() => setSelectedImage(null)}
-            />
+            {/* Image Modal */}
+            <div className="animate-fadeIn">
+                <ImageModal
+                    isOpen={selectedImage !== null}
+                    imageUrl={selectedImage?.url || ""}
+                    title={selectedImage?.title || ""}
+                    onClose={() => setSelectedImage(null)}
+                />
+            </div>
         </div>
     );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import WorkerSidebar from "../../components/worker/WorkerSidebar";
 import { useSelector } from "react-redux";
@@ -18,8 +19,11 @@ import { SubscriptionPlans } from "../../components/worker/Subscription";
 import AddMoneyModal from "../../components/user/AddMoneyModal";
 import PayoutModal from "../../components/common/PayoutForm";
 import ReApplyModal from "../../components/worker/ReApprovalComponent";
+import Loader from "../../components/common/Loader";
+import PendingApprovalMessage from "../../components/worker/PendingApprovalMessage";
 
 const Dashboard = () => {
+    const [initialLoading, setInitialLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("dashboard");
     const [userId, setUserId] = useState<string | null>(null);
     const [isEdit, setIsEdit] = useState(false);
@@ -31,16 +35,16 @@ const Dashboard = () => {
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
     const wallet = workerData.wallet;
-
     useEffect(() => {
         const fetchData = async () => {
             const workerID = localStorage.getItem("workerId");
             if (workerID) {
-                dispatch(fetchWorkerDetails(workerID));
-                console.log("first")
+                if (initialLoading) setInitialLoading(true);
+                await dispatch(fetchWorkerDetails(workerID));
+                setInitialLoading(false);
             }
         }
-        fetchData()
+        fetchData();
     }, [dispatch, reload]);
 
     useEffect(() => {
@@ -51,6 +55,10 @@ const Dashboard = () => {
 
     const handleTab = (tab: string) => {
         setActiveTab(tab);
+    };
+
+    const handleReload = () => {
+        setReloadWallet((prev) => !prev);
     };
 
     const handleEdit = () => {
@@ -68,13 +76,13 @@ const Dashboard = () => {
     }
 
     const closeAddMoneyModal = () => {
-        setReloadWallet((prev) => !prev);
         setAddMoneyModal(false);
+        setReloadWallet((prev) => !prev);
     }
 
     const closePayoutMoneyModal = () => {
-        setReloadWallet((prev) => !prev);
         setPayoutMoneyModal(false);
+        setReloadWallet((prev) => !prev);
     }
 
     const handleCloseReApplyModal = () => {
@@ -89,110 +97,116 @@ const Dashboard = () => {
 
     return (
         <div className="w-full h-screen flex">
-            {workerData.worker?.isAccountBuilt ? (
-                <>
-                    <WorkerSidebar handleTab={handleTab} />
-                    <div className="w-full h-full flex flex-col">
-                        <div className="flex items-center justify-between py-2 px-2">
-                            <h3 className="text-2xl font-semibold">
-                                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                            </h3>
+            {initialLoading ? (
+                <div className="flex-1 flex items-center justify-center">
+                    <Loader />
+                </div>
+            ) : workerData.worker?.isAccountBuilt ? (<>
+                <WorkerSidebar handleTab={handleTab} />
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                    <div className="flex items-center justify-between py-2 px-2">
+                        <h3 className="text-2xl font-semibold">
+                            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                        </h3>
 
-                            <div className="flex gap-2">
-                                {activeTab === "account" && (
-                                    <>
-                                        {workerData.worker.status === "Rejected" && (
-                                            <button
-                                                onClick={() => handleReApproval()}
-                                                className="text-sm border-black rounded px-2 py-1 bg-red-100 cursor-pointer text-red-900 rounded-md hover:bg-blue-200 transition"
-                                            >
-                                                Re-Approval
-                                            </button>
-                                        )}
-                                        <button
-                                            className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
-                                            onClick={handleEdit}
-                                        >
-                                            Edit
-                                        </button>
-                                    </>
-                                )}
-
-                                {activeTab === "wallet" && (
-                                    <>
-                                        <button
-                                            className="px-4 py-1 text-green-600 border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
-                                            onClick={handleAddMoney}
-                                        >
-                                            Add Money
-                                        </button>
-                                        <button
-                                            className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-gray-400 hover:text-white"
-                                            onClick={handlePayoutMoney}
-                                        >
-                                            Payout Money
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                        <hr className="border border-green-900" />
-
-                        <div className="flex-1 min-h-0 overflow-auto">
-                            {activeTab === "dashboard" ? (
+                        <div className="flex gap-2">
+                            {activeTab === "account" && (
                                 <>
-                                    {workerData.worker?.isVerified && workerData.worker.status != "Rejected" && workerData.worker.subscription == null ? (
-                                        <SubscriptionPlans />
-                                    ) : (
-                                        <WorkerDashboard
-                                            worker={workerData.worker}
-                                            wallet={workerData.wallet as IWallet}
-                                            availability={workerData.availability as IAvailability}
-                                        />
+                                    {workerData.worker.status === "Rejected" && (
+                                        <button
+                                            onClick={() => handleReApproval()}
+                                            className="text-sm border-black rounded px-2 py-1 bg-red-100 cursor-pointer text-red-900 rounded-md hover:bg-blue-200 transition"
+                                        >
+                                            Re-Approval
+                                        </button>
                                     )}
+                                    <button
+                                        className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
+                                        onClick={handleEdit}
+                                    >
+                                        Edit
+                                    </button>
                                 </>
-                            ) : activeTab === "account" ? (
+                            )}
+
+                            {activeTab === "wallet" && (
                                 <>
-                                    <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
+                                    <button
+                                        className="px-4 py-1 text-green-600 border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
+                                        onClick={handleAddMoney}
+                                    >
+                                        Add Money
+                                    </button>
+                                    <button
+                                        className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-gray-400 hover:text-white"
+                                        onClick={handlePayoutMoney}
+                                    >
+                                        Payout Money
+                                    </button>
                                 </>
-                            ) : activeTab === "history" ? (
-                                <WorkHistory />
-                            ) : activeTab === "wallet" ? (
-                                <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700 h-full">
-                                    <Wallet
-                                        workerId={workerData.worker?._id as string}
-                                        historyPrev={wallet?.transactions}
-                                        balancePrev={wallet?.balance}
-                                    />
-                                </div>
-                            ) : activeTab === "message" ? (
-                                <Message />
-                            ) : activeTab === "notification" ? (
-                                <Notifications />
-                            ) : null}
-
-                            {addMoneyModal && (
-                                <AddMoneyModal
-                                    userId={userId as string}
-                                    onClose={closeAddMoneyModal}
-                                />
-                            )}
-
-                            {payoutMoneyModal && (
-                                <PayoutModal
-                                    balance={wallet?.balance as number}
-                                    closeModal={closePayoutMoneyModal}
-                                    workerID={userId}
-                                />
-                            )}
-
-                            {reApplyModal && (
-                                <ReApplyModal close={handleCloseReApplyModal} workerID={userId as string} handleEdit={handleEdit} />
                             )}
                         </div>
                     </div>
-                </>
+
+                    <hr className="border border-green-900" />
+
+                    <div className="flex-1 min-h-0 overflow-auto">
+                        {activeTab === "dashboard" ? (
+                            <>
+                                {workerData.worker?.isVerified && workerData.worker.status != "Rejected" && workerData.worker.subscription == null ? (
+                                    <SubscriptionPlans />
+                                ) : !workerData.worker.isVerified || workerData.worker.status == "Rejected" && workerData.worker.subscription == null ? (
+                                    <PendingApprovalMessage
+                                        status={workerData.worker.status}
+                                        estimatedTime="42hrs" />
+                                ) : (
+                                    <WorkerDashboard
+                                        worker={workerData.worker}
+                                        wallet={workerData.wallet as IWallet}
+                                        availability={workerData.availability as IAvailability}
+                                    />
+                                )}
+                            </>
+                        ) : activeTab === "account" ? (
+                            <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
+                        ) : activeTab === "history" ? (
+                            <WorkHistory />
+                        ) : activeTab === "wallet" ? (
+                            <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700 h-full">
+                                <Wallet
+                                    workerId={workerData.worker?._id as string}
+                                    historyPrev={wallet?.transactions}
+                                    balancePrev={wallet?.balance}
+                                />
+                            </div>
+                        ) : activeTab === "message" ? (
+                            <Message />
+                        ) : activeTab === "notification" ? (
+                            <Notifications />
+                        ) : null}
+
+                        {addMoneyModal && (
+                            <AddMoneyModal
+                                userId={userId as string}
+                                onClose={closeAddMoneyModal}
+                                handleReload={handleReload}
+                            />
+                        )}
+
+                        {payoutMoneyModal && (
+                            <PayoutModal
+                                balance={wallet?.balance as number}
+                                closeModal={closePayoutMoneyModal}
+                                workerID={userId}
+                            />
+                        )}
+
+                        {reApplyModal && (
+                            <ReApplyModal close={handleCloseReApplyModal} workerID={userId as string} handleEdit={handleEdit} />
+                        )}
+                    </div>
+                </div>
+            </>
             ) : (
                 <>
                     {!workerData.worker?.isAccountBuilt ? (

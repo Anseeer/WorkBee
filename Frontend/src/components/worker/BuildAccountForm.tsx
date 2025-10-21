@@ -163,15 +163,28 @@ export default function BuildAccount() {
   };
 
   const handleGovIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.files) {
-      const newFiles = Array.from(e.currentTarget.files);
-      const updatedFiles = [...formik.values.govId, ...newFiles];
+    if (!e.currentTarget.files) return;
 
-      if (updatedFiles.length > 2) {
-        formik.setFieldError("govId", "Only 2 government IDs allowed");
-      } else {
-        formik.setFieldValue("govId", updatedFiles);
-      }
+    const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const newFiles = Array.from(e.currentTarget.files);
+
+    const validFiles = newFiles.filter((file) => validTypes.includes(file.type));
+    const invalidFiles = newFiles.filter((file) => !validTypes.includes(file.type));
+
+    const updatedFiles = [...formik.values.govId, ...validFiles];
+    e.currentTarget.value = "";
+
+    formik.setFieldValue("govId", updatedFiles);
+
+    if (invalidFiles.length > 0) {
+      formik.setFieldError("govId", "Only PNG or JPG images are allowed");
+    } else if (updatedFiles.length < 2) {
+      formik.setFieldError("govId", "Upload 2 government IDs");
+    } else if (updatedFiles.length > 2) {
+      formik.setFieldError("govId", "Only 2 government IDs allowed");
+    } else {
+      // Clear error if valid
+      formik.setFieldError("govId", "");
     }
   };
 
@@ -181,34 +194,34 @@ export default function BuildAccount() {
     formik.setFieldValue("govId", updated);
   };
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-start relative bg-gray-50 p-6">
+    <div className="min-h-screen w-full flex flex-col items-center justify-start relative bg-gray-50 p-6 animate-fadeInUp">
       {/* Logo in top-left corner */}
-      <div className="absolute top-6 left-6">
+      <div className="absolute top-6 left-6 animate-fadeInDown">
         <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
       </div>
 
       {/* Form Container */}
-      <div className="w-full max-w-6xl bg-white rounded-3xl border-2 border-green-600 shadow-md p-8 mt-20">
-        <h1 className="text-2xl font-bold mb-8 text-start">Build Your Profile</h1>
+      <div className="w-full max-w-6xl bg-white rounded-3xl border-2 border-green-600 shadow-md p-8 mt-20 animate-fadeInScale">
+        <h1 className="text-2xl font-bold mb-8 text-start animate-fadeInDown">Build Your Profile</h1>
         <form
           onSubmit={formik.handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-2 gap-12"
         >
           {/* Left Column */}
-          <div className="flex flex-col space-y-6">
+          <div className="flex flex-col space-y-6 animate-fadeInUp">
             {/* Profile Image */}
-            <div className="flex flex-col items-start gap-4">
+            <div className="flex flex-col items-start gap-4 animate-zoomIn">
               <div className="relative">
                 <img
                   src={selectedImg ? URL.createObjectURL(selectedImg) : Profile}
                   alt="Profile"
-                  className="w-32 h-32 rounded-full bg-gray-300 object-cover"
+                  className="w-32 h-32 rounded-full bg-gray-300 object-cover animate-scaleIn"
                 />
                 <label
                   htmlFor="profile-upload"
                   className="absolute bottom-0 right-0 bg-black p-2 rounded-full cursor-pointer hover:bg-green-700 transition-colors"
                 >
-                  <FaCamera className="text-white text-sm" />
+                  <FaCamera className="text-white text-sm animate-zoomIn" />
                 </label>
               </div>
               <input
@@ -227,7 +240,7 @@ export default function BuildAccount() {
             </div>
 
             {/* Age & Gender */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 animate-fadeInUp">
               <div>
                 <label className="block text-sm font-medium mb-2">Age</label>
                 <input
@@ -237,7 +250,7 @@ export default function BuildAccount() {
                   onBlur={formik.handleBlur}
                   value={formik.values.age}
                   onChange={formik.handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 />
                 {formik.errors.age && formik.touched.age && (
                   <div className="text-red-500 text-sm mt-1">{formik.errors.age}</div>
@@ -250,7 +263,7 @@ export default function BuildAccount() {
                   value={formik.values.gender}
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 >
                   <option value="">Select</option>
                   <option value="male">Male</option>
@@ -264,7 +277,7 @@ export default function BuildAccount() {
             </div>
 
             {/* Government ID Upload */}
-            <div>
+            <div className="animate-fadeInUp">
               <label className="block text-sm font-medium mb-2">
                 Upload Government ID (Front and Back Images Required)
               </label>
@@ -275,11 +288,11 @@ export default function BuildAccount() {
                   multiple
                   onBlur={formik.handleBlur}
                   onChange={handleGovIdChange}
-                  className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full p-3 pr-10 border border-gray-300 rounded-lg"
                 />
                 <button
                   type="button"
-                  className="absolute right-3 text-green-600 hover:text-green-800 font-bold text-xl"
+                  className="absolute right-3 text-green-600 hover:text-green-800 font-bold text-xl animate-zoomIn"
                   onClick={() =>
                     document
                       .querySelector<HTMLInputElement>('input[name="govId"]')
@@ -292,11 +305,11 @@ export default function BuildAccount() {
               {typeof formik.errors.govId === "string" && formik.touched.govId && (
                 <div className="text-red-500 text-sm mt-1">{formik.errors.govId}</div>
               )}
-              <div className="flex flex-wrap gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-3 animate-fadeInUp">
                 {formik.values.govId.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full shadow"
+                    className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full shadow animate-zoomIn"
                   >
                     <span className="text-sm font-medium">{file.name}</span>
                     <button
@@ -312,7 +325,7 @@ export default function BuildAccount() {
             </div>
 
             {/* Bio */}
-            <div>
+            <div className="animate-fadeInUp">
               <label className="block text-sm font-medium mb-2">Bio</label>
               <textarea
                 name="bio"
@@ -320,7 +333,7 @@ export default function BuildAccount() {
                 onBlur={formik.handleBlur}
                 value={formik.values.bio}
                 onChange={formik.handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                className="w-full p-3 border border-gray-300 rounded-lg resize-none"
                 placeholder="Tell us about yourself..."
               />
               {formik.errors.bio && formik.touched.bio && (
@@ -329,7 +342,11 @@ export default function BuildAccount() {
             </div>
 
             {/* Availability */}
-            <div onBlur={() => formik.setFieldTouched("availableDates", true)} tabIndex={0}>
+            <div
+              onBlur={() => formik.setFieldTouched("availableDates", true)}
+              tabIndex={0}
+              className="animate-fadeInUp"
+            >
               <h3 className="text-sm font-medium mb-3">Availability</h3>
               <Calendar
                 onClickDay={(date) => {
@@ -362,19 +379,22 @@ export default function BuildAccount() {
           </div>
 
           {/* Right Column */}
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeInUp">
             {/* Services Offered */}
-            <div>
+            <div className="animate-fadeInUp">
               <h3 className="text-sm font-medium mb-3">Services Offered</h3>
               <div className="space-y-3">
                 {service.map((service: IServiceOption) => (
-                  <label key={service.id} className="flex items-center gap-3 relative group cursor-pointer">
+                  <label
+                    key={service.id}
+                    className="flex items-center gap-3 relative group cursor-pointer animate-zoomIn"
+                  >
                     <input
                       type="checkbox"
                       checked={formik.values.selectedServices.includes(service.id)}
                       onChange={() => handleCheckbox("selectedServices", service.id)}
                       onBlur={formik.handleBlur}
-                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded"
                     />
                     <span className="text-sm">{service.name}</span>
                     <span className="absolute left-full ml-2 bg-green-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity">
@@ -383,13 +403,10 @@ export default function BuildAccount() {
                   </label>
                 ))}
               </div>
-              {formik.errors.selectedServices && formik.touched.selectedServices && (
-                <div className="text-red-500 text-sm mt-2">{formik.errors.selectedServices}</div>
-              )}
             </div>
 
             {/* Travel Radius */}
-            <div>
+            <div className="animate-fadeInUp">
               <label className="block text-sm font-medium mb-2">
                 Maximum Travel Distance (km)
               </label>
@@ -402,7 +419,7 @@ export default function BuildAccount() {
                 value={formik.values.radius}
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
-                className="w-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-32 p-3 border border-gray-300 rounded-lg"
               />
               <p className="text-xs text-gray-500 mt-2">
                 You will only receive work within this distance from your location.
@@ -413,17 +430,17 @@ export default function BuildAccount() {
             </div>
 
             {/* Working Hours */}
-            <div>
+            <div className="animate-fadeInUp">
               <h3 className="text-sm font-medium mb-3">Working Hours</h3>
               <div className="space-y-3">
                 {workingHours.map((hour) => (
-                  <label key={hour.id} className="flex items-center gap-3 cursor-pointer">
+                  <label key={hour.id} className="flex items-center gap-3 cursor-pointer animate-zoomIn">
                     <input
                       type="checkbox"
                       checked={formik.values.workingHours.includes(hour.id)}
                       onChange={() => handleCheckbox("workingHours", hour.id)}
                       onBlur={formik.handleBlur}
-                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded"
                     />
                     <span className="text-sm">{hour.label}</span>
                   </label>
@@ -435,11 +452,11 @@ export default function BuildAccount() {
             </div>
 
             {/* Submit Button */}
-            <div className="pt-4">
+            <div className="pt-4 animate-fadeInUp">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-green-800 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+                className="w-full bg-green-800 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium animate-zoomIn"
               >
                 {isLoading ? "Submitting..." : "Submit"}
               </button>

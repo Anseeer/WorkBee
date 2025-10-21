@@ -60,11 +60,10 @@ export default function WorkerSidebar({ handleTab }: prop) {
   return (
     <div
       ref={sidebarRef}
-      // REPLACED 'vh-full' with 'h-full' to correctly inherit parent's height
-      // Added 'flex-shrink-0' to prevent the sidebar from resizing when the main content needs space
+
       className={`bg-[#10451D] text-white h-full flex flex-col justify-between rounded-r-2xl shadow-lg flex-shrink-0
-    transition-all duration-300
-    ${isExpanded ? 'w-56' : 'w-16'} md:w-[225px]`}
+    transition-all duration-300 ease-in-out
+   ${isExpanded ? 'w-56 animate-fadeInLeft' : 'w-16 animate-fadeOutLeft'} md:w-[225px]`}
     >
       {/* Top Section: Logo + Navigation */}
       <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y-auto">        {!isExpanded && (
@@ -79,7 +78,7 @@ export default function WorkerSidebar({ handleTab }: prop) {
         </button>
       )}
 
-        <h1 className={`merienda-text text-3xl text-white mb-5 ${isExpanded ? 'block' : 'hidden'} md:block`}>
+        <h1 className={`merienda-text text-3xl text-white animate-fadeIn mb-5 ${isExpanded ? 'block' : 'hidden'} md:block`}>
           WorkBee
         </h1>
 
