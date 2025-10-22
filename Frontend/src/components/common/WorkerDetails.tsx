@@ -96,7 +96,7 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     };
 
     return (
-        <div className="h-full bg-gray-50 overflow-hidden animate-fadeInUp">
+        <div className="h-full bg-white overflow-hidden animate-fadeInUp">
             {/* Header */}
             <div className="bg-white border-b border-gray-200 animate-fadeInDown">
                 <div className="max-w-7xl mx-auto px-6 py-4">

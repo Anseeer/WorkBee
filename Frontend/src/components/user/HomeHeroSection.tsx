@@ -137,7 +137,7 @@ const HomeHeroSection = () => {
                         <button
                             onClick={() => HandleSelectedService(service)}
                             key={service.id}
-                            className="bg-[#F5FAF5] text-black text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full font-medium shadow hover:bg-green-100 transition break-words text-center opacity-0 animate-fadeInUp"
+                            className="text-black text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full font-medium shadow bg-white border-2 border-gray-300 hover:border-green-600 hover:text-green-600 transition break-words text-center opacity-0 animate-fadeInUp"
                             style={{
                                 animationDelay: `${index * 80}ms`,
                                 animationFillMode: 'forwards'

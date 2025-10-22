@@ -220,7 +220,7 @@ const CategorySection: React.FC = () => {
             {currentCategory && (
                 <div
                     key={`banner-${animationKey}`}
-                    className="relative rounded-2xl p-4 sm:p-8 min-h-[400px] sm:min-h-[600px] shadow-xl transition-all duration-500 flex flex-col sm:flex-row items-center justify-center sm:justify-between animate-zoomIn overflow-hidden"
+                    className="relative rounded-2xl p-4 sm:p-8 min-h-[400px] sm:min-h-[600px] transition-all duration-500 flex flex-col sm:flex-row items-center justify-center sm:justify-between animate-zoomIn overflow-hidden"
                 >
                     <img
                         src={backgroundMap[currentCategory.name]}

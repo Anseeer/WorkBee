@@ -44,7 +44,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
   const currentItems = Array.isArray(history) ? history?.slice(startIndex, startIndex + itemsPerPage) : [];
 
   return (
-    <div className="bg-gray-50 flex flex-col items-center p-2 sm:p-3 md:p-4 min-h-[400px] animate-fadeInScale">
+    <div className="bg-white flex flex-col items-center p-2 sm:p-3 md:p-4 min-h-[400px] animate-fadeInScale">
       <main className="w-full max-w-4xl">
 
         {/* Wallet Card */}

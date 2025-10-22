@@ -56,9 +56,6 @@ const RevenueManagement = () => {
 
     }, [history])
 
-
-
-    // Pagination logic
     const totalPages = Math.ceil(history.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedTransactions = history.slice(startIndex, startIndex + itemsPerPage);
@@ -96,7 +93,7 @@ const RevenueManagement = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 animate-fadeIn">
+        <div className="min-h-screen bg-white p-6 animate-fadeIn">
             <div className="max-w-7xl mx-auto space-y-8">
 
                 {/* Summary Cards */}

@@ -118,7 +118,7 @@ const ProfileSection = () => {
     return (
         <div className="flex flex-col md:flex-row h-auto min-h-[400px] mx-[10%] my-6 md:my-10 border border-green-900 border-3 rounded-xl bg-white  animate-fadeInUp">
             {/* Sidebar */}
-            <div className="w-full md:w-44 lg:w-52 bg-gray-50 border-b-2 md:border-b-0 md:border-r-2 rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-gray-300 animate-fadeInLeft">
+            <div className="w-full md:w-44 lg:w-52 bg-white border-b-2 md:border-b-0 md:border-r-2 rounded-t-3xl md:rounded-t-none md:rounded-l-3xl border-gray-300 animate-fadeInLeft">
                 <div className="p-3 sm:p-4 md:p-6">
                     <nav className="space-y-2 sm:space-y-3 md:space-y-4">
                         {[
@@ -134,7 +134,7 @@ const ProfileSection = () => {
                                         ? "text-green-700 font-bold bg-green-100 border-l-4 border-green-600 shadow-md shadow-green-500/30 animate-zoomIn"
                                         : "hover:bg-gray-100 animate-fadeInUp"}
                         `}
-                                style={{ animationDelay: `${idx * 100}ms` }} // staggered animation
+                                style={{ animationDelay: `${idx * 100}ms` }} 
                             >
                                 {item.label}
                             </div>
@@ -144,9 +144,9 @@ const ProfileSection = () => {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 bg-gray-50 rounded-b-2xl md:rounded-bl-2xl md:rounded-tr-2xl overflow-hidden p-2 sm:p-3 md:p-5 lg:min-h-[500px] lg:p-6 animate-fadeInRight">
+            <div className="flex-1 bg-white rounded-b-2xl md:rounded-bl-2xl md:rounded-tr-2xl overflow-hidden p-2 sm:p-3 md:p-5 lg:min-h-[500px] lg:p-6 animate-fadeInRight">
                 {/* Header */}
-                <div className="bg-gray-50 border-b rounded-tr-2xl md:rounded-tr-none border-gray-300 px-2 sm:px-3 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 md:gap-4 animate-fadeInDown">
+                <div className="bg-white border-b rounded-tr-2xl md:rounded-tr-none border-gray-300 px-2 sm:px-3 md:px-5 lg:px-6 py-2 sm:py-3 md:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 md:gap-4 animate-fadeInDown">
                     <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-black truncate animate-fadeInUp">
                         {isActiveTab === "Profile"
                             ? "Account"
@@ -250,7 +250,7 @@ const ProfileSection = () => {
                             workHistory.map((work, index) => (
                                 <div
                                     key={work._id}
-                                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 items-center bg-gray-50 rounded-lg p-2 sm:p-3 my-1 sm:my-2 shadow-sm gap-2 transform transition-transform duration-500 hover:scale-[1.01] animate-fadeInUp"
+                                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 items-center bg-white rounded-lg p-2 sm:p-3 my-1 sm:my-2 shadow-sm gap-2 transform transition-transform duration-500 hover:scale-[1.01] animate-fadeInUp"
                                     style={{ animationDelay: `${index * 50}ms` }}
                                 >
                                     <div className="font-medium text-xs sm:text-sm md:text-base break-words">{work.service}</div>
@@ -267,7 +267,7 @@ const ProfileSection = () => {
                                                     work.status === "Accepted" ? "bg-blue-100 text-blue-700 animate-pulse" :
                                                         work.status === "Rejected" ? "bg-red-100 text-red-700 animate-pulse" :
                                                             work.status === "Completed" ? "bg-green-100 text-green-700 animate-pulse" :
-                                                                "bg-gray-100 text-gray-700 animate-pulse"}`}>
+                                                                "bg-white text-gray-700 animate-pulse"}`}>
                                             {work.status || "Pending"}
                                         </span>
                                     </div>

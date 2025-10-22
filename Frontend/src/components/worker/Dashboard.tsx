@@ -51,7 +51,7 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 animate-fadeInUp">
+        <div className="min-h-screen bg-white animate-fadeInUp">
             <div className="container mx-auto p-6 max-w-7xl">
                 {/* Header Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6 animate-fadeInDown">

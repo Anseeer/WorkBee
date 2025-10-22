@@ -285,7 +285,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-transparent backdrop-blur-md flex items-center justify-center p-4 z-50">
-            <div className="bg-gradient-to-r from-teal-50 to-green-50 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
                 <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <User className="w-6 h-6 text-blue-600" />
@@ -302,7 +302,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 <form onSubmit={formik.handleSubmit} className="p-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div className="space-y-6">
-                            <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-blue-100 space-y-4">
+                            <div className="bg-white p-4 rounded-xl border-2 border-gray-300 space-y-4">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <User className="w-5 h-5 text-blue-600" /> Basic Information
                                 </h3>
@@ -390,7 +390,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
                             </div>
 
-                            <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-green-100 space-y-4">
+                            <div className="bg-white p-4 rounded-xl border-2 border-gray-300 space-y-4">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <Clock className="w-5 h-5 text-green-600" /> Work Details
                                 </h3>
@@ -458,7 +458,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                         </div>
 
                         <div className="space-y-6">
-                            <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-purple-100">
+                            <div className="bg-white p-4 rounded-xl border-2 border-gray-300">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <Image className="w-5 h-5 text-purple-600" /> Profile Image
                                 </h3>
@@ -487,7 +487,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </label>
                             </div>
 
-                            <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-orange-100 grid grid-cols-2 gap-4">
+                            <div className="bg-white  border-2 border-gray-300 p-4 rounded-xl  grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block mb-2">Front</label>
                                     <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer">
@@ -542,7 +542,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
                             </div>
 
-                            <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-teal-100">
+                            <div className="bg-white  border-2 border-gray-300 p-4 rounded-xl ">
                                 <h3 className="text-lg font-semibold mb-4">Categories</h3>
                                 <div className="grid grid-cols-2 gap-2">
                                     {allCategories.map((cat) => (
@@ -558,7 +558,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                 </div>
                             </div>
 
-                            <div className="bg-gradient-to-r from-teal-50 to-green-50 p-4 rounded-xl border border-indigo-100">
+                            <div className="p-4 rounded-xl bg-white  border-2 border-gray-300">
                                 <h3 className="text-lg font-semibold mb-4">Services</h3>
                                 <div className="grid grid-cols-2 gap-2">
                                     {allServices?.map((service) => {
