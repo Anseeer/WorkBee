@@ -6,5 +6,6 @@ export interface IService {
   name: string;
   description: string;
   wage: string;
+  image: string;
   isActive: boolean;
 }

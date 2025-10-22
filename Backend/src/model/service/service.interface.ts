@@ -12,5 +12,6 @@ export interface IServices extends Document {
     name: string,
     description: string,
     wage: string,
+    image: string,
     isActive: boolean
 }

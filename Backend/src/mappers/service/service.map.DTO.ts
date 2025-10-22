@@ -8,6 +8,7 @@ export const mapServiceToDTO = (service: Partial<IServices>): IServiceDTO => {
         name: service.name as string,
         description: service.description as string,
         wage: service.wage as string,
+        image: service.image as string,
         category: service.category as ObjectId || undefined,
         categoryName: service.categoryName as string | undefined,
         categoryIcon: service.categoryIcon as string || undefined,
@@ -22,6 +23,7 @@ export const mapServiceToEntity = (service: IServices): IServiceEntity => {
         name: service.name,
         description: service.description,
         wage: service.wage,
+        image: service.image,
         category: service.category,
         isActive: service.isActive
     }

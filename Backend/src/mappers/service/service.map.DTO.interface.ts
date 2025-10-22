@@ -9,6 +9,7 @@ export interface IServiceDTO {
     name: string,
     description: string,
     wage: string,
+    image: string,
     isActive: boolean
 }
 
@@ -18,5 +19,6 @@ export interface IServiceEntity {
     name: string,
     description: string,
     wage: string,
+    image: string,
     isActive: boolean
 }

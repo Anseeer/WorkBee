@@ -454,7 +454,7 @@ export class WorkService implements IWorkService {
     getTopServices = async (limit: number): Promise<IServiceDTO[]> => {
         try {
             const topServices = await this._workRepositoy.getTopServices(limit);
-            console.log("TOP :",topServices)
+            console.log("TOP :", topServices)
 
             const servicesLikeData: Partial<IServices>[] = topServices.map((serv) => ({
                 _id: serv.serviceId?.toString(),
@@ -463,6 +463,7 @@ export class WorkService implements IWorkService {
                 categoryId: serv.categoryId as string,
                 name: serv.serviceName as string,
                 description: serv.serviceDescription || "",
+                image: serv.image,
                 wage: serv.wage.toString(),
                 isActive: true,
             }));

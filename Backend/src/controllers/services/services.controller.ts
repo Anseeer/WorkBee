@@ -63,7 +63,7 @@ export class ServiceController implements IServiceController {
         try {
             const { serviceId, currentPage, pageSize } = req.query;
             const service = req.body;
-
+            console.log("Body :", service);
             if (!serviceId) {
                 throw new Error(SERVICE_MESSAGE.ID_NOT_RECEIVED);
             }
@@ -124,7 +124,7 @@ export class ServiceController implements IServiceController {
     getByWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { serviceIds } = req.body;
-            console.log("CHECHKED IDS IS HERE :",serviceIds)
+            console.log("CHECHKED IDS IS HERE :", serviceIds)
             if (!Array.isArray(serviceIds) || serviceIds.length === 0) {
                 throw new Error(SERVICE_MESSAGE.ID_NOT_RECEIVED);
             }

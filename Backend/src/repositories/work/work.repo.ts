@@ -282,6 +282,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
                         serviceId: "$_id",
                         usageCount: "$count",
                         serviceName: "$service.name",
+                        image: "$service.image",
                         categoryId: "$service.category",
                         serviceDescription: "$service.description",
                         wage: "$service.wage",
@@ -291,7 +292,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
                 }
             ]);
 
-            return res ;
+            return res;
         } catch (error) {
             console.error("Error in getTopServices:", error);
             throw new Error("Error in getTopServices");

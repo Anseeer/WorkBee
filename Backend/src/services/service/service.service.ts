@@ -114,14 +114,14 @@ export class ServiceService implements IServiceService {
 
     getBySearch = async (searchKey: string): Promise<IServiceDTO[]> => {
         try {
-            const serv = await this._serviceRepository.getBySearch(searchKey);
+            const serv = await this._serviceRepository.getBySearch(searchKey) as IServices[];
             return serv.map((s) => mapServiceToDTO(s));
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
-            throw error;
+            console.error("Error in getBySearch:", errMsg);
+            throw new Error(errMsg);
         }
-    }
+    };
 
     getById = async (id: string): Promise<IServiceDTO | null> => {
         try {

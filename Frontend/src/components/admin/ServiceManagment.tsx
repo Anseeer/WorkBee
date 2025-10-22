@@ -8,14 +8,17 @@ import { useFormik } from 'formik';
 import type { IService } from '../../types/IServiceTypes';
 import { deleteService, fetchCategory, fetchService, setIsActiveService, updateService } from '../../services/adminService';
 import AddingServiceSection from './ServiceAddingSection';
+import { uploadToCloud } from '../../utilities/uploadToCloud';
 
 const ServiceManagment = () => {
+    const [isLoading, setLoading] = useState(false);
     const [service, setService] = useState<IService[]>([]);
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [added, setAdded] = useState(false);
     const [deleted, setDeleted] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<IService | null>(null);
+    const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
     const [currrentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(10);
 
@@ -108,10 +111,12 @@ const ServiceManagment = () => {
     const handleEditOpen = (serv: IService) => {
         setEditData(serv);
         setIsEditing(true);
+        setExistingImageUrl(serv.image || null);
         formik.setValues({
             name: serv.name,
             wage: serv.wage,
             category: serv.category,
+            image: null,
         });
     };
 
@@ -125,25 +130,52 @@ const ServiceManagment = () => {
             name: '',
             category: '',
             wage: '',
+            image: null as File | null,
         },
         enableReinitialize: true,
-        validate: values => {
+        validate: (values) => {
             const errors: {
                 name?: string;
-                description?: string;
-                category?: string;
                 wage?: string;
+                category?: string;
+                image?: string;
             } = {};
+
             if (!values.name) errors.name = "Service name is required";
             if (!values.wage) errors.wage = "Wage is required";
             if (!values.category) errors.category = "Category is required";
+
+            if (!values.image && !existingImageUrl) {
+                errors.image = "Image is required";
+            }
+
+            if (values.image) {
+                const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+                if (!validTypes.includes(values.image.type)) {
+                    errors.image = "Only PNG or JPG images are allowed";
+                }
+            }
+
             return errors;
         },
         onSubmit: async values => {
+            setLoading(true);
             if (!editData?.id) return;
             try {
-                await updateService(editData.id, values);
+                let imageUrl = existingImageUrl;
+
+                if (values.image) {
+                    imageUrl = await uploadToCloud(values.image);
+                }
+
+                await updateService(editData._id as string, {
+                    name: values.name,
+                    wage: values.wage,
+                    category: values.category,
+                    image: imageUrl as string
+                });
                 toast.success("Service updated successfully");
+                setLoading(false)
                 setAdded(true);
                 handleEditClose();
             } catch (err: any) {
@@ -151,6 +183,7 @@ const ServiceManagment = () => {
                     err.response?.data?.data ||
                     err.response?.data?.message ||
                     err.message;
+                setLoading(false)
                 toast.error(`Failed to update service: ${message}`);
             }
         },
@@ -160,6 +193,17 @@ const ServiceManagment = () => {
         { key: 'name', label: 'Name' },
         { key: 'categoryName', label: 'Category' },
         { key: 'wage', label: 'Wage' },
+        {
+            key: 'image',
+            label: 'Icon',
+            render: (u) => (
+                <img
+                    src={u.image}
+                    alt={u.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                />
+            )
+        },
         {
             key: 'isActive',
             label: 'Active',
@@ -210,100 +254,142 @@ const ServiceManagment = () => {
                 data={service}
                 columns={columns}
                 searchKeys={['name', 'description', 'wage']}
-                advancedFilterKeys={['name', 'categoryName', 'wage','isActive']}
+                advancedFilterKeys={['name', 'categoryName', 'wage', 'isActive']}
             />
 
-            {/* Edit Modal */}
             {isEditing && (
-                <div className="fixed inset-0 bg-transparant bg-blur-50 bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
-                    <div className="bg-white rounded-lg p-6 border border-green-900 border-2 w-96 shadow-lg">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl w-full max-w-md sm:max-w-lg p-6 shadow-lg border-2 border-green-800 animate-fadeInUp">
+
+                        {/* Header */}
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold text-green-700">
-                                Edit Service
-                            </h2>
-                            <button onClick={handleEditClose}>
-                                <X className="w-5 h-5 text-gray-600 hover:text-gray-800" />
+                            <h2 className="text-lg font-semibold text-green-700">Edit Service</h2>
+                            <button
+                                onClick={handleEditClose}
+                                className="text-gray-600 hover:text-gray-800 transition"
+                            >
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
+
+                        {/* Form */}
                         <form onSubmit={formik.handleSubmit} className="space-y-4">
-                            {/* Name */}
+
+                            {/* Service Name */}
                             <div>
-                                <label className="block text-sm mb-1">Service Name</label>
+                                <label className="block text-sm font-medium mb-1">Service Name</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={formik.values.name}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.name && formik.errors.name
-                                        ? 'border-red-500'
-                                        : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.name && formik.errors.name
+                                        ? "border-red-500 focus:ring-red-400"
+                                        : "border-gray-300 focus:ring-green-400"
                                         }`}
                                 />
                                 {formik.touched.name && formik.errors.name && (
-                                    <span className="text-red-500 text-xs">
-                                        {formik.errors.name}
-                                    </span>
+                                    <span className="text-red-500 text-xs">{formik.errors.name}</span>
                                 )}
                             </div>
+
                             {/* Wage */}
                             <div>
-                                <label className="block text-sm mb-1">Wage</label>
+                                <label className="block text-sm font-medium mb-1">Wage</label>
                                 <input
                                     type="text"
                                     name="wage"
                                     value={formik.values.wage}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring ${formik.touched.wage && formik.errors.wage
-                                        ? 'border-red-500'
-                                        : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.wage && formik.errors.wage
+                                        ? "border-red-500 focus:ring-red-400"
+                                        : "border-gray-300 focus:ring-green-400"
                                         }`}
                                 />
                                 {formik.touched.wage && formik.errors.wage && (
-                                    <span className="text-red-500 text-xs">
-                                        {formik.errors.wage}
-                                    </span>
+                                    <span className="text-red-500 text-xs">{formik.errors.wage}</span>
                                 )}
                             </div>
-                            {/* Category Dropdown */}
+
+                            {/* Image Upload */}
                             <div>
-                                <label className="block text-sm mb-1">Category</label>
+                                <label className="block text-sm font-medium mb-1">Service Icon</label>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    {/* Existing image */}
+                                    {existingImageUrl && !formik.values.image && (
+                                        <img
+                                            src={existingImageUrl}
+                                            alt="Current Icon"
+                                            className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                                        />
+                                    )}
+
+                                    {/* New image preview */}
+                                    {formik.values.image && (
+                                        <img
+                                            src={URL.createObjectURL(formik.values.image)}
+                                            alt="New Icon Preview"
+                                            className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                                        />
+                                    )}
+
+                                    {/* Upload input */}
+                                    <input
+                                        type="file"
+                                        accept="image/png, image/jpeg, image/jpg"
+                                        onChange={(e) =>
+                                            formik.setFieldValue("image", e.currentTarget.files?.[0] || null)
+                                        }
+                                        className="text-sm w-full sm:w-auto"
+                                    />
+                                </div>
+                                {/* ✅ Corrected: Image error displays here */}
+                                {formik.touched.image && formik.errors.image && (
+                                    <span className="text-red-500 text-xs">{formik.errors.image}</span>
+                                )}
+                            </div>
+
+                            {/* Category */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Category</label>
                                 <select
                                     name="category"
                                     value={formik.values.category}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
+                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.category && formik.errors.category
+                                        ? "border-red-500 focus:ring-red-400"
+                                        : "border-gray-300 focus:ring-green-400"
+                                        }`}
                                 >
                                     <option value="">Select Category</option>
-                                    {categories.map(cat => (
+                                    {categories.map((cat) => (
                                         <option key={cat._id} value={cat._id}>
                                             {cat.name}
                                         </option>
                                     ))}
                                 </select>
-
-                                {formik.touched.category &&
-                                    formik.errors.category && (
-                                        <span className="text-red-500 text-xs">
-                                            {formik.errors.category}
-                                        </span>
-                                    )}
+                                {formik.touched.category && formik.errors.category && (
+                                    <span className="text-red-500 text-xs">{formik.errors.category}</span>
+                                )}
                             </div>
+
                             {/* Buttons */}
-                            <div className="flex justify-end gap-3">
+                            <div className="flex justify-end gap-3 pt-3">
                                 <button
                                     type="button"
                                     onClick={handleEditClose}
-                                    className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
+                                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition"
                                 >
-                                    Update
+                                    {isLoading ? 'Updating...' : 'Update'}
                                 </button>
                             </div>
                         </form>

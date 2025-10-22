@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
 import { fetchTopService } from "../../services/userService";
-import HomeRepairServiceImage from "../../assets/homeRepair-Service.jpg";
-import MovingServiceImage from "../../assets/moving-service.jpg";
-import OutdoorServiceImage from "../../assets/outdoor-service.jpg"
-import PaintingServiceImage from "../../assets/painting-service.jpg"
-import CleaningServiceImage from "../../assets/cleaning-service.jpg"
-import DomesticServiceImage from "../../assets/DomesticHelpServiceBanner.png"
 import { useNavigate } from "react-router-dom";
 
 interface IService {
@@ -15,17 +9,9 @@ interface IService {
     categoryId: string,
     isActive: boolean,
     name: string,
+    image: string,
     wage: string,
 }
-
-const categoryImages: { [key: string]: string } = {
-    'Cleaning': CleaningServiceImage,
-    'Moving': MovingServiceImage,
-    'Outdoor': OutdoorServiceImage,
-    'Painting': PaintingServiceImage,
-    'Domestic Help Services': DomesticServiceImage,
-    "Home Repair": HomeRepairServiceImage,
-};
 
 const PopularProjects = () => {
 
@@ -92,7 +78,7 @@ const PopularProjects = () => {
                             {/* Image Container */}
                             <div className="relative h-48 bg-gray-100 overflow-hidden">
                                 <img
-                                    src={categoryImages[service.categoryIcon] || service.categoryIcon}
+                                    src={service.image}
                                     alt={service.name}
                                     className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
                                 />

@@ -87,8 +87,15 @@ const CategoryManagment = () => {
         },
         enableReinitialize: true,
         validate: (values) => {
-            const errors: { name?: string; description?: string } = {};
+            const errors: { name?: string; description?: string; imageFile?: string } = {};
             if (!values.name) errors.name = "Category name is required";
+            if (!values.imageFile) errors.name = "Category Icone is required";
+            else if (values.imageFile) {
+                const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+                if (!validTypes.includes(values.imageFile.type)) {
+                    errors.imageFile = "Only PNG or JPG images are allowed";
+                }
+            }
             if (!values.description) {
                 errors.description = "Description is required";
             } else {

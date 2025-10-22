@@ -2,6 +2,7 @@ import { IServiceEntity } from "../../mappers/service/service.map.DTO.interface"
 import { IServices } from "../../model/service/service.interface";
 
 export interface IServiceRepository {
+    getBySearch(searchKey: string): unknown;
     create(category: Partial<IServices>): Promise<IServices>;
     findById(id: string): Promise<IServices | null>;
     findByName(name: string): Promise<IServices | null>;

@@ -19,6 +19,10 @@ export const serviceSchema = new Schema<IServices>({
         type: String,
         required: true
     },
+    image: {
+        type: String,
+        required: true
+    },
     isActive: {
         type: Boolean,
         required: true,

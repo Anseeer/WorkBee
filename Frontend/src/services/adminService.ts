@@ -115,7 +115,7 @@ export const addService = async (service: { name: string; wage: string; category
     return response;
 };
 
-export const updateService = async (id: string, service: { name: string; wage: string; category: string }) => {
+export const updateService = async (id: string, service: { name: string; wage: string; category: string; image: string }) => {
     const response = await axios.post(`${API_ROUTES.ADMIN_SERVICE.UPDATE_SERVICE}?serviceId=${id}`, service);
     return response;
 };

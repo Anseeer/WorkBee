@@ -79,7 +79,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         try {
             const result = await this.model.updateOne(
                 { _id: serviceId },
-                { $set: { name: service.name, wage: service.wage, category: service.category } }
+                { $set: { name: service.name, wage: service.wage, category: service.category, image:service.image || "" } }
             );
 
             return result.modifiedCount > 0;

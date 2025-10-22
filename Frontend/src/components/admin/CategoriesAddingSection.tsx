@@ -41,6 +41,11 @@ const AddingCategorySection = ({ setAdded }: Props) => {
 
             if (!values.imageFile) {
                 errors.imageFile = "Image is required";
+            } else if (values.imageFile) {
+                const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+                if (!validTypes.includes(values.imageFile.type)) {
+                    errors.imageFile = "Only PNG or JPG images are allowed";
+                }
             }
 
             return errors;
