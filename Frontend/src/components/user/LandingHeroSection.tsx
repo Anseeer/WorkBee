@@ -44,7 +44,7 @@ const HeroSection = () => {
     };
 
     return (
-        <section className="bg-white items-center relative overflow-hidden">
+        <section className="bg-white pb-10 items-center relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 grid py-5 grid-cols-1 md:grid-cols-2 gap-10 items-center">
                 {/* Left Section */}
                 <div className="space-y-6 animate-fadeInUp">
@@ -59,9 +59,8 @@ const HeroSection = () => {
                     </p>
 
                     {/* Search Bar */}
-                    {/* Search Bar */}
                     <div className="relative w-full max-w-md animate-fadeInUp delay-[0.3s]">
-                        <div className="flex rounded-full border border-green-900 overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl focus-within:shadow-xl">
+                        <div className="flex rounded-full border border-green-900 overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg focus-within:shadow-xl">
                             <input
                                 type="text"
                                 placeholder="What do you need help with?"
@@ -79,13 +78,16 @@ const HeroSection = () => {
 
                         {/* Service Buttons (Grid) */}
                         {searchTerm && services.length > 0 && (
-                            <div className="absolute mt-3 w-md p-4 z-10 animate-fadeInUp delay-[0.4s]">
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    {services?.slice(0, 6).map((service) => (
+                            <div
+                                className="absolute top-10 left-0 w-full sm:w-[500px] p-4 z-50 animate-fadeInUp"
+                                style={{ transform: 'translateY(100%)' }}
+                            >
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 rounded-lg p-2">
+                                    {services?.slice(0, 5).map((service) => (
                                         <button
                                             key={service.id}
                                             onClick={() => HandleSelectedService(service)}
-                                            className="bg-[#F5FAF5] text-black text-sm px-3 py-2 rounded-full font-medium shadow hover:bg-green-100 transition-all duration-300 hover:scale-105"
+                                            className="text-black text-sm px-3 py-2 rounded-full font-medium shadow border-1 border-gray-300 hover:border-green-600 hover:text-green-600 transition-all duration-300 hover:scale-105"
                                         >
                                             {service.name}
                                         </button>
