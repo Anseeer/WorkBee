@@ -19,7 +19,7 @@ import cookieParser from "cookie-parser";
 import http from "http";
 import logger from "./utilities/logger";
 import { initializeSocket } from "./socket/socketHandler";
-import { initCronJobs } from "./utilities/subscriptionExpiryJob";
+import { initCronJobs } from "./utilities/cronJobs";
 import { initSocket } from "./socket/socket";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })

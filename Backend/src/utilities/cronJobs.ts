@@ -3,8 +3,16 @@ import TYPES from '../inversify/inversify.types';
 import container from '../inversify/inversify.container';
 import { IWorkerRepository } from '../repositories/worker/worker.repo.interface';
 import { IWorker } from '../model/worker/worker.interface';
+import { IAvailabilityRepository } from '../repositories/availability/availability.repo.interface';
 
 const workerRepository = container.get<IWorkerRepository>(TYPES.workerRepository);
+const availabilityRepository = container.get<IAvailabilityRepository>(TYPES.availabilityRepository);
+
+export const initCronJobs = () => {
+    subscriptionExpiryJob.start();
+    availabilityCleanupJob.start();
+    console.log("Cron jobs initialized ");
+};
 
 const subscriptionExpiryJob = cron.schedule("0 0 * * *", async () => {
     try {
@@ -33,7 +41,13 @@ const subscriptionExpiryJob = cron.schedule("0 0 * * *", async () => {
     }
 });
 
-export const initCronJobs = () => {
-    subscriptionExpiryJob.start();
-    console.log("Cron jobs initialized (subscription expiry started)");
-};
+
+const availabilityCleanupJob = cron.schedule("0 0 * * *", async () => {
+    try {
+        console.log("Running availability cleanup job...");
+        const removedCount = await availabilityRepository.removeExpiredDates();
+        console.log(`Removed expired availability dates from ${removedCount} worker(s).`);
+    } catch (error) {
+        console.error("Error in availability cleanup job:", error);
+    }
+});

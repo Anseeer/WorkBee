@@ -43,6 +43,13 @@ const HeroSection = () => {
         navigate("/work-details");
     };
 
+    const truncateWords = (text: string, wordLimit: number) => {
+        const words = text.split(" ");
+        return words.length > wordLimit
+            ? words.slice(0, wordLimit).join(" ") + " ..."
+            : text;
+    };
+
     return (
         <section className="bg-white pb-10 items-center relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 grid py-5 grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -89,7 +96,7 @@ const HeroSection = () => {
                                             onClick={() => HandleSelectedService(service)}
                                             className="text-black text-sm px-3 py-2 rounded-full font-medium shadow border-1 border-gray-300 hover:border-green-600 hover:text-green-600 transition-all duration-300 hover:scale-105"
                                         >
-                                            {service.name}
+                                            {truncateWords(service.name, 2)}
                                         </button>
                                     ))}
                                 </div>

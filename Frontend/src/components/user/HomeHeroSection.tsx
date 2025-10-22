@@ -81,7 +81,15 @@ const HomeHeroSection = () => {
         navigate('/work-details');
     }
     const user = useSelector((state: RootState) => state?.user.user);
-    console.log("UserData in redux :", user)
+    console.log("User in redux :", user);
+
+    const truncateWords = (text: string, wordLimit: number) => {
+        const words = text.split(" ");
+        return words.length > wordLimit
+            ? words.slice(0, wordLimit).join(" ") + " ..."
+            : text;
+    };
+
 
     return (
         <div className="w-full min-h-[500px] flex flex-col items-center justify-center py-12 px-4">
@@ -125,7 +133,6 @@ const HomeHeroSection = () => {
             {/* Service Buttons */}
             <div className="w-full max-w-6xl mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 px-4 sm:px-8">
                 {isLoading ? (
-                    // // Loading skeleton
                     Array.from({ length: visibleCount }).map((_, index) => (
                         <div
                             key={`skeleton-${index}`}
@@ -137,13 +144,13 @@ const HomeHeroSection = () => {
                         <button
                             onClick={() => HandleSelectedService(service)}
                             key={service.id}
-                            className="text-black text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full font-medium shadow bg-white border-2 border-gray-300 hover:border-green-600 hover:text-green-600 transition break-words text-center opacity-0 animate-fadeInUp"
+                            className="text-black text-sm sm:text-base px-3 sm:px-4 py-1 rounded-full font-medium shadow bg-white border-2 border-gray-300 hover:border-green-600 hover:text-green-600 transition break-words text-center opacity-0 animate-fadeInUp"
                             style={{
                                 animationDelay: `${index * 80}ms`,
                                 animationFillMode: 'forwards'
                             }}
                         >
-                            {service.name}
+                            {truncateWords(service.name, 3)}
                         </button>
                     ))
                 ) : (

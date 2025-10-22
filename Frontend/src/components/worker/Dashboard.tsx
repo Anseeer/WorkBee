@@ -98,7 +98,7 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                         </div>
 
                         {/* Assigned Work Section */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 min-h-[400px] flex flex-col animate-fadeInScale">
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-y-auto p-6 max-h-[400px] flex flex-col animate-fadeInScale">
                             <div className="flex items-center justify-between mb-6 animate-slideInRight">
                                 <div className="flex items-center space-x-2">
                                     <div className="p-2 bg-blue-100 rounded-lg">
@@ -152,15 +152,6 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                                 )}
                             </div>
                         </div>
-                    </div>
-
-                    {/* Right Column - Calendar & Chart */}
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 animate-fadeInDown">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Availability</h3>
-                            <Calendar availability={availability} />
-                        </div>
-
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 animate-fadeInDown" style={{ animationDelay: "0.2s" }}>
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-bold text-gray-900">Earnings Overview</h3>
@@ -177,11 +168,15 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                             <EarningsChart filter={filter} rawData={earnings} />
                         </div>
                     </div>
+
+                    {/* Right Column - Calendar & Chart */}
+                    <div className="space-y-6">
+                        <Calendar availability={availability} />
+                    </div>
                 </div>
             </div>
         </div>
     );
-
 };
 
 export default WorkerDashboard;

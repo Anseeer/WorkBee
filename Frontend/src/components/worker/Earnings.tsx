@@ -45,7 +45,7 @@ const EarningsChart: React.FC<EarningsChartProps> = ({ filter, rawData }) => {
     const data = normalizeEarnings(rawData, filter);
 
     return (
-        <div className="bg-white rounded-lg">
+        <div className="bg-white  rounded-lg">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
                 Earnings ({filter})
             </h3>

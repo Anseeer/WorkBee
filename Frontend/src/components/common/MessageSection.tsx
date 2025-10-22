@@ -237,7 +237,7 @@ export default function MessageSection({ chats, me }: Props) {
   };
 
   return (
-    <div className="border-2 border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row min-h-screen md:h-[calc(100vh-4rem)] gap-0 md:gap-4">
+    <div className="border-2 h-screen border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row min-h-screen md:h-[calc(100vh-4rem)] gap-0 md:gap-4">
       <audio id="remote-audio" autoPlay playsInline />
 
       {/* Sidebar */}
@@ -308,28 +308,6 @@ export default function MessageSection({ chats, me }: Props) {
       <div className={`w-full lg:w-2/3 md:w-2/3 bg-white ${selectedUser ? 'block' : 'hidden md:block'} h-full`}>
         {isCall ? (
           <CallComponent onCallEnd={onCallEnd} user={user} isOutgoing={isOutgoing} me={me} />
-        ) : incomingCall ? (
-          <div className="fixed inset-0 flex items-start justify-center z-50 animate-zoomIn">
-            <div className="w-full md:w-2/3 lg:w-2/3 bg-white p-6 rounded-lg shadow-lg text-center mx-4">
-              <h2 className="text-xl font-bold mb-4">
-                Incoming Call from {selectedUser?.name || 'User'}
-              </h2>
-              <div className="flex justify-center gap-4">
-                <button
-                  className="bg-green-400 rounded-full border border-green-500 text-white px-4 py-2 rounded"
-                  onClick={handleAcceptCall}
-                >
-                  Accept
-                </button>
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={handleRejectCall}
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
         ) : selectedUser ? (
           <div className="flex flex-col h-full">
             {/* Chat Header */}
@@ -366,7 +344,7 @@ export default function MessageSection({ chats, me }: Props) {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
+            <div className="flex-1 h-screen overflow-y-auto p-4 sm:p-6 space-y-4">
               {chatMessages.map((msg, i) => {
                 const time = new Date(msg.createdAt as string).toLocaleTimeString([], {
                   hour: '2-digit',
@@ -436,7 +414,31 @@ export default function MessageSection({ chats, me }: Props) {
           </div>
         )}
       </div>
+      {incomingCall ? (
+        <div className="fixed  inset-0 flex items-start justify-center z-50 animate-zoomIn">
+          <div className="w-full  md:w-2/3 lg:w-2/3 bg-white p-6 rounded-lg shadow-lg text-center mx-4">
+            <h2 className="text-xl font-bold mb-4">
+              Incoming Call from {selectedUser?.name || 'User'}
+            </h2>
+            <div className="flex justify-center gap-4">
+              <button
+                className="bg-green-400 rounded-full border border-green-500 text-white px-4 py-2 rounded"
+                onClick={handleAcceptCall}
+              >
+                Accept
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={handleRejectCall}
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 
 }
+

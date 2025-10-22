@@ -110,6 +110,14 @@ const CategorySection: React.FC = () => {
         scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
     };
 
+    const truncateWords = (text: string, wordLimit: number) => {
+        const words = text.split(" ");
+        return words.length > wordLimit
+            ? words.slice(0, wordLimit).join(" ") + " ..."
+            : text;
+    };
+    
+
     return (
         <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 my-5 min-h-screen">
             <div className="mb-8 relative">
@@ -209,7 +217,7 @@ const CategorySection: React.FC = () => {
                                         animationFillMode: 'forwards'
                                     }}
                                 >
-                                    {service.name}
+                                    {truncateWords(service.name, 2)}
                                 </button>
                             ))}
                         </div>

@@ -43,5 +43,17 @@ export class AvailabilityRepository extends BaseRepository<IAvailability> implem
         }
     }
 
+    removeExpiredDates = async (): Promise<number> => {
+        const today = new Date();
+        const result = await this.model.updateMany(
+            {},
+            {
+                $pull: {
+                    availableDates: { date: { $lt: today } },
+                },
+            }
+        );
+        return result.modifiedCount;
+    }
 
 }
