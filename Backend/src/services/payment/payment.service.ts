@@ -5,6 +5,7 @@ import { IPayment } from "../../model/payment/payment.interface.model";
 import { IPaymentRepository } from "../../repositories/payment/payment.repo.interface";
 import { IPaymentDTO } from "../../mappers/payment/payment.mapToDTO.interface";
 import { mapPaymentToDTO } from "../../mappers/payment/payment.mapToDTO";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class PaymentService implements IPaymentService {
@@ -23,7 +24,7 @@ export class PaymentService implements IPaymentService {
             return mapPaymentToDTO(payment);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -37,7 +38,7 @@ export class PaymentService implements IPaymentService {
             return mapPaymentToDTO(payment);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -51,7 +52,7 @@ export class PaymentService implements IPaymentService {
             return mapPaymentToDTO(payment as IPayment);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }

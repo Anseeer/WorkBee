@@ -3,6 +3,7 @@ import type { Iuser } from "../types/IUser";
 import { fetchUser, forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/userService";
 import type { AxiosError } from "axios";
 import type { IWallet } from "../types/IWallet";
+import { API_ROUTES } from "../constant/api.routes";
 
 interface userState {
     user: Iuser | null,
@@ -18,7 +19,8 @@ const initialState: userState = {
     resetEmail: null,
 }
 
-export const registerUserThunk = createAsyncThunk("users/register",
+export const registerUserThunk = createAsyncThunk(
+    API_ROUTES.USER.REGISTER,
     async (userData: Partial<Iuser>, { rejectWithValue }) => {
         try {
             const response = await register(userData);
@@ -32,7 +34,8 @@ export const registerUserThunk = createAsyncThunk("users/register",
     }
 )
 
-export const loginUserThunk = createAsyncThunk("users/login",
+export const loginUserThunk = createAsyncThunk(
+    API_ROUTES.USER.LOGIN,
     async (credintials: { email: string, password: string }, { rejectWithValue }) => {
         try {
             const response = await login(credintials);
@@ -45,7 +48,8 @@ export const loginUserThunk = createAsyncThunk("users/login",
     }
 )
 
-export const forgotPassUserThunk = createAsyncThunk("user/forgot-password",
+export const forgotPassUserThunk = createAsyncThunk(
+    API_ROUTES.USER.FORGOT_PASS,
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await forgotPassword(email);
@@ -59,7 +63,8 @@ export const forgotPassUserThunk = createAsyncThunk("user/forgot-password",
     }
 )
 
-export const resendOtpUserThunk = createAsyncThunk("user/otp-resend",
+export const resendOtpUserThunk = createAsyncThunk(
+    API_ROUTES.USER.RESEND_OTP,
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await resendOtp(email);
@@ -73,7 +78,8 @@ export const resendOtpUserThunk = createAsyncThunk("user/otp-resend",
     }
 )
 
-export const verifyOtpUserThunk = createAsyncThunk("user/verify-otp",
+export const verifyOtpUserThunk = createAsyncThunk(
+    API_ROUTES.USER.VERIFY_OTP,
     async (verifyData: { email: string, otp: string }, { rejectWithValue }) => {
         try {
             const response = await verifyOtp(verifyData.email, verifyData.otp)
@@ -86,7 +92,8 @@ export const verifyOtpUserThunk = createAsyncThunk("user/verify-otp",
     }
 )
 
-export const resetPasswordUserThunk = createAsyncThunk("users/reset-password",
+export const resetPasswordUserThunk = createAsyncThunk(
+    API_ROUTES.USER.RESET_PASS,
     async (resetData: { email: string, password: string }, { rejectWithValue }) => {
         try {
             const response = await resetPass(resetData.email, resetData.password)
@@ -99,7 +106,8 @@ export const resetPasswordUserThunk = createAsyncThunk("users/reset-password",
     }
 )
 
-export const fetchUserDataThunk = createAsyncThunk("users/fetch-data",
+export const fetchUserDataThunk = createAsyncThunk(
+    API_ROUTES.USER.FETCH_DATA,
     async (_, { rejectWithValue }) => {
         try {
             const response = await fetchUser()

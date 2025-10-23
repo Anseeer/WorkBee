@@ -134,7 +134,7 @@ const ProfileSection = () => {
                                         ? "text-green-700 font-bold bg-green-100 border-l-4 border-green-600 shadow-md shadow-green-500/30 animate-zoomIn"
                                         : "hover:bg-gray-100 animate-fadeInUp"}
                         `}
-                                style={{ animationDelay: `${idx * 100}ms` }} 
+                                style={{ animationDelay: `${idx * 100}ms` }}
                             >
                                 {item.label}
                             </div>

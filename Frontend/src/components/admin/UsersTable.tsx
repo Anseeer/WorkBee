@@ -66,7 +66,7 @@ const UserTable = () => {
                 data={users}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
-                advancedFilterKeys={['name', 'email', 'phone','isActive','location']}
+                advancedFilterKeys={['name', 'email', 'phone', 'isActive', 'location']}
             />
         </div>
     );

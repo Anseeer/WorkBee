@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { IWork } from "../types/IWork";
 import type { AxiosError } from "axios";
 import { DraftWork } from "../services/userService";
+import { API_ROUTES } from "../constant/api.routes";
 
 
 export const initialState: IWork = {
@@ -30,7 +31,8 @@ export const initialState: IWork = {
     sheduleTime: "",
 }
 
-export const WorkDraftThunk = createAsyncThunk('works/create-work',
+export const WorkDraftThunk = createAsyncThunk(
+    API_ROUTES.USER.DRAFT_WORK,
     async (WorkDetails: IWork, { rejectWithValue }) => {
         try {
             const response = await DraftWork(WorkDetails);

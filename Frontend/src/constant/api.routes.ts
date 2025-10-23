@@ -7,11 +7,14 @@ export const API_ROUTES = {
     LANDING: "",
     PROFILE: "/profile",
     VERIFY_OTP: "/verify-otp",
+    RESEND_OTP: "/otp-resend",
     FORGOT_PASS: "/forgot-password",
     RESET_PASS: "/reset-password",
     WORK_DETAILS: "/work-details",
     NOTIFICATIONS: "/notifications",
     MESSAGE: "/message",
+    FETCH_DATA: "/fetch-data",
+    DRAFT_WORK: "/create-work",
   },
 
   ADMIN: {
@@ -28,9 +31,12 @@ export const API_ROUTES = {
     LOGIN: "/workers/login",
     LANDING: "/workers",
     VERIFY_OTP: "/workers/verify-otp",
+    RESEND_OTP: "/workers/otp-resend",
     FORGOT_PASS: "/workers/forgot-password",
     RESET_PASS: "/workers/reset-password",
+    BUILD_ACCOUNT: "/workers/build-account",
     NOTIFICATION: "/workers/notifications",
+    FETCH_DETAILS: "/workers/fetch-details",
   },
 
   ADMIN_SERVICE: {
@@ -65,29 +71,6 @@ export const API_ROUTES = {
     UPDATE_SUBSCRIPTION: "subscription/update",
   },
 
-  // USER_SERVICE: {
-  //   REGISTER: "users/register",
-  //   LOGIN: "users/login",
-  //   LOGOUT: "users/logout",
-  //   FETCH_USER: "users/fetch-data",
-  //   UPDATE_USER: "users/update",
-  //   FORGOT_PASSWORD: "users/forgot-password",
-  //   RESEND_OTP: "users/resend-otp",
-  //   VERIFY_OTP: "users/verify-otp",
-  //   RESET_PASSWORD: "users/reset-password",
-  //   FETCH_SERVICES: "services/getAll-services",
-  //   FETCH_SERVICE_BY_SEARCH: "services/by-search",
-  //   FETCH_SERVICE_BY_ID: "services/By-Id",
-  //   FETCH_CATEGORY_BY_ID: "categories/By-Id",
-  //   FETCH_AVAILABILITY: "users/fetch-availability",
-  //   CREATE_WORK: "works/creat-work",
-  //   FETCH_WORK_HISTORY: "works/users",
-  //   CANCEL_WORK: "works/cancel",
-  //   FIND_USERS_BY_IDS: "users/find-users-byId",
-  //   FETCH_CHAT: "chats/fetch-chat",
-  //   RATE_WORKER: "workers/ratings",
-  // },
-
   USER_SERVICE: {
     REGISTER: "users/register",
     LOGIN: "users/login",
@@ -102,18 +85,14 @@ export const API_ROUTES = {
     FETCH_AVAILABILITY: "users/fetch-availability",
     FIND_BY_IDS: "users/find-users-byId",
 
-    // Work
     CREATE_WORK: "works/creat-work",
     CANCEL_WORK: "works/cancel",
     FETCH_WORK_HISTORY: "works/users",
 
-    // Chat
     FETCH_CHAT: "chats/fetch-chat",
 
-    // Ratings
     RATE_WORKER: "workers/ratings",
 
-    // Services & Categories
     FETCH_SERVICES: "services/getAll-services",
     FETCH_SERVICE_BY_ID: "services/By-Id",
     FETCH_CATEGORY_BY_ID: "categories/By-Id",

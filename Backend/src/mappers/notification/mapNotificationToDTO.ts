@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 import { INotification } from "../../model/notification/notification.interface";
-import { INotificationEntity } from "./mapNotificationToEntity.interface";
+import { INotificationDTO } from "./INotification.DTO";
 
-export const mapNotificationToEntity = (
-    notification: Partial<INotification>
-): Partial<INotificationEntity> => {
+export const mapNotificationToDTO = (notification: Partial<INotification>): INotificationDTO => {
     return {
         recipient: notification.recipient
             ? new mongoose.Types.ObjectId(notification.recipient)

@@ -122,7 +122,7 @@ const WorkerListing = () => {
                 slot,
                 totalAmount,
                 PlatformFee,
-                commission:commissionAmount,
+                commission: commissionAmount,
                 workerId: selectedWorker?.id,
                 workerName: selectedWorker?.name,
                 userName: userDetails?.name

@@ -6,8 +6,6 @@ import { useState } from "react";
 import GoogleAuth from "./GoogleSignButton";
 import type { CredentialResponse } from "@react-oauth/google";
 
-
-
 interface LoginFormProps {
   Submit: (credentials: { email: string; password: string }) => void;
   HandleForgotPass: () => void;

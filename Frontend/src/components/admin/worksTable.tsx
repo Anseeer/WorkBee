@@ -64,7 +64,7 @@ const WorksTable = () => {
                 data={works}
                 columns={columns}
                 searchKeys={['service', 'workerName', 'userName', 'location']}
-                advancedFilterKeys={['service', 'workerName', 'userName', 'status','commission','platformFee','sheduleDate']}
+                advancedFilterKeys={['service', 'workerName', 'userName', 'status', 'commission', 'platformFee', 'sheduleDate']}
             />
 
             {selectedWork && <WorkInfoModal closeModal={closeWorkInfo} workId={selectedWork as string} />}

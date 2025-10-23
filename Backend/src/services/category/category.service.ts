@@ -6,6 +6,7 @@ import { ICategoryRepository } from "../../repositories/category/category.repo.i
 import { CATEGORY_MESSAGE } from "../../constants/messages";
 import { ICategoryDTO } from "../../mappers/category/category.map.DTO.interface";
 import { mapCategoryToDTO, mapCategoryToEntity } from "../../mappers/category/category.map.DTO";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class CategoryService implements ICategoryService {
@@ -31,7 +32,7 @@ export class CategoryService implements ICategoryService {
             return { category, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -48,7 +49,7 @@ export class CategoryService implements ICategoryService {
             return cat;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -64,7 +65,7 @@ export class CategoryService implements ICategoryService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -75,7 +76,7 @@ export class CategoryService implements ICategoryService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -90,7 +91,7 @@ export class CategoryService implements ICategoryService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -102,7 +103,7 @@ export class CategoryService implements ICategoryService {
             return category;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -114,7 +115,7 @@ export class CategoryService implements ICategoryService {
             return category;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };

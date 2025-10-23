@@ -18,7 +18,7 @@ export class SubscriptionController implements ISubscriptionController {
     createSubscriptionPlan = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const subscription = req.body;
-            console.log("Subscription :", subscription);
+            logger.info("Subscription :", subscription);
             if (!subscription.planName || !subscription.description || !subscription.durationInDays || subscription.amount < 0 || !subscription.comission) {
                 throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA)
             }
@@ -27,7 +27,7 @@ export class SubscriptionController implements ISubscriptionController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.FAILD_CREATED, errMsg));
         }
@@ -44,7 +44,7 @@ export class SubscriptionController implements ISubscriptionController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.FETCH_FAILD, errMsg));
         }
@@ -61,7 +61,7 @@ export class SubscriptionController implements ISubscriptionController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.FETCH_FAILD, errMsg));
         }
@@ -78,7 +78,7 @@ export class SubscriptionController implements ISubscriptionController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.STATUS_UPDATE_FAILD, errMsg));
         }
@@ -99,7 +99,7 @@ export class SubscriptionController implements ISubscriptionController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.UPDATE_FAILD, errMsg));
         }
@@ -117,7 +117,7 @@ export class SubscriptionController implements ISubscriptionController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.ACTIVE_PLAN_FAILD, errMsg));
         }

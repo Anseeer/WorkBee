@@ -56,8 +56,8 @@ const AboutPage: React.FC = () => {
             <section className="relative bg-gradient-to-br from-[#2B4E34] to-[#1a2e20] text-white py-20 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
-                            About WorkBee
+                        <h1 className="text-4xl merienda-text md:text-6xl font-bold mb-6 animate-fade-in">
+                            WorkBee
                         </h1>
                         <p className="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
                             Your trusted marketplace connecting skilled workers with those who need their services.
@@ -182,10 +182,10 @@ const AboutPage: React.FC = () => {
                         Join thousands of satisfied customers or become a worker and grow your business.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button onClick={()=> navigate('/')} className="bg-white text-[#2B4E34] px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                        <button onClick={() => navigate('/')} className="bg-white text-[#2B4E34] px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors">
                             Book a Service
                         </button>
-                        <button onClick={()=> navigate('/workers')} className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors">
+                        <button onClick={() => navigate('/workers')} className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors">
                             Become a Worker
                         </button>
                     </div>

@@ -4,6 +4,7 @@ import { buildAccount, forgotPassword, getWorkerDetails, login, register, resend
 import type { IWorker } from "../types/IWorker";
 import type { IAvailability } from "../types/IAvailability";
 import type { IWallet } from "../types/IWallet";
+import { API_ROUTES } from "../constant/api.routes";
 
 interface BuildAccountResponse {
     worker: IWorker;
@@ -27,7 +28,7 @@ const initialState: WorkerState = {
 };
 
 export const registerWorkerThunk = createAsyncThunk(
-    "workers/register",
+    API_ROUTES.WORKER.REGISTER,
     async (workerData: Partial<IWorker>, { rejectWithValue }) => {
         try {
             const response = await register(workerData);
@@ -40,7 +41,7 @@ export const registerWorkerThunk = createAsyncThunk(
 );
 
 export const loginWorkerThunk = createAsyncThunk(
-    "workers/login",
+    API_ROUTES.WORKER.LOGIN,
     async (credentials: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await login(credentials);
@@ -53,7 +54,7 @@ export const loginWorkerThunk = createAsyncThunk(
 );
 
 export const forgotPassUserThunk = createAsyncThunk(
-    "workers/forgot-password",
+    API_ROUTES.WORKER.FORGOT_PASS,
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await forgotPassword(email);
@@ -66,7 +67,7 @@ export const forgotPassUserThunk = createAsyncThunk(
 );
 
 export const resendOtpUserThunk = createAsyncThunk(
-    "workers/otp-resend",
+    API_ROUTES.WORKER.RESEND_OTP,
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await resendOtp(email);
@@ -79,7 +80,7 @@ export const resendOtpUserThunk = createAsyncThunk(
 );
 
 export const verifyOtpUserThunk = createAsyncThunk(
-    "workers/verify-otp",
+    API_ROUTES.WORKER.VERIFY_OTP,
     async (verifyData: { email: string; otp: string }, { rejectWithValue }) => {
         try {
             const response = await verifyOtp(verifyData.email, verifyData.otp);
@@ -92,7 +93,7 @@ export const verifyOtpUserThunk = createAsyncThunk(
 );
 
 export const resetPasswordUserThunk = createAsyncThunk(
-    "workers/reset-password",
+    API_ROUTES.WORKER.RESET_PASS,
     async (resetData: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await resetPass(resetData.email, resetData.password);
@@ -105,7 +106,7 @@ export const resetPasswordUserThunk = createAsyncThunk(
 );
 
 export const buildAccountWorkerThunk = createAsyncThunk(
-    "workers/build-account",
+    API_ROUTES.WORKER.BUILD_ACCOUNT,
     async (accountData: Partial<IWorker>, { rejectWithValue }) => {
         try {
             console.log("WorkerId :", accountData._id)
@@ -119,7 +120,7 @@ export const buildAccountWorkerThunk = createAsyncThunk(
 );
 
 export const fetchWorkerDetails = createAsyncThunk(
-    "workers/fetch-details",
+    API_ROUTES.WORKER.FETCH_DETAILS,
     async (workerId: string, { rejectWithValue }) => {
         try {
             console.log("Getting the worker id from localStorage:", workerId);
@@ -171,14 +172,10 @@ const workerSlice = createSlice({
             .addCase(registerWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            // Login
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {
                 console.log("Action.Payload :", action.payload)
                 const worker = action.payload.worker;
                 const wallet = action.payload.wallet;
-                const availability = action.payload.availability;
-                console.log("Worker :", worker)
-                console.log("Availability :", availability)
                 state.worker = {
                     ...worker,
                     id: worker.id || worker._id
@@ -191,7 +188,6 @@ const workerSlice = createSlice({
             .addCase(loginWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            // Build Account
             .addCase(buildAccountWorkerThunk.fulfilled, (state, action) => {
                 state.worker = action.payload.worker;
                 state.availability = action.payload.availability

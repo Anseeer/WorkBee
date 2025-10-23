@@ -7,7 +7,7 @@ export interface IMessageDTO {
     receiverId: string;
     content: string;
     contentType: string;
-    createdAt:string;
+    createdAt: string;
 }
 
 

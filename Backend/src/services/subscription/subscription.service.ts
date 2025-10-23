@@ -8,6 +8,7 @@ import { ISubscriptionDTO } from "../../mappers/subscription/subscription.map.DT
 import { SUBSCRIPTION_MESSAGE } from "../../constants/messages";
 import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class SubscriptionService implements ISubscriptionService {
@@ -37,7 +38,7 @@ export class SubscriptionService implements ISubscriptionService {
             return { subscription, totalPage }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -50,7 +51,7 @@ export class SubscriptionService implements ISubscriptionService {
             return mapSubscriptionToDTO(subscription);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -71,7 +72,7 @@ export class SubscriptionService implements ISubscriptionService {
             return created ? true : false;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -82,7 +83,7 @@ export class SubscriptionService implements ISubscriptionService {
             return await this._subscriptionRepository.delete(subscriptionId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -93,7 +94,7 @@ export class SubscriptionService implements ISubscriptionService {
             await this._subscriptionRepository.toggleStatus(subscriptionId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -110,7 +111,7 @@ export class SubscriptionService implements ISubscriptionService {
             return mapSubscriptionToDTO(sub);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -160,7 +161,7 @@ export class SubscriptionService implements ISubscriptionService {
 
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }

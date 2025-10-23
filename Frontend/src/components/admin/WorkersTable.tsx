@@ -86,7 +86,7 @@ const WorkersTable = () => {
                 itemsPerPage={6}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
-                advancedFilterKeys={['name', 'email', 'phone','location','isActive']}
+                advancedFilterKeys={['name', 'email', 'phone', 'location', 'isActive']}
                 onRowClick={async (worker) => {
                     try {
                         const availabilityData = await FetchAvailability(worker.id);
@@ -100,8 +100,6 @@ const WorkersTable = () => {
                         console.log(error);
                     }
                 }}
-
-
 
             />
         </div>

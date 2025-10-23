@@ -36,9 +36,7 @@ import { SubscriptionRepository } from "../repositories/subscription/subscriptio
 import { SubscriptionService } from "../services/subscription/subscription.service";
 import { SubscriptionController } from "../controllers/subscription/subscription.controller";
 
-
 // interfaces
-
 
 import { IUserRepository } from "../repositories/user/user.repo.interface";
 import { IUserService } from "../services/user/user.service.interface";

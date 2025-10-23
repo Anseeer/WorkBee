@@ -14,7 +14,6 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { toast } from "react-toastify";
 import { getServiceByCategory } from "../../services/workerService";
 
-
 const workingHours = [
   { id: "morning", label: "Morning (9am - 1pm)" },
   { id: "afternoon", label: "Afternoon (1pm - 5pm)" },

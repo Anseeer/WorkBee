@@ -4,6 +4,7 @@ import Services from "../../model/service/service.model";
 import BaseRepository from "../base/base.repo";
 import { IServiceRepository } from "./service.repo.interface";
 import { IServiceEntity } from "../../mappers/service/service.map.DTO.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class ServiceRepository extends BaseRepository<IServices> implements IServiceRepository {
@@ -16,7 +17,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
             const newItem = new this.model(item);
             return await newItem.save();
         } catch (error) {
-            console.error('Error in create:', error);
+            logger.error('Error in create:', error);
             throw new Error('Error in create');
         }
     }
@@ -25,7 +26,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         try {
             return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
         } catch (error) {
-            console.error('Error in findByName:', error);
+            logger.error('Error in findByName:', error);
             throw new Error('Error in findByName');
         }
     }
@@ -43,7 +44,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
 
             return service as IServices;
         } catch (error) {
-            console.error('Error in findById:', error);
+            logger.error('Error in findById:', error);
             throw error;
         }
     }
@@ -52,7 +53,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         try {
             return await this.model.find().sort({ createdAt: 1 });
         } catch (error) {
-            console.error('Error in getAllService:', error);
+            logger.error('Error in getAllService:', error);
             throw new Error('Error in getAllServices');
         }
     }
@@ -70,7 +71,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
 
             return true;
         } catch (error) {
-            console.error('Error in setIsActive:', error);
+            logger.error('Error in setIsActive:', error);
             throw new Error('Error in setISActive');
         }
     }
@@ -79,12 +80,12 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         try {
             const result = await this.model.updateOne(
                 { _id: serviceId },
-                { $set: { name: service.name, wage: service.wage, category: service.category, image:service.image || "" } }
+                { $set: { name: service.name, wage: service.wage, category: service.category, image: service.image || "" } }
             );
 
             return result.modifiedCount > 0;
         } catch (error) {
-            console.error('Error in update:', error);
+            logger.error('Error in update:', error);
             throw new Error('Error in update');
         }
     };
@@ -94,7 +95,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
             const result = await this.model.deleteOne({ _id: id });
             return result.deletedCount > 0;
         } catch (error) {
-            console.error('Error in delete:', error);
+            logger.error('Error in delete:', error);
             throw new Error('Error in delete');
         }
     };
@@ -103,7 +104,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         try {
             return await this.model.find({ category: { $in: categoryIds } });
         } catch (error) {
-            console.error('Error in getByCategories:', error);
+            logger.error('Error in getByCategories:', error);
             throw new Error('Error in getByCategories');
         }
     };
@@ -112,7 +113,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         try {
             return await this.model.find({ _id: { $in: serviceIds } });
         } catch (error) {
-            console.error('Error in getByWorker:', error);
+            logger.error('Error in getByWorker:', error);
             throw new Error('Error in getByWorker');
         }
     };
@@ -162,10 +163,9 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
                 { $limit: 12 }
             ]);
         } catch (error) {
-            console.error('Error in getBySearch:', error);
+            logger.error('Error in getBySearch:', error);
             throw new Error('Error in getBySearch');
         }
     };
-
 
 }

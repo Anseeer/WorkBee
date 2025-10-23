@@ -5,7 +5,6 @@ import workerReducer from "./slice/workerSlice";
 import adminReducer from "./slice/adminSlice";
 import workDraft from "./slice/workDraftSlice";
 
-
 const Store = configureStore({
     reducer: {
         user: userReducer,
@@ -14,8 +13,6 @@ const Store = configureStore({
         work: workDraft,
     },
 });
-
-
 
 export type RootState = ReturnType<typeof Store.getState>;
 export type AppDispatch = typeof Store.dispatch;

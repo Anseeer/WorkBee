@@ -13,7 +13,7 @@ export const mapServiceToDTO = (service: Partial<IServices>): IServiceDTO => {
         categoryName: service.categoryName as string | undefined,
         categoryIcon: service.categoryIcon as string || undefined,
         categoryId: service.categoryId as string || undefined,
-        isActive: service.isActive as boolean 
+        isActive: service.isActive as boolean
     }
 }
 

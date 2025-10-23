@@ -72,7 +72,7 @@ export class WorkerController implements IWorkerController {
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            console.log("Error ::", error)
+            logger.error("Error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg));
         }
@@ -94,7 +94,6 @@ export class WorkerController implements IWorkerController {
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.LOGOUT_FAILD, errMsg));
         }
     };
-
 
     buildAccount = async (req: Request, res: Response, next: NextFunction) => {
         const { workerId } = req.query;
@@ -212,7 +211,7 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
 
         } catch (error: unknown) {
-            console.log("Error :", error);
+            logger.error("Error :", error);
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.WORKER_DETAILS_FETCH_FAILD, errMsg));
         }
@@ -339,7 +338,6 @@ export class WorkerController implements IWorkerController {
 
     rateWorkers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log("get in the backend ratings");
             const workerId = req.query.workerId;
             const rating = parseInt(req.query.rating as string);
 

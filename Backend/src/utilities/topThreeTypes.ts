@@ -9,3 +9,10 @@ export interface TopThreeResult {
     TopWorker: TopItem[];
     TopUsers: TopItem[];
 }
+
+export interface TopThreeResultDTO {
+    TopServices: TopItem[];
+    TopCategory: TopItem[];
+    TopWorker: TopItem[];
+    TopUsers: TopItem[];
+}

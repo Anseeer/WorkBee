@@ -22,6 +22,7 @@ import { mapWalletToDTO, mapWalletToEntity } from "../../mappers/wallet/map.wall
 import { mapAvailabilityToDTO, mapAvailabilityToEntity } from "../../mappers/availability/availability.map.DTO";
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { Types } from "mongoose";
+import logger from "../../utilities/logger";
 
 const client = new OAuth2Client();
 
@@ -89,7 +90,7 @@ export class WorkerService implements IWorkerService {
             };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -135,7 +136,7 @@ export class WorkerService implements IWorkerService {
             return { accessToken, refreshToken, worker, wallet };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -187,7 +188,7 @@ export class WorkerService implements IWorkerService {
             return { updatedWorker, updatedAvailability };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -200,7 +201,7 @@ export class WorkerService implements IWorkerService {
             return otp;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -211,7 +212,7 @@ export class WorkerService implements IWorkerService {
             return await this.forgotPass(email);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -223,7 +224,7 @@ export class WorkerService implements IWorkerService {
             return mapWorkerToDTO(findUser);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -235,7 +236,7 @@ export class WorkerService implements IWorkerService {
             return mapWorkerToDTO(findUser);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -253,7 +254,7 @@ export class WorkerService implements IWorkerService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -264,7 +265,7 @@ export class WorkerService implements IWorkerService {
             await this._workerRepository.resetPassword(email, hashedPass);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -279,7 +280,7 @@ export class WorkerService implements IWorkerService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -332,7 +333,6 @@ export class WorkerService implements IWorkerService {
             });
 
             const payload = ticket.getPayload();
-            console.log("Worker Payload :", payload)
 
             if (!payload?.email) throw new Error(WORKER_MESSAGE.GOOGLE_LOGIN_FAILED);
 
@@ -384,7 +384,7 @@ export class WorkerService implements IWorkerService {
             return mapWalletToDTO(wallet as IWallet);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error('Error in findWallet:', errMsg);
+            logger.error(errMsg);
             throw new Error(`Failed to find wallet: ${errMsg}`);
         }
     }
@@ -398,7 +398,7 @@ export class WorkerService implements IWorkerService {
             return await this._walletRepository.getEarnings(workerId, filter);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error('Error in getEarnings:', errMsg);
+            logger.error(errMsg);
             throw new Error(`Failed to get earnings: ${errMsg}`);
         }
     }
@@ -414,7 +414,7 @@ export class WorkerService implements IWorkerService {
             return await this._workerRepository.rateWorker(workerId, rating);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error('Error in rateWorker:', errMsg);
+            logger.error(errMsg);
             throw new Error(`Failed to rate worker: ${errMsg}`);
         }
     }
@@ -432,7 +432,7 @@ export class WorkerService implements IWorkerService {
             }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error('Error in rateWorker:', errMsg);
+            logger.error(errMsg);
             throw new Error(`Failed to rate worker: ${errMsg}`);
         }
     }
@@ -445,7 +445,7 @@ export class WorkerService implements IWorkerService {
             await this._workerRepository.updateCompletedWorks(workerId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error('Error in rateWorker:', errMsg);
+            logger.error(errMsg);
             throw new Error(`Failed to rate worker: ${errMsg}`);
         }
     }
@@ -458,7 +458,7 @@ export class WorkerService implements IWorkerService {
             await this._workerRepository.reApprovalRequest(workerId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error('Error in reApprovalRequest:', errMsg);
+            logger.error(errMsg);
             throw new Error(`Failed to reApprovalRequest: ${errMsg}`);
         }
     }

@@ -12,10 +12,10 @@ export const getProfileImage = (
 
   const initials = name
     ? name
-        .split(" ")
-        .map((word) => word[0])
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
     : "W";
 
   return `https://ui-avatars.com/api/?name=${initials}&background=random`;

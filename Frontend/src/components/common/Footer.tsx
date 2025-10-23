@@ -9,7 +9,13 @@ export default function Footer() {
 
           {/* Logo/Brand Section */}
           <div className="text-center md:text-left">
-            <h2 className="text-2xl font-bold text-gray-200 mb-2">WorkBee</h2>
+            <div className="flex-shrink-0">
+              <h1
+                className="merienda-text text-2xl sm:text-3xl cursor-pointer text-white"
+              >
+                WorkBee
+              </h1>
+            </div>
             <p className="text-gray-300 text-sm">Your trusted service platform</p>
           </div>
 

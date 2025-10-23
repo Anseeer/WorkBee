@@ -5,6 +5,7 @@ import BaseRepository from "../base/base.repo";
 import { IUserRepository } from "./user.repo.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
 import { IUserEntity } from "../../mappers/user/user.map.DTO.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class UserRepository extends BaseRepository<Iuser> implements IUserRepository {
@@ -15,7 +16,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         try {
             return await User.find({ role: "User" }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in getAllUsers:', error);
+            logger.error('Error in getAllUsers:', error);
             throw new Error('Error in getAllUsers');
         }
     }
@@ -32,7 +33,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
 
             return true;
         } catch (error) {
-            console.error('Error in setIsActive:', error);
+            logger.error('Error in setIsActive:', error);
             throw new Error('Error in setIsActive');
         }
     }
@@ -46,7 +47,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
 
             return user;
         } catch (error) {
-            console.error('Error in fetchData:', error);
+            logger.error('Error in fetchData:', error);
             throw new Error('Error in fetchData');
         }
     }
@@ -72,7 +73,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
 
             return res.modifiedCount > 0;
         } catch (error) {
-            console.error('Error in update:', error);
+            logger.error('Error in update:', error);
             throw new Error('Error in update');
         }
     }
@@ -81,7 +82,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         try {
             return await this.model.find({ _id: { $in: userIds } });
         } catch (error) {
-            console.error('Error in findUsersByIds:', error);
+            logger.error('Error in findUsersByIds:', error);
             throw new Error('Error in findUsersByIds');
         }
     }

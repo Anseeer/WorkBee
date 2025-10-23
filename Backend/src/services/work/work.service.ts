@@ -17,15 +17,15 @@ import { mapChatToEntity } from "../../mappers/chatMessage/chat.map.DTO";
 import { IChat } from "../../model/chatMessage/IChat";
 import { toISTDateOnly } from "../../utilities/toISTDate";
 import { Role } from "../../constants/role";
-import { TopThreeResult } from "../../utilities/topThreeTypes";
+import { TopThreeResultDTO } from "../../utilities/topThreeTypes";
 import { INotification } from "../../model/notification/notification.interface";
 import { getIO } from "../../socket/socket";
 import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
 import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
-import { Server } from "socket.io";
 import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
 import { mapServiceToDTO } from "../../mappers/service/service.map.DTO";
 import { IServices } from "../../model/service/service.interface";
+import logger from "../../utilities/logger";
 
 
 @injectable()
@@ -113,7 +113,7 @@ export class WorkService implements IWorkService {
 
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -141,7 +141,7 @@ export class WorkService implements IWorkService {
             return { paginatedWorks, totalPages };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -169,7 +169,7 @@ export class WorkService implements IWorkService {
             return { paginatedWorkHistory, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -193,7 +193,6 @@ export class WorkService implements IWorkService {
             const work = await this._workRepositoy.findById(workId);
             if (!work) throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
 
-            // Build notification
             const recipientIsWorker = canceller?.id.toString() !== work.workerId?.toString();
 
             const notification: Partial<INotification> = {
@@ -218,15 +217,14 @@ export class WorkService implements IWorkService {
             const recipientId = notification.recipient?.toString();
             if (recipientId) {
                 io.to(recipientId).emit("new-notification", newNotification);
-                console.log("✅ Emitted new-notification to:", recipientId);
             } else {
-                console.log("⚠️ No recipient ID found for notification");
+                logger.error("No recipient ID found for notification");
             }
 
             return await this._workRepositoy.cancel(workId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error("Cancel error:", errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -312,7 +310,7 @@ export class WorkService implements IWorkService {
             return await this._workRepositoy.accept(workId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -353,7 +351,7 @@ export class WorkService implements IWorkService {
             return await this._workRepositoy.setIsWorkCompleted(workId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -369,7 +367,7 @@ export class WorkService implements IWorkService {
             return workDetails;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -389,7 +387,7 @@ export class WorkService implements IWorkService {
             return { paginatedWorks, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -401,7 +399,7 @@ export class WorkService implements IWorkService {
             return res;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -413,18 +411,18 @@ export class WorkService implements IWorkService {
             return res;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
 
-    getTopThree = async (): Promise<TopThreeResult[] | undefined> => {
+    getTopThree = async (): Promise<TopThreeResultDTO[] | undefined> => {
         try {
             const response = await this._workRepositoy.getTopThree();
             return response;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -436,7 +434,7 @@ export class WorkService implements IWorkService {
             return work as IWorkDTO;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -446,7 +444,7 @@ export class WorkService implements IWorkService {
             await this._workRepositoy.updatePaymentStatus(workId, status);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -454,7 +452,6 @@ export class WorkService implements IWorkService {
     getTopServices = async (limit: number): Promise<IServiceDTO[]> => {
         try {
             const topServices = await this._workRepositoy.getTopServices(limit);
-            console.log("TOP :", topServices)
 
             const servicesLikeData: Partial<IServices>[] = topServices.map((serv) => ({
                 _id: serv.serviceId?.toString(),
@@ -472,7 +469,7 @@ export class WorkService implements IWorkService {
             return serviceDTOs;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.error("Error in getTopServices:", errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     };

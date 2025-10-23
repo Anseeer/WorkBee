@@ -44,8 +44,6 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         lng: 0,
     });
 
-
-
     const initialValues: WorkFormValues = {
         location: locationData,
         taskSize: '',

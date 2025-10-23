@@ -35,7 +35,7 @@ export interface IWorker {
         startDate: Date;
         endDate: Date;
         commission: string;
-    }|null,
+    } | null,
     isAccountBuilt: boolean,
     createdAt: Date | string,
     updatedAt: Date

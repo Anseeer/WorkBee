@@ -6,6 +6,7 @@ import Work from "../../model/work/work.model";
 import { WORK_MESSAGE } from "../../constants/messages";
 import { TopThreeResult } from "../../utilities/topThreeTypes";
 import { IServices } from "../../model/service/service.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class WorkRepository extends BaseRepository<IWork> implements IWorkRepository {
@@ -18,7 +19,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             const newItem = new this.model(item);
             return await newItem.save();
         } catch (error) {
-            console.error('Error in create:', error);
+            logger.error('Error in create:', error);
             throw new Error('Error in create');
         }
     }
@@ -27,7 +28,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         try {
             return await this.model.find({ userId }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in findByUser:', error);
+            logger.error('Error in findByUser:', error);
             throw new Error('Error in findByUser');
         }
     }
@@ -36,7 +37,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         try {
             return await this.model.find({ workerId }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in findByWorker:', error);
+            logger.error('Error in findByWorker:', error);
             throw new Error('Error in findByWorker');
         }
     }
@@ -49,7 +50,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             );
             return res.modifiedCount > 0;
         } catch (error) {
-            console.error('Error in cancel:', error);
+            logger.error('Error in cancel:', error);
             throw new Error('Error in cancel');
         }
     }
@@ -62,7 +63,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             );
             return res.modifiedCount > 0;
         } catch (error) {
-            console.error('Error in accept:', error);
+            logger.error('Error in accept:', error);
             throw new Error('Error in accept');
         }
     }
@@ -75,7 +76,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             }
             return workDetails;
         } catch (error) {
-            console.error('Error in findById:', error);
+            logger.error('Error in findById:', error);
             throw new Error('Error in findById');
         }
     }
@@ -98,7 +99,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             await work.save();
             return true;
         } catch (error) {
-            console.error('Error in setIsWorkCompleted:', error);
+            logger.error('Error in setIsWorkCompleted:', error);
             throw new Error('Error in setIsWorkCompleted');
         }
     }
@@ -107,7 +108,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         try {
             return await this.model.find().sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in getAllWorks:', error);
+            logger.error('Error in getAllWorks:', error);
             throw new Error('Error in getAllWorks');
         }
     }
@@ -116,7 +117,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         try {
             return await this.model.find({ workerId, status: "Accepted" }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in getAssignedWorks:', error);
+            logger.error('Error in getAssignedWorks:', error);
             throw new Error('Error in getAssignedWorks');
         }
     }
@@ -125,7 +126,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         try {
             return await this.model.find({ workerId, status: "Pending" }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in getRequestedWorks:', error);
+            logger.error('Error in getRequestedWorks:', error);
             throw new Error('Error in getRequestedWorks');
         }
     }
@@ -146,7 +147,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
                 { $set: { paymentStatus: status } }
             );
         } catch (error) {
-            console.error("Error in updatePaymentStatus:", error);
+            logger.error("Error in updatePaymentStatus:", error);
             throw new Error("Error in updatePaymentStatus");
         }
     }
@@ -242,7 +243,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             ])
 
         } catch (error) {
-            console.error("Error in getTopThree:", error);
+            logger.error("Error in getTopThree:", error);
             throw new Error("Error in getTopThree");
         }
     }
@@ -294,7 +295,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
 
             return res;
         } catch (error) {
-            console.error("Error in getTopServices:", error);
+            logger.error("Error in getTopServices:", error);
             throw new Error("Error in getTopServices");
         }
     };
