@@ -192,24 +192,34 @@ const WorkDetailForm = ({ setStep }: Prop) => {
     return (
         <form
             onSubmit={formik.handleSubmit}
-            className="max-w-5xl mx-auto p-6 bg-white min-h-screen"
+            className="max-w-5xl mx-auto p-6 bg-white min-h-screen animate-fadeInUp"
         >
-            <h2 className="text-xl font-normal text-center mb-12 text-gray-800 max-w-4xl mx-auto leading-relaxed">
+            <h2 className="text-xl font-normal text-center mb-12 text-gray-800 max-w-4xl mx-auto leading-relaxed animate-fadeInDown">
                 Tell us about your task. We use these details to show Taskers in your area who fit your needs.
             </h2>
 
             {/* Location Section */}
-            <div className="mb-4">
+            <div className="mb-4 animate-slideInRight">
                 <div
                     onClick={() => setActiveStep(1)}
-                    className={`border-2 rounded-2xl p-6 cursor-pointer transition-all duration-300 border-green-600 `}
+                    className={`border-2 rounded-2xl p-6 cursor-pointer transition-all duration-300 border-green-600`}
                 >
-                    <h2 className="text-lg font-semibold mb-4 text-gray-900">Your Work Location</h2>
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 animate-fadeInScale">
+                        Your Work Location
+                    </h2>
+
                     {activeStep === 1 || formik.errors.location?.address ? (
-                        <div>
+                        <div className="animate-fadeInUp">
                             <input
                                 onKeyDown={(e) => {
-                                    const keysToPrevent = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Tab', 'Enter'];
+                                    const keysToPrevent = [
+                                        "ArrowLeft",
+                                        "ArrowUp",
+                                        "ArrowRight",
+                                        "ArrowDown",
+                                        "Tab",
+                                        "Enter",
+                                    ];
                                     if (keysToPrevent.includes(e.key)) {
                                         e.preventDefault();
                                     }
@@ -226,28 +236,39 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                 placeholder="Enter your location..."
                                 className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-700 mb-2 text-base"
                             />
-                            {formik.touched.location?.address && formik.errors.location?.address && (
-                                <p className="text-red-500 text-sm">{formik.errors.location.address}</p>
-                            )}
+                            {formik.touched.location?.address &&
+                                formik.errors.location?.address && (
+                                    <p className="text-red-500 text-sm animate-fadeInDown">
+                                        {formik.errors.location.address}
+                                    </p>
+                                )}
                         </div>
                     ) : null}
                 </div>
             </div>
 
             {/* Work Options Section */}
-            <div className="mb-4">
+            <div className="mb-4 animate-slideInRight">
                 <div
-                    className={`border-2 rounded-2xl p-6 transition-all duration-300 border-green-600 }`}
+                    className={`border-2 rounded-2xl p-6 transition-all duration-300 border-green-600`}
                     onClick={() => setActiveStep(2)}
                 >
-                    <h2 className="text-lg font-semibold mb-4 text-gray-900">Work Options</h2>
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 animate-fadeInScale">
+                        Work Options
+                    </h2>
+
                     {activeStep === 2 || formik.errors.taskSize || formik.errors.workType ? (
-                        <>
+                        <div className="animate-fadeInUp">
                             <div className="mb-6">
-                                <h3 className="font-semibold mb-4 text-gray-900">How big is your task?</h3>
+                                <h3 className="font-semibold mb-4 text-gray-900">
+                                    How big is your task?
+                                </h3>
                                 <div className="space-y-4">
-                                    {['Small', 'Medium', 'Large'].map((size) => (
-                                        <label key={size} className="flex items-center space-x-3 cursor-pointer">
+                                    {["Small", "Medium", "Large"].map((size) => (
+                                        <label
+                                            key={size}
+                                            className="flex items-center space-x-3 cursor-pointer animate-fadeInUp"
+                                        >
                                             <input
                                                 type="radio"
                                                 name="taskSize"
@@ -257,34 +278,41 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                                 className="w-4 h-4 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500"
                                             />
                                             <span className="text-base text-gray-900">
-                                                {size === 'Small' && 'Small → 2-3hrs'}
-                                                {size === 'Medium' && 'Medium → 5 hrs'}
-                                                {size === 'Large' && 'Large → 7+ hrs'}
+                                                {size === "Small" && "Small → 2-3hrs"}
+                                                {size === "Medium" && "Medium → 5 hrs"}
+                                                {size === "Large" && "Large → 7+ hrs"}
                                             </span>
                                         </label>
                                     ))}
+
                                     {formik.touched.taskSize && formik.errors.taskSize && (
-                                        <p className="text-red-500 text-sm">{formik.errors.taskSize}</p>
+                                        <p className="text-red-500 text-sm animate-fadeInDown">
+                                            {formik.errors.taskSize}
+                                        </p>
                                     )}
                                 </div>
                             </div>
-                        </>
+                        </div>
                     ) : null}
                 </div>
             </div>
 
             {/* Description Section */}
-            <div className="mb-6">
+            <div className="mb-6 animate-slideInRight">
                 <div
-                    className={`border-2 rounded-2xl p-6 transition-all duration-300 border-green-600 `}
+                    className={`border-2 rounded-2xl p-6 transition-all duration-300 border-green-600`}
                     onClick={() => setActiveStep(3)}
                 >
-                    <h2 className="text-lg font-semibold mb-4 text-gray-900">Tell us the details of your work</h2>
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 animate-fadeInScale">
+                        Tell us the details of your work
+                    </h2>
+
                     {activeStep === 3 || formik.errors.description ? (
-                        <div>
-                            <p className="text-gray-700 mb-4 text-base leading-relaxed">
+                        <div className="animate-fadeInUp">
+                            <p className="text-gray-700 mb-4 text-base leading-relaxed animate-fadeInDown">
                                 Start the conversation and tell your Tasker what you need done.
                             </p>
+
                             <textarea
                                 name="description"
                                 value={formik.values.description}
@@ -293,9 +321,12 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                                 className="w-full p-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 h-40 resize-none mb-2 text-base placeholder-gray-400"
                             />
                             {formik.touched.description && formik.errors.description && (
-                                <p className="text-red-500 text-sm">{formik.errors.description}</p>
+                                <p className="text-red-500 text-sm animate-fadeInDown">
+                                    {formik.errors.description}
+                                </p>
                             )}
-                            <div className="flex justify-center">
+
+                            <div className="flex justify-center animate-zoomIn">
                                 <button
                                     type="submit"
                                     className="bg-green-700 text-white px-8 py-3 rounded-full hover:bg-green-800 transition-colors text-base font-medium"
