@@ -3,7 +3,7 @@ import { resendOtpUserThunk, verifyOtpUserThunk } from "../../slice/workerSlice"
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import VerifyOtpForm from "../../components/common/VerifyOtpForm";
-import { emailRegex, otpRegex } from "../../regexs";
+import { emailRegex, otpRegex } from "../../constant/regexs";
 import type { AxiosError } from "axios";
 import { API_ROUTES } from "../../constant/api.routes";
 

@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AxiosError } from "axios";
 import { login } from "../services/adminService";
 import type { Iuser } from "../types/IUser";
-
+import { API_ROUTES } from "../constant/api.routes";
 
 interface adminState {
     admin: Iuser | null,
@@ -17,7 +17,7 @@ const initialState: adminState = {
 }
 
 export const loginAdminThunk = createAsyncThunk(
-    "admins/login",
+    API_ROUTES.ADMIN.LOGIN,
     async (credentials: { email: string, password: string }, { rejectWithValue }) => {
         try {
             const response = await login(credentials);
@@ -34,7 +34,7 @@ const adminSlice = createSlice({
     name: "admin",
     initialState,
     reducers: {
-        logout:(state)=>{
+        logout: (state) => {
             state.admin = null;
             state.error = null;
             state.resetEmail = null;

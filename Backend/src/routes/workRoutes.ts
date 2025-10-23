@@ -19,6 +19,7 @@ Router.get("/works", auth, WorkController.getAllWorks);
 Router.get("/assigned-works", auth, WorkController.getAssignedWorks);
 Router.get("/requested-works", auth, WorkController.getRequestedWorks);
 Router.get("/get-top-three", auth, WorkController.getTopThree);
+Router.get("/get-top-services", WorkController.getTopService);
 
 
 export default Router;

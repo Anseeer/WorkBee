@@ -189,15 +189,39 @@ export const CHAT_MESSAGE = {
     CHAT_ID_NOT_GET: "ChatId not get",
     FETCH_LAST_MESSAGE_SUCCESSFULL: "Fetch last message successfull",
     FETCH_LAST_MESSAGE_FAILD: "Fetch last message faild",
-    CHAT_ID_OR_USER_ID_NOT_GET:"chatId or userId missing",
-    MESSAGE_DATA_NOT_GET:"Cant get message Data",
-    CHAT_DATA_NOT_GET:"Cant get chat Data",
+    CHAT_ID_OR_USER_ID_NOT_GET: "chatId or userId missing",
+    MESSAGE_DATA_NOT_GET: "Cant get message Data",
+    CHAT_DATA_NOT_GET: "Cant get chat Data",
 }
 
 export const SEARCH_TERMS = {
-    TERM_NOT_EXIST:"Search term not exist",
+    TERM_NOT_EXIST: "Search term not exist",
 }
 
 export const AVAILABILITY_MESSAGE = {
-    UPDATE_FAILD:"Failed to update availability",
+    UPDATE_FAILD: "Failed to update availability",
+}
+
+export const SUBSCRIPTION_MESSAGE = {
+    SUCCESSFULLY_CREATED: "New plan successFully created",
+    FAILD_CREATED: "New plan faild to created",
+    MISSING_DATA: "Missing subscription data",
+    NAME_MISSING: "plan name not get",
+    CANT_FIND: "Cant find plan",
+    LIMIT_WARNING: "You can only have up to 3 plans. Remove one to add another.",
+    ALREADY_EXIST: "Already exist.",
+    FETCH_SUCCESS: "Fetch successFully.",
+    FETCH_FAILD: "Fetch faild.",
+    ID_NOT_FOUND: "SubscriptionID not found.",
+    STATUS_UPDATE_SUCCESSFULLY: "Subscription status update successfully.",
+    STATUS_UPDATE_FAILD: "Subscription status update faild.",
+    UPDATE_SUCCESSFULLY: "Subscription update successfully.",
+    UPDATE_FAILD: "Subscription update faild.",
+    ACTIVE_PLAN_SUCCESSFULLY: "activateSubscriptionPlan successfully.",
+    ACTIVE_PLAN_FAILD: "activateSubscriptionPlan faild.",
+}
+
+export const COMMON_MESSAGE = {
+    ALREADY_EXIST: "Already exist.",
+    PAGINATION_DATA_NOT_FOUND: "PaginationData not found.",
 }

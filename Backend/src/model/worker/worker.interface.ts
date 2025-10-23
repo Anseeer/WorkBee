@@ -27,10 +27,10 @@ export interface IWorker extends Document {
         ratingsCount: number
     },
     subscription: {
-        plan: string;
+        plan: Types.ObjectId;
         startDate: Date;
         endDate: Date;
-        isActive: boolean;
+        commission: string,
     } | null,
     createdAt: Date,
     updatedAt: Date

@@ -53,7 +53,6 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     const [services, setServices] = useState<IService[]>([]);
     const dispatch = useAppDispatch();
 
-
     useEffect(() => {
         const fetchData = async () => {
             if (!worker) return;
@@ -97,12 +96,13 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     };
 
     return (
-        <div className="h-[560px] bg-gray-50 overflow-hidden">
-            <div className="bg-white border-b border-gray-200">
+        <div className="h-full bg-white overflow-hidden animate-fadeInUp">
+            {/* Header */}
+            <div className="bg-white border-b border-gray-200 animate-fadeInDown">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                         <div className="flex items-center space-x-4">
-                            <div className="relative">
+                            <div className="relative animate-zoomIn">
                                 <img
                                     src={
                                         typeof worker.profileImage === "string"
@@ -120,12 +120,13 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                     </div>
                                 )}
                             </div>
-                            <div>
+
+                            <div className="animate-fadeInUp">
                                 <div className="flex items-center space-x-3">
                                     <h1 className="text-xl font-bold text-gray-900">{worker.name}</h1>
                                     <span
                                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-        ${worker.status === "Approved"
+                  ${worker.status === "Approved"
                                                 ? "bg-green-100 text-green-800"
                                                 : worker.status === "Rejected"
                                                     ? "bg-red-100 text-red-800"
@@ -136,16 +137,21 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                             ? "Verified"
                                             : worker.status === "Rejected"
                                                 ? "Rejected"
-                                                : "Pending Approval"}
+                                                : worker.status === "Re-approval"
+                                                    ? "Requested to re-approval"
+                                                    : "Pending Approval"}
                                     </span>
                                 </div>
-                                <div className="flex items-center space-x-2">
+
+                                <div className="flex items-center space-x-2 mt-1">
                                     <span className="text-xs text-gray-600">Rating:</span>
                                     <StarRatingDisplay rating={worker.ratings.average || 0} />
                                     <span className="text-xs text-gray-600">
                                         ({worker.ratings.average.toFixed(1)}/5)
-                                    </span>                                </div>
-                                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                                    </span>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
                                     <div className="flex items-center space-x-1">
                                         <MapPin className="w-3 h-3" />
                                         <span>{worker.location.address}</span>
@@ -158,22 +164,23 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                             </div>
                         </div>
 
-                        <div className="flex space-x-4">
+                        <div className="flex space-x-4 animate-fadeInUp" style={{ animationDelay: "0.3s" }}>
                             <StatCard icon={CheckCircle} label="Completed" value={worker.completedWorks} color="green" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="h-100 overflow-y-auto">
+            {/* Main Content */}
+            <div className="h-full overflow-y-auto">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
                         <div className="lg:col-span-2 space-y-8">
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            {/* Contact Information */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeInScale">
                                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Contact Information</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="flex items-center space-x-3">
+                                    <div className="flex items-center space-x-3 animate-fadeInUp">
                                         <div className="p-2 bg-blue-50 rounded-lg">
                                             <Mail className="w-5 h-5 text-blue-600" />
                                         </div>
@@ -182,7 +189,7 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                             <p className="font-medium text-gray-900">{worker.email}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center space-x-3">
+                                    <div className="flex items-center space-x-3 animate-fadeInUp" style={{ animationDelay: "0.1s" }}>
                                         <div className="p-2 bg-green-50 rounded-lg">
                                             <Phone className="w-5 h-5 text-green-600" />
                                         </div>
@@ -194,18 +201,16 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            {/* Bio */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeInScale" style={{ animationDelay: "0.2s" }}>
                                 <h2 className="text-xl font-semibold text-gray-900 mb-4">How Can I Help</h2>
                                 <p className="text-gray-700 leading-relaxed">{worker.bio}</p>
                             </div>
 
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            {/* Work Details */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeInScale" style={{ animationDelay: "0.3s" }}>
                                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Work Details</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <p className="text-sm text-gray-600 mb-2">Work Type</p>
-                                        <p className="font-medium text-gray-900">{worker.workType.join(', ')}</p>
-                                    </div>
                                     <div>
                                         <p className="text-sm text-gray-600 mb-2">Preferred Schedule</p>
                                         <p className="font-medium text-gray-900">{worker.preferredSchedule.join(', ')}</p>
@@ -217,40 +222,31 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                                 </div>
                             </div>
 
+                            {/* Categories & Services */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeInScale">
                                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
                                     <div className="space-y-3">
-                                        {categories.length > 0 ? (
-                                            categories.map((category, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg"
-                                                >
-                                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                                    <span className="text-gray-800 font-medium">{category.name}</span>
-                                                </div>
-                                            ))
-                                        ) : (
+                                        {categories.length > 0 ? categories.map((category, index) => (
+                                            <div key={index} className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
+                                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                                <span className="text-gray-800 font-medium">{category.name}</span>
+                                            </div>
+                                        )) : (
                                             <p className="text-gray-500 text-sm">No categories found</p>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeInScale">
                                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Services</h3>
                                     <div className="space-y-3">
-                                        {services.length > 0 ? (
-                                            services.map((service, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg"
-                                                >
-                                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                                    <span className="text-gray-800 font-medium">{service.name}</span>
-                                                </div>
-                                            ))
-                                        ) : (
+                                        {services.length > 0 ? services.map((service, index) => (
+                                            <div key={index} className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
+                                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                <span className="text-gray-800 font-medium">{service.name}</span>
+                                            </div>
+                                        )) : (
                                             <p className="text-gray-500 text-sm">No services found</p>
                                         )}
                                     </div>
@@ -258,19 +254,20 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                             </div>
                         </div>
 
-                        <div className="lg:col-span-1">
+                        {/* Right Column */}
+                        <div className="lg:col-span-1 animate-slideInRight">
                             <Calendar availability={availability} />
 
-                            <div className="mt-6 pt-6 bg-white border p-5 rounded-xl shadow-sm border-gray-200">
+                            <div className="mt-6 pt-6 bg-white border p-5 rounded-xl shadow-sm border-gray-200 animate-fadeInScale" style={{ animationDelay: "0.2s" }}>
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Status</h3>
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm text-gray-600">Subscription</span>
-                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.subscription?.isActive
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${worker.subscription
                                             ? 'bg-green-100 text-green-800'
                                             : 'bg-red-100 text-red-800'
                                             }`}>
-                                            {worker.subscription?.isActive ? 'Active' : 'Inactive'}
+                                            {worker.subscription ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between">
@@ -288,12 +285,11 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                     </div>
                 </div>
             </div>
-            {
-                isEdit ? (
-                    <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose} />
-                ) : null
-            }
-        </div >
+
+            {isEdit && (
+                <WorkerEditForm onSave={onSave} workerData={selectedDetails} onClose={onClose} />
+            )}
+        </div>
     );
 };
 

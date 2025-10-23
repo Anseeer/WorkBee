@@ -4,7 +4,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { resetPasswordUserThunk } from "../../slice/userSlice";
 import ResetPasswordForm from "../../components/common/ResetPassForm";
 import type { AxiosError } from "axios";
-import { emailRegex, passRegex } from "../../regexs";
+import { emailRegex, passRegex } from "../../constant/regexs";
 import { API_ROUTES } from "../../constant/api.routes";
 
 const ResetPasswordPage = () => {

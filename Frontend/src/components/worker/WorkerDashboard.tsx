@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { IAvailability } from "../../types/IAvailability";
 import type { IWallet } from "../../types/IWallet";
 import type { IWorker } from "../../types/IWorker";
-import { fetchAssignedWorks, fetchEarnings, fetchWorkRequest } from "../../services/workerService";
+import { fetchAssignedWorks, fetchRequestedWorks, fetchWorkerEarnings } from "../../services/workerService";
 import { Calendar } from "../../utilities/Calendar";
 import type { IWork } from "../../types/IWork";
 import EarningsChart from "./EarningChart";
@@ -32,9 +32,9 @@ const WorkerDashboard = ({ worker, wallet, availability }: props) => {
             if (!worker?._id) return;
             setWorkerId(worker._id as string);
             try {
-                const pendings = await fetchWorkRequest(workerId);
+                const pendings = await fetchRequestedWorks(workerId);
                 const assigned = await fetchAssignedWorks(workerId);
-                const earningsDate = await fetchEarnings(filter, workerId);
+                const earningsDate = await fetchWorkerEarnings(filter, workerId);
                 setEarningsData(earningsDate.earnings);
                 setAssignedWorks(assigned.assignedWorks);
                 setJobRequest(pendings.pendingWorks.length);

@@ -7,6 +7,7 @@ import { IWorker } from "../../model/worker/worker.interface";
 
 export interface IWorkerService {
     registerWorker(workerData: Partial<IWorker>): Promise<{ accessToken: string, refreshToken: string, worker?: IWorkerDTO, wallet: IWalletDTO | null }>;
+    findById(workerId: string): Promise<IWorkerDTO | null>;
     loginWorker(credentials: { email: string; password: string }): Promise<{
         accessToken: string;
         refreshToken: string;
@@ -33,7 +34,8 @@ export interface IWorkerService {
         availability?: IAvailabilityDTO;
     }>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getEarnings(filter: string, workerId: string): Promise<any[]|undefined>
-    rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }> 
-    updateCompletedWorks(workerId: string): Promise<void>; 
+    getEarnings(filter: string, workerId: string): Promise<any[] | undefined>
+    rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }>
+    updateCompletedWorks(workerId: string): Promise<void>;
+    reApprovalRequest(workerId: string): Promise<void>;
 }

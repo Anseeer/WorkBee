@@ -9,6 +9,7 @@ interface CalendarProps {
 }
 
 export const Calendar = ({ availability }: CalendarProps) => {
+    console.log("Availabilities :", availability)
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [calendarDays, setCalendarDays] = useState<(number | null)[]>([]);
 
@@ -65,7 +66,7 @@ export const Calendar = ({ availability }: CalendarProps) => {
 
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6  top-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 top-6">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Availability</h3>
                 <div className="flex gap-2">
@@ -84,39 +85,52 @@ export const Calendar = ({ availability }: CalendarProps) => {
                 </div>
             </div>
 
-            <div className="border border-gray-200 rounded-lg p-4">
-                <div className="text-center mb-4">
-                    <h4 className="font-semibold text-gray-900">{month} {year}</h4>
+            {/* ✅ Conditional display */}
+            {availability?.availableDates?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16">
+                    <p className="text-gray-500 font-medium text-center">
+                        No availability set.
+                    </p>
+                    <p className="text-red-700 font-semibold mt-1">
+                        Update your availability.
+                    </p>
                 </div>
+            ) : (
+                <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="text-center mb-4">
+                        <h4 className="font-semibold text-gray-900">
+                            {month} {year}
+                        </h4>
+                    </div>
 
-                <div className="grid grid-cols-7 gap-1 mb-2">
-                    {daysOfWeek.map((day) => (
-                        <div
-                            key={day}
-                            className="text-center text-xs font-medium p-2 text-gray-600"
-                        >
-                            {day}
-                        </div>
-                    ))}
-                </div>
+                    <div className="grid grid-cols-7 gap-1 mb-2">
+                        {daysOfWeek.map((day) => (
+                            <div
+                                key={day}
+                                className="text-center text-xs font-medium p-2 text-gray-600"
+                            >
+                                {day}
+                            </div>
+                        ))}
+                    </div>
 
-                <div className="grid grid-cols-7 gap-1">
-                    {calendarDays.map((day, index) => (
-                        <div
-                            key={index}
-                            className={`text-center p-2 text-sm font-medium rounded-lg transition-colors ${day === null
-                                ? ""
-                                : availableDays.includes(day)
-                                    ? "bg-green-700 text-white shadow-sm"
-                                    : "text-gray-400 cursor-not-allowed"
-                                }`}
-                        >
-                            {day !== null ? day : ""}
-                        </div>
-                    ))}
+                    <div className="grid grid-cols-7 gap-1">
+                        {calendarDays.map((day, index) => (
+                            <div
+                                key={index}
+                                className={`text-center p-2 text-sm font-medium rounded-lg transition-colors ${day === null
+                                    ? ""
+                                    : availableDays.includes(day)
+                                        ? "bg-green-700 text-white shadow-sm"
+                                        : "text-gray-400 cursor-not-allowed"
+                                    }`}
+                            >
+                                {day !== null ? day : ""}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
-
 };

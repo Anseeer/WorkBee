@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import LoginForm from "../../components/common/LoginForm";
-import { emailRegex, passRegex } from "../../regexs";
+import { emailRegex, passRegex } from "../../constant/regexs";
 import { googleLoginSuccess, loginWorkerThunk } from "../../slice/workerSlice";
 import { API_ROUTES } from "../../constant/api.routes";
 import axios from "../../services/axios";
@@ -80,7 +80,7 @@ const WorkerLoginPage = () => {
         toast.error("Google login failed");
     };
 
-    return <LoginForm Submit={handleLogin} loading={loading}  handleGoogleLogin={handleGoogleLogin} handleGoogleError={handleGoogleError} role="Worker" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
+    return <LoginForm Submit={handleLogin} loading={loading} handleGoogleLogin={handleGoogleLogin} handleGoogleError={handleGoogleError} role="Worker" HandleForgotPass={HandleForgotPass} HandleRegister={HandleRegister} />;
 };
 
 export default WorkerLoginPage;

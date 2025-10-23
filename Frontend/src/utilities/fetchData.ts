@@ -5,11 +5,11 @@ import { fetchUserDataThunk } from "../slice/userSlice";
 
 export const fetchData = async (dispatch: any) => {
     try {
-        const {data} = await axios.get("/auth/verify", { withCredentials: true });
+        const { data } = await axios.get("/auth/verify", { withCredentials: true });
         console.log(data)
         const role = data.role;
 
-        if(role == "User"){
+        if (role == "User") {
             dispatch(fetchUserDataThunk());
         }
 

@@ -17,10 +17,16 @@ import { mapChatToEntity } from "../../mappers/chatMessage/chat.map.DTO";
 import { IChat } from "../../model/chatMessage/IChat";
 import { toISTDateOnly } from "../../utilities/toISTDate";
 import { Role } from "../../constants/role";
-import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
-import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
-import { TopThreeResult } from "../../utilities/topThreeTypes";
+import { TopThreeResultDTO } from "../../utilities/topThreeTypes";
 import { INotification } from "../../model/notification/notification.interface";
+import { getIO } from "../../socket/socket";
+import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";
+import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
+import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
+import { mapServiceToDTO } from "../../mappers/service/service.map.DTO";
+import { IServices } from "../../model/service/service.interface";
+import logger from "../../utilities/logger";
+
 
 @injectable()
 export class WorkService implements IWorkService {
@@ -40,7 +46,7 @@ export class WorkService implements IWorkService {
         @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository,
         @inject(TYPES.categoryRepository) categoryRepo: ICategoryRepository,
         @inject(TYPES.chatRepository) chatRepo: IChatRepositoy,
-        @inject(TYPES.notificationRepository) notificationRepo: INotificationRepository
+        @inject(TYPES.notificationRepository) notificationRepo: INotificationRepository,
     ) {
         this._workRepositoy = workRepo;
         this._workerRepositoy = workerRepo;
@@ -54,6 +60,8 @@ export class WorkService implements IWorkService {
 
     createWork = async (workDetails: IWork): Promise<IWorkDTO> => {
         try {
+            const io = getIO();
+
             const { workerId, userId, serviceId, categoryId } = workDetails;
             if (!workDetails) {
                 throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
@@ -98,16 +106,14 @@ export class WorkService implements IWorkService {
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
-
-            if (!newNotification) {
-                throw new Error("Failed to create notification");
-            }
+            if (!newNotification) throw new Error("Failed to create notification");
+            io.to(workerId.toString()).emit("new-notification", newNotification);
 
             return work;
 
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -135,7 +141,7 @@ export class WorkService implements IWorkService {
             return { paginatedWorks, totalPages };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -163,70 +169,71 @@ export class WorkService implements IWorkService {
             return { paginatedWorkHistory, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
 
     cancel = async (workId: string, id: string): Promise<boolean> => {
         try {
+            const io = getIO();
+
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             if (!id) throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
 
             const worker = await this._workerRepositoy.findById(id);
             const user = await this._userRepositoy.findById(id);
-            let canceldPerson;
 
             if (!worker && !user) {
                 throw new Error("Can't find a worker or user with this id");
             }
 
-            canceldPerson = worker ?? user;
+            const canceller = worker ?? user;
 
             const work = await this._workRepositoy.findById(workId);
             if (!work) throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
+
+            const recipientIsWorker = canceller?.id.toString() !== work.workerId?.toString();
+
             const notification: Partial<INotification> = {
-                recipient:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? new mongoose.Types.ObjectId(work.userId.toString())
-                        : new mongoose.Types.ObjectId(work.workerId.toString()),
-                recipientModel:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? "User"
-                        : "Worker",
-                actor:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? new mongoose.Types.ObjectId(work.workerId.toString())
-                        : new mongoose.Types.ObjectId(work.userId.toString()),
-                actorModel:
-                    canceldPerson?.id.toString() === work.workerId?.toString()
-                        ? "Worker"
-                        : "User",
+                recipient: new mongoose.Types.ObjectId(
+                    recipientIsWorker ? work.workerId.toString() : work.userId.toString()
+                ),
+                recipientModel: recipientIsWorker ? "Worker" : "User",
+                actor: new mongoose.Types.ObjectId(canceller?.id.toString()),
+                actorModel: worker ? "Worker" : "User",
                 type: "job_cancelled",
                 title: work?.service,
-                body: `The job ${work?.service} has been cancelled by ${canceldPerson?.name}.
-            Date: ${work.sheduleDate} on ${work.sheduleTime}.
-            Job description: ${work?.description}`,
+                body: `The job "${work?.service}" has been cancelled by ${canceller?.name}.
+      Date: ${work.sheduleDate} on ${work.sheduleTime}.
+      Job description: ${work?.description}`,
                 read: false,
             };
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
+            if (!newNotification) throw new Error("Failed to create notification");
 
-            if (!newNotification) {
-                throw new Error("Failed to create notification");
+            const recipientId = notification.recipient?.toString();
+            if (recipientId) {
+                io.to(recipientId).emit("new-notification", newNotification);
+            } else {
+                logger.error("No recipient ID found for notification");
             }
 
             return await this._workRepositoy.cancel(workId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
 
+
     accept = async (workId: string): Promise<boolean> => {
         try {
+            const io = getIO()
+
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             const work = await this._workRepositoy.findById(workId);
             if (!work) throw new Error(WORK_MESSAGE.WORK_NOT_EXIST);
@@ -297,20 +304,21 @@ export class WorkService implements IWorkService {
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
-            if (!newNotification) {
-                throw new Error("Faild to create notification");
-            }
+            if (!newNotification) throw new Error("Failed to create notification");
+            io.to(work.userId.toString()).emit("new-notification", newNotification);
 
             return await this._workRepositoy.accept(workId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
 
     completed = async (workId: string, workerId: string): Promise<boolean> => {
         try {
+            const io = getIO()
+
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             if (!workerId) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
 
@@ -337,12 +345,13 @@ export class WorkService implements IWorkService {
 
             const notificationEntity = mapNotificationToEntity(notification);
             const newNotification = await this._notificationRepositoy.create(notificationEntity);
-            if (!newNotification) throw new Error("Faild to create notification");
+            if (!newNotification) throw new Error("Failed to create notification");
+            io.to(work.userId.toString()).emit("new-notification", newNotification);
 
             return await this._workRepositoy.setIsWorkCompleted(workId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -358,7 +367,7 @@ export class WorkService implements IWorkService {
             return workDetails;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -378,7 +387,7 @@ export class WorkService implements IWorkService {
             return { paginatedWorks, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -390,7 +399,7 @@ export class WorkService implements IWorkService {
             return res;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -402,18 +411,18 @@ export class WorkService implements IWorkService {
             return res;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
 
-    getTopThree = async (): Promise<TopThreeResult[] | undefined> => {
+    getTopThree = async (): Promise<TopThreeResultDTO[] | undefined> => {
         try {
             const response = await this._workRepositoy.getTopThree();
             return response;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -425,7 +434,7 @@ export class WorkService implements IWorkService {
             return work as IWorkDTO;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -435,8 +444,34 @@ export class WorkService implements IWorkService {
             await this._workRepositoy.updatePaymentStatus(workId, status);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw new Error(errMsg);
         }
     }
+
+    getTopServices = async (limit: number): Promise<IServiceDTO[]> => {
+        try {
+            const topServices = await this._workRepositoy.getTopServices(limit);
+
+            const servicesLikeData: Partial<IServices>[] = topServices.map((serv) => ({
+                _id: serv.serviceId?.toString(),
+                categoryName: serv.categoryName as string,
+                categoryIcon: serv.categoryIcon as string,
+                categoryId: serv.categoryId as string,
+                name: serv.serviceName as string,
+                description: serv.serviceDescription || "",
+                image: serv.image,
+                wage: serv.wage.toString(),
+                isActive: true,
+            }));
+
+            const serviceDTOs = servicesLikeData.map((serv) => mapServiceToDTO(serv));
+            return serviceDTOs;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            throw new Error(errMsg);
+        }
+    };
+
 }

@@ -255,7 +255,13 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
                                         <FaRupeeSign size={14} className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
                                         {workDetails?.wage}
                                     </span>
-                                    {/* Responsive wage font size and icon size */}
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600 font-medium text-xs sm:text-sm md:text-base">Platform commission:</span>
+                                    <span className="text-gray-900 font-bold text-sm sm:text-base md:text-lg text-green-600 flex items-center gap-1">
+                                        <FaRupeeSign size={14} className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                                        {workDetails?.commission}
+                                    </span>
                                 </div>
                             </div>
                         </div>

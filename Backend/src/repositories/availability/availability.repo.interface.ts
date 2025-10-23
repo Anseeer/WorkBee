@@ -10,4 +10,5 @@ export interface IAvailabilityRepository {
     delete(id: string): Promise<boolean>;
     update(availability: Partial<IAvailabilitEntity>): Promise<boolean>;
     markBookedSlot(availability: IAvailability): Promise<IAvailability | null>;
+    removeExpiredDates(): Promise<number>;
 }

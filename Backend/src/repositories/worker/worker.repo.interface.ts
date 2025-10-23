@@ -1,10 +1,13 @@
 import { IAvailabilitEntity } from "../../mappers/availability/availability.map.DTO.interface";
+import { IWorkerEntity } from "../../mappers/worker/worker.map.DTO.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
+import { ISubscription } from "../../model/subscription/subscription.interface";
 import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 export interface IWorkerRepository {
-    create(user: Partial<IWorker>): Promise<IWorker>;
+    find(): Promise<IWorker[] | []>;
+    create(user: Partial<IWorker | IWorkerEntity>): Promise<IWorker>;
     findById(id: string): Promise<IWorker | null>;
     findByEmail(email: string): Promise<IWorker | null>;
     resetPassword(email: string, hashedPass: string): Promise<boolean>;
@@ -17,9 +20,12 @@ export interface IWorkerRepository {
     setIsActive(id: string): Promise<boolean>;
     approveWorker(id: string): Promise<boolean>;
     rejectedWorker(id: string): Promise<boolean>;
-    update(worker: Partial<IWorker>): Promise<boolean>;
+    update(worker: Partial<IWorker | IWorkerEntity>): Promise<boolean>;
     search(searchTerms: Partial<IWork>): Promise<IWorker[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorker[]>;
     rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }>;
     updateCompletedWorks(workerId: string): Promise<void>;
+    setSubscriptionPlan(workerId: string, planData: Partial<ISubscription>): Promise<IWorker>;
+    setPlanExpired(workerId: string): Promise<boolean>;
+    reApprovalRequest(workerId: string): Promise<boolean>;
 }

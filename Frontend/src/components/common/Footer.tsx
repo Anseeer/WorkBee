@@ -1,52 +1,97 @@
-import instagramIcon from "../../assets/instagram-icon.png"
-import facebookIcon from "../../assets/facebook-icon.png"
+import { Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#2B4E34] text-black px-4 py-8 md:px-12">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+    <footer className="bg-[#2B4E34] text-white px-6 py-12">
+      <div className="max-w-6xl mx-auto">
+        {/* Main Footer Content */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-8">
 
-        {/* Social Links */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Follow us:</h3>
-          <div className="flex space-x-4">
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              <img src={facebookIcon} alt="Facebook" className="w-6 h-6" />
+          {/* Logo/Brand Section */}
+          <div className="text-center md:text-left">
+            <div className="flex-shrink-0">
+              <h1
+                className="merienda-text text-2xl sm:text-3xl cursor-pointer text-white"
+              >
+                WorkBee
+              </h1>
+            </div>
+            <p className="text-gray-300 text-sm">Your trusted service platform</p>
+          </div>
+
+          {/* Quick Links */}
+          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8">
+            <a
+              href="/about"
+              className="text-gray-200 hover:text-gray-300 transition-colors text-sm font-medium"
+            >
+              About
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              <img src={instagramIcon} alt="Instagram" className="w-6 h-6" />
+            <a
+              href="/terms"
+              className="text-gray-200 hover:text-gray-300 transition-colors text-sm font-medium"
+            >
+              Terms & Conditions
+            </a>
+            <a
+              href="/workers"
+              className=" text-gray-300 px-5 py-2 rounded-full font-medium"
+            >
+              Become a Worker
+            </a>
+          </div>
+
+          {/* Social Media Icons */}
+          <div className="flex gap-4">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              aria-label="Facebook"
+            >
+              <Facebook className="w-5 h-5" />
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              aria-label="Instagram"
+            >
+              <Instagram className="w-5 h-5" />
+            </a>
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              aria-label="Twitter"
+            >
+              <Twitter className="w-5 h-5" />
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
             </a>
           </div>
         </div>
 
-        {/* Discover Links */}
-        <div>
-          <h4 className="text-lg font-semibold mb-4">Discover</h4>
-          <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:underline">Become a Tasker</a></li>
-            <li><a href="#" className="hover:underline">Service By City</a></li>
-            <li><a href="#" className="hover:underline">Service Nearby</a></li>
-            <li><a href="#" className="hover:underline">All Services</a></li>
-            <li><a href="#" className="hover:underline">Help</a></li>
-          </ul>
-        </div>
+        {/* Divider */}
+        <div className="border-t border-white/20"></div>
 
-        {/* Company Links */}
-        <div>
-          <h4 className="text-lg font-semibold mb-4">Company</h4>
-          <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:underline">About Us</a></li>
-            <li><a href="#" className="hover:underline">Careers</a></li>
-            <li><a href="#" className="hover:underline">Blog</a></li>
-            <li><a href="#" className="hover:underline">Terms & Privacy</a></li>
-          </ul>
+        {/* Copyright */}
+        <div className="text-center pt-6">
+          <p className="text-gray-300 text-sm">
+            © {new Date().getFullYear()} WorkBee. All rights reserved.
+          </p>
         </div>
-      </div>
-
-      <div className="border-t border-gray-200 mt-8 pt-4 text-center text-xs text-gray-300">
-        © {new Date().getFullYear()} WorkBee. All rights reserved.
       </div>
     </footer>
   );
-
 }

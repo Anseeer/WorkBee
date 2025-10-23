@@ -81,7 +81,7 @@ const workerSchema = new Schema<IWorker>({
     status: {
         type: String,
         required: true,
-        enum: ["Pending Approval", "Approved", "Rejected"],
+        enum: ["Pending Approval", "Approved", "Rejected", "Re-approval"],
         default: "Pending Approval",
     },
     govId: {
@@ -99,10 +99,13 @@ const workerSchema = new Schema<IWorker>({
         }
     },
     subscription: {
-        plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', required: false },
-        startDate: { type: Date, required: false },
-        endDate: { type: Date, required: false },
-        isActive: { type: Boolean, default: false }
+        type: {
+            plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', required: false },
+            startDate: { type: Date, required: false },
+            endDate: { type: Date, required: false },
+            commission: { type: String }
+        },
+        default: null,
     },
     isAccountBuilt: { type: Boolean, default: false }
 }, { timestamps: true });

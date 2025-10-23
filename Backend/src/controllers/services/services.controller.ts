@@ -24,7 +24,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.CREATE_SERVICE_FAILED, errMsg));
         }
@@ -39,7 +39,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, errMsg));
         }
@@ -53,7 +53,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.UPDATE_SERVICE_STATUS_FAILED, errMsg));
         }
@@ -63,7 +63,7 @@ export class ServiceController implements IServiceController {
         try {
             const { serviceId, currentPage, pageSize } = req.query;
             const service = req.body;
-
+            logger.error("Body :", service);
             if (!serviceId) {
                 throw new Error(SERVICE_MESSAGE.ID_NOT_RECEIVED);
             }
@@ -84,7 +84,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.UPDATE_SERVICE_FAILED, errMsg));
         }
@@ -98,7 +98,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.DELETE_SERVICE_FAILED, errMsg));
         }
@@ -115,7 +115,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_CATEGORIES_FAILED, errMsg));
         }
@@ -124,7 +124,7 @@ export class ServiceController implements IServiceController {
     getByWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { serviceIds } = req.body;
-            console.log("CHECHKED IDS IS HERE :",serviceIds)
+            logger.info("CHECHKED IDS IS HERE :", serviceIds)
             if (!Array.isArray(serviceIds) || serviceIds.length === 0) {
                 throw new Error(SERVICE_MESSAGE.ID_NOT_RECEIVED);
             }
@@ -133,7 +133,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_WORKER_FAILED, errMsg));
         }
@@ -151,7 +151,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_SERVICE_BY_SEARCH_FAILED, errMsg));
         }
@@ -169,7 +169,7 @@ export class ServiceController implements IServiceController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, errMsg));
         }

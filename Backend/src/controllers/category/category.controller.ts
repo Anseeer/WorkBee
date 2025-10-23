@@ -24,7 +24,7 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_FAILED, errMsg));
         }
@@ -46,7 +46,7 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.CREATE_CATEGORY_FAILED, errMsg));
         }
@@ -84,7 +84,7 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.UPDATE_CATEGORY_FAILED, errMsg));
         }
@@ -98,7 +98,7 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.UPDATE_CATEGORY_STATUS_FAILED, errMsg));
         }
@@ -112,7 +112,7 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.DELETE_CATEGORY_FAILED, errMsg));
         }
@@ -126,7 +126,7 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_CATEGORIES_BY_WORKER_FAILED, errMsg));
         }
@@ -145,7 +145,7 @@ export class CategoryController implements ICategoryController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            console.log("Error:", error)
+            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_ALL_CATEGORIES_FAILED, errMsg));
         }

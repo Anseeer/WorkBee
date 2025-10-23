@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 
-export interface IPayment extends Document{
+export interface IPayment extends Document {
     userId: mongoose.Schema.Types.ObjectId,
     workerId: mongoose.Schema.Types.ObjectId,
     workId: mongoose.Schema.Types.ObjectId,

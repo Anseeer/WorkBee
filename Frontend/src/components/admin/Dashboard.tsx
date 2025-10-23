@@ -6,11 +6,12 @@ import { fetchCategory, fetchEarnings, fetchService, fetchTopThree, fetchUsers, 
 import UsersIcon from "../../assets/users-icon.png";
 import WorkersIcon from "../../assets/workers-icon.png";
 import JobsIcon from "../../assets/jobs-icon.png";
-import WalletIcon from "../../assets/stepFour-icon.png";
+import { BarChart } from "lucide-react";
 import CategoryAndServicesIcon from "../../assets/category&services.png";
 import serviceIcon from "../../assets/service-icon.png";
 import EarningsChart from '../worker/Earnings';
 import type { IWallet } from '../../types/IWallet';
+import AnimatedNumber from '../../utilities/AnimatedNumber';
 
 interface TopItem {
   name: string;
@@ -32,6 +33,7 @@ const Dashboard: React.FC = () => {
   const [filter, setFilter] = useState<Filter>('monthly');
   const [earnings, setEarnings] = useState([]);
   const [Wallet, setWallet] = useState<IWallet>();
+  console.log('Wallet :', Wallet)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,7 +69,7 @@ const Dashboard: React.FC = () => {
   const renderSection = (title: string, items: TopItem[]) => {
     const maxCount = Math.max(...items.map(item => item.count), 1);
     return (
-      <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div className="bg-white p-6 animate-zoomIn rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
         <h3 className="text-xl font-bold text-gray-800 mb-6">{title}</h3>
         <div className="space-y-4">
           {items.length > 0 ? (
@@ -92,89 +94,60 @@ const Dashboard: React.FC = () => {
       </div>
     );
   };
-
   return (
-    <div className="container mx-auto p-6 max-h-[585px] overflow-y-auto">
+    <div className="container mx-auto p-6 max-h-[585px] overflow-y-auto animate-fadeInUp scrollbar-hide">
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div>
-            <p className="text-sm font-medium text-gray-500">Total Workers</p>
-            <h2 className="text-2xl font-bold text-gray-900">{workers.length}</h2>
+        {[
+          { label: "Total Workers", value: workers.length, icon: WorkersIcon },
+          { label: "Total Users", value: users.length, icon: UsersIcon },
+          { label: "Total Jobs", value: works.length, icon: JobsIcon },
+          { label: "Total Category", value: category.length, icon: CategoryAndServicesIcon },
+          { label: "Total Service", value: services.length, icon: serviceIcon },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            className={`bg-white p-6 rounded-2xl shadow-md flex items-center justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300 animate-fadeInScale`}
+            style={{ animationDelay: `${i * 0.15}s` }}
+          >
+            <div>
+              <p className="text-sm font-medium text-gray-500 animate-fadeInDown">{stat.label}</p>
+              <h2 className="text-2xl font-bold text-gray-900 animate-fadeInUp">
+                <AnimatedNumber value={Number(stat.value)} />
+              </h2>
+            </div>
+            <div className="p-3 bg-green-100 rounded-full flex items-center justify-center animate-zoomIn">
+              <img
+                src={stat.icon}
+                alt={stat.label}
+                className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8"
+              />
+            </div>
           </div>
-          <div className="p-3 bg-green-100 rounded-full flex items-center justify-center">
-            <img
-              src={WorkersIcon}
-              alt="Workers"
-              className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8"
-            />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div>
-            <p className="text-sm font-medium text-gray-500">Total Users</p>
-            <h2 className="text-2xl font-bold text-gray-900">{users.length}</h2>
-          </div>
-          <div className="p-3 bg-green-100 rounded-full flex items-center justify-center">
-            <img
-              src={UsersIcon}
-              alt="Users"
-              className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8"
-            />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div>
-            <p className="text-sm font-medium text-gray-500">Total Jobs</p>
-            <h2 className="text-2xl font-bold text-gray-900">{works.length}</h2>
-          </div>
-          <div className="p-3 bg-green-100 rounded-full flex items-center justify-center">
-            <img
-              src={JobsIcon}
-              alt="Jobs"
-              className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8"
-            />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div>
-            <p className="text-sm font-medium text-gray-500">Total Category</p>
-            <h2 className="text-2xl font-bold text-gray-900">{category.length}</h2>
-          </div>
-          <div className="p-3 bg-green-100 rounded-full flex items-center justify-center">
-            <img
-              src={CategoryAndServicesIcon}
-              alt="CategoryAndServicesIcon"
-              className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8"
-            />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div>
-            <p className="text-sm font-medium text-gray-500">Total Service</p>
-            <h2 className="text-2xl font-bold text-gray-900">{services.length}</h2>
-          </div>
-          <div className="p-3 bg-green-100 rounded-full flex items-center justify-center">
-            <img
-              src={serviceIcon}
-              alt="Service"
-              className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8"
-            />
-          </div>
-        </div>
+        ))}
       </div>
 
+      {/* Top Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {renderSection('Top Workers', topWorkers)}
-        {renderSection('Top Users', topUsers)}
-        {renderSection('Top Categories', topCategories)}
-        {renderSection('Top Services', topServices)}
+        <div className="animate-slideInRight" style={{ animationDelay: "0.1s" }}>
+          {renderSection('Top Workers', topWorkers)}
+        </div>
+        <div className="animate-slideInRight" style={{ animationDelay: "0.2s" }}>
+          {renderSection('Top Users', topUsers)}
+        </div>
+        <div className="animate-slideInRight" style={{ animationDelay: "0.3s" }}>
+          {renderSection('Top Categories', topCategories)}
+        </div>
+        <div className="animate-slideInRight" style={{ animationDelay: "0.4s" }}>
+          {renderSection('Top Services', topServices)}
+        </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 p-3 w-full">
+      {/* Chart + Wallet */}
+      <div className="flex flex-col lg:flex-row gap-6 p-3 w-full mt-4">
         {/* Chart Section */}
-        <div className="flex-1 p-4 rounded-xl bg-white border border-gray-200 space-y-6">
-          {/* Filter buttons */}
-          <div className="flex space-x-3">
+        <div className="flex-1 p-4 rounded-xl bg-white border border-gray-200 space-y-6 animate-fadeInUp">
+          <div className="flex space-x-3 items-center animate-fadeInDown">
             <label htmlFor="filter" className="text-sm font-medium text-gray-700">
               Filter:
             </label>
@@ -182,32 +155,27 @@ const Dashboard: React.FC = () => {
               id="filter"
               value={filter}
               onChange={(e) => setFilter(e.target.value as Filter)}
-              className="border rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-green-300"
+              className="border rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-green-300 transition-all"
             >
               <option value="monthly">Monthly</option>
               <option value="yearly">Yearly</option>
             </select>
           </div>
-
-          {/* Chart */}
           <EarningsChart filter={filter} rawData={earnings} />
         </div>
 
         {/* Wallet Section */}
-        <div className="w-full lg:w-1/3 border border-gray-200 p-6 rounded-lg shadow flex flex-col items-center justify-center text-center">
-          <p className="text-lg text-green-800">Wallet balance</p>
-          <h2 className="text-4xl font-bold text-green-900">₹{Wallet?.balance}</h2>
-
-          <img
-            src={WalletIcon}
-            alt="walletIcon"
-            className="mt-4 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain"
-          />
+        <div className="w-full lg:w-1/3 border border-gray-200 p-6 rounded-2xl shadow flex flex-col items-center justify-center text-center bg-white animate-zoomIn hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
+          <p className="text-lg text-green-800 animate-fadeInDown">Wallet Balance</p>
+          <h2 className="text-4xl font-bold text-green-900 animate-fadeInScale">
+            ₹<AnimatedNumber value={Number(Wallet?.balance)} />
+          </h2>
+          <BarChart className="mt-4 w-20 h-20 text-green-700 animate-fadeInUp" />
         </div>
       </div>
-
     </div>
   );
+
 };
 
 export default Dashboard;

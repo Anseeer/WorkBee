@@ -10,7 +10,7 @@ export class PaymentRepository extends BaseRepository<IPayment> implements IPaym
         super(Payment);
     }
 
-    async findOne(workId: string, transactionId: string): Promise<IPayment|null> {
+    async findOne(workId: string, transactionId: string): Promise<IPayment | null> {
         try {
             const payment = await this.model.findOne({ workId, transactionId });
             if (!payment) return null;

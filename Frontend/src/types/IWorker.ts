@@ -34,8 +34,8 @@ export interface IWorker {
         plan: string;
         startDate: Date;
         endDate: Date;
-        isActive: boolean;
-    },
+        commission: string;
+    } | null,
     isAccountBuilt: boolean,
     createdAt: Date | string,
     updatedAt: Date

@@ -6,6 +6,7 @@ import { IAvailabilityRepository } from "../../repositories/availability/availab
 import { AVAILABILITY_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DTO.interface";
 import { mapAvailabilityToDTO, mapAvailabilityToEntity } from "../../mappers/availability/availability.map.DTO";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class AvailabilityService implements IAvailabilityService {
@@ -22,7 +23,7 @@ export class AvailabilityService implements IAvailabilityService {
             return availability;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };
@@ -47,7 +48,7 @@ export class AvailabilityService implements IAvailabilityService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     };

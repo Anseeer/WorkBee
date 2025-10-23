@@ -5,7 +5,7 @@ export const uploadToCloud = async (file: File): Promise<string> => {
 
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", "WorkBee"); 
+  formData.append("upload_preset", "WorkBee");
 
   const res = await axios.post(import.meta.env.VITE_CLOUDNARY_URL,
     formData,

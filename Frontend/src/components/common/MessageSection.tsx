@@ -176,7 +176,7 @@ export default function MessageSection({ chats, me }: Props) {
         endCall();
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, me, selectedUser, isCall]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
@@ -237,11 +237,14 @@ export default function MessageSection({ chats, me }: Props) {
   };
 
   return (
-    <div className="border-2 border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row h-screen lg:h-[calc(100vh-4rem)] gap-0 md:gap-4">
+    <div className="border-2 h-screen border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row min-h-screen md:h-[calc(100vh-4rem)] gap-0 md:gap-4">
       <audio id="remote-audio" autoPlay playsInline />
-      <div className={`w-full lg:w-1/3 md:w-1/3 ${selectedUser ? 'hidden md:block' : 'block'} h-[95vh] md:h-full`}>
+
+      {/* Sidebar */}
+      <div className={`w-full lg:w-1/3 md:w-1/3 ${selectedUser ? 'hidden md:block' : 'block'} h-full animate-fadeInLeft`}>
         <div className="bg-[#65A276] w-full h-full overflow-y-auto rounded-r rounded-xl p-4 flex flex-col gap-4">
-          <div className="relative">
+          {/* Search Box */}
+          <div className="relative animate-fadeInDown">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-500" />
             </div>
@@ -253,16 +256,20 @@ export default function MessageSection({ chats, me }: Props) {
               className="w-full bg-gray-100 rounded-lg py-3 sm:py-4 pl-12 pr-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all text-sm sm:text-base"
             />
           </div>
+
+          {/* Chat Users */}
           <div className="flex flex-col gap-3">
-            {filteredChats?.map((chat) => {
+            {filteredChats?.map((chat, index) => {
               const otherParticipant = chat.participants.find((p) => p._id !== me);
               if (!otherParticipant) return null;
               const unreadCount = chat.unreadCounts?.[me] || 0;
+
               return (
                 <div
                   onClick={() => setSelectedUser(otherParticipant)}
                   key={chat?._id}
-                  className="bg-gray-100 rounded-lg p-3 sm:p-4 flex items-center gap-4 hover:bg-white transition-all cursor-pointer"
+                  className="bg-gray-100 rounded-lg p-3 sm:p-4 flex items-center gap-4 hover:bg-white transition-all cursor-pointer animate-fadeInUp"
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0">
                     <img
@@ -288,41 +295,23 @@ export default function MessageSection({ chats, me }: Props) {
               );
             })}
           </div>
+
           {filteredChats?.length === 0 && searchQuery && (
-            <div className="text-center py-8">
+            <div className="text-center py-8 animate-fadeInScale">
               <p className="text-white text-sm">No users found</p>
             </div>
           )}
         </div>
       </div>
-      <div className={`w-full lg:w-2/3 md:w-2/3 bg-white ${selectedUser ? 'block' : 'hidden md:block'} h-[95vh] md:h-full`}>
+
+      {/* Chat Area */}
+      <div className={`w-full lg:w-2/3 md:w-2/3 bg-white ${selectedUser ? 'block' : 'hidden md:block'} h-full`}>
         {isCall ? (
           <CallComponent onCallEnd={onCallEnd} user={user} isOutgoing={isOutgoing} me={me} />
-        ) : incomingCall ? (
-          <div className={`fixed inset-0 flex items-start justify-center z-50`}>
-            <div className="w-full md:w-2/3 lg:w-2/3 bg-white p-6 rounded-lg shadow-lg text-center mx-4">
-              <h2 className="text-xl font-bold mb-4">
-                Incoming Call from {selectedUser?.name || 'User'}
-              </h2>
-              <div className="flex justify-center gap-4">
-                <button
-                  className="bg-green-400 rounded-full border border-green-500 text-white px-4 py-2 rounded"
-                  onClick={handleAcceptCall}
-                >
-                  Accept
-                </button>
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={handleRejectCall}
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
         ) : selectedUser ? (
           <div className="flex flex-col h-full">
-            <div className="bg-[#65A276] px-4 sm:px-6 py-3 sm:py-4 flex rounded-xl rounded-b-none items-center justify-between">
+            {/* Chat Header */}
+            <div className="bg-[#65A276] px-4 sm:px-6 py-3 sm:py-4 flex rounded-xl rounded-b-none items-center justify-between animate-fadeInDown">
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setSelectedUser(null)}
@@ -344,7 +333,6 @@ export default function MessageSection({ chats, me }: Props) {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => {
-                    console.log('MessageSection: Initiating call to', selectedUser?._id);
                     setIsOutgoing(true);
                     setIsCall(true);
                   }}
@@ -354,7 +342,9 @@ export default function MessageSection({ chats, me }: Props) {
                 </button>
               </div>
             </div>
-            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
+
+            {/* Messages */}
+            <div className="flex-1 h-screen overflow-y-auto p-4 sm:p-6 space-y-4">
               {chatMessages.map((msg, i) => {
                 const time = new Date(msg.createdAt as string).toLocaleTimeString([], {
                   hour: '2-digit',
@@ -364,7 +354,8 @@ export default function MessageSection({ chats, me }: Props) {
                 return (
                   <div
                     key={msg._id || i}
-                    className={`flex ${msg.senderId === me ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${msg.senderId === me ? 'justify-end' : 'justify-start'} animate-fadeInUp`}
+                    style={{ animationDelay: `${i * 0.05}s` }}
                   >
                     <div
                       className={`relative max-w-[70%] sm:max-w-xs md:max-w-md lg:max-w-lg px-4 sm:px-8 py-1 pb-4 rounded-2xl ${msg.senderId === me ? 'bg-[#65A276] text-black' : 'bg-[#65A286] text-black'}`}
@@ -381,7 +372,9 @@ export default function MessageSection({ chats, me }: Props) {
               })}
               <div ref={bottomRef} />
             </div>
-            <div className="bg-[#65A276] px-4 sm:px-6 py-3 rounded-xl rounded-t-none">
+
+            {/* Input */}
+            <div className="bg-[#65A276] px-4 sm:px-6 py-3 rounded-xl rounded-t-none animate-fadeInUp">
               <form onSubmit={handleSendMessage} className="flex items-center gap-4">
                 <input
                   type="text"
@@ -401,7 +394,7 @@ export default function MessageSection({ chats, me }: Props) {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full relative overflow-hidden">
+          <div className="flex items-center justify-center h-full relative overflow-hidden animate-fadeInScale">
             <video
               autoPlay
               loop
@@ -413,16 +406,39 @@ export default function MessageSection({ chats, me }: Props) {
             </video>
             <div className="absolute inset-0"></div>
             <div className="relative text-center space-y-4 text-white px-4">
-              <div className="flex-shrink-0">
-                <h1 className="merienda-text text-5xl sm:text-6xl md:text-7xl text-green-900">WorkBee</h1>
-              </div>
-              <p className="text-black text-base sm:text-lg md:text-lg text-semibold">
+              <h1 className="merienda-text text-5xl sm:text-6xl md:text-7xl text-green-900 animate-zoomIn">WorkBee</h1>
+              <p className="text-black text-base sm:text-lg md:text-lg text-semibold animate-fadeInUp">
                 Select a user from the sidebar to start your conversation.
               </p>
             </div>
           </div>
         )}
       </div>
+      {incomingCall ? (
+        <div className="fixed  inset-0 flex items-start justify-center z-50 animate-zoomIn">
+          <div className="w-full  md:w-2/3 lg:w-2/3 bg-white p-6 rounded-lg shadow-lg text-center mx-4">
+            <h2 className="text-xl font-bold mb-4">
+              Incoming Call from {selectedUser?.name || 'User'}
+            </h2>
+            <div className="flex justify-center gap-4">
+              <button
+                className="bg-green-400 rounded-full border border-green-500 text-white px-4 py-2 rounded"
+                onClick={handleAcceptCall}
+              >
+                Accept
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={handleRejectCall}
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
+
 }
+

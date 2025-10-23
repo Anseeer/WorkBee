@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import WorkerSidebar from "../../components/worker/WorkerSidebar";
 import { useSelector } from "react-redux";
@@ -14,110 +15,210 @@ import Notifications from "./notification";
 import WorkerDashboard from "../../components/worker/Dashboard";
 import type { IAvailability } from "../../types/IAvailability";
 import type { IWallet } from "../../types/IWallet";
+import { SubscriptionPlans } from "../../components/worker/Subscription";
+import AddMoneyModal from "../../components/user/AddMoneyModal";
+import PayoutModal from "../../components/common/PayoutForm";
+import ReApplyModal from "../../components/worker/ReApprovalComponent";
+import Loader from "../../components/common/Loader";
+import PendingApprovalMessage from "../../components/worker/PendingApprovalMessage";
 
 const Dashboard = () => {
+    const [initialLoading, setInitialLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("dashboard");
+    const [userId, setUserId] = useState<string | null>(null);
     const [isEdit, setIsEdit] = useState(false);
+    const [addMoneyModal, setAddMoneyModal] = useState(false);
+    const [payoutMoneyModal, setPayoutMoneyModal] = useState(false);
+    const [reApplyModal, setReApplyModal] = useState(false);
+    const [reload, setReloadWallet] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
     const wallet = workerData.wallet;
     useEffect(() => {
-        const workerID = localStorage.getItem("workerId");
-        if (workerID) {
-            dispatch(fetchWorkerDetails(workerID));
+        const fetchData = async () => {
+            const workerID = localStorage.getItem("workerId");
+            if (workerID) {
+                if (initialLoading) setInitialLoading(true);
+                await dispatch(fetchWorkerDetails(workerID));
+                setInitialLoading(false);
+            }
         }
-    }, [dispatch]);
+        fetchData();
+    }, [dispatch, reload]);
 
     useEffect(() => {
         setSelectedDetails(workerData);
-    }, [workerData, setSelectedDetails]);
+        console.log('WorkerData :', workerData.wallet);
+        console.log("Second")
+    }, [workerData, setSelectedDetails, reload]);
 
     const handleTab = (tab: string) => {
         setActiveTab(tab);
+    };
+
+    const handleReload = () => {
+        setReloadWallet((prev) => !prev);
     };
 
     const handleEdit = () => {
         setIsEdit((prev) => !prev);
     }
 
+    const handleAddMoney = () => {
+        setUserId(workerData.worker?._id as string)
+        setAddMoneyModal(true)
+    }
+
+    const handlePayoutMoney = () => {
+        setUserId(workerData.worker?._id as string)
+        setPayoutMoneyModal(true)
+    }
+
+    const closeAddMoneyModal = () => {
+        setAddMoneyModal(false);
+        setReloadWallet((prev) => !prev);
+    }
+
+    const closePayoutMoneyModal = () => {
+        setPayoutMoneyModal(false);
+        setReloadWallet((prev) => !prev);
+    }
+
+    const handleCloseReApplyModal = () => {
+        setReloadWallet((prev) => !prev);
+        setReApplyModal(false);
+    }
+
+    const handleReApproval = () => {
+        setUserId(workerData.worker?._id as string)
+        setReApplyModal(true)
+    }
+
     return (
         <div className="w-full h-screen flex">
-            <WorkerSidebar handleTab={handleTab} />
-            <div className="w-full h-full flex flex-col">
-                <div className="flex items-center justify-between py-2 px-2">
-                    <h3 className="text-2xl font-semibold">
-                        {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                    </h3>
-                    {activeTab === "account" && workerData.worker?.isAccountBuilt && (
-                        <button
-                            className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
-                            onClick={() => handleEdit()}
-                        >
-                            Edit
-                        </button>
-                    )}
-                    {/* {activeTab == "wallet" && (
-                        <button
-                            className="px-4 py-1 text-black border border-black rounded font font-semibold rounded hover:bg-green-900 hover:text-white "
-                            onClick={() => handleWithrawMoney()}
-                        >
-                            Withraw Money
-                        </button>
-                    )} */}
+            {initialLoading ? (
+                <div className="flex-1 flex items-center justify-center">
+                    <Loader />
                 </div>
-                <hr className="border border-green-900" />
-                <div className="flex-1 min-h-0 overflow-auto">
-                    {activeTab === "dashboard" ? (
-                        workerData.worker?.isAccountBuilt ? (
-                            <WorkerDashboard worker={workerData.worker} wallet={workerData.wallet as IWallet} availability={workerData.availability as IAvailability} />
-                        ) : (
-                            <div className="flex justify-center h-full items-center">
-                                <div className="bg-white border-2 border-dashed border-green-600 rounded-3xl p-10 text-center shadow-lg max-w-md w-full">
-                                    <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                                        Build Your Account
-                                    </h2>
-                                    <p className="text-gray-600 text-sm mb-6">
-                                        Complete your account setup to start receiving work opportunities and
-                                        manage your dashboard.
-                                    </p>
+            ) : workerData.worker?.isAccountBuilt ? (<>
+                <WorkerSidebar handleTab={handleTab} />
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                    <div className="flex items-center justify-between py-2 px-2">
+                        <h3 className="text-2xl font-semibold">
+                            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                        </h3>
+
+                        <div className="flex gap-2">
+                            {activeTab === "account" && (
+                                <>
+                                    {workerData.worker.status === "Rejected" && (
+                                        <button
+                                            onClick={() => handleReApproval()}
+                                            className="text-sm border-black rounded px-2 py-1 bg-red-100 cursor-pointer text-red-900 rounded-md hover:bg-blue-200 transition"
+                                        >
+                                            Re-Approval
+                                        </button>
+                                    )}
                                     <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleTab('account');
-                                        }}
-                                        className="bg-green-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-green-800 transition-colors"
+                                        className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
+                                        onClick={handleEdit}
                                     >
-                                        Build Account
+                                        Edit
                                     </button>
-                                </div>
-                            </div>
-                        )
-                    ) : activeTab === "account" ? (
-                        workerData.worker?.isAccountBuilt ? (
-                            <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
-                        ) : (
-                            <BuildAccount />
-                        )
-                    ) : activeTab === "history" ? (
-                        <WorkHistory />
-                    ) : activeTab === "wallet" ? (
-                        <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700 h-full">
-                            <Wallet
-                                workerId={workerData.worker?._id as string}
-                                historyPrev={wallet?.transactions}
-                                balancePrev={wallet?.balance}
-                            />
+                                </>
+                            )}
+
+                            {activeTab === "wallet" && (
+                                <>
+                                    <button
+                                        className="px-4 py-1 text-green-600 border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
+                                        onClick={handleAddMoney}
+                                    >
+                                        Add Money
+                                    </button>
+                                    <button
+                                        className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-gray-400 hover:text-white"
+                                        onClick={handlePayoutMoney}
+                                    >
+                                        Payout Money
+                                    </button>
+                                </>
+                            )}
                         </div>
-                    ) : activeTab === "message" ? (
-                        <Message />
-                    ) : activeTab === "notification" ? (
-                        <Notifications />
-                    ) : null}
+                    </div>
+
+                    <hr className="border border-green-900" />
+
+                    <div className="flex-1 min-h-0 overflow-auto">
+                        {activeTab === "dashboard" ? (
+                            <>
+                                {workerData.worker?.isVerified && workerData.worker.status != "Rejected" && workerData.worker.subscription == null ? (
+                                    <SubscriptionPlans />
+                                ) : !workerData.worker.isVerified || workerData.worker.status == "Rejected" && workerData.worker.subscription == null ? (
+                                    <PendingApprovalMessage
+                                        status={workerData.worker.status}
+                                        estimatedTime="42hrs" />
+                                ) : (
+                                    <WorkerDashboard
+                                        worker={workerData.worker}
+                                        wallet={workerData.wallet as IWallet}
+                                        availability={workerData.availability as IAvailability}
+                                    />
+                                )}
+                            </>
+                        ) : activeTab === "account" ? (
+                            <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
+                        ) : activeTab === "history" ? (
+                            <WorkHistory />
+                        ) : activeTab === "wallet" ? (
+                            <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700 h-full">
+                                <Wallet
+                                    workerId={workerData.worker?._id as string}
+                                    historyPrev={wallet?.transactions}
+                                    balancePrev={wallet?.balance}
+                                />
+                            </div>
+                        ) : activeTab === "message" ? (
+                            <Message />
+                        ) : activeTab === "notification" ? (
+                            <Notifications />
+                        ) : null}
+
+                        {addMoneyModal && (
+                            <AddMoneyModal
+                                userId={userId as string}
+                                onClose={closeAddMoneyModal}
+                                handleReload={handleReload}
+                            />
+                        )}
+
+                        {payoutMoneyModal && (
+                            <PayoutModal
+                                balance={wallet?.balance as number}
+                                closeModal={closePayoutMoneyModal}
+                                workerID={userId}
+                            />
+                        )}
+
+                        {reApplyModal && (
+                            <ReApplyModal close={handleCloseReApplyModal} workerID={userId as string} handleEdit={handleEdit} />
+                        )}
+                    </div>
                 </div>
-            </div>
+            </>
+            ) : (
+                <>
+                    {!workerData.worker?.isAccountBuilt ? (
+                        <>
+                            <BuildAccount />
+                        </>
+                    ) : null}
+                </>
+            )}
         </div>
     );
+
 };
 
 export default Dashboard;

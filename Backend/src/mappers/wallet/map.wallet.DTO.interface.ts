@@ -2,13 +2,13 @@ import { Types } from "mongoose";
 
 export interface IWalletDTO {
     _id?: string,
-    userId: Types.ObjectId;
+    userId: string;
     balance: number;
     transactions: {
-        transactionId: string;
+        transactionId: string | null;
         type: "CREDIT" | "DEBIT";
         amount: number;
-        description?: string;
+        description?: string | undefined;
         createdAt: Date;
     }[];
     createdAt?: Date;
@@ -18,7 +18,7 @@ export interface IWalletEntity {
     userId: Types.ObjectId;
     balance: number;
     transactions: {
-        transactionId: string;
+        transactionId: string | null;
         type: "CREDIT" | "DEBIT";
         amount: number;
         description?: string;

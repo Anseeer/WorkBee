@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { registerUserThunk } from "../../slice/userSlice";
 import { useNavigate } from "react-router-dom";
-import { emailRegex, passRegex, phoneRegex } from "../../regexs";
+import { emailRegex, passRegex, phoneRegex } from "../../constant/regexs";
 import type { AxiosError } from "axios";
 import { useFormik } from "formik";
 import { Eye, EyeOff } from "lucide-react";

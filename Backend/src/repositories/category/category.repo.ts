@@ -4,6 +4,7 @@ import Category from "../../model/category/category.model";
 import BaseRepository from "../base/base.repo";
 import { ICategoryRepository } from "./category.repo.interface";
 import { ICategoryEntity } from "../../mappers/category/category.map.DTO.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class CategoryRepository extends BaseRepository<ICategory> implements ICategoryRepository {
@@ -16,7 +17,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
             const newItem = new this.model(item);
             return await newItem.save();
         } catch (error) {
-            console.error('Error in create:', error);
+            logger.error('Error in create:', error);
             throw new Error('Error in create');
         }
     }
@@ -25,7 +26,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         try {
             return await this.model.findById(id) as ICategory;
         } catch (error) {
-            console.error('Error in findById:', error);
+            logger.error('Error in findById:', error);
             throw new Error('Error in findById');
         }
     }
@@ -34,7 +35,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         try {
             return await this.model.find().sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in getAll:', error);
+            logger.error('Error in getAll:', error);
             throw new Error('Error in getAll');
         }
     }
@@ -43,7 +44,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         try {
             return await this.model.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
         } catch (error) {
-            console.error('Error in findByName:', error);
+            logger.error('Error in findByName:', error);
             throw new Error('Error in findByName');
         }
     }
@@ -61,7 +62,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
 
             return true;
         } catch (error) {
-            console.error('Error in setIsActive:', error);
+            logger.error('Error in setIsActive:', error);
             throw new Error('Error in setIsActive');
         }
     }
@@ -81,7 +82,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
 
             return result.modifiedCount > 0;
         } catch (error) {
-            console.error('Error in update:', error);
+            logger.error('Error in update:', error);
             throw new Error('Error in update');
         }
     };
@@ -91,7 +92,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
             const result = await this.model.deleteOne({ _id: id });
             return result.deletedCount > 0;
         } catch (error) {
-            console.error('Error in delete:', error);
+            logger.error('Error in delete:', error);
             throw new Error('Error in delete');
         }
     };
@@ -100,7 +101,7 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         try {
             return await this.model.find({ _id: { $in: categoryIds } });
         } catch (error) {
-            console.error('Error in getByWorker:', error);
+            logger.error('Error in getByWorker:', error);
             throw new Error('Error in getByWorker');
         }
     };

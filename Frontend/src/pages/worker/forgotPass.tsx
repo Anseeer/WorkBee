@@ -4,7 +4,7 @@ import ForgotPasswordForm from "../../components/common/ForgotPassForm";
 import { forgotPassUserThunk } from "../../slice/workerSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { API_ROUTES } from "../../constant/api.routes";
-import { emailRegex } from "../../regexs";
+import { emailRegex } from "../../constant/regexs";
 
 const WorkerForgotPasswordPage = () => {
   const dispatch = useAppDispatch();

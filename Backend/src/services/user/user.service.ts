@@ -22,6 +22,7 @@ import { mapWalletToDTO, mapWalletToEntity } from "../../mappers/wallet/map.wall
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { Types } from "mongoose";
 import { Role } from "../../constants/role";
+import logger from "../../utilities/logger";
 
 const client = new OAuth2Client();
 
@@ -77,7 +78,7 @@ export class UserService implements IUserService {
             return { user, accessToken, refreshToken, wallet };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -109,7 +110,7 @@ export class UserService implements IUserService {
             return { user, accessToken, refreshToken, wallet };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -122,7 +123,7 @@ export class UserService implements IUserService {
             return otp;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -133,7 +134,7 @@ export class UserService implements IUserService {
             return await this.forgotPass(email);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -145,7 +146,7 @@ export class UserService implements IUserService {
             return user;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -157,7 +158,7 @@ export class UserService implements IUserService {
             return user;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -180,7 +181,7 @@ export class UserService implements IUserService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -191,7 +192,7 @@ export class UserService implements IUserService {
             await this._userRepository.resetPassword(email, hashedPass);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -234,7 +235,7 @@ export class UserService implements IUserService {
             };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -246,7 +247,7 @@ export class UserService implements IUserService {
             return availability;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -260,7 +261,7 @@ export class UserService implements IUserService {
             return { user, wallet };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -271,7 +272,7 @@ export class UserService implements IUserService {
             return await this._userRepository.update(userData, userId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -286,7 +287,7 @@ export class UserService implements IUserService {
             return users.map((user) => mapUserToDTO(user));
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }

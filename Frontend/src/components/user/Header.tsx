@@ -2,10 +2,6 @@ import { useEffect, useState } from 'react';
 import { Bell, Menu, MessageSquare, User, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../services/axios';
-import { logoutUser } from '../../services/userService';
-import { toast } from 'react-toastify';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { logout } from '../../slice/userSlice';
 import { API_ROUTES } from '../../constant/api.routes';
 import Loader from '../common/Loader';
 
@@ -17,7 +13,6 @@ export default function Header() {
     const [isLogged, setIsLogged] = useState<boolean | null>(null);
 
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
         axios.get("/auth/verify", { withCredentials: true })
@@ -26,19 +21,6 @@ export default function Header() {
             })
             .catch(() => setIsLogged(false));
     }, []);
-
-    const handleLogout = async () => {
-        try {
-            await logoutUser();
-            toast.success("Logout Successful");
-            dispatch(logout());
-            setIsLogged(false);
-            setIsMobileMenuOpen(false);
-            navigate(API_ROUTES.USER.LOGIN, { replace: true });
-        } catch (error) {
-            console.error("Logout failed:", error);
-        }
-    };
 
     const handleProfile = () => {
         if (!isProfileOpen) {
@@ -163,20 +145,24 @@ export default function Header() {
                                 </>
                             ) : (
                                 <div className="flex flex-col space-y-3">
-                                    <button className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
+                                    <button
+                                        onClick={handleNotification}
+                                        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
                                         <Bell className="h-5 w-5" />
                                         <span>Notifications</span>
                                     </button>
-                                    <button className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
+                                    <button
+                                        onClick={handleMessage}
+                                        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
                                         <MessageSquare className="h-5 w-5" />
                                         <span>Messages</span>
                                     </button>
                                     <button
-                                        onClick={handleLogout}
+                                        onClick={handleProfile}
                                         className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
                                     >
                                         <User className="h-5 w-5" />
-                                        <span>Logout</span>
+                                        <span>Profile</span>
                                     </button>
                                 </div>
                             )}

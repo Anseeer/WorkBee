@@ -15,3 +15,4 @@ export interface YearlyEarning extends BaseEarning {
 }
 
 export type EarningResult = MonthlyEarning | YearlyEarning;
+export type EarningResultDTO = MonthlyEarning | YearlyEarning;

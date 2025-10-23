@@ -6,6 +6,7 @@ import { IWalletRepository } from "./wallet.repo.interface";
 import { Wallet } from "../../model/wallet/wallet.model";
 import mongoose, { isValidObjectId } from "mongoose";
 import { EarningResult } from "../../utilities/earningsType";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class WalletRepository extends BaseRepository<IWallet> implements IWalletRepository {
@@ -18,15 +19,13 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
             const newItem = new this.model(item);
             return await newItem.save();
         } catch (error) {
-            console.error('Error in create:', error);
+            logger.error('Error in create:', error);
             throw new Error('Error in create');
         }
     }
 
     async findByUser(userId: string): Promise<IWallet | null> {
         try {
-            console.log("WorkerID :", userId);
-
             if (!isValidObjectId(userId)) {
                 throw new Error('Invalid Wallet ID provided.');
             }
@@ -41,7 +40,7 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
 
             return wallet;
         } catch (error) {
-            console.error('Error in findByUser:', error);
+            logger.error('Error in findByUser:', error);
             throw new Error('Error in findByUser');
         }
     }
@@ -85,7 +84,7 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
 
             return earnings;
         } catch (error) {
-            console.error("Error in getEarnings:", error);
+            logger.error("Error in getEarnings:", error);
             throw new Error("Error in getEarnings");
         }
     }
@@ -103,7 +102,7 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
 
             return wallet;
         } catch (error) {
-            console.error('Error in platformWallet:', error);
+            logger.error('Error in platformWallet:', error);
             throw new Error('Error in platformWallet');
         }
     }
@@ -122,7 +121,7 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
                 }
             );
         } catch (error) {
-            console.error('Error in updateWallet:', error);
+            logger.error('Error in updateWallet:', error);
             throw new Error('Error in updateWallet');
         }
     }
@@ -141,7 +140,17 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
                 }
             );
         } catch (error) {
-            console.error('Error in updateWallet:', error);
+            logger.error('Error in updateWallet:', error);
+            throw new Error('Error in updateWallet');
+        }
+    }
+
+    async findPlatformWallet(): Promise<IWallet | null> {
+        try {
+            const wallet = await this.model.findOne({ walletType: "PLATFORM" }).lean();
+            return wallet;
+        } catch (error) {
+            logger.error('Error in updateWallet:', error);
             throw new Error('Error in updateWallet');
         }
     }

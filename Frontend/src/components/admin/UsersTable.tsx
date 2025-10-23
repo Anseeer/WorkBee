@@ -10,7 +10,7 @@ const UserTable = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchUsers(currentPage, 5);
+            const res = await fetchUsers(currentPage, 6);
             setUsers(res.data.data.users);
             setTotalPages(res.data.data.totalPage);
         };
@@ -31,10 +31,7 @@ const UserTable = () => {
         }
     };
 
-
-
     const columns: Column<Iuser>[] = [
-        { key: 'id', label: 'ID', render: (u) => u.id.slice(0, 10) },
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },
         { key: 'phone', label: 'Phone' },
@@ -65,9 +62,11 @@ const UserTable = () => {
                 totalPages={totalPages}
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
+                itemsPerPage={6}
                 data={users}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
+                advancedFilterKeys={['name', 'email', 'phone', 'isActive', 'location']}
             />
         </div>
     );

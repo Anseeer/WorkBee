@@ -5,6 +5,7 @@ import BaseRepository from "../base/base.repo";
 import Chat from "../../model/chatMessage/chat.model";
 import { Types } from "mongoose";
 import { CHAT_MESSAGE } from "../../constants/messages";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class ChatRepository extends BaseRepository<IChat> implements IChatRepositoy {
@@ -26,7 +27,7 @@ export class ChatRepository extends BaseRepository<IChat> implements IChatReposi
 
             return chat.length > 0 ? chat : null;
         } catch (error) {
-            console.error('Error in findChat:', error);
+            logger.error('Error in findChat:', error);
             throw new Error('Error in findChat');
         }
     }
@@ -43,7 +44,7 @@ export class ChatRepository extends BaseRepository<IChat> implements IChatReposi
                 .populate("participants.participantId", "name profileImage")
                 .populate("lastMessage");
         } catch (error) {
-            console.error('Error in findChatByUsers:', error);
+            logger.error('Error in findChatByUsers:', error);
             throw new Error('Error in findChatByUsers');
         }
     }
@@ -56,7 +57,7 @@ export class ChatRepository extends BaseRepository<IChat> implements IChatReposi
 
             return await this.model.findById(chatId).populate('lastMessage');
         } catch (error) {
-            console.error('Error in findByChatId:', error);
+            logger.error('Error in findByChatId:', error);
             throw new Error('Error in findByChatId');
         }
     }
@@ -82,7 +83,7 @@ export class ChatRepository extends BaseRepository<IChat> implements IChatReposi
                 }
             );
         } catch (error) {
-            console.error('Error in updateChatOnSendMessage:', error);
+            logger.error('Error in updateChatOnSendMessage:', error);
             throw new Error('Error in updateChatOnMessage');
         }
     }
@@ -92,20 +93,14 @@ export class ChatRepository extends BaseRepository<IChat> implements IChatReposi
             if (!chatId || !userId) {
                 throw new Error("chatId or userId not provided!");
             }
-
-            console.log("ChatId :", chatId);
-            console.log("UserId :", userId);
-
             const result = await this.model.updateOne(
                 { _id: new Types.ObjectId(chatId) },
                 { $set: { [`unreadCounts.${userId}`]: 0 } }
             );
 
-            console.log("Modified Count:", result.modifiedCount);
-
             return result.modifiedCount > 0;
         } catch (error) {
-            console.error('Error in resetUnreadCount:', error);
+            logger.error('Error in resetUnreadCount:', error);
             throw new Error('Error in resetUnreadCount');
         }
     }

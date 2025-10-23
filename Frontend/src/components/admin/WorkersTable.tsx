@@ -23,7 +23,7 @@ const WorkersTable = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetchWorkers(currentPage, 5);
+            const res = await fetchWorkers(currentPage, 6);
             setWorkers(res.data.data.workers);
             setTotalPage(res.data.data.totalPage);
 
@@ -48,7 +48,6 @@ const WorkersTable = () => {
 
 
     const columns: Column<IWorker>[] = [
-        { key: 'id', label: 'ID', render: (u) => u.id.slice(0, 10) },
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },
         { key: 'phone', label: 'Phone' },
@@ -84,8 +83,10 @@ const WorkersTable = () => {
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
                 totalPages={totalPage}
+                itemsPerPage={6}
                 columns={columns}
                 searchKeys={['name', 'email', 'phone']}
+                advancedFilterKeys={['name', 'email', 'phone', 'location', 'isActive']}
                 onRowClick={async (worker) => {
                     try {
                         const availabilityData = await FetchAvailability(worker.id);
@@ -99,8 +100,6 @@ const WorkersTable = () => {
                         console.log(error);
                     }
                 }}
-
-
 
             />
         </div>

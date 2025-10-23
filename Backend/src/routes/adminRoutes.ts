@@ -20,7 +20,7 @@ Router.get('/fetch-availability', auth, authorize(["Admin"]), adminController.fe
 Router.get('/approve-worker', auth, authorize(["Admin"]), adminController.approveWorker)
 Router.get('/reject-worker', auth, authorize(["Admin"]), adminController.rejectedWorker)
 Router.get('/earnings', auth, authorize(["Admin"]), adminController.fetchEarnings)
-Router.get('/wallet', auth, authorize(["Admin"]), adminController.platformWallet)
+Router.get('/wallet', adminController.platformWallet)
 
 
 export default Router;

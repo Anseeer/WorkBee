@@ -4,6 +4,7 @@ import { IMessage } from "../../model/chatMessage/IMessage";
 import Message from "../../model/chatMessage/message.model";
 import BaseRepository from "../base/base.repo";
 import { IMessageRepository } from "./message.repo.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class MessageRepository extends BaseRepository<IMessage> implements IMessageRepository {
@@ -22,7 +23,7 @@ export class MessageRepository extends BaseRepository<IMessage> implements IMess
                 .limit(50)
                 .lean();
         } catch (error) {
-            console.error('Error in findLastMessage:', error);
+            logger.error('Error in findLastMessage:', error);
             throw new Error('Error in findLastMessage');
         }
     }

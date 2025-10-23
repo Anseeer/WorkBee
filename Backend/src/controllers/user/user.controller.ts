@@ -9,18 +9,14 @@ import { USERS_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { AuthRequest } from "../../middlewares/authMiddleware";
-import { IChatService } from "../../services/chatMessage/chatMessage.service.interface";
 
 @injectable()
 export class UserController implements IUserController {
     private _userService: IUserService;
-    private _chatService: IChatService;
     constructor(
         @inject(TYPES.userService) userService: IUserService,
-        @inject(TYPES.chatService) chatService: IChatService
     ) {
         this._userService = userService
-        this._chatService = chatService
     }
 
     register = async (req: Request, res: Response, next: NextFunction) => {

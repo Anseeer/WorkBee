@@ -24,6 +24,7 @@ Router.post('/google-login', workerController.googleLogin);
 Router.get('/wallet', auth, workerController.findWallet);
 Router.get('/earnings', auth, workerController.getEarnings);
 Router.get("/ratings", auth, workerController.rateWorkers);
+Router.get("/re-approval", auth, workerController.reApprovalRequest);
 
 
 export default Router;

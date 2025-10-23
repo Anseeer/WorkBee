@@ -24,7 +24,7 @@ const userSchema = new Schema<Iuser>({
     location: {
         type: locationSchema,
         required: function () {
-            return this.role !== "Admin"; 
+            return this.role !== "Admin";
         }
     },
     profileImage: {

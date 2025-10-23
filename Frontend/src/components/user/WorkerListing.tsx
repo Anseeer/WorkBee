@@ -115,13 +115,14 @@ const WorkerListing = () => {
         }
     }, [triggerDraft, workDetails, dispatch, navigate]);
 
-    const Confirm = async (date: string, slot: string, totalAmount: string, PlatformFee: string) => {
+    const Confirm = async (date: string, slot: string, totalAmount: string, PlatformFee: string, commissionAmount: string) => {
         try {
             const res = await dispatch(workerDetails({
                 date,
                 slot,
                 totalAmount,
                 PlatformFee,
+                commission: commissionAmount,
                 workerId: selectedWorker?.id,
                 workerName: selectedWorker?.name,
                 userName: userDetails?.name
@@ -143,16 +144,16 @@ const WorkerListing = () => {
     const paginatedWorkers = filteredWorkers.slice(startIndex, startIndex + itemsPerPage);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-10">
-            <div className="flex flex-col md:flex-row justify-between gap-6">
+        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-10 animate-fadeInUp">
+            <div className="flex flex-col md:flex-row justify-between gap-6 animate-fadeInDown">
 
                 {/* Sidebar */}
-                <div className="w-full md:w-80 flex-shrink-0">
-                    <div className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6">
+                <div className="w-full md:w-80 flex-shrink-0 animate-slideInRight">
+                    <div className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6 animate-fadeInScale">
                         <h3 className="text-lg font-semibold mb-4 text-green-700">Time of day</h3>
                         <div className="space-y-3">
                             {timeSlots.map((slot) => (
-                                <label key={slot.value} className="flex items-center space-x-3 cursor-pointer">
+                                <label key={slot.value} className="flex items-center space-x-3 cursor-pointer animate-fadeInUp">
                                     <input
                                         type="checkbox"
                                         checked={filters.selectedTimeSlots.includes(slot.value)}
@@ -167,18 +168,19 @@ const WorkerListing = () => {
                 </div>
 
                 {/* Worker List */}
-                <div className="flex-1">
+                <div className="flex-1 animate-fadeInUp">
                     <div className="max-w-full space-y-4">
                         {paginatedWorkers.length > 0 ? (
-                            paginatedWorkers.map((worker) => (
+                            paginatedWorkers.map((worker, index) => (
                                 <div
                                     key={worker.id}
-                                    className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6"
+                                    className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6 animate-fadeInUp"
+                                    style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "backwards" }}
                                 >
                                     <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
 
                                         {/* Profile Image + Button */}
-                                        <div className="flex flex-col items-center flex-shrink-0">
+                                        <div className="flex flex-col items-center flex-shrink-0 animate-zoomIn">
                                             <img
                                                 src={worker.profileImage as string}
                                                 className="w-20 h-20 bg-gray-300 rounded-full object-cover"
@@ -186,24 +188,25 @@ const WorkerListing = () => {
                                             />
                                             <button
                                                 onClick={() => handleSelectWorker(worker)}
-                                                className="bg-green-800 mt-3 text-white px-4 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition-colors"
+                                                className="bg-green-800 mt-3 text-white px-4 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition-colors animate-scaleIn"
                                             >
                                                 Select
                                             </button>
                                         </div>
 
                                         {/* Worker Details */}
-                                        <div className="flex-1">
+                                        <div className="flex-1 animate-fadeInUp">
                                             <h3 className="text-lg font-semibold text-gray-900">{worker.name}</h3>
                                             <div className="flex items-center space-x-2">
                                                 <span className="text-xs text-gray-600">Rating:</span>
                                                 <StarRatingDisplay rating={worker.ratings.average || 0} />
                                                 <span className="text-xs text-gray-600">
                                                     ({worker.ratings.average.toFixed(1)}/5)
-                                                </span>                                            </div>
+                                                </span>
+                                            </div>
 
                                             {/* Info Row */}
-                                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2">
+                                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2 animate-fadeInUp">
                                                 <div className="flex items-center space-x-1">
                                                     <MapPin className="w-3 h-3" />
                                                     <span>{worker.location.address}</span>
@@ -218,9 +221,8 @@ const WorkerListing = () => {
                                                 </div>
                                             </div>
 
-
                                             {/* Bio */}
-                                            <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3">
+                                            <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3 animate-fadeInScale">
                                                 <p className="text-sm font-medium text-gray-900 mb-1">
                                                     How Can I Help:
                                                 </p>
@@ -233,7 +235,7 @@ const WorkerListing = () => {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-500 text-center py-10">
+                            <p className="text-gray-500 text-center py-10 animate-fadeInDown">
                                 No workers found matching your criteria.
                             </p>
                         )}
@@ -241,7 +243,7 @@ const WorkerListing = () => {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex justify-center items-center space-x-2 mt-6">
+                        <div className="flex justify-center items-center space-x-2 mt-6 animate-slideIn">
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
@@ -252,7 +254,10 @@ const WorkerListing = () => {
                                 <button
                                     key={i}
                                     onClick={() => setCurrentPage(i + 1)}
-                                    className={`w-8 h-8 rounded-full ${currentPage === i + 1 ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}
+                                    className={`w-8 h-8 rounded-full ${currentPage === i + 1
+                                        ? 'bg-gray-900 text-white'
+                                        : 'bg-gray-200 text-gray-800'
+                                        } animate-scaleIn`}
                                 >
                                     {i + 1}
                                 </button>
@@ -270,13 +275,15 @@ const WorkerListing = () => {
 
             {/* Modal */}
             {isModalOpen && selectedWorker && (
-                <WorkerAvailabilityModal
-                    work={workDetails}
-                    worker={selectedWorker}
-                    availability={availability as IAvailability}
-                    onClose={Close}
-                    onConfirm={Confirm}
-                />
+                <div className="animate-zoomIn">
+                    <WorkerAvailabilityModal
+                        work={workDetails}
+                        worker={selectedWorker}
+                        availability={availability as IAvailability}
+                        onClose={Close}
+                        onConfirm={Confirm}
+                    />
+                </div>
             )}
         </div>
     );

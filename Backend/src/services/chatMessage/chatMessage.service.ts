@@ -10,6 +10,7 @@ import { CHAT_MESSAGE, USERS_MESSAGE } from "../../constants/messages";
 import { IChat } from "../../model/chatMessage/IChat";
 import { IMessageDTO } from "../../mappers/chatMessage/message.map.DTO.interface";
 import { mapMessageToDTO } from "../../mappers/chatMessage/message.map.DTO";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class ChatService implements IChatService {
@@ -36,7 +37,7 @@ export class ChatService implements IChatService {
             return chat;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -51,7 +52,7 @@ export class ChatService implements IChatService {
             return lastMessage as IMessageDTO[];
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -64,7 +65,7 @@ export class ChatService implements IChatService {
             return await this._chatRepository.resetUnreadCount(chatId, userId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -79,7 +80,7 @@ export class ChatService implements IChatService {
             return chat;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -94,7 +95,7 @@ export class ChatService implements IChatService {
             return message;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -115,7 +116,7 @@ export class ChatService implements IChatService {
             );
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }

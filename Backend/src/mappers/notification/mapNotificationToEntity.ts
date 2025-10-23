@@ -9,12 +9,12 @@ export const mapNotificationToEntity = (
         recipient: notification.recipient
             ? new mongoose.Types.ObjectId(notification.recipient)
             : undefined,
-        recipientModel: notification.recipientModel ,
+        recipientModel: notification.recipientModel,
         actor: notification.actor
             ? new mongoose.Types.ObjectId(notification.actor)
             : undefined,
-        actorModel: notification.actorModel, 
-        type: notification.type!, 
+        actorModel: notification.actorModel,
+        type: notification.type!,
         title: notification.title!,
         body: notification.body!,
         read: notification.read ?? false,

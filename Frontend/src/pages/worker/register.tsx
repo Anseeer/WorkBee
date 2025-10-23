@@ -5,9 +5,8 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { registerWorkerThunk } from "../../slice/workerSlice";
 import { getAllCategories } from "../../services/workerService";
 import type { ICategory } from "../../types/ICategory";
-import { emailRegex, passRegex, phoneRegex } from "../../regexs";
+import { emailRegex, passRegex, phoneRegex } from "../../constant/regexs";
 import { useNavigate } from "react-router-dom";
-import type { AxiosError } from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { API_ROUTES } from "../../constant/api.routes";
 
@@ -84,8 +83,8 @@ const WorkerRegistrationPage = () => {
                 toast.success("Registration successful!");
                 navigate(API_ROUTES.WORKER.DASHBOARD, { replace: true });
             } catch (error: unknown) {
-                const err = error as AxiosError<{ data: string }>;
-                toast.error(err.response?.data?.data || "Registration failed");
+                const message = error as string || "Registration failed";
+                toast.error(message);
             } finally {
                 setLoading(false);
             }
@@ -342,7 +341,7 @@ const WorkerRegistrationPage = () => {
                                     </div>
 
                                     {showDropdown && (
-                                        <div className="absolute mt-1 w-full bg-white border border-gray-300 
+                                        <div className="absolute mt-1 w-full bg-white 
                                        rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
                                             {categoriesList.map((cat) => (
                                                 <div

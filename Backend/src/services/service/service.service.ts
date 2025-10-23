@@ -6,6 +6,7 @@ import { IServiceRepository } from "../../repositories/services/service.repo.int
 import { SERVICE_MESSAGE } from "../../constants/messages";
 import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
 import { mapServiceToDTO, mapServiceToEntity } from "../../mappers/service/service.map.DTO";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class ServiceService implements IServiceService {
@@ -25,7 +26,7 @@ export class ServiceService implements IServiceService {
             return mapServiceToDTO(newService);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -43,7 +44,7 @@ export class ServiceService implements IServiceService {
             return { services, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -54,7 +55,7 @@ export class ServiceService implements IServiceService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -70,7 +71,7 @@ export class ServiceService implements IServiceService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -85,7 +86,7 @@ export class ServiceService implements IServiceService {
             return true;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -96,7 +97,7 @@ export class ServiceService implements IServiceService {
             return serv.map((s) => mapServiceToDTO(s));
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -107,21 +108,21 @@ export class ServiceService implements IServiceService {
             return serv.map((s) => mapServiceToDTO(s));
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
 
     getBySearch = async (searchKey: string): Promise<IServiceDTO[]> => {
         try {
-            const serv = await this._serviceRepository.getBySearch(searchKey);
+            const serv = await this._serviceRepository.getBySearch(searchKey) as IServices[];
             return serv.map((s) => mapServiceToDTO(s));
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
-            throw error;
+            logger.error(errMsg);
+            throw new Error(errMsg);
         }
-    }
+    };
 
     getById = async (id: string): Promise<IServiceDTO | null> => {
         try {
@@ -129,7 +130,7 @@ export class ServiceService implements IServiceService {
             return mapServiceToDTO(serv as IServices);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }

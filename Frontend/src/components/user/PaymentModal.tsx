@@ -19,6 +19,7 @@ const PaymentModal = ({ onClose, Amount, workId, platFromFee, setRatingModal }: 
     const handlePayment = async (amount: number) => {
         try {
             const { data } = await axios.post("rzp/create-order", { amount, workId, platFromFee });
+            console.log("Data :", data)
 
             const script = document.createElement("script");
             script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -28,7 +29,7 @@ const PaymentModal = ({ onClose, Amount, workId, platFromFee, setRatingModal }: 
             script.onload = () => {
                 const options = {
                     key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                    amount: data.amount,
+                    amount: amount,
                     currency: data.currency,
                     name: "WorkBee",
                     description: "Service Payment",
@@ -117,6 +118,7 @@ const PaymentModal = ({ onClose, Amount, workId, platFromFee, setRatingModal }: 
                 <input
                     type="number"
                     name="amount"
+                    readOnly
                     value={formik.values.amount}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}

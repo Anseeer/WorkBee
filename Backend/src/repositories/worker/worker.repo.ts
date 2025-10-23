@@ -8,14 +8,25 @@ import { Availability } from "../../model/availablity/availablity.model";
 import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
 import mongoose, { Types } from "mongoose";
-import { WORKER_MESSAGE } from "../../constants/messages";
+import { SUBSCRIPTION_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
 import { FilterQuery } from "mongoose";
 import { Role } from "../../constants/role";
+import { ISubscription } from "../../model/subscription/subscription.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class WorkerRepository extends BaseRepository<IWorker> implements IWorkerRepository {
     constructor() {
         super(Worker);
+    }
+
+    async find(): Promise<IWorker[] | []> {
+        try {
+            return this.model.find();
+        } catch (error) {
+            logger.error('Error in find:', error);
+            throw new Error('Error in find');
+        }
     }
 
     async findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null> {
@@ -26,7 +37,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 { new: true }
             );
         } catch (error) {
-            console.error('Error in findByIdAndUpdate:', error);
+            logger.error('Error in findByIdAndUpdate:', error);
             throw new Error('Error in findByIdAndUpdate');
         }
     }
@@ -35,7 +46,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         try {
             return await Availability.findOne({ workerId: id });
         } catch (error) {
-            console.error('Error in findAvailabilityByWorkerId:', error);
+            logger.error('Error in findAvailabilityByWorkerId:', error);
             throw new Error('Error in findAvailabilityByWorkerId');
         }
     }
@@ -44,7 +55,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         try {
             return await Availability.create(availability);
         } catch (error) {
-            console.error('Error in setAvailability:', error);
+            logger.error('Error in setAvailability:', error);
             throw new Error('Error in setAvailability');
         }
     }
@@ -57,7 +68,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 { new: true }
             );
         } catch (error) {
-            console.error('Error in updateAvailability:', error);
+            logger.error('Error in updateAvailability:', error);
             throw new Error('Error in updateAvailability');
         }
     }
@@ -66,7 +77,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         try {
             return await this.model.find({ role: Role.WORKER, isVerified: true }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in getAllWorkers:', error);
+            logger.error('Error in getAllWorkers:', error);
             throw new Error('Error in getAllWorkers');
         }
     }
@@ -75,7 +86,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         try {
             return await this.model.find({ role: Role.WORKER, isVerified: false, isAccountBuilt: true }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Error in getAllNonVerifiedWorkers:', error);
+            logger.error('Error in getAllNonVerifiedWorkers:', error);
             throw new Error('Error in getAllNonVerifiedWorkers');
         }
     }
@@ -92,7 +103,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             return true;
         } catch (error) {
-            console.error('Error in setIsActive:', error);
+            logger.error('Error in setIsActive:', error);
             throw new Error('Error in setIsActive');
         }
     }
@@ -111,7 +122,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             return true;
         } catch (error) {
-            console.error('Error in approveWorker:', error);
+            logger.error('Error in approveWorker:', error);
             throw new Error('Error in approveWorker');
         }
     }
@@ -130,7 +141,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             return true;
         } catch (error) {
-            console.error('Error in rejectedWorker:', error);
+            logger.error('Error in rejectedWorker:', error);
             throw new Error('Error in rejectdWorker');
         }
     }
@@ -165,7 +176,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             return result.modifiedCount > 0;
         } catch (error) {
-            console.error('Error in update:', error);
+            logger.error('Error in update:', error);
             throw new Error('Error in update');
         }
     }
@@ -175,17 +186,29 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             const query: FilterQuery<IWorker> = {
                 workType: { $in: searchTerms.workType },
                 isAccountBuilt: true,
+                subscription: { $ne: null },
                 isActive: true,
                 isVerified: true,
             };
 
             if (searchTerms.categoryId) {
-                query.categories = { $in: [new Types.ObjectId(searchTerms.categoryId.toString())] };
+                const categoryId =
+                    typeof searchTerms.categoryId === "string"
+                        ? new Types.ObjectId(searchTerms.categoryId)
+                        : searchTerms.categoryId;
+
+                query.categories = { $in: [categoryId] };
             }
 
             if (searchTerms.serviceId) {
-                query.services = { $in: [new Types.ObjectId(searchTerms.serviceId.toString())] };
+                const serviceId =
+                    typeof searchTerms.serviceId === "string"
+                        ? new Types.ObjectId(searchTerms.serviceId)
+                        : searchTerms.serviceId;
+
+                query.services = { $in: [serviceId] };
             }
+
 
             const workers = await this.model.find(query);
 
@@ -216,7 +239,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             return filteredWorkers;
         } catch (error) {
-            console.error('Error in search:', error);
+            logger.error('Error in search:', error);
             throw new Error('Error in search');
         }
     }
@@ -230,7 +253,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             return worker;
         } catch (error) {
-            console.error('Error in findById:', error);
+            logger.error('Error in findById:', error);
             throw new Error('Error in findById');
         }
     }
@@ -239,7 +262,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         try {
             return await this.model.find({ _id: { $in: workerIds } });
         } catch (error) {
-            console.error('Error in findWorkersByIds:', error);
+            logger.error('Error in findWorkersByIds:', error);
             throw new Error('Error in findWorkersByIds');
         }
     }
@@ -273,7 +296,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             };
 
         } catch (error) {
-            console.error('Error in rateWorker:', error);
+            logger.error('Error in rateWorker:', error);
             throw new Error('Error in rateWorker');
         }
     }
@@ -285,8 +308,79 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 { $inc: { completedWorks: 1 } }
             );
         } catch (error) {
-            console.error('Error in updateCompletedWorks:', error);
+            logger.error('Error in updateCompletedWorks:', error);
             throw new Error('Error in updateCompletedWorks');
+        }
+    }
+
+    async setSubscriptionPlan(workerId: string, planData: Partial<ISubscription>): Promise<IWorker> {
+        try {
+            if (!workerId || !planData) {
+                throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA);
+            }
+            const startDate = new Date();
+            const durationDays = planData.durationInDays || 0;
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + durationDays);
+
+            const subscription = {
+                plan: planData._id,
+                startDate,
+                endDate,
+                commission: planData.comission
+            };
+
+            const updatedWorker = await this.model.findOneAndUpdate(
+                { _id: new mongoose.Types.ObjectId(workerId) },
+                { $set: { subscription } },
+                { new: true }
+            );
+
+            if (!updatedWorker) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+            }
+            return updatedWorker;
+        } catch (error) {
+            logger.error('Error in setSubscriptionPlan:', error);
+            throw new Error('Error in setSubscriptionPlan');
+        }
+    }
+
+    async setPlanExpired(workerId: string): Promise<boolean> {
+        try {
+            if (!workerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+
+            const result = await this.model.findOneAndUpdate(
+                { _id: new mongoose.Types.ObjectId(workerId) },
+                { $set: { subscription: null } },
+                { new: true }
+            );
+
+            return !!result;
+        } catch (error) {
+            logger.error('Error in setPlanExpired:', error);
+            throw new Error('Error in setPlanExpired');
+        }
+    }
+
+    async reApprovalRequest(workerId: string): Promise<boolean> {
+        try {
+            if (!workerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            }
+
+            const result = await this.model.findOneAndUpdate(
+                { _id: new mongoose.Types.ObjectId(workerId) },
+                { $set: { status: "Re-approval" } },
+                { new: true }
+            );
+
+            return !!result;
+        } catch (error) {
+            logger.error('Error in reApprovalRequest:', error);
+            throw new Error('Error in reApprovalRequest');
         }
     }
 

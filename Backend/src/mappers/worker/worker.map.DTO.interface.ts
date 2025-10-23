@@ -35,7 +35,7 @@ export interface IWorkerDTO {
         plan: string;
         startDate: Date;
         endDate: Date;
-        isActive: boolean;
+        commission: string;
     } | null;
     createdAt: Date | string;
 }
@@ -72,7 +72,7 @@ export interface IWorkerEntity {
         plan: string;
         startDate: Date;
         endDate: Date;
-        isActive: boolean;
+        commission: string;
     } | null;
     createdAt: Date;
 }

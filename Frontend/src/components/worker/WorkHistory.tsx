@@ -15,7 +15,6 @@ const WorkHistory = () => {
     const [isModal, setIsModalOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
-    console.log(worker);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,13 +31,6 @@ const WorkHistory = () => {
     }
 
     const columns: Column<IWork>[] = [
-        {
-            key: '_id',
-            label: 'ID',
-            render: (u) => u._id
-                ? '#' + u._id.toString().slice(2, 11).toUpperCase()
-                : '-'
-        },
         { key: 'service', label: 'Service' },
         { key: 'location', label: 'Location', render: (u) => u.location?.address.split(' ').slice(0, 2).join(" ") ?? '-' },
         { key: 'sheduleDate', label: 'Date', render: (u) => new Date(u.sheduleDate).toLocaleDateString() },
@@ -68,7 +60,7 @@ const WorkHistory = () => {
             {isModal ? (
                 <WorkDetailsModal workId={workId} closeModal={onClsoe} />
             ) : (
-                <div className="min-h-screen ">
+                <div className="h-screen ">
                     <DataTable
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
@@ -77,19 +69,10 @@ const WorkHistory = () => {
                             ...w,
                             id: w._id ?? ''
                         }))}
+                        itemsPerPage={6}
                         columns={columns}
-                        searchKeys={[
-                            'userName',
-                            'service',
-                            'description',
-                            'wage',
-                            'workType',
-                            'size',
-                            'location',
-                            'sheduleDate',
-                            'sheduleTime',
-                            'status'
-                        ]}
+                        searchKeys={['userName', 'service', 'description', 'wage', 'workType', 'size', 'location', 'sheduleDate', 'sheduleTime', 'status']}
+                        advancedFilterKeys={['service', 'location', 'sheduleDate', 'sheduleTime', 'wage', 'status']}
                     />
                 </div>
             )}

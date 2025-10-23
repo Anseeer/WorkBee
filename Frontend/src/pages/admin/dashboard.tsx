@@ -4,11 +4,13 @@ import UserTable from "../../components/admin/UsersTable";
 import WorkersTable from "../../components/admin/WorkersTable";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import WorkerDetails from "../../components/common/WorkerDetails";
-import CategoryTable from "../../components/admin/CategoryTable";
-import ServicesTable from "../../components/admin/ServiceTable";
+import CategoryManagment from "../../components/admin/CategoryManagment";
+import ServiceManagment from "../../components/admin/ServiceManagment";
 import WorkerApprovalComponent from "../../components/admin/WorkerRequestSection";
 import WorksTable from "../../components/admin/worksTable";
 import Dashboard from "../../components/admin/Dashboard";
+import SubscriptionManagment from "../../components/admin/SubscriptionManagment";
+import RevenueManagement from "../../components/admin/RevenueManagement";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -32,10 +34,10 @@ const AdminDashboard = () => {
   return (
     <div className="w-full h-screen flex">
       <AdminSidebar handleTab={handleTab} />
-      <div className="w-full h-full flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         <div className="flex items-center justify-between py-2 px-2">
           <h3 className="text-2xl font-semibold">
-            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + ` Management`}
           </h3>
         </div>
 
@@ -45,10 +47,12 @@ const AdminDashboard = () => {
           {activeTab === "dashboard" && <Dashboard />}
           {activeTab === "users" && <UserTable />}
           {activeTab === "workers" && renderWorkersAndVerfyingTab()}
-          {activeTab === "categories" && <CategoryTable />}
-          {activeTab === "services" && <ServicesTable />}
+          {activeTab === "categories" && <CategoryManagment />}
+          {activeTab === "services" && <ServiceManagment />}
+          {activeTab === "subscription" && <SubscriptionManagment />}
           {activeTab === "jobs" && <WorksTable />}
           {activeTab === "workerRequest" && <WorkerApprovalComponent />}
+          {activeTab === "revenue" && <RevenueManagement />}
         </div>
       </div>
     </div>

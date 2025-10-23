@@ -17,7 +17,7 @@ interface WorkerModalProps {
     worker: IWorker;
     availability: IAvailability;
     onClose: () => void;
-    onConfirm: (date: string, slot: string, totalAmount: string,PlatformFee:string) => void;
+    onConfirm: (date: string, slot: string, totalAmount: string, PlatformFee: string, commissionAmount: string) => void;
 }
 
 type AvailableSlot = {
@@ -43,6 +43,8 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     const wage = Number(work?.wage) || 0;
     const PlatformFee = wage * 0.05;
     const totalAmount = wage + wage * 0.05;
+    const commissionPercentage = Number(worker.subscription?.commission) || 0;
+    const commissionAmount = (wage * commissionPercentage) / 100;
 
 
     const formatDate = (date: Date) => {
@@ -341,7 +343,7 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                             onClick={() =>
                                 selectedDate &&
                                 selectedSlot &&
-                                onConfirm(selectedDate, selectedSlot, totalAmount.toString(),PlatformFee.toString())
+                                onConfirm(selectedDate, selectedSlot, totalAmount.toString(), PlatformFee.toString(), commissionAmount.toString())
                             }
                             disabled={isConfirmDisabled}
                             className={`

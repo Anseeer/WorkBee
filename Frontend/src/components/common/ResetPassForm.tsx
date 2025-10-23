@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { passRegex } from "../../regexs";
+import { passRegex } from "../../constant/regexs";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 

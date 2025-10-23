@@ -46,7 +46,7 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
                     : "",
                 startDate: worker.subscription.startDate,
                 endDate: worker.subscription.endDate,
-                isActive: worker.subscription.isActive,
+                commission: worker.subscription.commission,
             }
             : null,
         createdAt: worker.createdAt
@@ -90,7 +90,7 @@ export function mapWorkerToEntity(worker: Partial<IWorker>): IWorkerEntity {
                 plan: worker.subscription.plan.toString(),
                 startDate: worker.subscription.startDate,
                 endDate: worker.subscription.endDate,
-                isActive: worker.subscription.isActive,
+                commission: worker.subscription.commission,
             }
             : null,
         createdAt: worker.createdAt ?? new Date(),

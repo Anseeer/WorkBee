@@ -22,6 +22,7 @@ import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { mapEarningsToDTO } from "../../mappers/earnings/earningsResult.mapToDTO";
 import { MappedEarningDTO } from "../../mappers/earnings/earnigsResult.DTO.interface";
+import logger from "../../utilities/logger";
 
 @injectable()
 export class AdminService implements IAdminService {
@@ -64,7 +65,7 @@ export class AdminService implements IAdminService {
             return { accessToken, refreshToken, admin };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -82,7 +83,7 @@ export class AdminService implements IAdminService {
             return { users, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -95,7 +96,7 @@ export class AdminService implements IAdminService {
             return await this._userRepository.setIsActive(id);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -108,7 +109,7 @@ export class AdminService implements IAdminService {
             return await this._workerRepository.setIsActive(id);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -126,7 +127,7 @@ export class AdminService implements IAdminService {
             return { workers, totalPage };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -138,7 +139,7 @@ export class AdminService implements IAdminService {
             return workers;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -150,7 +151,7 @@ export class AdminService implements IAdminService {
             return availability;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -160,7 +161,7 @@ export class AdminService implements IAdminService {
             await this._workerRepository.approveWorker(id);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -170,7 +171,7 @@ export class AdminService implements IAdminService {
             await this._workerRepository.rejectedWorker(id);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -181,7 +182,7 @@ export class AdminService implements IAdminService {
             return await earnings.map((earn) => mapEarningsToDTO(earn));
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
@@ -189,11 +190,11 @@ export class AdminService implements IAdminService {
     async platformWallet(): Promise<IWalletDTO | null> {
         try {
             const findWallet = await this._walletRepository.platformWallet();
-            const wallet = mapWalletToDTO(findWallet as IWallet);
+            const wallet = findWallet ? mapWalletToDTO(findWallet as IWallet) : null;
             return wallet;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log(errMsg);
+            logger.error(errMsg);
             throw error;
         }
     }
