@@ -66,9 +66,9 @@ export const findUsersByIds = async (userIds: string[]) => {
     return response.data.data;
 };
 
-export const fetchAvailability = async (id: string | null) => {
-    if (!id) throw new Error('Worker Id not provided');
-    const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_AVAILABILITY}?workerId=${id}`);
+export const fetchAvailability = async (workerId: string | null) => {
+    if (!workerId) throw new Error('Worker Id not provided');
+    const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_AVAILABILITY}?workerId=${workerId}`);
     return response;
 };
 
@@ -82,16 +82,16 @@ export const fetchServiceBySearchTerm = async (searchKey: string) => {
     return response;
 };
 
-export const fetchServiceById = async (id: string) => {
-    if (!id) throw new Error('Service Id not provided');
-    const response = await axios.post(`${API_ROUTES.USER_SERVICE.FETCH_SERVICE_BY_ID}?id=${id}`);
+export const fetchServiceById = async (serviceId: string) => {
+    if (!serviceId) throw new Error('Service Id not provided');
+    const response = await axios.post(`${API_ROUTES.USER_SERVICE.FETCH_SERVICE_BY_ID}?id=${serviceId}`);
     return response;
 };
 
 
-export const fetchCategoryById = async (id: string) => {
-    if (!id) throw new Error('Category Id not provided');
-    const response = await axios.post(`${API_ROUTES.USER_SERVICE.FETCH_CATEGORY_BY_ID}?id=${id}`);
+export const fetchCategoryById = async (categoryId: string) => {
+    if (!categoryId) throw new Error('Category Id not provided');
+    const response = await axios.post(`${API_ROUTES.USER_SERVICE.FETCH_CATEGORY_BY_ID}?id=${categoryId}`);
     return response;
 };
 

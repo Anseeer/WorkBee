@@ -21,8 +21,8 @@ export const fetchUsers = async (currentPage: number, pageSize: number) => {
     return response;
 };
 
-export const setIsActiveUsers = async (id: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.SET_USER_STATUS}?id=${id}`);
+export const setIsActiveUsers = async (userId: string) => {
+    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.SET_USER_STATUS}?id=${userId}`);
     return response;
 };
 
@@ -38,24 +38,24 @@ export const fetchWorkersNonVerified = async () => {
     return response;
 };
 
-export const fetchAvailability = async (id: string | null) => {
-    if (!id) throw new Error("Worker ID not provided");
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.FETCH_AVAILABILITY}?workerId=${id}`);
+export const fetchAvailability = async (workerId: string | null) => {
+    if (!workerId) throw new Error("Worker ID  provided");
+    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.FETCH_AVAILABILITY}?workerId=${workerId}`);
     return response;
 };
 
-export const setIsActiveWorkers = async (id: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.SET_WORKER_STATUS}?id=${id}`);
+export const setIsActiveWorkers = async (workerId: string) => {
+    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.SET_WORKER_STATUS}?id=${workerId}`);
     return response;
 };
 
-export const approveWorker = async (id: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.APPROVE_WORKER}?workerId=${id}`);
+export const approveWorker = async (workerId: string) => {
+    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.APPROVE_WORKER}?workerId=${workerId}`);
     return response;
 };
 
-export const rejectedWorker = async (id: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.REJECT_WORKER}?workerId=${id}`);
+export const rejectedWorker = async (workerId: string) => {
+    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.REJECT_WORKER}?workerId=${workerId}`);
     return response;
 };
 
@@ -66,8 +66,8 @@ export const fetchCategory = async (currentPage: number, pageSize: number) => {
     return response;
 };
 
-export const setIsActiveCategory = async (id: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_CATEGORY_ACTIVE}?categoryId=${id}`);
+export const setIsActiveCategory = async (categoryId: string) => {
+    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_CATEGORY_ACTIVE}?categoryId=${categoryId}`);
     return response;
 };
 
@@ -93,8 +93,8 @@ export const updateCategory = async (
     return response;
 };
 
-export const deleteCategory = async (id: string) => {
-    const response = await axios.delete(`${API_ROUTES.ADMIN_SERVICE.DELETE_CATEGORY}?categoryId=${id}`);
+export const deleteCategory = async (categoryId: string) => {
+    const response = await axios.delete(`${API_ROUTES.ADMIN_SERVICE.DELETE_CATEGORY}?categoryId=${categoryId}`);
     return response;
 };
 
@@ -105,8 +105,8 @@ export const fetchService = async (currentPage: number, pageSize: number) => {
     return response;
 };
 
-export const setIsActiveService = async (id: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_SERVICE_ACTIVE}?serviceId=${id}`);
+export const setIsActiveService = async (serviceId: string) => {
+    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_SERVICE_ACTIVE}?serviceId=${serviceId}`);
     return response;
 };
 
@@ -115,13 +115,13 @@ export const addService = async (service: { name: string; wage: string; category
     return response;
 };
 
-export const updateService = async (id: string, service: { name: string; wage: string; category: string; image: string }) => {
-    const response = await axios.post(`${API_ROUTES.ADMIN_SERVICE.UPDATE_SERVICE}?serviceId=${id}`, service);
+export const updateService = async (serviceId: string, service: { name: string; wage: string; category: string; image: string }) => {
+    const response = await axios.post(`${API_ROUTES.ADMIN_SERVICE.UPDATE_SERVICE}?serviceId=${serviceId}`, service);
     return response;
 };
 
-export const deleteService = async (id: string) => {
-    const response = await axios.delete(`${API_ROUTES.ADMIN_SERVICE.DELETE_SERVICE}?serviceId=${id}`);
+export const deleteService = async (serviceId: string) => {
+    const response = await axios.delete(`${API_ROUTES.ADMIN_SERVICE.DELETE_SERVICE}?serviceId=${serviceId}`);
     return response;
 };
 
