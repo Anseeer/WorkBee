@@ -21,15 +21,15 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         }
     }
 
-    async setIsActive(id: string): Promise<boolean> {
+    async setIsActive(userId: string): Promise<boolean> {
         try {
-            const user = await User.findById(id);
+            const user = await User.findById(userId);
             if (!user) {
                 throw new Error(USERS_MESSAGE.CANT_FIND_USER);
             }
 
             const newStatus = !user.isActive;
-            await User.updateOne({ _id: id }, { $set: { isActive: newStatus } });
+            await User.updateOne({ _id: userId }, { $set: { isActive: newStatus } });
 
             return true;
         } catch (error) {

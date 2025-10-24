@@ -4,10 +4,10 @@ import { IServices } from "../../model/service/service.interface";
 export interface IServiceRepository {
     getBySearch(searchKey: string): unknown;
     create(category: Partial<IServices>): Promise<IServices>;
-    findById(id: string): Promise<IServices | null>;
+    findById(serviceId: string): Promise<IServices | null>;
     findByName(name: string): Promise<IServices | null>;
-    delete(id: string): Promise<boolean>;
-    setIsActive(id: string): Promise<boolean>;
+    delete(serviceId: string): Promise<boolean>;
+    setIsActive(serviceId: string): Promise<boolean>;
     update(category: IServiceEntity, serviceId: string): Promise<boolean>;
     getAllService(): Promise<IServices[]>
     getByCategories(categoryIds: string[]): Promise<IServices[]>

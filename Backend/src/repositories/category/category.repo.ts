@@ -22,9 +22,9 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         }
     }
 
-    async findById(id: string): Promise<ICategory> {
+    async findById(categoryId: string): Promise<ICategory> {
         try {
-            return await this.model.findById(id) as ICategory;
+            return await this.model.findById(categoryId) as ICategory;
         } catch (error) {
             logger.error('Error in findById:', error);
             throw new Error('Error in findById');
@@ -49,14 +49,14 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         }
     }
 
-    async setIsActive(id: string): Promise<boolean> {
+    async setIsActive(categoryId: string): Promise<boolean> {
         try {
-            const category = await this.model.findById(id);
+            const category = await this.model.findById(categoryId);
             if (!category) return false;
 
             const updatedStatus = !category.isActive;
             await this.model.updateOne(
-                { _id: id },
+                { _id: categoryId },
                 { $set: { isActive: updatedStatus } }
             );
 
@@ -87,9 +87,9 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
         }
     };
 
-    delete = async (id: string): Promise<boolean> => {
+    delete = async (categoryId: string): Promise<boolean> => {
         try {
-            const result = await this.model.deleteOne({ _id: id });
+            const result = await this.model.deleteOne({ _id: categoryId });
             return result.deletedCount > 0;
         } catch (error) {
             logger.error('Error in delete:', error);

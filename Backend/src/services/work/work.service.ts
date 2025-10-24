@@ -174,15 +174,15 @@ export class WorkService implements IWorkService {
         }
     };
 
-    cancel = async (workId: string, id: string): Promise<boolean> => {
+    cancel = async (workId: string, userId: string): Promise<boolean> => {
         try {
             const io = getIO();
 
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
-            if (!id) throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
+            if (!userId) throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
 
-            const worker = await this._workerRepositoy.findById(id);
-            const user = await this._userRepositoy.findById(id);
+            const worker = await this._workerRepositoy.findById(userId);
+            const user = await this._userRepositoy.findById(userId);
 
             if (!worker && !user) {
                 throw new Error("Can't find a worker or user with this id");

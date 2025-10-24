@@ -124,9 +124,9 @@ export class ServiceService implements IServiceService {
         }
     };
 
-    getById = async (id: string): Promise<IServiceDTO | null> => {
+    getById = async (serviceId: string): Promise<IServiceDTO | null> => {
         try {
-            const serv = await this._serviceRepository.findById(id);
+            const serv = await this._serviceRepository.findById(serviceId);
             return mapServiceToDTO(serv as IServices);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);

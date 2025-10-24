@@ -217,9 +217,9 @@ export class WorkerService implements IWorkerService {
         }
     }
 
-    async getUserById(id: string): Promise<IWorkerDTO | null> {
+    async getUserById(userId: string): Promise<IWorkerDTO | null> {
         try {
-            const findUser = await this._workerRepository.findById(id);
+            const findUser = await this._workerRepository.findById(userId);
             if (!findUser) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             return mapWorkerToDTO(findUser);
         } catch (error) {

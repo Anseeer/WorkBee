@@ -139,9 +139,9 @@ export class UserService implements IUserService {
         }
     }
 
-    async getUserById(id: string): Promise<IUserDTO | null> {
+    async getUserById(userId: string): Promise<IUserDTO | null> {
         try {
-            const userData = await this._userRepository.findById(id);
+            const userData = await this._userRepository.findById(userId);
             const user = mapUserToDTO(userData as Iuser);
             return user;
         } catch (error) {
@@ -240,9 +240,9 @@ export class UserService implements IUserService {
         }
     }
 
-    async fetchAvailability(id: string): Promise<IAvailabilityDTO | null> {
+    async fetchAvailability(workerId: string): Promise<IAvailabilityDTO | null> {
         try {
-            const availabilityData = await this._availabilityRepository.findByWorkerId(id);
+            const availabilityData = await this._availabilityRepository.findByWorkerId(workerId);
             const availability = mapAvailabilityToDTO(availabilityData as IAvailability);
             return availability;
         } catch (error) {

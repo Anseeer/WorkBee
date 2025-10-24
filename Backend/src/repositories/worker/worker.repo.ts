@@ -29,10 +29,10 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async findByIdAndUpdate(id: string, updatedFields: Partial<IWorker>): Promise<IWorker | null> {
+    async findByIdAndUpdate(workerId: string, updatedFields: Partial<IWorker>): Promise<IWorker | null> {
         try {
             return await this.model.findByIdAndUpdate(
-                id,
+                workerId,
                 { $set: updatedFields },
                 { new: true }
             );
@@ -42,9 +42,9 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async findAvailabilityByWorkerId(id: string): Promise<IAvailability | null> {
+    async findAvailabilityByWorkerId(workerId: string): Promise<IAvailability | null> {
         try {
-            return await Availability.findOne({ workerId: id });
+            return await Availability.findOne({ workerId });
         } catch (error) {
             logger.error('Error in findAvailabilityByWorkerId:', error);
             throw new Error('Error in findAvailabilityByWorkerId');
@@ -91,15 +91,15 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async setIsActive(id: string): Promise<boolean> {
+    async setIsActive(workerId: string): Promise<boolean> {
         try {
-            const worker = await this.model.findById(id);
+            const worker = await this.model.findById(workerId);
             if (!worker) {
                 throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
             }
 
             const newStatus = !worker.isActive;
-            await this.model.updateOne({ _id: id }, { $set: { isActive: newStatus } });
+            await this.model.updateOne({ _id: workerId }, { $set: { isActive: newStatus } });
 
             return true;
         } catch (error) {
@@ -108,15 +108,15 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async approveWorker(id: string): Promise<boolean> {
+    async approveWorker(workerId: string): Promise<boolean> {
         try {
-            const worker = await this.model.findById(id);
+            const worker = await this.model.findById(workerId);
             if (!worker) {
                 throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
             }
 
             await this.model.updateOne(
-                { _id: id },
+                { _id: workerId },
                 { $set: { isVerified: true, status: "Approved" } }
             );
 
@@ -127,15 +127,15 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async rejectedWorker(id: string): Promise<boolean> {
+    async rejectedWorker(workerId: string): Promise<boolean> {
         try {
-            const worker = await this.model.findById(id);
+            const worker = await this.model.findById(workerId);
             if (!worker) {
                 throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
             }
 
             await this.model.updateOne(
-                { _id: id },
+                { _id: workerId },
                 { $set: { isVerified: false, status: "Rejected" } }
             );
 
@@ -244,9 +244,9 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async findById(id: string): Promise<IWorker> {
+    async findById(workerId: string): Promise<IWorker> {
         try {
-            const worker = await this.model.findById(id);
+            const worker = await this.model.findById(workerId);
             if (!worker) {
                 throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             }

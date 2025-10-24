@@ -31,13 +31,13 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         }
     }
 
-    async findById(id: string): Promise<IServices> {
+    async findById(serviceId: string): Promise<IServices> {
         try {
-            if (!id) {
+            if (!serviceId) {
                 throw new Error("Service ID is required");
             }
 
-            const service = await this.model.findById(id);
+            const service = await this.model.findById(serviceId);
             if (!service) {
                 throw new Error("Service not found");
             }
@@ -58,14 +58,14 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         }
     }
 
-    async setIsActive(id: string): Promise<boolean> {
+    async setIsActive(serviceId: string): Promise<boolean> {
         try {
-            const service = await this.model.findById(id);
+            const service = await this.model.findById(serviceId);
             if (!service) return false;
 
             const updatedStatus = !service.isActive;
             await this.model.updateOne(
-                { _id: id },
+                { _id: serviceId },
                 { $set: { isActive: updatedStatus } }
             );
 
@@ -90,9 +90,9 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
         }
     };
 
-    delete = async (id: string): Promise<boolean> => {
+    delete = async (serviceId: string): Promise<boolean> => {
         try {
-            const result = await this.model.deleteOne({ _id: id });
+            const result = await this.model.deleteOne({ _id: serviceId });
             return result.deletedCount > 0;
         } catch (error) {
             logger.error('Error in delete:', error);

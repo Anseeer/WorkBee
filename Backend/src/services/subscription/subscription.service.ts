@@ -131,7 +131,7 @@ export class SubscriptionService implements ISubscriptionService {
                 transactionId,
                 type: "DEBIT" as const,
                 amount: planData.amount,
-                description: planData.description,
+                description: planData.planName,
                 createdAt: new Date()
             };
 
@@ -139,7 +139,7 @@ export class SubscriptionService implements ISubscriptionService {
                 transactionId,
                 type: "CREDIT" as const,
                 amount: planData.amount,
-                description: `Subscription - ${planData.description}`,
+                description: `Subscription - ${planData.planName}`,
                 createdAt: new Date()
             };
 

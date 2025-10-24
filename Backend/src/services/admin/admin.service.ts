@@ -88,12 +88,12 @@ export class AdminService implements IAdminService {
         }
     }
 
-    async setIsActiveUsers(id: string): Promise<boolean> {
+    async setIsActiveUsers(userId: string): Promise<boolean> {
         try {
-            if (!id) {
+            if (!userId) {
                 throw new Error(ADMIN_MESSAGES.ID_NOT_RECEIVED);
             }
-            return await this._userRepository.setIsActive(id);
+            return await this._userRepository.setIsActive(userId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
@@ -101,12 +101,12 @@ export class AdminService implements IAdminService {
         }
     }
 
-    async setIsActiveWorkers(id: string): Promise<boolean> {
+    async setIsActiveWorkers(userId: string): Promise<boolean> {
         try {
-            if (!id) {
+            if (!userId) {
                 throw new Error(ADMIN_MESSAGES.ID_NOT_RECEIVED);
             }
-            return await this._workerRepository.setIsActive(id);
+            return await this._workerRepository.setIsActive(userId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
@@ -144,9 +144,9 @@ export class AdminService implements IAdminService {
         }
     }
 
-    async fetchAvailability(id: string): Promise<IAvailabilityDTO | null> {
+    async fetchAvailability(workerId: string): Promise<IAvailabilityDTO | null> {
         try {
-            const findAvailability = await this._availabilityRepository.findByWorkerId(id);
+            const findAvailability = await this._availabilityRepository.findByWorkerId(workerId);
             const availability = mapAvailabilityToDTO(findAvailability as IAvailability);
             return availability;
         } catch (error) {
@@ -156,9 +156,9 @@ export class AdminService implements IAdminService {
         }
     }
 
-    async approveWorker(id: string): Promise<void> {
+    async approveWorker(workerId: string): Promise<void> {
         try {
-            await this._workerRepository.approveWorker(id);
+            await this._workerRepository.approveWorker(workerId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
@@ -166,9 +166,9 @@ export class AdminService implements IAdminService {
         }
     }
 
-    async rejectedWorker(id: string): Promise<void> {
+    async rejectedWorker(workerId: string): Promise<void> {
         try {
-            await this._workerRepository.rejectedWorker(id);
+            await this._workerRepository.rejectedWorker(workerId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
