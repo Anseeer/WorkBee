@@ -109,7 +109,7 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
     }, [isCallActive]);
     return (
         <div
-            className="flex relative min-h-screen bg-center bg-cover bg-no-repeat  flex-col w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl overflow-hidden">
+            className="flex relative h-full bg-center bg-cover bg-no-repeat  flex-col w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl overflow-hidden">
             <div
                 className="absolute inset-0 opacity-20 blur-sm bg-center bg-cover bg-no-repeat"
                 style={{

@@ -6,7 +6,6 @@ import type { INotification } from "../../types/INotification";
 import { NotificationBadge } from "../../utilities/StatusBadge";
 import type { Iuser } from "../../types/IUser";
 import type { IWorker } from "../../types/IWorker";
-import { toast } from "react-toastify";
 
 const NotificationItem = ({ notification }: { notification: INotification }) => {
     const ref = useRef(null);
@@ -16,7 +15,7 @@ const NotificationItem = ({ notification }: { notification: INotification }) => 
         ? formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })
         : "Unknown time";
 
-    return (
+    return ( 
         <motion.div
             ref={ref}
             initial={{ opacity: 0, y: 20 }}
@@ -62,7 +61,6 @@ const NotificationSection = ({ user }: props) => {
 
         socket.on("new-notification", (newNotification) => {
             setNotifications((prev) => [newNotification, ...prev]);
-            toast.info(`🔔 ${newNotification.title}`);
         });
 
         return () => {
