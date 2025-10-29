@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import { Camera, Image, User, X } from "lucide-react";
@@ -12,13 +14,18 @@ interface props {
   setEdit: (arg: boolean) => void;
 }
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 export default function EditUserModal({ onClose, setEdit }: props) {
   const user = useSelector((state: RootState) => state.user.user);
 
   const locationRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const autocompleteRef = useRef<any>(null);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -28,8 +35,8 @@ export default function EditUserModal({ onClose, setEdit }: props) {
       location: {
         address: user?.location?.address || "",
         pincode: user?.location?.pincode || "",
-        lat: user?.location?.lat ?? null,
-        lng: user?.location?.lng ?? null
+        lat: user?.location?.lat ?? 0,
+        lng: user?.location?.lng ?? 0
       }
     },
     validate: (values) => {
@@ -40,17 +47,17 @@ export default function EditUserModal({ onClose, setEdit }: props) {
         profileImage?: string;
       } = {};
 
-      if (!values.name.trim()) {
+      if (!values?.name?.trim()) {
         errors.name = "Full Name is required";
       }
 
-      if (!values.phone.trim()) {
+      if (!values?.phone?.trim()) {
         errors.phone = "Phone is required";
       } else if (!/^[0-9]{10}$/.test(values.phone)) {
         errors.phone = "Enter a valid 10-digit phone number";
       }
 
-      if (!values.location.address.trim()) {
+      if (!values?.location?.address?.trim()) {
         errors.location = { address: "Location is required" };
       }
 
@@ -60,75 +67,107 @@ export default function EditUserModal({ onClose, setEdit }: props) {
       try {
         console.log(values);
         await update(values, user?.id as string);
-        toast.success("Updated successfull")
-        setEdit(true)
+        toast.success("Updated successfully");
+        setEdit(true);
         onClose();
       } catch (error) {
-        toast.error("Updated faild")
-        console.log("Form Submitted error :", error);
+        toast.error("Update failed");
+        console.log("Form Submitted error:", error);
       }
     }
   });
 
   useEffect(() => {
-
     const initializeAutocomplete = () => {
-      if (!locationRef.current || !window.google) return;
+      if (!window.google?.maps?.places) {
+        console.error("Google Maps API not loaded properly");
+        return;
+      }
 
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(locationRef.current, {
-        types: ["address"],
-        componentRestrictions: { country: "IN" },
-        fields: ["formatted_address", "geometry", "address_components", "name"],
-      });
-
-      autocompleteRef.current.addListener("place_changed", () => {
-        const place = autocompleteRef.current?.getPlace();
-        if (!place || !place.geometry) return;
-
-        const addressComponents = place.address_components || [];
-        let pincode = "";
-
-        for (const component of addressComponents) {
-          if (component.types.includes("postal_code")) {
-            pincode = component.long_name;
-            break;
+      try {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          locationRef.current!,
+          {
+            componentRestrictions: { country: "IN" },
+            fields: ["formatted_address", "geometry", "address_components", "name"],
           }
-        }
+        );
 
-        const lat = place.geometry.location?.lat() || 0;
-        const lng = place.geometry.location?.lng() || 0;
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (!place || !place.geometry) return;
 
-        formik.setFieldValue("location", {
-          address: place.formatted_address || "",
-          pincode,
-          lat,
-          lng,
+          const addressComponents = place.address_components || [];
+          let pincode = "";
+
+          for (const component of addressComponents) {
+            if (component.types.includes("postal_code")) {
+              pincode = component.long_name;
+              break;
+            }
+          }
+
+          const lat = place.geometry.location?.lat() ?? 0;
+          const lng = place.geometry.location?.lng() ?? 0;
+
+          formik.setFieldValue("location", {
+            address: place.formatted_address || "",
+            pincode,
+            lat,
+            lng,
+          });
         });
-      });
+
+        autocompleteRef.current = autocomplete;
+        setIsGoogleLoaded(true);
+      } catch (error) {
+        console.error("Error initializing Autocomplete:", error);
+      }
     };
-    console.log(showDropdown);
+
     const loadGoogleMapsAPI = () => {
-      if (window.google && window.google.maps) {
+      if (window.google?.maps?.places) {
         initializeAutocomplete();
         return;
       }
+
+      const existingScript = document.querySelector(
+        'script[src*="maps.googleapis.com"]'
+      );
+
+      if (existingScript) {
+        existingScript.addEventListener("load", () => {
+          setTimeout(initializeAutocomplete, 100);
+        });
+        return;
+      }
+
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY
+        }&libraries=places`;
       script.async = true;
       script.defer = true;
-      script.onload = initializeAutocomplete;
+      script.onload = () => setTimeout(initializeAutocomplete, 100);
+      script.onerror = () => {
+        console.error("Failed to load Google Maps API");
+        toast.error("Failed to load location services");
+      };
       document.head.appendChild(script);
     };
+
     loadGoogleMapsAPI();
 
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
+    return () => {
+      if (autocompleteRef.current) {
+        window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
       }
     };
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, [formik, showDropdown]);
+  }, []);
+
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    formik.setFieldValue("location.address", e.target.value);
+  };
+
 
   return (
     <div className="fixed inset-0 bg-transparent backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4">
@@ -221,17 +260,19 @@ export default function EditUserModal({ onClose, setEdit }: props) {
                 Location
               </label>
               <input
-                id="location"
-                name="location"
                 ref={locationRef}
+                name="location.address"
                 value={formik.values.location.address}
-                onChange={formik.handleChange}
+                onChange={handleLocationInputChange}
                 onBlur={formik.handleBlur}
                 placeholder="Enter your address"
                 className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-xs sm:text-sm"
               />
               {formik.touched.location?.address && formik.errors.location?.address && (
                 <span className="text-xs sm:text-sm text-red-500">{formik.errors.location.address}</span>
+              )}
+              {!isGoogleLoaded && (
+                <p className="text-xs text-gray-500 mt-1">Loading location services...</p>
               )}
             </div>
           </div>

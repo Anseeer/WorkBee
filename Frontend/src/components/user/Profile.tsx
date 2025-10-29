@@ -42,7 +42,10 @@ const ProfileSection = () => {
         if (user?.profileImage) {
             setSelectedImg(user.profileImage as string);
         }
-    }, [user?.profileImage, isEdit]);
+        if (user?.id) {
+            setUserId(user?.id);
+        }
+    }, [user?.profileImage, isEdit, user?.id]);
 
     const Profile = getProfileImage(user?.name, selectedImg);
 
@@ -262,12 +265,12 @@ const ProfileSection = () => {
                                     <div className="hidden sm:block text-xs sm:text-sm break-words">{work.workerName || "Name"}</div>
                                     <div className="text-xs sm:text-sm">
                                         <span className={`px-1 sm:px-2 py-0.5 text-xs sm:text-sm font-medium rounded-full w-fit
-                        ${work.status === "Pending" ? "bg-orange-100 text-orange-700 animate-pulse" :
-                                                work.status === "Canceled" ? "bg-red-100 text-red-700 animate-pulse" :
-                                                    work.status === "Accepted" ? "bg-blue-100 text-blue-700 animate-pulse" :
-                                                        work.status === "Rejected" ? "bg-red-100 text-red-700 animate-pulse" :
-                                                            work.status === "Completed" ? "bg-green-100 text-green-700 animate-pulse" :
-                                                                "bg-white text-gray-700 animate-pulse"}`}>
+                        ${work.status === "Pending" ? "bg-orange-100 text-orange-700 " :
+                                                work.status === "Canceled" ? "bg-red-100 text-red-700 " :
+                                                    work.status === "Accepted" ? "bg-blue-100 text-blue-700 " :
+                                                        work.status === "Rejected" ? "bg-red-100 text-red-700 " :
+                                                            work.status === "Completed" ? "bg-green-100 text-green-700 " :
+                                                                "bg-white text-gray-700 "}`}>
                                             {work.status || "Pending"}
                                         </span>
                                     </div>
@@ -345,7 +348,6 @@ const ProfileSection = () => {
             </div>
         </div >
     );
-
 
 };
 

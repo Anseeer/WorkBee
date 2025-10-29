@@ -31,11 +31,22 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
-
+const allowedOrigins = [
+  process.env.CLIENT_URL_DOCKER,
+  process.env.CLIENT_URL_HOST
+].filter(Boolean);
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use('/api/users', userRoutes);
 app.use('/api/workers', workerRoutes);
@@ -63,32 +74,3 @@ app.use(errorHandler)
 server.listen(process.env.PORT, () => {
   logger.info(`Listening on http://localhost:${process.env.PORT}/`);
 });
-
-
-
-// const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.indexOf(origin) === -1) {
-//       const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
-//       return callback(new Error(msg), false);
-//     }
-//     return callback(null, true);
-//   },
-//   credentials: true
-// }));
-
-
-// const io = new Server(server, {
-//   cors: {
-//     origin: function (origin, callback) {
-//       if (!origin) return callback(null, true);
-//       if (allowedOrigins.indexOf(origin) === -1) {
-//         return callback(new Error("Not allowed by CORS"));
-//       }
-//       return callback(null, true);
-//     },
-//     credentials: true
-//   }
-// });

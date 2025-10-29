@@ -147,7 +147,7 @@ export class WorkerService implements IWorkerService {
         workerData: Partial<IWorker>
     ): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailabilityDTO | null }> {
         try {
-            const existingWorker = await this._workerRepository.findById(workerId);
+            const existingWorker = await this._workerRepository.findWorkerById(workerId);
             if (!existingWorker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
 
             const updatedFields: Partial<IWorker> = {
@@ -219,7 +219,7 @@ export class WorkerService implements IWorkerService {
 
     async getUserById(userId: string): Promise<IWorkerDTO | null> {
         try {
-            const findUser = await this._workerRepository.findById(userId);
+            const findUser = await this._workerRepository.findWorkerById(userId);
             if (!findUser) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             return mapWorkerToDTO(findUser);
         } catch (error) {
@@ -424,7 +424,7 @@ export class WorkerService implements IWorkerService {
             if (!id) {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID)
             }
-            const worker = await this._workerRepository.findById(id);
+            const worker = await this._workerRepository.findWorkerById(id);
             if (worker) {
                 return mapWorkerToDTO(worker)
             } else {

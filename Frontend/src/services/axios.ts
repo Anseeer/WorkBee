@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+console.log("AXIOS URL IN THE ENV :", import.meta.env.VITE_API_BASE_URL)
+
+console.log("Axios file imported!");
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,

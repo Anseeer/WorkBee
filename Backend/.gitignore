@@ -8,7 +8,6 @@ build/
 
 *.log
 
-.env
 .DS_Store
 .env.development
 .env.production

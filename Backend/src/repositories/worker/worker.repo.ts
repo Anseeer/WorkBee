@@ -244,12 +244,9 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async findById(workerId: string): Promise<IWorker> {
+    async findWorkerById(workerId: string): Promise<IWorker | null> {
         try {
             const worker = await this.model.findById(workerId);
-            if (!worker) {
-                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
-            }
 
             return worker;
         } catch (error) {

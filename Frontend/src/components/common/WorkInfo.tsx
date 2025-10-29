@@ -44,7 +44,6 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
         fetchData();
     }, [workId])
 
-
     const getStatusColor = (status: string) => {
         switch (status?.toLowerCase()) {
             case 'confirmed': return 'text-green-600 bg-green-50';

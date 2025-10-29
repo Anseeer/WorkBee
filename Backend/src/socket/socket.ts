@@ -1,15 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Server } from "socket.io";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 let io: Server | null = null;
 
 export const initSocket = (server: any) => {
+    const allowedOrigins = [
+        process.env.CLIENT_URL_DOCKER,
+        process.env.CLIENT_URL_HOST,
+    ].filter((url): url is string => Boolean(url));
+
     io = new Server(server, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: allowedOrigins.length > 0 ? allowedOrigins : "*",
             credentials: true,
         },
     });
+
     return io;
 };
 

@@ -354,7 +354,7 @@ export default function MessageSection({ chats, me }: Props) {
                 return (
                   <div
                     key={msg._id || i}
-                    className={`flex ${msg.senderId === me ? 'justify-end' : 'justify-start'} animate-fadeInUp`}
+                    className={`flex ${msg.senderId === me ? 'justify-end' : 'justify-start'} `}
                     style={{ animationDelay: `${i * 0.05}s` }}
                   >
                     <div

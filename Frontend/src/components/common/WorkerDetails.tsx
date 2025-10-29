@@ -175,7 +175,7 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
             <div className="h-full overflow-y-auto">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-2 space-y-8">
+                        <div className="lg:col-span-2 space-y-8 pb-10">
                             {/* Contact Information */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeInScale">
                                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Contact Information</h2>
@@ -223,7 +223,7 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
                             </div>
 
                             {/* Categories & Services */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 md:mb-20">
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeInScale">
                                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
                                     <div className="space-y-3">

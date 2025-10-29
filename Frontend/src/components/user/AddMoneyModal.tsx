@@ -34,7 +34,6 @@ const AddMoneyModal = ({ onClose, userId }: Props) => {
                             amount
                         })
                             .then((res) => {
-                                // handleReload();
                                 onClose();
                                 console.log("Wallet top-up success:", res);
                             })
@@ -58,7 +57,7 @@ const AddMoneyModal = ({ onClose, userId }: Props) => {
 
     const formik = useFormik({
         initialValues: {
-            amount: 0,
+            amount: 100,
         },
         validate: (values) => {
             const errors: { amount?: string } = {};

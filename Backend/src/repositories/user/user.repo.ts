@@ -52,6 +52,20 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         }
     }
 
+    async findById(userId: string): Promise<Iuser> {
+        try {
+            const user = await this.model.findById(userId);
+            if (!user) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
+
+            return user;
+        } catch (error) {
+            logger.error('Error in findById:', error);
+            throw new Error('Error in findById');
+        }
+    }
+
     async update(userDetails: IUserEntity, userId: string): Promise<boolean> {
         try {
             const existingUser = await this.model.findById(userId);

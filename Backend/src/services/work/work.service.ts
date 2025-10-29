@@ -67,7 +67,7 @@ export class WorkService implements IWorkService {
                 throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
             }
 
-            const workerExist = await this._workerRepositoy.findById(workerId.toString());
+            const workerExist = await this._workerRepositoy.findWorkerById(workerId.toString());
             if (!workerExist || workerExist.isActive === false) {
                 throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
             }
@@ -181,7 +181,7 @@ export class WorkService implements IWorkService {
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             if (!userId) throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
 
-            const worker = await this._workerRepositoy.findById(userId);
+            const worker = await this._workerRepositoy.findWorkerById(userId);
             const user = await this._userRepositoy.findById(userId);
 
             if (!worker && !user) {
@@ -205,8 +205,8 @@ export class WorkService implements IWorkService {
                 type: "job_cancelled",
                 title: work?.service,
                 body: `The job "${work?.service}" has been cancelled by ${canceller?.name}.
-      Date: ${work.sheduleDate} on ${work.sheduleTime}.
-      Job description: ${work?.description}`,
+                Date: ${work.sheduleDate} on ${work.sheduleTime}.
+                Job description: ${work?.description}`,
                 read: false,
             };
 
@@ -228,7 +228,6 @@ export class WorkService implements IWorkService {
             throw error;
         }
     };
-
 
     accept = async (workId: string): Promise<boolean> => {
         try {
@@ -297,8 +296,8 @@ export class WorkService implements IWorkService {
                 type: "job_accepted",
                 title: work?.service,
                 body: `The job ${work?.service} has been accepted by ${work?.workerName}.
-         Date: ${work.sheduleDate} on ${work.sheduleTime}.
-         Job description: ${work?.description}`,
+                Date: ${work.sheduleDate} on ${work.sheduleTime}.
+                Job description: ${work?.description}`,
                 read: false,
             };
 
@@ -322,7 +321,7 @@ export class WorkService implements IWorkService {
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             if (!workerId) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
 
-            const worker = await this._workerRepositoy.findById(workerId);
+            const worker = await this._workerRepositoy.findWorkerById(workerId);
             if (!worker) throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
 
             worker.completedWorks += 1;
@@ -339,7 +338,7 @@ export class WorkService implements IWorkService {
                 type: "job_completed",
                 title: work?.service,
                 body: `The job ${work?.service} has been completed by ${work?.workerName}.
-            Job description: ${work?.description}`,
+                Job description: ${work?.description}`,
                 read: false,
             };
 
@@ -378,7 +377,6 @@ export class WorkService implements IWorkService {
             const size = parseInt(pageSize);
             const startIndex = (page - 1) * size;
             const endIndex = page * size;
-
             const allWorks = await this._workRepositoy.getAllWorks();
             const works = allWorks.map((work) => mapWorkToDTO(work));
             const paginatedWorks = works.slice(startIndex, endIndex);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -11,7 +12,7 @@ import { API_ROUTES } from "../../constant/api.routes";
 
 const RegistrationPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const autocompleteRef = useRef<any>(null); const [loading, setLoading] = useState<boolean>(false);
   const Dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(true);
@@ -89,72 +90,87 @@ const RegistrationPage = () => {
       if (!values.location.address) {
         errors.location = { address: "Location is required" };
       }
+
+      if (!values.location.pincode || !values.location.lng || !values.location.lat) {
+        errors.location = { address: "Invalid Location, try again !" };
+      }
       return errors;
     },
   })
 
-  const updateLocation = useCallback((locationData: typeof formik.values.location) => {
-    formik.setFieldValue('location', locationData);
-  }, [formik]);
+  const updateLocation = useCallback(
+    (locationData: typeof formik.values.location) => {
+      formik.setFieldValue("location", locationData);
+    },
+    [formik]
+  );
 
   useEffect(() => {
-    let autocompleteInstance: google.maps.places.Autocomplete | null = null;
-    let scriptLoaded = false;
-
     const initializeAutocomplete = () => {
-      if (!inputRef.current || !window.google || autocompleteInstance) return;
+      if (!inputRef.current || !window.google?.maps?.places) {
+        console.error("Google Maps Places API not loaded properly");
+        return;
+      }
 
-      autocompleteInstance = new window.google.maps.places.Autocomplete(
-        inputRef.current,
-        {
-          types: ['address'],
-          componentRestrictions: { country: 'IN' },
-          fields: ['formatted_address', 'geometry', 'address_components', 'name']
-        }
-      );
-
-      google.maps.event.addListener(autocompleteInstance, "place_changed", () => {
-        const place = autocompleteInstance?.getPlace();
-
-        if (!place || !place.geometry) return;
-
-        const addressComponents = place.address_components || [];
-        let pincode = "";
-
-        for (const component of addressComponents) {
-          if (component.types.includes("postal_code")) {
-            pincode = component.long_name;
-            break;
+      try {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputRef.current,
+          {
+            componentRestrictions: { country: "IN" },
+            fields: ["formatted_address", "geometry", "address_components", "name"],
           }
-        }
+        );
 
-        const lat = place.geometry.location?.lat() || 0;
-        const lng = place.geometry.location?.lng() || 0;
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (!place || !place.geometry) return;
 
-        updateLocation({
-          address: place.formatted_address || "",
-          pincode,
-          lat,
-          lng,
+          const addressComponents = place.address_components || [];
+          const pincode =
+            addressComponents.find((c: any) => c.types.includes("postal_code"))?.long_name || "";
+
+          const lat = place.geometry.location?.lat() ?? 0;
+          const lng = place.geometry.location?.lng() ?? 0;
+
+          updateLocation({
+            address: place.formatted_address || "",
+            pincode,
+            lat,
+            lng,
+          });
         });
-      });
+
+        autocompleteRef.current = autocomplete;
+      } catch (error) {
+        console.error("Error initializing Autocomplete:", error);
+      }
     };
 
     const loadGoogleMapsAPI = () => {
-      if (window.google && window.google.maps) {
+      if (window.google?.maps?.places) {
         initializeAutocomplete();
         return;
       }
 
-      if (scriptLoaded) return;
+      const existingScript = document.querySelector(
+        'script[src*="maps.googleapis.com"]'
+      );
 
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places`;
+      if (existingScript) {
+        existingScript.addEventListener("load", () => {
+          setTimeout(initializeAutocomplete, 100);
+        });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY
+        }&libraries=places`;
       script.async = true;
       script.defer = true;
-      script.onload = () => {
-        scriptLoaded = true;
-        initializeAutocomplete();
+      script.onload = () => setTimeout(initializeAutocomplete, 100);
+      script.onerror = () => {
+        console.error("Failed to load Google Maps API");
       };
       document.head.appendChild(script);
     };
@@ -162,30 +178,30 @@ const RegistrationPage = () => {
     loadGoogleMapsAPI();
 
     return () => {
-      if (autocompleteInstance) {
-        google.maps.event.clearInstanceListeners(autocompleteInstance);
+      if (autocompleteRef.current) {
+        window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
       }
     };
   }, [updateLocation]);
 
   return (
-    <div className="bg-gray-50 w-full min-h-screen relative px-4 sm:px-6">
+    <div className="min-h-screen bg-gray-50 p-4 w-full overflow-y-auto">
       {/* Logo */}
-      <div className="absolute top-4 left-4 sm:top-8 sm:left-8">
-        <h1 className="merienda-text text-2xl sm:text-3xl text-green-900">WorkBee</h1>
+      <div className="absolute top-6 left-6">
+        <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
       </div>
 
       {/* Centered Form */}
-      <div className="flex items-center justify-center py-12">
-        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl">
-          <div className="bg-white rounded-3xl border-2 border-green-600 shadow-md p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 text-center mb-6">
+      <div className="flex items-center justify-center mt-20 mb-10">
+        <div className="w-full max-w-xl">
+          <div className="bg-white rounded-3xl border-2 border-green-600 p-6 shadow-md">
+            <h2 className="text-xl font-semibold text-gray-800 text-center mb-6">
               Let's get you started
             </h2>
 
-            <form onSubmit={formik.handleSubmit} className="space-y-6 sm:space-y-8">
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
               {/* Username & Location */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <div className="h-5">
                     {formik.touched.name && formik.errors.name && (
@@ -199,7 +215,9 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type="text"
                     placeholder="Username"
-                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                  border-0 border-b-2 border-gray-300 focus:border-green-600 
+                  focus:outline-none bg-transparent"
                   />
                 </div>
 
@@ -224,13 +242,15 @@ const RegistrationPage = () => {
                     ref={inputRef}
                     type="text"
                     placeholder="Location"
-                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                  border-0 border-b-2 border-gray-300 focus:border-green-600 
+                  focus:outline-none bg-transparent"
                   />
                 </div>
               </div>
 
               {/* Email & Phone */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="h-5">
                     {formik.touched.email && formik.errors.email && (
@@ -244,7 +264,9 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type="email"
                     placeholder="Email"
-                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                  border-0 border-b-2 border-gray-300 focus:border-green-600 
+                  focus:outline-none bg-transparent"
                   />
                 </div>
 
@@ -261,13 +283,15 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type="tel"
                     placeholder="Phone"
-                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent text-sm sm:text-base"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                  border-0 border-b-2 border-gray-300 focus:border-green-600 
+                  focus:outline-none bg-transparent"
                   />
                 </div>
               </div>
 
               {/* Password & Confirm Password */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
                   <div className="h-5">
                     {formik.touched.password && formik.errors.password && (
@@ -281,7 +305,9 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Password"
-                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent pr-8 text-sm sm:text-base"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                  border-0 border-b-2 border-gray-300 focus:border-green-600 
+                  focus:outline-none bg-transparent pr-8"
                   />
                   <button
                     type="button"
@@ -305,7 +331,9 @@ const RegistrationPage = () => {
                     onBlur={formik.handleBlur}
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm Password"
-                    className="w-full px-2 py-2 sm:px-3 sm:py-2 text-gray-600 placeholder-gray-400 border-0 border-b-2 border-gray-300 focus:border-green-600 focus:outline-none bg-transparent pr-8 text-sm sm:text-base"
+                    className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
+                  border-0 border-b-2 border-gray-300 focus:border-green-600 
+                  focus:outline-none bg-transparent pr-8"
                   />
                   <button
                     type="button"
@@ -322,7 +350,11 @@ const RegistrationPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-900 hover:bg-green-600 text-white font-semibold py-2 sm:py-3 rounded-full transition-colors duration-200"
+                  className="w-full bg-green-900 hover:bg-green-600 text-white font-semibold 
+                rounded-full transition-colors duration-200
+                h-[38px] sm:h-[42px] md:h-[45px] 
+                py-2 sm:py-3 px-3 sm:px-4 
+                text-sm sm:text-base"
                 >
                   {loading ? 'Signing...' : 'Sign up'}
                 </button>
@@ -330,8 +362,8 @@ const RegistrationPage = () => {
 
               {/* Sign In Link */}
               <div className="text-center pt-2">
-                <p className="text-gray-600 text-sm sm:text-base">
-                  Already have account?{' '}
+                <p className="text-gray-600 text-sm">
+                  Already have an account?{' '}
                   <span
                     onClick={() => navigate('/login', { replace: true })}
                     className="text-green-600 hover:text-green-700 font-medium cursor-pointer"

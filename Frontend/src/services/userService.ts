@@ -4,13 +4,11 @@ import type { IWork } from "../types/IWork";
 import { API_ROUTES } from "../constant/api.routes";
 import { getProfileImage } from "../utilities/getProfile";
 
-
 export const register = async (userData: Partial<Iuser>) => {
     userData.profileImage = getProfileImage(userData.name);
     const response = await axios.post(API_ROUTES.USER_SERVICE.REGISTER, userData, {
         withCredentials: true,
     });
-    console.log('Response from axios:', response);
     return response;
 };
 
@@ -44,7 +42,6 @@ export const resetPass = async (email: string, password: string) => {
     const response = await axios.post(API_ROUTES.USER_SERVICE.RESET_PASSWORD, { email, password });
     return response;
 };
-
 
 export const fetchUser = async (userId?: string) => {
     const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_DATA}?userId=${userId}`);
@@ -115,6 +112,9 @@ export const fetchWorkHistory = async (
 };
 
 export const cancelWork = async (workId: string, id: string) => {
+    if (!workId || !id) {
+        throw new Error("WorkID or userID missing !");
+    }
     await axios.patch(`${API_ROUTES.USER_SERVICE.CANCEL_WORK}?workId=${workId}&id=${id}`);
 };
 
