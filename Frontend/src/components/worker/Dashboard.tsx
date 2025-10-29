@@ -114,7 +114,7 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                                         {assignedworks.map((work, index) => (
                                             <div
                                                 key={index}
-                                                className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 hover:shadow-md transition-all animate-fadeInUp"
+                                                className="bg-gray-50 rounded-xl p-4 border border-blue-100 hover:shadow-md transition-all animate-fadeInUp"
                                                 style={{ animationDelay: `${index * 0.1}s` }}
                                             >
                                                 <div className="flex justify-between items-start">

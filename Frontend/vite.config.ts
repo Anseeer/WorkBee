@@ -11,6 +11,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: false, 
+      },
       manifest: {
         name: 'WorkBee',
         short_name: 'WorkBee',
