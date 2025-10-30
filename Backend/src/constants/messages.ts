@@ -25,7 +25,6 @@ export const ADMIN_MESSAGES = {
     MISSING_CREDENTIALS: "Email and password are required.",
 };
 
-
 export const CATEGORY_MESSAGE = {
     GET_ALL_CATEGORIES_SUCCESS: "All categories fetched successfully.",
     GET_ALL_CATEGORIES_FAILED: "Failed to fetch categories.",
