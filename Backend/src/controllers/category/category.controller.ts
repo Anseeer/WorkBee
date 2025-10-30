@@ -52,7 +52,6 @@ export class CategoryController implements ICategoryController {
         }
     };
 
-
     update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { currentPage, pageSize, categoryId } = req.query
@@ -131,7 +130,6 @@ export class CategoryController implements ICategoryController {
             next(new errorResponse(StatusCode.BAD_REQUEST, CATEGORY_MESSAGE.GET_CATEGORIES_BY_WORKER_FAILED, errMsg));
         }
     }
-
 
     getById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
