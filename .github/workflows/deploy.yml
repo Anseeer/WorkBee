@@ -75,7 +75,7 @@ jobs:
           echo "Frontend image pushed: $FRONT_IMG"
           echo "Backend image pushed: $BACK_IMG"
 
-    deliver:
+  deliver:
     name: CD - Deploy to Cloud Run (manual approval)
     needs: ci
     runs-on: ubuntu-latest
@@ -112,4 +112,3 @@ jobs:
             --region="${{ env.REGION }}" \
             --platform=managed \
             --allow-unauthenticated
-
