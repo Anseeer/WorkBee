@@ -71,6 +71,7 @@ initCronJobs();
 
 app.use(errorHandler)
 
-server.listen(process.env.PORT, () => {
-  logger.info(`Listening on http://localhost:${process.env.PORT}/`);
+const PORT = process.env.PORT || 3003;
+server.listen(PORT, () => {
+  logger.info(`Listening on http://localhost:${PORT}/`);
 });

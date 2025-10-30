@@ -72,14 +72,17 @@ jobs:
 
       - name: CI summary
         run: |
-          echo "✅ Frontend image pushed: $FRONT_IMG"
-          echo "✅ Backend image pushed: $BACK_IMG"
+          echo "Frontend image pushed: $FRONT_IMG"
+          echo "Backend image pushed: $BACK_IMG"
 
-  deliver:
+    deliver:
     name: CD - Deploy to Cloud Run (manual approval)
     needs: ci
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: production
+      url: https://console.cloud.google.com/run
+    concurrency: production-deploy
 
     steps:
       - name: Checkout repository
@@ -93,7 +96,6 @@ jobs:
       - name: Set gcloud project
         run: gcloud config set project ${{ env.PROJECT_ID }}
 
-      # --- Deploy backend ---
       - name: Deploy backend to Cloud Run
         run: |
           gcloud run deploy workbee-backend \
@@ -103,7 +105,6 @@ jobs:
             --allow-unauthenticated \
             --set-env-vars=NODE_ENV=production
 
-      # --- Deploy frontend ---
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud run deploy workbee-frontend \
@@ -111,3 +112,4 @@ jobs:
             --region="${{ env.REGION }}" \
             --platform=managed \
             --allow-unauthenticated
+
