@@ -17,6 +17,7 @@ jobs:
   ci:
     name: CI - build, test, docker build & push
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -50,9 +51,8 @@ jobs:
       # --- Set image tags ---
       - name: Set image tags
         run: |
-          echo "SHORT_SHA=${GITHUB_SHA::8}" >> $GITHUB_ENV
-          echo "FRONT_IMG=${{ env.DOCKERHUB_USER }}/workbee-frontend:${GITHUB_SHA::8}" >> $GITHUB_ENV
-          echo "BACK_IMG=${{ env.DOCKERHUB_USER }}/workbee-backend:${GITHUB_SHA::8}" >> $GITHUB_ENV
+          echo "FRONT_IMG=${{ env.DOCKERHUB_USER }}/workbee-frontend:${GITHUB_SHA}" >> $GITHUB_ENV
+          echo "BACK_IMG=${{ env.DOCKERHUB_USER }}/workbee-backend:${GITHUB_SHA}" >> $GITHUB_ENV
 
       # --- Build & push frontend image ---
       - name: Build & push frontend Docker image
@@ -72,14 +72,15 @@ jobs:
 
       - name: CI summary
         run: |
-          echo "Frontend image pushed: $FRONT_IMG"
-          echo "Backend image pushed: $BACK_IMG"
+          echo "✅ Frontend image pushed: $FRONT_IMG"
+          echo "✅ Backend image pushed: $BACK_IMG"
 
   deliver:
     name: CD - Deploy to Cloud Run (manual approval)
     needs: ci
     runs-on: ubuntu-latest
     environment: production
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -92,19 +93,21 @@ jobs:
       - name: Set gcloud project
         run: gcloud config set project ${{ env.PROJECT_ID }}
 
+      # --- Deploy backend ---
       - name: Deploy backend to Cloud Run
         run: |
           gcloud run deploy workbee-backend \
-            --image="${{ env.DOCKERHUB_USER }}/workbee-backend:${{ env.SHORT_SHA }}" \
+            --image="${{ env.DOCKERHUB_USER }}/workbee-backend:${{ github.sha }}" \
             --region="${{ env.REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
             --set-env-vars=NODE_ENV=production
 
+      # --- Deploy frontend ---
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud run deploy workbee-frontend \
-            --image="${{ env.DOCKERHUB_USER }}/workbee-frontend:${{ env.SHORT_SHA }}" \
+            --image="${{ env.DOCKERHUB_USER }}/workbee-frontend:${{ github.sha }}" \
             --region="${{ env.REGION }}" \
             --platform=managed \
             --allow-unauthenticated
