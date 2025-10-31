@@ -94,19 +94,26 @@ jobs:
       - name: Deploy backend to Cloud Run
         run: |
           gcloud run deploy workbee-backend \
-          --image="docker.io/${{ env.DOCKERHUB_USER }}/workbee-backend:${{ github.sha }}" \
-          --region="${{ env.REGION }}" \
-          --platform=managed \
-          --allow-unauthenticated \
-          --port=8080 \
-          --timeout=600s
+            --image="docker.io/${{ env.DOCKERHUB_USER }}/workbee-backend:${{ github.sha }}" \
+            --region="${{ env.REGION }}" \
+            --platform=managed \
+            --allow-unauthenticated \
+            --port=8080 \
+            --timeout=600s \
+            --no-cpu-throttling \
+            --max-instances=3 \
+            --quiet
 
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud run deploy workbee-frontend \
-          --image="docker.io/${{ env.DOCKERHUB_USER }}/workbee-frontend:${{ github.sha }}" \
-          --region="${{ env.REGION }}" \
-          --platform=managed \
-          --allow-unauthenticated \
-          --port=80 \
-          --timeout=600s
+            --image="docker.io/${{ env.DOCKERHUB_USER }}/workbee-frontend:${{ github.sha }}" \
+            --region="${{ env.REGION }}" \
+            --platform=managed \
+            --allow-unauthenticated \
+            --port=80 \
+            --timeout=600s \
+            --no-cpu-throttling \
+            --max-instances=3 \
+            --quiet
+
