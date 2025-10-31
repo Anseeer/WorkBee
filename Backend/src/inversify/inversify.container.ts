@@ -2,7 +2,6 @@ import TYPES from "./inversify.types";
 import { Container } from "inversify";
 
 // classes
-
 import { UserRepository } from "../repositories/user/user.repo";
 import { UserService } from "../services/user/user.service";
 import { UserController } from "../controllers/user/user.controller";
@@ -37,7 +36,6 @@ import { SubscriptionService } from "../services/subscription/subscription.servi
 import { SubscriptionController } from "../controllers/subscription/subscription.controller";
 
 // interfaces
-
 import { IUserRepository } from "../repositories/user/user.repo.interface";
 import { IUserService } from "../services/user/user.service.interface";
 import { IUserController } from "../controllers/user/user.controller.interface";

@@ -11,7 +11,6 @@ export interface ISubscriptionDTO {
     paymentId: string
 }
 
-
 export interface ISubscriptionEntity {
     planName: string,
     description: string,

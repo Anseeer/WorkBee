@@ -56,7 +56,7 @@ export const buildAccount = async (
 };
 
 export const getWorkerDetails = async (workerId: string) => {
-  if (!workerId) throw new Error("Worker ID not provided");
+  if (!workerId) throw new Error("Worker ID not Get");
   return axios.get(`${API_ROUTES.WORKER_SERVICE.FETCH_DETAILS}?workerId=${workerId}`);
 };
 

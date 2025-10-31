@@ -1,4 +1,3 @@
-// INotification.DTO.ts
 import mongoose from "mongoose";
 
 export interface INotificationDTO {

@@ -208,7 +208,7 @@ router.post("/create-wallet-order", async (req: Request, res: Response): Promise
     try {
         const { amount } = req.body;
         if (!amount || amount < 1) {
-            res.status(400).json({ error: "Invalid amount" });
+            res.status(400).json({ error: "Invalid Amount" });
             return;
         }
 

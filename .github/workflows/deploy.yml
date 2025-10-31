@@ -15,7 +15,7 @@ env:
 
 jobs:
   ci:
-    name: CI - build, test, docker build & push
+    name: CI - Build, Test, Docker Build & Push
     runs-on: ubuntu-latest
 
     steps:
@@ -27,20 +27,20 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Configure Docker to use Artifact Registry
+      - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker "${{ env.REGION }}-docker.pkg.dev" --quiet
 
-      - name: Build frontend (install & build)
+      - name: Build frontend
         working-directory: ${{ env.FRONTEND_DIR }}
         run: |
           npm ci
-          npm run build || true
+          npm run build
 
-      - name: Build backend (install & build)
+      - name: Build backend
         working-directory: ${{ env.BACKEND_DIR }}
         run: |
           npm ci
-          npm run build || true
+          npm run build
 
       - name: Set image tags
         run: |
@@ -65,7 +65,7 @@ jobs:
           echo "Backend image pushed: $BACK_IMG"
 
   deliver:
-    name: CD - Deploy to Cloud Run (manual approval)
+    name: CD - Deploy to Cloud Run (Manual Approval)
     needs: ci
     runs-on: ubuntu-latest
     environment:
