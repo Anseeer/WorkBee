@@ -48,13 +48,11 @@ jobs:
           npm ci
           npm run build || true
 
-      # --- Set image tags ---
       - name: Set image tags
         run: |
           echo "FRONT_IMG=${{ env.DOCKERHUB_USER }}/workbee-frontend:${GITHUB_SHA}" >> $GITHUB_ENV
           echo "BACK_IMG=${{ env.DOCKERHUB_USER }}/workbee-backend:${GITHUB_SHA}" >> $GITHUB_ENV
 
-      # --- Build & push frontend image ---
       - name: Build & push frontend Docker image
         working-directory: ${{ env.FRONTEND_DIR }}
         run: |
@@ -62,7 +60,6 @@ jobs:
             -t "$FRONT_IMG" \
             --push .
 
-      # --- Build & push backend image ---
       - name: Build & push backend Docker image
         working-directory: ${{ env.BACKEND_DIR }}
         run: |
@@ -105,7 +102,6 @@ jobs:
             --allow-unauthenticated \
             --port=8080 \
             --timeout=600s
-
 
       - name: Deploy frontend to Cloud Run
         run: |
