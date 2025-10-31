@@ -34,14 +34,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # --- Frontend build ---
       - name: Build frontend (install & build)
         working-directory: ${{ env.FRONTEND_DIR }}
         run: |
           npm ci
           npm run build || true
 
-      # --- Backend build ---
       - name: Build backend (install & build)
         working-directory: ${{ env.BACKEND_DIR }}
         run: |
