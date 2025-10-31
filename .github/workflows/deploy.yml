@@ -100,7 +100,7 @@ jobs:
         run: |
           gcloud run deploy workbee-backend \
             --image="gcr.io/${{ secrets.GCP_PROJECT_ID }}/workbee-backend" \
-            --region="${{ secrets.GCP_REGION }}" \
+            --region="${{ env.REGION }}"
             --platform=managed \
             --allow-unauthenticated \
             --port=8080 \
