@@ -102,7 +102,24 @@ jobs:
             --timeout=600s \
             --no-cpu-throttling \
             --max-instances=3 \
-            --quiet
+            --set-env-vars="\
+            PORT=${{ secrets.PORT }},\
+            MONGODB_URI=${{ secrets.MONGODB_URI }},\
+            JWT_SECRET=${{ secrets.JWT_SECRET }},\
+            JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }},\
+            JWT_REFRESH_EXPIRES_IN=${{ secrets.JWT_REFRESH_EXPIRES_IN }},\
+            JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }},\
+            NODE_EMAIL=${{ secrets.NODE_EMAIL }},\
+            NODE_EMAIL_PASS=${{ secrets.NODE_EMAIL_PASS }},\
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},\
+            RAZORPAY_KEY_ID=${{ secrets.RAZORPAY_KEY_ID }},\
+            RAZORPAY_KEY_SECRET=${{ secrets.RAZORPAY_KEY_SECRET }},\
+            TOKEN_MAX_AGE=${{ secrets.TOKEN_MAX_AGE }},\
+            REFRESH_TOKEN_MAX_AGE=${{ secrets.REFRESH_TOKEN_MAX_AGE }},\
+            RAZORPAYX_ACCOUNT=${{ secrets.RAZORPAYX_ACCOUNT }},\
+            CLIENT_URL_DOCKER=${{ secrets.CLIENT_URL_DOCKER }},\
+            CLIENT_URL_HOST=${{ secrets.CLIENT_URL_HOST }}" \
+                        --quiet
 
       - name: Deploy frontend to Cloud Run
         run: |
@@ -115,5 +132,13 @@ jobs:
             --timeout=600s \
             --no-cpu-throttling \
             --max-instances=3 \
-            --quiet
-
+            --set-env-vars="\
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }},\
+            VITE_GOOGLE_MAP_API_KEY=${{ secrets.VITE_GOOGLE_MAP_API_KEY }},\
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }},\
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }},\
+            VITE_RAZORPAY_KEY_ID=${{ secrets.VITE_RAZORPAY_KEY_ID }},\
+            VITE_CLOUDNARY_URL=${{ secrets.VITE_CLOUDNARY_URL }},\
+            VITE_PORT=${{ secrets.VITE_PORT }},\
+            VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }}" \
+                        --quiet
