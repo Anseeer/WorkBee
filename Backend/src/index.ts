@@ -33,8 +33,10 @@ app.use(express.urlencoded({ extended: true }))
 
 const allowedOrigins = [
   process.env.CLIENT_URL_DOCKER,
-  process.env.CLIENT_URL_HOST
+  process.env.CLIENT_URL_HOST,
+  process.env.CLIENT_URL_CLOUD,
 ].filter(Boolean);
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -47,6 +49,7 @@ app.use(
     credentials: true,
   })
 );
+
 
 app.use('/api/users', userRoutes);
 app.use('/api/workers', workerRoutes);
