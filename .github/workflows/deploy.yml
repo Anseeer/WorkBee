@@ -200,11 +200,11 @@ jobs:
 
       # ✅ Build & push frontend Docker image
       - name: Build & push frontend Docker image
-        working-directory: ${{ env.FRONTEND_DIR }}
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t "$FRONT_IMG" \
-            --push .
+            --file Frontend/Dockerfile \
+            --push Frontend
 
       # ✅ Build & push backend Docker image
       - name: Build & push backend Docker image
