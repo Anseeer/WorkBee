@@ -193,12 +193,12 @@ jobs:
           npm ci
           npm run build
 
+      # ✅ Build & push frontend Docker image
       - name: Set image tags
         run: |
           echo "FRONT_IMG=${{ env.DOCKERHUB_USER }}/workbee-frontend:${GITHUB_SHA}" >> $GITHUB_ENV
           echo "BACK_IMG=${{ env.DOCKERHUB_USER }}/workbee-backend:${GITHUB_SHA}" >> $GITHUB_ENV
 
-      # ✅ Build & push frontend Docker image
       - name: Build & push frontend Docker image
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 \
