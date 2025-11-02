@@ -8,9 +8,8 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy source and env files
+# Copy source files
 COPY . .
-COPY .env.production .env
 
 # Build backend
 RUN npm run build
