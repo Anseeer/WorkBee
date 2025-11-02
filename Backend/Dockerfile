@@ -27,9 +27,6 @@ RUN npm install --omit=dev
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy env file (used at runtime)
-COPY .env.production .env
-
 ENV NODE_ENV=production
 EXPOSE 8080
 
