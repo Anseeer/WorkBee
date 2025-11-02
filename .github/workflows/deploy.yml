@@ -140,4 +140,5 @@ jobs:
             VITE_CLOUDNARY_URL=${{ secrets.VITE_CLOUDNARY_URL }},\
             VITE_PORT=${{ secrets.VITE_PORT }},\
             VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }}" \
-                        --quiet
+            --quiet
+
