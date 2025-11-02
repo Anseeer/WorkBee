@@ -14,7 +14,7 @@ COPY . .
 
 # ✅ Copy your env file (make sure it exists inside Frontend/)
 # This ensures Vite/React gets correct URLs during build
-COPY .env.production .env
+COPY ./Frontend/.env.production .env
 
 # Build the production version
 RUN npm run build
