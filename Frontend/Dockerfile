@@ -9,12 +9,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy rest of the files including env
+# Copy source and env files
 COPY . .
-
-# ✅ Copy your env file (make sure it exists inside Frontend/)
-# This ensures Vite/React gets correct URLs during build
-COPY ./Frontend/.env.production .env
+COPY .env.production .env
 
 # Build the production version
 RUN npm run build
