@@ -6,14 +6,16 @@ import { fetchUserDataThunk } from "../slice/userSlice";
 export const fetchData = async (dispatch: any) => {
     try {
         const { data } = await axios.get("/auth/verify", { withCredentials: true });
-        console.log(data)
-        const role = data.role;
+        console.log("Verified user:", data);
 
-        if (role == "User") {
+        if (data.role === "User") {
             dispatch(fetchUserDataThunk());
         }
-
-    } catch (error) {
-        console.log(error);
+    } catch (error: any) {
+        if (error.response?.status === 400) {
+            console.log("No valid session — user not logged in yet.");
+        } else {
+            console.error("Error verifying user:", error);
+        }
     }
-}
+};

@@ -52,7 +52,6 @@ app.use(
   })
 );
 
-
 app.use('/api/users', userRoutes);
 app.use('/api/workers', workerRoutes);
 app.use('/api/admins', adminRoutes);
