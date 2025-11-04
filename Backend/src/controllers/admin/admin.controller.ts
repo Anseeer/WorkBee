@@ -49,16 +49,15 @@ export class AdminController implements IAdminController {
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-            res.cookie("accessToken", {
-                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                sameSite: COOKIE_CONFIG.SAME_SITE,
-                secure: COOKIE_CONFIG.SECURE,
+            res.clearCookie("accessToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
             });
-
-            res.cookie("refreshToken", {
-                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                sameSite: COOKIE_CONFIG.SAME_SITE,
-                secure: COOKIE_CONFIG.SECURE,
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
             });
 
             res.json({ message: ADMIN_MESSAGES.LOGOUT_SUCCESS });

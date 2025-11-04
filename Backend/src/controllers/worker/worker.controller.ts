@@ -89,16 +89,15 @@ export class WorkerController implements IWorkerController {
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-            res.cookie("accessToken", {
-                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                sameSite: COOKIE_CONFIG.SAME_SITE,
-                secure: COOKIE_CONFIG.SECURE,
+            res.clearCookie("accessToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
             });
-
-            res.cookie("refreshToken", {
-                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
-                sameSite: COOKIE_CONFIG.SAME_SITE,
-                secure: COOKIE_CONFIG.SECURE,
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
             });
 
             res.json({ message: WORKER_MESSAGE.LOGOUT_SUCCESs });
@@ -297,12 +296,14 @@ export class WorkerController implements IWorkerController {
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
             res.status(response.status).json(response);
