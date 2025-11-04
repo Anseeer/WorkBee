@@ -27,14 +27,17 @@ export class UserController implements IUserController {
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
+
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
@@ -51,14 +54,17 @@ export class UserController implements IUserController {
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
+
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -69,14 +75,19 @@ export class UserController implements IUserController {
 
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            res.clearCookie('accessToken', {
-                httpOnly: true,
-                sameSite: 'strict',
+
+            res.cookie("accessToken", {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
             });
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                sameSite: 'strict',
+
+            res.cookie("refreshToken", {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
             });
+
             res.json({ message: USERS_MESSAGE.LOGOUT_SUCCESS });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);

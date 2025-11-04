@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }))
 const allowedOrigins = [
   process.env.CLIENT_URL_DOCKER,
   process.env.CLIENT_URL_HOST,
-  process.env.CLIENT_URL_CLOUD || "https://workbee-frontend-170764750094.asia-south1.run.app",
+  process.env.CLIENT_URL_CLOUD ,
 ].filter(Boolean);
 
 console.log("Allowed origins :", allowedOrigins)

@@ -35,17 +35,21 @@ export class WorkerController implements IWorkerController {
             const credentials = { email, password };
             const { accessToken, refreshToken, worker, wallet, availability } = await this._workerService.loginWorker(credentials);
             const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.LOGIN_SUCCESS, { worker, availability, wallet });
+
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
+
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -58,17 +62,21 @@ export class WorkerController implements IWorkerController {
         try {
             const { accessToken, refreshToken, worker, wallet } = await this._workerService.registerWorker(req.body);
             const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.REGISTRATION_SUCCESS, { worker, wallet });
+
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
+
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
@@ -80,14 +88,19 @@ export class WorkerController implements IWorkerController {
 
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            res.clearCookie('accessToken', {
-                httpOnly: true,
-                sameSite: 'strict',
+
+            res.cookie("accessToken", {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
             });
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                sameSite: 'strict',
+
+            res.cookie("refreshToken", {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
             });
+
             res.json({ message: WORKER_MESSAGE.LOGOUT_SUCCESs });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);

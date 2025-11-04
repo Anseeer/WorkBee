@@ -19,8 +19,8 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
 
   if (!accessToken && !refreshToken) {
     res
-      .status(StatusCode.BAD_REQUEST)
-      .json(new errorResponse(StatusCode.BAD_REQUEST, AUTH_MESSAGE.ACCESS_DENIED, {}));
+      .status(StatusCode.OK)
+      .json(new errorResponse(StatusCode.OK, AUTH_MESSAGE.ACCESS_DENIED, {}));
     return;
   }
 
@@ -58,7 +58,8 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
 
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
-        sameSite: COOKIE_CONFIG.SAME_SITE,
+        sameSite: "none",
+        secure: true,
         maxAge: COOKIE_CONFIG.MAX_AGE,
       });
 

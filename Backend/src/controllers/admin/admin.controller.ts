@@ -24,17 +24,21 @@ export class AdminController implements IAdminController {
             }
             const { accessToken, refreshToken, admin } = await this._adminService.login(req.body);
             const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.LOGIN_SUCCESS, { admin });
+
             res.cookie("accessToken", accessToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.MAX_AGE,
             });
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: COOKIE_CONFIG.HTTP_ONLY,
                 sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
                 maxAge: COOKIE_CONFIG.REFRESH_MAX_AGE,
             });
+
             res.status(response.status).json(response);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
@@ -44,14 +48,19 @@ export class AdminController implements IAdminController {
 
     logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            res.clearCookie('accessToken', {
-                httpOnly: true,
-                sameSite: 'strict',
+
+            res.cookie("accessToken", {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
             });
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                sameSite: 'strict',
+
+            res.cookie("refreshToken", {
+                httpOnly: COOKIE_CONFIG.HTTP_ONLY,
+                sameSite: COOKIE_CONFIG.SAME_SITE,
+                secure: COOKIE_CONFIG.SECURE,
             });
+
             res.json({ message: ADMIN_MESSAGES.LOGOUT_SUCCESS });
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
