@@ -266,7 +266,14 @@ export default function MessageSection({ chats, me }: Props) {
 
               return (
                 <div
-                  onClick={() => setSelectedUser(otherParticipant)}
+                  onClick={() => {
+                    if (isCall) {
+                      toast.warning("You can't switch users while on a call");
+                      return;
+                    }
+                    setSelectedUser(otherParticipant);
+                  }}
+
                   key={chat?._id}
                   className="bg-gray-100 rounded-lg p-3 sm:p-4 flex items-center gap-4 hover:bg-white transition-all cursor-pointer animate-fadeInUp"
                   style={{ animationDelay: `${index * 0.1}s` }}

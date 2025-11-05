@@ -93,7 +93,7 @@ const PopularProjects = () => {
                                 <p className="text-sm text-gray-600">
                                     Project starting at{' '}
                                     <span className="font-semibold text-gray-900 group-hover:text-green-800 transition-colors duration-300">
-                                        {service.wage}
+                                        ₹{service.wage}
                                     </span>
                                 </p>
                             </div>

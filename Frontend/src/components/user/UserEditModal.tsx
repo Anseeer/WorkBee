@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 
 interface props {
   onClose: () => void;
-  setEdit: (arg: boolean) => void;
+  setEdit: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 declare global {
@@ -36,93 +36,83 @@ export default function EditUserModal({ onClose, setEdit }: props) {
         address: user?.location?.address || "",
         pincode: user?.location?.pincode || "",
         lat: user?.location?.lat ?? 0,
-        lng: user?.location?.lng ?? 0
-      }
+        lng: user?.location?.lng ?? 0,
+      },
     },
     validate: (values) => {
       const errors: {
         name?: string;
         phone?: string;
         location?: { address?: string };
-        profileImage?: string;
       } = {};
 
-      if (!values?.name?.trim()) {
-        errors.name = "Full Name is required";
-      }
-
-      if (!values?.phone?.trim()) {
-        errors.phone = "Phone is required";
-      } else if (!/^[0-9]{10}$/.test(values.phone)) {
+      if (!values.name.trim()) errors.name = "Full Name is required";
+      if (!values.phone.trim()) errors.phone = "Phone is required";
+      else if (!/^[0-9]{10}$/.test(values.phone))
         errors.phone = "Enter a valid 10-digit phone number";
-      }
 
-      if (!values?.location?.address?.trim()) {
+      if (!values.location.address.trim())
         errors.location = { address: "Location is required" };
-      }
 
       return errors;
     },
     onSubmit: async (values) => {
       try {
-        console.log(values);
         await update(values, user?.id as string);
         toast.success("Updated successfully");
-        setEdit(true);
+        setEdit(prev => !prev);
         onClose();
       } catch (error) {
         toast.error("Update failed");
         console.log("Form Submitted error:", error);
       }
-    }
+    },
   });
 
   useEffect(() => {
     const initializeAutocomplete = () => {
-      if (!window.google?.maps?.places) {
-        console.error("Google Maps API not loaded properly");
-        return;
-      }
+      if (!window.google?.maps?.places) return;
 
-      try {
-        const autocomplete = new window.google.maps.places.Autocomplete(
-          locationRef.current!,
-          {
-            componentRestrictions: { country: "IN" },
-            fields: ["formatted_address", "geometry", "address_components", "name"],
+      const autocomplete = new window.google.maps.places.Autocomplete(
+        locationRef.current!,
+        {
+          componentRestrictions: { country: "IN" },
+          fields: [
+            "formatted_address",
+            "geometry",
+            "address_components",
+            "name",
+          ],
+        }
+      );
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (!place || !place.geometry) return;
+
+        const addressComponents = place.address_components || [];
+        let pincode = "";
+
+        for (const component of addressComponents) {
+          if (component.types.includes("postal_code")) {
+            pincode = component.long_name;
+            break;
           }
-        );
+        }
 
-        autocomplete.addListener("place_changed", () => {
-          const place = autocomplete.getPlace();
-          if (!place || !place.geometry) return;
+        const lat = place.geometry.location?.lat() ?? 0;
+        const lng = place.geometry.location?.lng() ?? 0;
 
-          const addressComponents = place.address_components || [];
-          let pincode = "";
-
-          for (const component of addressComponents) {
-            if (component.types.includes("postal_code")) {
-              pincode = component.long_name;
-              break;
-            }
-          }
-
-          const lat = place.geometry.location?.lat() ?? 0;
-          const lng = place.geometry.location?.lng() ?? 0;
-
-          formik.setFieldValue("location", {
-            address: place.formatted_address || "",
-            pincode,
-            lat,
-            lng,
-          });
+        formik.setFieldValue("location", {
+          address: place.formatted_address || "",
+          pincode,
+          lat,
+          lng,
         });
+      });
 
-        autocompleteRef.current = autocomplete;
-        setIsGoogleLoaded(true);
-      } catch (error) {
-        console.error("Error initializing Autocomplete:", error);
-      }
+      autocompleteRef.current = autocomplete;
+      setIsGoogleLoaded(true);
     };
 
     const loadGoogleMapsAPI = () => {
@@ -137,7 +127,7 @@ export default function EditUserModal({ onClose, setEdit }: props) {
 
       if (existingScript) {
         existingScript.addEventListener("load", () => {
-          setTimeout(initializeAutocomplete, 100);
+          setTimeout(initializeAutocomplete, 200);
         });
         return;
       }
@@ -147,7 +137,7 @@ export default function EditUserModal({ onClose, setEdit }: props) {
         }&libraries=places`;
       script.async = true;
       script.defer = true;
-      script.onload = () => setTimeout(initializeAutocomplete, 100);
+      script.onload = () => setTimeout(initializeAutocomplete, 200);
       script.onerror = () => {
         console.error("Failed to load Google Maps API");
         toast.error("Failed to load location services");
@@ -159,7 +149,9 @@ export default function EditUserModal({ onClose, setEdit }: props) {
 
     return () => {
       if (autocompleteRef.current) {
-        window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        window.google.maps.event.clearInstanceListeners(
+          autocompleteRef.current
+        );
       }
     };
   }, []);
@@ -167,11 +159,9 @@ export default function EditUserModal({ onClose, setEdit }: props) {
   const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     formik.setFieldValue("location.address", e.target.value);
   };
-
-
   return (
     <div className="fixed inset-0 bg-transparent backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-4 sm:p-5 md:p-6 relative overflow-y-auto max-h-[85vh] sm:max-h-[90vh] border border-gray-200">
+      <div className="bg-white backdrop-blur-xl rounded-xl shadow-lg w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-4 sm:p-5 md:p-6 relative overflow-y-auto max-h-[85vh] sm:max-h-[90vh] border border-gray-200">
         {/* Close Button */}
         <button
           className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 p-1 bg-red-300 hover:bg-red-500 rounded-full"
@@ -181,11 +171,15 @@ export default function EditUserModal({ onClose, setEdit }: props) {
           <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
-        <form onSubmit={formik.handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
+        <form
+          onSubmit={formik.handleSubmit}
+          className="space-y-4 sm:space-y-5 md:space-y-6"
+        >
           {/* Basic Info */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 sm:p-4 rounded-xl border border-blue-100 space-y-3 sm:space-y-4">
+          <div className="bg-gray-100 p-3 sm:p-4 rounded-xl border border-blue-100 space-y-3 sm:space-y-4">
             <h3 className="text-base sm:text-lg font-semibold flex items-center gap-2">
-              <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" /> {user?.name}'s Information
+              <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />{" "}
+              {user?.name}'s Information
             </h3>
 
             {/* Name */}
@@ -202,7 +196,9 @@ export default function EditUserModal({ onClose, setEdit }: props) {
                 className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-xs sm:text-sm"
               />
               {formik.touched.name && formik.errors.name && (
-                <span className="text-xs sm:text-sm text-red-500">{formik.errors.name}</span>
+                <span className="text-xs sm:text-sm text-red-500">
+                  {formik.errors.name}
+                </span>
               )}
             </div>
 
@@ -220,14 +216,17 @@ export default function EditUserModal({ onClose, setEdit }: props) {
                 className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-xs sm:text-sm"
               />
               {formik.touched.phone && formik.errors.phone && (
-                <span className="text-xs sm:text-sm text-red-500">{formik.errors.phone}</span>
+                <span className="text-xs sm:text-sm text-red-500">
+                  {formik.errors.phone}
+                </span>
               )}
             </div>
 
             {/* Profile Image */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 sm:p-4 rounded-xl border border-purple-100">
+            <div className="bg-gray-100 p-3 sm:p-4 rounded-xl border border-purple-100">
               <h3 className="text-base sm:text-lg font-semibold flex items-center gap-2">
-                <Image className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" /> Profile Image
+                <Image className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />{" "}
+                Profile Image
               </h3>
               <label className="flex flex-col items-center justify-center w-full h-24 sm:h-28 md:h-32 border-2 border-dashed rounded-lg cursor-pointer mt-2 sm:mt-3">
                 {formik.values.profileImage ? (
@@ -268,11 +267,16 @@ export default function EditUserModal({ onClose, setEdit }: props) {
                 placeholder="Enter your address"
                 className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-xs sm:text-sm"
               />
-              {formik.touched.location?.address && formik.errors.location?.address && (
-                <span className="text-xs sm:text-sm text-red-500">{formik.errors.location.address}</span>
-              )}
+              {formik.touched.location?.address &&
+                formik.errors.location?.address && (
+                  <span className="text-xs sm:text-sm text-red-500">
+                    {formik.errors.location.address}
+                  </span>
+                )}
               {!isGoogleLoaded && (
-                <p className="text-xs text-gray-500 mt-1">Loading location services...</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Loading location services...
+                </p>
               )}
             </div>
           </div>
