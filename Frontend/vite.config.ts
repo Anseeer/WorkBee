@@ -12,7 +12,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
-        enabled: false, 
+        enabled: false
       },
       manifest: {
         name: 'WorkBee',
@@ -23,15 +23,20 @@ export default defineConfig({
           {
             src: '/Logo1.png',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/png'
           },
           {
             src: '/Logo1.png',
             sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
+            type: 'image/png'
+          }
+        ]
       },
+      workbox: {
+        navigateFallbackDenylist: [/\/api\//]
+      },
+      injectRegister: null,
+      selfDestroying: true
     }),
   ],
 })

@@ -16,7 +16,6 @@ const GoogleAuth = ({ handleGoogleLogin, handleGoogleError }: Props) => {
           console.error("Google login failed");
           if (handleGoogleError) handleGoogleError();
         }}
-        useOneTap
         type="icon"
         shape="circle"
       />

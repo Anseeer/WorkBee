@@ -4,6 +4,7 @@ import { adminRoutes } from "./adminRoutes";
 import NotFoundPage from "../components/common/NotFoundPAge";
 import { About } from "../pages/user/about";
 import { TermsAndConditions } from "../pages/user/terms&conditions";
+import { PrivacyAndPolicy } from "../pages/user/privacyPolicy";
 
 export const appRoutes = [
   ...userRoutes,
@@ -11,5 +12,6 @@ export const appRoutes = [
   ...adminRoutes,
   { path: "*", element: <NotFoundPage /> },
   { path: "/about", element: <About /> },
+  { path: "/privacy", element: <PrivacyAndPolicy /> },
   { path: "/terms", element: <TermsAndConditions /> },
 ];
