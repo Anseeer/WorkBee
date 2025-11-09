@@ -1,8 +1,8 @@
 import { Document, Types } from "mongoose"
 import { ILocation } from "../location/location.interface"
+import { ISelectedService } from "../service/service.interface";
 
 export interface IWorker extends Document {
-    // _id: string | Types.ObjectId,
     name: string,
     email: string,
     phone: string,
@@ -13,14 +13,13 @@ export interface IWorker extends Document {
     role: string,
     radius: number,
     completedWorks: number,
-    workType: string[],
     preferredSchedule: string[],
     isVerified: boolean,
     status: string,
     isActive: boolean,
     location: ILocation,
     govId: string[],
-    services: Types.ObjectId[],
+    services: ISelectedService[],
     categories: Types.ObjectId[],
     ratings: {
         average: number,

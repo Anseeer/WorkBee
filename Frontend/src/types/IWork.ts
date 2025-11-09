@@ -20,7 +20,6 @@ export interface IWork {
         lat: number,
         lng: number
     },
-    workType: string,
     size: string,
     description: string,
     sheduleDate: string,

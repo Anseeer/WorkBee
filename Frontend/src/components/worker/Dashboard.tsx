@@ -29,16 +29,19 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!worker) {
+                throw new Error(`WorkerId not get`)
+            }
             setWorkerId(worker?.id);
-            const assigned = await fetchAssignedWorks(workerId as string);
-            const requested = await fetchRequestedWorks(workerId as string);
-            const earningsRes = await fetchWorkerEarnings(workerId as string, filter as string);
+            const assigned = await fetchAssignedWorks(workerId as string || worker?.id);
+            const requested = await fetchRequestedWorks(workerId as string || worker?.id);
+            const earningsRes = await fetchWorkerEarnings(workerId as string || worker?.id, filter as string);
             setEarnings(earningsRes.earnings);
             setAssignedWorks(assigned.assignedWorks)
             setRequestedWorks(requested.requestedWorks)
         }
         fetchData();
-    }, [filter, worker?.id, workerId])
+    }, [filter, worker, worker?.id, workerId])
 
     const StatCard = ({ icon: Icon, label, value, bgColor, textColor }: any) => (
         <div className={`${bgColor} rounded-xl p-6 shadow-sm border border-gray-100`}>
@@ -153,19 +156,29 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                             </div>
                         </div>
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 animate-fadeInDown" style={{ animationDelay: "0.2s" }}>
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-bold text-gray-900">Earnings Overview</h3>
-                                <select
-                                    id="filter"
-                                    value={filter}
-                                    onChange={(e) => setFilter(e.target.value as Filter)}
-                                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="monthly">Monthly</option>
-                                    <option value="yearly">Yearly</option>
-                                </select>
-                            </div>
-                            <EarningsChart filter={filter} rawData={earnings} />
+                            {earnings && earnings.length > 0 ? (
+                                <>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-lg font-bold text-gray-900">Earnings Overview</h3>
+                                        <select
+                                            id="filter"
+                                            value={filter}
+                                            onChange={(e) => setFilter(e.target.value as Filter)}
+                                            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="monthly">Monthly</option>
+                                            <option value="yearly">Yearly</option>
+                                        </select>
+                                    </div>
+
+                                    <EarningsChart filter={filter} rawData={earnings} />
+                                </>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-10 text-gray-500">
+                                    <p className="text-sm font-medium">No earnings data available</p>
+                                    <p className="text-xs">Once earnings start coming in, you'll see them here.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

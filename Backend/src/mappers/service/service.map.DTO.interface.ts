@@ -8,7 +8,6 @@ export interface IServiceDTO {
     categoryIcon?: string,
     name: string,
     description: string,
-    wage: string,
     image: string,
     isActive: boolean
 }
@@ -18,7 +17,6 @@ export interface IServiceEntity {
     category: mongoose.Schema.Types.ObjectId,
     name: string,
     description: string,
-    wage: string,
     image: string,
     isActive: boolean
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import type { IService } from "../../types/IServiceTypes";
+import type { IService } from "../../types/IService";
 import { fetchService, fetchServiceBySearchTerm } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";

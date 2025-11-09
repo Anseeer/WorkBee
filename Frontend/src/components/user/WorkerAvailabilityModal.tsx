@@ -15,6 +15,7 @@ interface IAvailability {
 interface WorkerModalProps {
     work: Partial<IWork>;
     worker: IWorker;
+    price:string;
     availability: IAvailability;
     onClose: () => void;
     onConfirm: (date: string, slot: string, totalAmount: string, PlatformFee: string, commissionAmount: string) => void;
@@ -29,18 +30,22 @@ type AvailableSlot = {
 const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     work,
     worker,
+    price,
     availability,
     onClose,
     onConfirm
 }) => {
     console.log("WorkerAvailability:", availability);
+    console.log("Worker :", worker);
+    console.log("work :", work);
+    console.log("Price :", price);
 
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
 
 
-    const wage = Number(work?.wage) || 0;
+    const wage = Number(price) || 0;
     const PlatformFee = wage * 0.05;
     const totalAmount = wage + wage * 0.05;
     const commissionPercentage = Number(worker.subscription?.commission) || 0;
@@ -292,11 +297,6 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                                         <div className="flex justify-between">
                                             <span>Work:</span>
                                             <span className="font-semibold">{work.service}</span>
-                                        </div>
-
-                                        <div className="flex justify-between">
-                                            <span>Type:</span>
-                                            <span className="font-semibold capitalize">{work.workType}</span>
                                         </div>
 
                                         <div className="flex justify-between">

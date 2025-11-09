@@ -155,12 +155,13 @@ export class WorkerService implements IWorkerService {
                 bio: workerData.bio,
                 age: workerData.age,
                 services: workerData.services,
-                workType: workerData.workType,
                 radius: workerData.radius,
                 preferredSchedule: workerData.preferredSchedule,
                 govId: workerData.govId,
                 isAccountBuilt: true
             };
+
+            console.log("UPDATED FILEDS ::::",updatedFields)
 
             const updatedWorkerEntity = await this._workerRepository.findByIdAndUpdate(workerId, updatedFields);
             if (!updatedWorkerEntity) throw new Error(WORKER_MESSAGE.UPDATE_WORKER_SUCCESSFULLY);
@@ -291,8 +292,10 @@ export class WorkerService implements IWorkerService {
                 throw new Error("Search term not provided");
             }
 
-            const { location, workType, serviceId, categoryId } = searchTerm;
-            if (!location?.lat || !location?.lng || !workType || !serviceId || !categoryId) {
+            console.log("search Term :",searchTerm)
+
+            const { location, serviceId, categoryId } = searchTerm;
+            if (!location?.lat || !location?.lng  || !serviceId || !categoryId) {
                 throw new Error("All search terms are required: location, workType, serviceId, categoryId");
             }
 

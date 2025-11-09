@@ -1,3 +1,4 @@
+import type { ISelectedService } from "./IService";
 
 export interface IWorker {
     id: string,
@@ -28,7 +29,7 @@ export interface IWorker {
         average: number,
         ratingsCount: number
     },
-    services: string[],
+    services: ISelectedService[],
     categories: string[],
     subscription: {
         plan: string;

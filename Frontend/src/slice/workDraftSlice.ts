@@ -24,7 +24,6 @@ export const initialState: IWork = {
     platformFee: "",
     commission: "",
     totalAmount: "",
-    workType: "",
     size: "",
     description: "",
     sheduleDate: "",
@@ -52,12 +51,10 @@ const workDraft = createSlice({
     reducers: {
         workDetails: (state, action) => {
             state.location = action.payload.location;
-            state.workType = action.payload.workType;
             state.size = action.payload.taskSize;
             state.description = action.payload.description;
             state.categoryId = action.payload.categoryId;
             state.serviceId = action.payload.serviceId;
-            state.wage = action.payload.wage;
             state.totalAmount = action.payload.totalAmount;
             state.service = action.payload.service;
             state.category = action.payload.category;
@@ -73,6 +70,8 @@ const workDraft = createSlice({
             state.totalAmount = action.payload.totalAmount;
             state.platformFee = action.payload.PlatformFee;
             state.commission = action.payload.commission;
+            state.wage = action.payload.wage;
+            state.userId = action.payload.userId;
             console.log("WorkState :", state);
             return;
         }

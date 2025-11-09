@@ -1,6 +1,13 @@
 import mongoose from "mongoose";
 import { Document } from "mongoose";
 
+export interface ISelectedService {
+    serviceId: string
+    name: string
+    price: number
+    unit: "hour"
+}
+
 export interface IServices extends Document {
     serviceDescription?: string;
     serviceName?: string;
@@ -11,7 +18,6 @@ export interface IServices extends Document {
     categoryIcon?: string,
     name: string,
     description: string,
-    wage: string,
     image: string,
     isActive: boolean
 }

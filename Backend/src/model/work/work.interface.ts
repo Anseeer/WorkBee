@@ -16,7 +16,6 @@ export interface IWork extends Document {
     commission: string,
     totalAmount: string,
     location: ILocation,
-    workType: string,
     size: string,
     description: string,
     sheduleDate: string,

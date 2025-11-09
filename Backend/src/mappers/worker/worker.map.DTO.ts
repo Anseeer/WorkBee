@@ -9,7 +9,6 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
         email: worker.email || "",
         phone: worker.phone || "",
         role: worker.role || "",
-        workType: worker.workType || [],
         preferredSchedule: worker.preferredSchedule || [],
         isActive: worker.isActive ?? false,
         isVerified: worker.isVerified ?? false,
@@ -26,7 +25,12 @@ function mapWorkerToDTO(worker: IWorker): IWorkerDTO {
             }
             : { address: "", pincode: "", lat: 0, lng: 0 },
         services: Array.isArray(worker.services)
-            ? worker.services.map(s => s?.toString() || "")
+            ? worker.services.map(s => ({
+                serviceId: s.serviceId?.toString() || "",
+                name: s.name || "",
+                price: s.price || 0,
+                unit: s.unit || "hour"
+            }))
             : [],
         categories: Array.isArray(worker.categories)
             ? worker.categories.map(c => c?.toString() || "")
@@ -63,7 +67,6 @@ export function mapWorkerToEntity(worker: Partial<IWorker>): IWorkerEntity {
         phone: worker.phone ?? "",
         password: worker.password,
         role: worker.role ?? "Worker",
-        workType: worker.workType ?? [],
         preferredSchedule: worker.preferredSchedule ?? [],
         isActive: worker.isActive ?? true,
         isVerified: worker.isVerified ?? false,

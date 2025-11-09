@@ -71,7 +71,6 @@ const AddingServiceSection = ({ setAdded }: Props) => {
 
                 const payload = {
                     name: values.name,
-                    wage: values.wage,
                     category: values.category,
                     image: imageUrl,
                 };
@@ -114,26 +113,6 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                     />
                     {formik.touched.name && formik.errors.name && (
                         <span className="text-red-500 text-xs mt-1">{formik.errors.name}</span>
-                    )}
-                </div>
-
-                {/* Wage */}
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium mb-1">Wage</label>
-                    <input
-                        type="text"
-                        name="wage"
-                        value={formik.values.wage}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Enter wage"
-                        className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 w-full ${formik.touched.wage && formik.errors.wage
-                            ? "border-red-500 focus:ring-red-400"
-                            : "border-gray-300 focus:ring-green-400"
-                            }`}
-                    />
-                    {formik.touched.wage && formik.errors.wage && (
-                        <span className="text-red-500 text-xs mt-1">{formik.errors.wage}</span>
                     )}
                 </div>
 

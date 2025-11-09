@@ -5,7 +5,7 @@ import type { ICategory } from '../../types/ICategory';
 import { Edit, Trash2, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
-import type { IService } from '../../types/IServiceTypes';
+import type { IService } from '../../types/IService';
 import { deleteService, fetchCategory, fetchService, setIsActiveService, updateService } from '../../services/adminService';
 import AddingServiceSection from './ServiceAddingSection';
 import { uploadToCloud } from '../../utilities/uploadToCloud';
@@ -114,7 +114,6 @@ const ServiceManagment = () => {
         setExistingImageUrl(serv.image || null);
         formik.setValues({
             name: serv.name,
-            wage: serv.wage,
             category: serv.category,
             image: null,
         });
@@ -129,20 +128,17 @@ const ServiceManagment = () => {
         initialValues: {
             name: '',
             category: '',
-            wage: '',
             image: null as File | null,
         },
         enableReinitialize: true,
         validate: (values) => {
             const errors: {
                 name?: string;
-                wage?: string;
                 category?: string;
                 image?: string;
             } = {};
 
             if (!values.name) errors.name = "Service name is required";
-            if (!values.wage) errors.wage = "Wage is required";
             if (!values.category) errors.category = "Category is required";
 
             if (!values.image && !existingImageUrl) {
@@ -170,7 +166,6 @@ const ServiceManagment = () => {
 
                 await updateService(editData._id as string, {
                     name: values.name,
-                    wage: values.wage,
                     category: values.category,
                     image: imageUrl as string
                 });
@@ -192,7 +187,6 @@ const ServiceManagment = () => {
     const columns: Column<IService>[] = [
         { key: 'name', label: 'Name' },
         { key: 'categoryName', label: 'Category' },
-        { key: 'wage', label: 'Wage' },
         {
             key: 'image',
             label: 'Icon',
@@ -253,8 +247,8 @@ const ServiceManagment = () => {
                 totalPages={totalPage}
                 data={service}
                 columns={columns}
-                searchKeys={['name', 'description', 'wage']}
-                advancedFilterKeys={['name', 'categoryName', 'wage', 'isActive']}
+                searchKeys={['name', 'description']}
+                advancedFilterKeys={['name', 'categoryName', 'isActive']}
             />
 
             {isEditing && (
@@ -291,25 +285,6 @@ const ServiceManagment = () => {
                                 />
                                 {formik.touched.name && formik.errors.name && (
                                     <span className="text-red-500 text-xs">{formik.errors.name}</span>
-                                )}
-                            </div>
-
-                            {/* Wage */}
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Wage</label>
-                                <input
-                                    type="text"
-                                    name="wage"
-                                    value={formik.values.wage}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${formik.touched.wage && formik.errors.wage
-                                        ? "border-red-500 focus:ring-red-400"
-                                        : "border-gray-300 focus:ring-green-400"
-                                        }`}
-                                />
-                                {formik.touched.wage && formik.errors.wage && (
-                                    <span className="text-red-500 text-xs">{formik.errors.wage}</span>
                                 )}
                             </div>
 

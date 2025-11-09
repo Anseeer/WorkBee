@@ -110,12 +110,12 @@ export const setIsActiveService = async (serviceId: string) => {
     return response;
 };
 
-export const addService = async (service: { name: string; wage: string; category: string }) => {
+export const addService = async (service: { name: string; category: string }) => {
     const response = await axios.post(API_ROUTES.ADMIN_SERVICE.CREATE_SERVICE, service);
     return response;
 };
 
-export const updateService = async (serviceId: string, service: { name: string; wage: string; category: string; image: string }) => {
+export const updateService = async (serviceId: string, service: { name: string; category: string; image: string }) => {
     const response = await axios.post(`${API_ROUTES.ADMIN_SERVICE.UPDATE_SERVICE}?serviceId=${serviceId}`, service);
     return response;
 };

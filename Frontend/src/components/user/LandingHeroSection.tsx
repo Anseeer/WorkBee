@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import HeroImg from "../../assets/HeroImg.png";
 import { fetchServiceBySearchTerm } from "../../services/userService";
-import type { IService } from "../../types/IServiceTypes";
+import type { IService } from "../../types/IService";
 import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {

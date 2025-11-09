@@ -242,10 +242,6 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
                                     <span className="text-gray-900 text-xs sm:text-sm md:text-base break-words">{workDetails?.service}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600 font-medium text-xs sm:text-sm md:text-base">Work Type:</span>
-                                    <span className="text-gray-900 text-xs sm:text-sm md:text-base break-words">{workDetails?.workType}</span>
-                                </div>
-                                <div className="flex justify-between">
                                     <span className="text-gray-600 font-medium text-xs sm:text-sm md:text-base">Size:</span>
                                     <span className="text-gray-900 text-xs sm:text-sm md:text-base break-words">{workDetails?.size}</span>
                                 </div>

@@ -100,7 +100,6 @@ export const fetchWorkerService = async (serviceIds: string[]) => {
 export const fetchWorkerByWorkDetails = async (details: {
   categoryId: string;
   serviceId: string;
-  workType: string;
   location: {
     lat: number;
     lng: number;

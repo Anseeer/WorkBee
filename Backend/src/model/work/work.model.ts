@@ -64,10 +64,6 @@ const workSchema = new Schema<IWork>({
         lat: { type: Number, required: true },
         lng: { type: Number, required: true }
     },
-    workType: {
-        type: String,
-        required: true
-    },
     size: {
         type: String,
         required: true

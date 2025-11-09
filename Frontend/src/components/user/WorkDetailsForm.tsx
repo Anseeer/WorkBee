@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { workDetails } from '../../slice/workDraftSlice';
 import { fetchCategoryById, fetchServiceById, } from '../../services/userService';
-import type { IService } from '../../types/IServiceTypes';
+import type { IService } from '../../types/IService';
 import type { ICategory } from '../../types/ICategory';
 import { toast } from 'react-toastify';
 
@@ -17,13 +17,11 @@ interface WorkFormValues {
         lng: number;
     };
     taskSize: string;
-    workType: string;
     description: string;
     categoryId: string | null;
     serviceId: string | null;
     service: string | null;
     category: string | null;
-    wage: string;
 }
 
 interface Prop {
@@ -50,13 +48,11 @@ const WorkDetailForm = ({ setStep }: Prop) => {
             lng: 0,
         },
         taskSize: '',
-        workType: 'one-time',
         description: '',
         categoryId,
         serviceId,
         service: service?.name as string,
         category: category?.name as string,
-        wage: service?.wage as string,
     };
 
     useEffect(() => {
@@ -96,9 +92,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
             if (!values.taskSize) {
                 errors.taskSize = 'Please select task size';
             }
-            if (!values.workType) {
-                errors.workType = 'Please select workType';
-            }
+
             if (!values.description) {
                 errors.description = 'Please provide description';
             }
@@ -315,7 +309,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                         Work Options
                     </h2>
 
-                    {activeStep === 2 || formik.errors.taskSize || formik.errors.workType ? (
+                    {activeStep === 2 || formik.errors.taskSize ? (
                         <div className="animate-fadeInUp">
                             <div className="mb-6">
                                 <h3 className="font-semibold mb-4 text-gray-900">

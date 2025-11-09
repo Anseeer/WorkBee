@@ -160,7 +160,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 bio: workerData.bio,
                 profileImage: workerData.profileImage,
                 radius: workerData.radius,
-                workType: workerData.workType,
                 preferredSchedule: workerData.preferredSchedule,
                 location: workerData.location,
                 govId: workerData.govId,
@@ -184,7 +183,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
     async search(searchTerms: Partial<IWork>): Promise<IWorker[]> {
         try {
             const query: FilterQuery<IWorker> = {
-                workType: { $in: searchTerms.workType },
                 isAccountBuilt: true,
                 subscription: { $ne: null },
                 isActive: true,
@@ -201,14 +199,13 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             }
 
             if (searchTerms.serviceId) {
-                const serviceId =
-                    typeof searchTerms.serviceId === "string"
-                        ? new Types.ObjectId(searchTerms.serviceId)
-                        : searchTerms.serviceId;
+            const serviceId =
+                typeof searchTerms.serviceId === "string"
+                    ? searchTerms.serviceId
+                     : String(searchTerms.serviceId);
 
-                query.services = { $in: [serviceId] };
-            }
-
+            query["services.serviceId"] = serviceId;
+        }
 
             const workers = await this.model.find(query);
 

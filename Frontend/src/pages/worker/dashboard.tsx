@@ -172,7 +172,7 @@ const Dashboard = () => {
                         ) : activeTab === "history" ? (
                             <WorkHistory />
                         ) : activeTab === "wallet" ? (
-                            <div className="border-2 rounded-xl p-2 bg-gray-50 m-10 border-green-700 h-full">
+                            <div className="border-2 rounded-xl p-2 m-10 border-green-700 h-full">
                                 <Wallet
                                     workerId={workerData.worker?._id as string}
                                     historyPrev={wallet?.transactions}

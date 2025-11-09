@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchCategory } from "../../services/adminService";
 import type { ICategory } from "../../types/ICategory";
 import { getServiceByCategory } from "../../services/workerService";
-import type { IService } from "../../types/IServiceTypes";
+import type { IService } from "../../types/IService";
 import { useNavigate } from "react-router-dom";
 
 const backgroundMap: Record<string, string> = {

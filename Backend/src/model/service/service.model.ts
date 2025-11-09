@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { IServices } from "./service.interface";
 
+
 export const serviceSchema = new Schema<IServices>({
     category: {
         type: mongoose.Schema.Types.ObjectId,
@@ -14,10 +15,6 @@ export const serviceSchema = new Schema<IServices>({
     description: {
         type: String,
         required: false
-    },
-    wage: {
-        type: String,
-        required: true
     },
     image: {
         type: String,

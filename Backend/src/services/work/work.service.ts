@@ -459,7 +459,6 @@ export class WorkService implements IWorkService {
                 name: serv.serviceName as string,
                 description: serv.serviceDescription || "",
                 image: serv.image,
-                wage: serv.wage.toString(),
                 isActive: true,
             }));
 

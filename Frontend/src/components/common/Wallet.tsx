@@ -66,7 +66,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
         </div>
 
         {/* Transactions */}
-        <div className="bg-gray-50 rounded-lg p-2 sm:p-3 md:p-4 mt-4 sm:mt-6 animate-fadeInUp">
+        <div className="rounded-lg p-2 sm:p-3 md:p-4 mt-4 sm:mt-6 animate-fadeInUp">
           <div className="text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">Recent Transactions</div>
           {history.length > 0 ? (
             <div className="border rounded flex flex-col h-auto min-h-[200px] sm:h-[230px] animate-fadeInUp">
@@ -108,7 +108,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   disabled={currentPage === 1}
-                  className={`px-1 sm:px-2 py-0.5 sm:py-1 rounded ${currentPage === 1 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-green-900 text-white hover:bg-green-600"}`}
+                  className={`px-1 sm:px-2 py-0.5 sm:py-1 rounded ${currentPage === 1 ? "text-gray-500 cursor-not-allowed" : "bg-green-900 text-white hover:bg-green-600"}`}
                 >
                   Prev
                 </button>
@@ -116,7 +116,7 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className={`px-1 sm:px-2 py-0.5 sm:py-1 rounded ${currentPage === totalPages ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-green-900 text-white hover:bg-green-600"}`}
+                  className={`px-1 sm:px-2 py-0.5 sm:py-1 rounded ${currentPage === totalPages ? "text-gray-500 cursor-not-allowed" : "bg-green-900 text-white hover:bg-green-600"}`}
                 >
                   Next
                 </button>

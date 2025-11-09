@@ -33,11 +33,14 @@ const workerSchema = new Schema<IWorker>({
         type: String,
         required: false
     },
-    services: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Services',
-        required: false
-    },
+    services: [
+        {
+            serviceId: { type: mongoose.Schema.Types.ObjectId, ref: "Services", required: true },
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+            unit: { type: String, enum: ["hour"], default: "hour" }
+        }
+    ],
     bio: {
         type: String,
         required: false
@@ -49,11 +52,6 @@ const workerSchema = new Schema<IWorker>({
     },
     radius: {
         type: Number,
-        required: false
-    },
-    workType: {
-        type: [String],
-        enum: ['one-time', 'weekly', 'monthly', 'long-term'],
         required: false
     },
     preferredSchedule: {

@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { ISelectedService } from "../../model/service/service.interface";
 
 export interface IWorkerDTO {
     id: Types.ObjectId | string;
@@ -7,7 +8,6 @@ export interface IWorkerDTO {
     email: string;
     phone: string;
     role: string;
-    workType: string[];
     preferredSchedule: string[];
     isActive: boolean;
     isVerified: boolean;
@@ -21,7 +21,7 @@ export interface IWorkerDTO {
         lat: number;
         lng: number;
     };
-    services: string[];
+    services: ISelectedService[];
     categories: string[];
     age: number;
     bio: string;
@@ -48,7 +48,6 @@ export interface IWorkerEntity {
     phone: string;
     password?: string;
     role: string;
-    workType: string[];
     preferredSchedule: string[];
     isActive: boolean;
     isVerified: boolean;
@@ -62,7 +61,7 @@ export interface IWorkerEntity {
         lat: number;
         lng: number;
     };
-    services: Types.ObjectId[];
+    services: ISelectedService[];
     categories: Types.ObjectId[];
     age: number;
     bio: string;

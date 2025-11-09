@@ -20,8 +20,10 @@ interface FilterState {
 
 const WorkerListing = () => {
     const workDetails = useSelector((state: RootState) => state?.work);
-    const userDetails = useSelector((state: RootState) => state?.user.user);
+    console.log("WorkDetails :", workDetails)
+    const userDetails = useSelector((state: RootState) => state?.user?.user);
     const [workers, setWorkers] = useState<IWorker[]>([]);
+    const [price, setPrice] = useState('');
     const [filteredWorkers, setFilteredWorkers] = useState<IWorker[]>([]);
     const [availability, setAvailability] = useState<IAvailability | null>(null);
     const dispatch = useAppDispatch();
@@ -52,7 +54,6 @@ const WorkerListing = () => {
             const fetchDetails = {
                 categoryId: workDetails.categoryId,
                 serviceId: workDetails.serviceId,
-                workType: workDetails.workType,
                 location: {
                     lat: workDetails.location.lat,
                     lng: workDetails.location.lng,
@@ -92,8 +93,9 @@ const WorkerListing = () => {
         }));
     };
 
-    const handleSelectWorker = async (worker: IWorker) => {
+    const handleSelectWorker = async (worker: IWorker, price: string) => {
         setSelectedWorker(worker);
+        setPrice(price);
         setIsModalOpen(true);
         const availabilityResponse = await fetchAvailability(worker.id);
         console.log(availabilityResponse.data.data.availableDates)
@@ -125,7 +127,9 @@ const WorkerListing = () => {
                 commission: commissionAmount,
                 workerId: selectedWorker?.id,
                 workerName: selectedWorker?.name,
-                userName: userDetails?.name
+                userName: userDetails?.name,
+                wage: price,
+                userId: userDetails?.id
             }));
 
             console.log("Actual API Response:", res);
@@ -138,6 +142,9 @@ const WorkerListing = () => {
         }
     };
 
+    const getWorkerServicePrice = (worker: IWorker, serviceId: string) => {
+        return worker.services.find(s => s.serviceId === serviceId)?.price ?? null;
+    };
 
     const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -171,69 +178,83 @@ const WorkerListing = () => {
                 <div className="flex-1 animate-fadeInUp">
                     <div className="max-w-full space-y-4">
                         {paginatedWorkers.length > 0 ? (
-                            paginatedWorkers.map((worker, index) => (
-                                <div
-                                    key={worker.id}
-                                    className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6 animate-fadeInUp"
-                                    style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "backwards" }}
-                                >
-                                    <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                            paginatedWorkers.map((worker, index) => {
+                                const price = getWorkerServicePrice(worker, workDetails.serviceId);
 
-                                        {/* Profile Image + Button */}
-                                        <div className="flex flex-col items-center flex-shrink-0 animate-zoomIn">
-                                            <img
-                                                src={worker.profileImage as string}
-                                                className="w-20 h-20 bg-gray-300 rounded-full object-cover"
-                                                alt={worker.name}
-                                            />
-                                            <button
-                                                onClick={() => handleSelectWorker(worker)}
-                                                className="bg-green-800 mt-3 text-white px-4 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition-colors animate-scaleIn"
-                                            >
-                                                Select
-                                            </button>
-                                        </div>
+                                return (
+                                    <div
+                                        key={worker.id}
+                                        className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6 animate-fadeInUp"
+                                        style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "backwards" }}
+                                    >
+                                        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
 
-                                        {/* Worker Details */}
-                                        <div className="flex-1 animate-fadeInUp">
-                                            <h3 className="text-lg font-semibold text-gray-900">{worker.name}</h3>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-xs text-gray-600">Rating:</span>
-                                                <StarRatingDisplay rating={worker.ratings.average || 0} />
-                                                <span className="text-xs text-gray-600">
-                                                    ({worker.ratings.average.toFixed(1)}/5)
-                                                </span>
+                                            {/* Profile Image + Button */}
+                                            <div className="flex flex-col items-center flex-shrink-0 animate-zoomIn">
+                                                <img
+                                                    src={worker.profileImage as string}
+                                                    className="w-20 h-20 bg-gray-300 rounded-full object-cover"
+                                                    alt={worker.name}
+                                                />
+                                                <button
+                                                    onClick={() => handleSelectWorker(worker, price?.toString() as string)}
+                                                    className="bg-green-800 mt-3 text-white px-4 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition-colors animate-scaleIn"
+                                                >
+                                                    Select
+                                                </button>
                                             </div>
 
-                                            {/* Info Row */}
-                                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2 animate-fadeInUp">
-                                                <div className="flex items-center space-x-1">
-                                                    <MapPin className="w-3 h-3" />
-                                                    <span>{worker.location.address}</span>
-                                                </div>
-                                                <div className="flex items-center space-x-1">
-                                                    <User className="w-3 h-3" />
-                                                    <span>{worker.age} years old</span>
-                                                </div>
-                                                <div className="flex items-center space-x-1">
-                                                    <CheckCircle className="w-3 h-3 text-green-600" />
-                                                    <span>{worker.completedWorks ?? 0} completed works</span>
-                                                </div>
-                                            </div>
+                                            {/* Worker Details */}
+                                            <div className="flex-1 animate-fadeInUp">
 
-                                            {/* Bio */}
-                                            <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3 animate-fadeInScale">
-                                                <p className="text-sm font-medium text-gray-900 mb-1">
-                                                    How Can I Help:
-                                                </p>
-                                                <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                                                    {worker.bio}
-                                                </p>
+                                                {/* Name + Price */}
+                                                <div className="flex justify-between items-center w-full">
+                                                    <h3 className="text-lg font-semibold text-gray-900">{worker.name}</h3>
+
+                                                    <h3 className="text-lg font-semibold text-green-700">
+                                                        {price !== null ? `₹${price}/hour` : "N/A"}
+                                                    </h3>
+                                                </div>
+
+                                                {/* Rating */}
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="text-xs text-gray-600">Rating:</span>
+                                                    <StarRatingDisplay rating={worker.ratings.average || 0} />
+                                                    <span className="text-xs text-gray-600">
+                                                        ({worker.ratings.average.toFixed(1)}/5)
+                                                    </span>
+                                                </div>
+
+                                                {/* Info Row */}
+                                                <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 mt-2 animate-fadeInUp">
+                                                    <div className="flex items-center space-x-1">
+                                                        <MapPin className="w-3 h-3" />
+                                                        <span>{worker.location.address}</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-1">
+                                                        <User className="w-3 h-3" />
+                                                        <span>{worker.age} years old</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-1">
+                                                        <CheckCircle className="w-3 h-3 text-green-600" />
+                                                        <span>{worker.completedWorks ?? 0} completed works</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Bio */}
+                                                <div className="border-2 border-gray-300 rounded-2xl p-4 mt-3 animate-fadeInScale">
+                                                    <p className="text-sm font-medium text-gray-900 mb-1">
+                                                        How Can I Help:
+                                                    </p>
+                                                    <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                                                        {worker.bio}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <p className="text-gray-500 text-center py-10 animate-fadeInDown">
                                 No workers found matching your criteria.
@@ -278,6 +299,7 @@ const WorkerListing = () => {
                 <div className="animate-zoomIn">
                     <WorkerAvailabilityModal
                         work={workDetails}
+                        price={price}
                         worker={selectedWorker}
                         availability={availability as IAvailability}
                         onClose={Close}
