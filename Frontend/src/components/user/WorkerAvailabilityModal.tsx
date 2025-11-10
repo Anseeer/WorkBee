@@ -18,7 +18,7 @@ interface WorkerModalProps {
     price:string;
     availability: IAvailability;
     onClose: () => void;
-    onConfirm: (date: string, slot: string, totalAmount: string, PlatformFee: string, commissionAmount: string) => void;
+    onConfirm: (date: string, slot: string, PlatformFee: string, commissionAmount: string) => void;
 }
 
 type AvailableSlot = {
@@ -47,7 +47,6 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
 
     const wage = Number(price) || 0;
     const PlatformFee = wage * 0.05;
-    const totalAmount = wage + wage * 0.05;
     const commissionPercentage = Number(worker.subscription?.commission) || 0;
     const commissionAmount = (wage * commissionPercentage) / 100;
 
@@ -310,7 +309,7 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                                         </div>
 
                                         <div className="flex justify-between">
-                                            <span>Price:</span>
+                                            <span>Wage Per-Hour:</span>
                                             <span className="font-semibold">₹{wage.toFixed(2)}</span>
                                         </div>
 
@@ -319,10 +318,6 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                                             <span className="font-semibold">₹{PlatformFee.toFixed(2)}</span>
                                         </div>
 
-
-                                        <div className="pt-2 border-t border-blue-200">
-                                            <strong>Total amount: ₹{totalAmount.toFixed(2)}</strong>
-                                        </div>
                                     </div>
 
                                 </div>
@@ -343,7 +338,7 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                             onClick={() =>
                                 selectedDate &&
                                 selectedSlot &&
-                                onConfirm(selectedDate, selectedSlot, totalAmount.toString(), PlatformFee.toString(), commissionAmount.toString())
+                                onConfirm(selectedDate, selectedSlot, PlatformFee.toString(), commissionAmount.toString())
                             }
                             disabled={isConfirmDisabled}
                             className={`

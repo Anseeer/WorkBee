@@ -14,7 +14,7 @@ export const initialState: IWork = {
     service: "",
     workerName: "",
     userName: "",
-    wage: "",
+    wagePerHour: "",
     location: {
         address: "",
         pincode: "",
@@ -24,6 +24,7 @@ export const initialState: IWork = {
     platformFee: "",
     commission: "",
     totalAmount: "",
+    totalHours: "",
     size: "",
     description: "",
     sheduleDate: "",
@@ -70,7 +71,7 @@ const workDraft = createSlice({
             state.totalAmount = action.payload.totalAmount;
             state.platformFee = action.payload.PlatformFee;
             state.commission = action.payload.commission;
-            state.wage = action.payload.wage;
+            state.wagePerHour = action.payload.wagePerHour;
             state.userId = action.payload.userId;
             console.log("WorkState :", state);
             return;

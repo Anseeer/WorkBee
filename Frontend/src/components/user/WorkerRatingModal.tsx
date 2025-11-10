@@ -39,8 +39,8 @@ export const WorkerRatingModal = ({ onClose, workId }: props) => {
     }, [workId])
 
     return (
-        <div className="fixed inset-0 bg-transparent bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+        <div className="fixed inset-0  bg-transparent bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white border-2 border-green-600 rounded-lg p-6 w-full max-w-md relative">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
@@ -100,7 +100,7 @@ export const WorkerRatingModal = ({ onClose, workId }: props) => {
                 {/* Submit Button */}
                 <div className="flex justify-end">
                     <button
-                        className={`bg-blue-500 text-white px-4 py-2 rounded transition ${rating < 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+                        className={`bg-green-600 cursor-pointer text-white px-4 py-2 rounded transition ${rating < 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
                             }`}
                         onClick={handleSubmit}
                         disabled={rating < 1}

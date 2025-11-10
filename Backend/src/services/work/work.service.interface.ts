@@ -11,11 +11,11 @@ export interface IWorkService {
     fetchWorkHistoryByWorker(workerId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorkHistory: IWorkDTO[], totalPage: number }>;
     cancel(workId: string, userId: string): Promise<boolean>;
     accept(workId: string): Promise<boolean>;
-    completed(workId: string, workerId: string): Promise<boolean>;
+    completed(workId: string, workerId: string, hoursWorked: string): Promise<boolean>;
     getAllWorks(currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPage: number }>;
     getAssignedWorks(workerId: string): Promise<IWorkDTO[] | undefined>;
     getRequestedWorks(workerId: string): Promise<IWorkDTO[] | undefined>;
     getTopThree(): Promise<TopThreeResultDTO[] | undefined>;
-    updatePaymentStatus(workId: string, status: string): Promise<void>;
+    updatePaymentStatus(workId: string, status: string, totalAmount: string): Promise<void>;
     getTopServices(limit: number): Promise<IServiceDTO[]>;
 } 

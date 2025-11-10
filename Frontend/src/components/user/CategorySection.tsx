@@ -203,7 +203,7 @@ const CategorySection: React.FC = () => {
                         <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
                             {services.map((service, index) => (
                                 <button
-                                    key={service.id}
+                                    key={service._id}
                                     onClick={() => {
                                         setSelectedService(service.name.toLowerCase());
                                         HandleSelectedService(service);

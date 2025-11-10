@@ -7,18 +7,30 @@ import type { RootState } from "../../Store";
 interface Props {
     onClose: () => void;
     setRatingModal: (arg: boolean) => void;
-    Amount: number;
-    platFromFee: number;
+    wagePerHour: number;
+    hoursWorked: number;
+    platformFee: number;
     workId: string;
 }
 
-const PaymentModal = ({ onClose, Amount, workId, platFromFee, setRatingModal }: Props) => {
+const PaymentModal = ({
+    onClose,
+    wagePerHour,
+    hoursWorked,
+    platformFee,
+    workId,
+    setRatingModal
+}: Props) => {
 
     const wallet = useSelector((state: RootState) => state.user.wallet);
 
+    // Calculations
+    const subtotal = wagePerHour * hoursWorked;
+    const totalAmount = subtotal + platformFee;
+
     const handlePayment = async (amount: number) => {
         try {
-            const { data } = await axios.post("rzp/create-order", { amount, workId, platFromFee });
+            const { data } = await axios.post("rzp/create-order", { amount, workId, platformFee });
             console.log("Data :", data)
 
             const script = document.createElement("script");
@@ -66,95 +78,84 @@ const PaymentModal = ({ onClose, Amount, workId, platFromFee, setRatingModal }: 
 
     const formik = useFormik({
         initialValues: {
-            amount: Amount,
+            amount: totalAmount
         },
         validate: (values) => {
-            const errors: { amount?: string } = {};
-            if (!values.amount) {
-                errors.amount = "Amount is required";
-            } else if (values.amount < Amount) {
-                errors.amount = `Amount should be equal to ₹${Amount}`;
-            } else if (values.amount > Amount) {
-                errors.amount = `Amount should be equal to ₹${Amount}`;
-            } else if (Amount > (wallet?.balance ?? 0)) {
-                errors.amount = `Insufficient balance. Your wallet balance is ₹${wallet?.balance ?? 0}`;
+            const errors: any = {};
+
+            if (values.amount !== totalAmount) {
+                errors.amount = `Amount should be ₹${totalAmount}`;
             }
+
+            if (totalAmount > (wallet?.balance ?? 0)) {
+                errors.amount = `Insufficient balance. Wallet balance: ₹${wallet?.balance ?? 0}`;
+            }
+
             return errors;
         },
         onSubmit: (values) => {
             handlePayment(values.amount);
-        },
+        }
     });
 
     return (
-        <div className="fixed inset-0 bg-transparent bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+        <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-3">
             <form
                 onSubmit={formik.handleSubmit}
-                className="bg-white border-2 border-green-700 rounded-lg shadow-lg p-4 sm:p-5 md:p-6 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] relative animate-fadeIn"
+                className="bg-white border-2 border-green-700 rounded-lg shadow-lg p-5 w-full max-w-sm relative"
             >
-                {/* Close Icon */}
                 <button
                     type="button"
                     onClick={onClose}
-                    className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 text-gray-500 hover:text-gray-700"
-                    aria-label="Close payment modal"
+                    className="absolute top-3 right-3 text-gray-500 hover:text-red-700"
                 >
-                    <svg
-                        className="w-4 h-4 sm:w-5 sm:h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
+                    ✕
                 </button>
 
-                {/* Title */}
-                <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-1 sm:mb-2 text-center">
+                <h2 className="text-lg font-semibold text-center mb-1">
                     Complete Your Payment
                 </h2>
 
-                {/* Comfort Message */}
-                <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 text-center break-words">
-                    Please enter the amount based on the service. We ensure your payment is safe & secure.
+                <p className="text-xs text-gray-600 text-center mb-3">
+                    Review your service summary before you pay.
                 </p>
 
-                {/* Amount Field */}
-                <div className="flex flex-col items-center mb-3 sm:mb-4">
+                <div className="bg-gray-50 rounded-lg border p-4 mb-4 text-sm space-y-2">
+                    <div className="flex justify-between">
+                        <span>Wage Per Hour</span>
+                        <span className="font-semibold">₹{wagePerHour}</span>
+                    </div>
 
-                    <p
-                        id="amount"
-                        className={`text-center w-full border rounded px-3 py-2 text-sm sm:text-base font-semibold ${formik.touched.amount && formik.errors.amount
-                            ? "border-red-500 text-red-600"
-                            : "border-gray-300 text-gray-800"
-                            }`}
-                    >
-                        ₹ {Amount}
-                    </p>
+                    <div className="flex justify-between">
+                        <span>Hours Worked</span>
+                        <span className="font-semibold">{hoursWorked} hrs</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                        <span>Subtotal</span>
+                        <span className="font-semibold">₹{subtotal}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                        <span>Platform Fee</span>
+                        <span className="font-semibold text-blue-700">+ ₹{platformFee}</span>
+                    </div>
+
+                    <hr />
+
+                    <div className="flex justify-between text-base">
+                        <span className="font-semibold">Total Amount</span>
+                        <span className="font-bold text-green-700">₹{totalAmount}</span>
+                    </div>
                 </div>
 
-                {/* Error Message */}
-                {formik.touched.amount && formik.errors.amount && (
-                    <p className="text-red-500 text-xs sm:text-sm mb-3 sm:mb-4 text-center break-words">
-                        {formik.errors.amount}
-                    </p>
-                )}
-
-                {/* Pay Button */}
-                <div className="flex justify-center">
-                    <button
-                        type="submit"
-                        className="px-5 sm:px-6 py-2 text-sm sm:text-base rounded bg-green-700 text-white hover:bg-green-600 transition-all duration-300 w-full sm:w-auto"
-                    >
-                        Pay Now
-                    </button>
-                </div>
+                <button
+                    type="submit"
+                    className="w-full py-2 bg-green-700 text-white rounded-md font-medium hover:bg-green-600"
+                >
+                    Pay Now
+                </button>
+                {<span className="font-semibold align-center text-red-800">{formik.errors.amount}</span>}
             </form>
         </div>
     );

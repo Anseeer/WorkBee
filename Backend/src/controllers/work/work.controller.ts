@@ -93,14 +93,14 @@ export class WorkController implements IWorkController {
 
     completedWork = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workId, workerId } = req.query;
+            const { workId, workerId, hoursWorked } = req.query;
             if (!workId) {
                 throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             } else if (!workerId) {
                 throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET)
             }
 
-            const result = await this._workService.completed(workId as string, workerId as string);
+            const result = await this._workService.completed(workId as string, workerId as string, hoursWorked as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_COMPLETED_SUCCESS, result);
             logger.info(response);
             res.status(response.status).json(response);

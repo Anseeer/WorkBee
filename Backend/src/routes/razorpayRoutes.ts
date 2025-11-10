@@ -28,8 +28,9 @@ const notificationService = container.get<INotificationService>(TYPES.notificati
 
 router.post("/create-order", async (req: Request, res: Response) => {
     try {
-        const { amount, workId, platFromFee } = req.body;
-        const wage = amount - platFromFee;
+        const { amount, workId, platformFee } = req.body;
+        console.log("Body :", req.body)
+        const wage = amount - platformFee;
 
         const options = {
             amount: amount * 100,
@@ -50,7 +51,7 @@ router.post("/create-order", async (req: Request, res: Response) => {
                 userId: work.userId,
                 workerId: work.workerId,
                 amount: wage,
-                platformFee: platFromFee,
+                platformFee: platformFee,
                 transactionId: order.id,
                 status: "Pending"
             });
@@ -101,8 +102,8 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         if (!work) {
             throw new Error("Work not found");
         }
-
-        await workService.updatePaymentStatus(workId, "Completed");
+        const totalAmount = payment?.amount + payment.platformFee;
+        await workService.updatePaymentStatus(workId, "Completed", totalAmount.toString());
 
         const updatedPayment = {
             status: "Paid",
@@ -184,7 +185,7 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
             actorModel: "User",
             type: "job_paid",
             title: work.service,
-            body: `The payment of ${work.wage} has been completed by ${work.workerName}.
+            body: `The payment of ₹${work.totalAmount} has been completed by ${work.workerName}.
                     Job description: ${work.description}`,
             read: false,
         };

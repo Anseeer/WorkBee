@@ -160,7 +160,14 @@ const Dashboard: React.FC = () => {
               <option value="yearly">Yearly</option>
             </select>
           </div>
-          <EarningsChart filter={filter} rawData={earnings} />
+
+          {(!earnings || earnings.length === 0) ? (
+            <div className="flex items-center justify-center h-48 text-gray-500 text-sm font-medium">
+              No earnings available.
+            </div>
+          ) : (
+            <EarningsChart filter={filter} rawData={earnings} />
+          )}
         </div>
 
         {/* Wallet Section */}

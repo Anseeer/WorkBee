@@ -27,8 +27,9 @@ const ProfileSection = () => {
     const [isWorkerRatingModal, setWorkerRatingModal] = useState(false);
     const [isAddMoneyModal, setAddMoneyModal] = useState(false);
     const [isWorkInfoModal, setWorkInfoModal] = useState(false);
-    const [amount, setAmount] = useState<number | null>(null);
-    const [platFromFee, setPlatFromFeet] = useState<number | null>(null);
+    const [wagePerHour, setWagePerHour] = useState<number | null>(null);
+    const [totalHours, setTotalHours] = useState<number | null>(null);
+    const [platFromFee, setPlatFromFee] = useState<number | null>(null);
     const [workId, setWorkId] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
@@ -37,6 +38,7 @@ const ProfileSection = () => {
     const wallet = useSelector((state: RootState) => state.user?.wallet);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
+
     console.log("User :", user);
     useEffect(() => {
         if (user?.profileImage) {
@@ -111,10 +113,11 @@ const ProfileSection = () => {
         setWorkInfoModal(true)
     }
 
-    const HandlePay = (workId: string, wage: number | string, platFromFee: number | string) => {
+    const HandlePay = (workId: string, wagePerHour: number | string, totalHours: string, platFromFee: number | string) => {
         setIsPaymentModal(true);
-        setAmount(Number(wage));
-        setPlatFromFeet(Number(platFromFee));
+        setWagePerHour(Number(wagePerHour));
+        setPlatFromFee(Number(platFromFee));
+        setTotalHours(Number(totalHours));
         setWorkId(workId);
     }
 
@@ -275,10 +278,10 @@ const ProfileSection = () => {
                                                 {work.status || "Pending"}
                                             </span>
                                         </div>
-                                        <div className="hidden md:block text-xs sm:text-sm break-words">{work.totalAmount || "InitialPayment"}</div>
+                                        <div className="hidden md:block text-xs sm:text-sm break-words">₹{work.totalAmount || work.wagePerHour + "/hr" || "InitialPayment"}</div>
                                         {work.status === "Completed" && work.paymentStatus === "Pending" ? (
                                             <button
-                                                onClick={() => HandlePay(work._id as string, work.totalAmount, work.platformFee)}
+                                                onClick={() => HandlePay(work._id as string, work.wagePerHour, work.totalHours, work.platformFee)}
                                                 className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded bg-orange-100 hover:bg-orange-500 hover:rounded-full cursor-pointer font-semibold transition-all duration-300 border border-gray-300 animate-fadeInUp"
                                             >
                                                 Pay
@@ -337,7 +340,7 @@ const ProfileSection = () => {
                         <Wallet historyPrev={wallet?.transactions} workerId={userId as string} reload={reloadWallet} balancePrev={wallet?.balance} />
                     ) : null}
                     {isPaymentModal ? (
-                        <PaymentModal setRatingModal={setWorkerRatingModal} platFromFee={platFromFee as number} Amount={amount as number} workId={workId as string} onClose={closeModal} />
+                        <PaymentModal setRatingModal={setWorkerRatingModal} platformFee={platFromFee as number} wagePerHour={wagePerHour as number} hoursWorked={totalHours as number} workId={workId as string} onClose={closeModal} />
                     ) : isAddMoneyModal ? (
                         <AddMoneyModal userId={userId as string} onClose={closeAddMoneyModal} />
                     ) : isWorkerRatingModal ? (

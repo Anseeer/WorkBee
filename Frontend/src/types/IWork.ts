@@ -10,9 +10,10 @@ export interface IWork {
     service: string,
     workerName: string,
     userName: string,
-    wage: string,
+    wagePerHour: string,
     platformFee: string,
     commission: string,
+    totalHours: string,
     totalAmount: string,
     location: {
         address: string,

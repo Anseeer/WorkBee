@@ -314,12 +314,13 @@ export class WorkService implements IWorkService {
         }
     };
 
-    completed = async (workId: string, workerId: string): Promise<boolean> => {
+    completed = async (workId: string, workerId: string, hoursWorked: string): Promise<boolean> => {
         try {
             const io = getIO()
 
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             if (!workerId) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+            if (!hoursWorked) throw new Error(WORK_MESSAGE.WORK_DETAILS_GET_FAILD);
 
             const worker = await this._workerRepositoy.findWorkerById(workerId);
             if (!worker) throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
@@ -347,7 +348,7 @@ export class WorkService implements IWorkService {
             if (!newNotification) throw new Error("Failed to create notification");
             io.to(work.userId.toString()).emit("new-notification", newNotification);
 
-            return await this._workRepositoy.setIsWorkCompleted(workId);
+            return await this._workRepositoy.setIsWorkCompleted(workId, hoursWorked);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
@@ -437,9 +438,9 @@ export class WorkService implements IWorkService {
         }
     }
 
-    updatePaymentStatus = async (workId: string, status: string): Promise<void> => {
+    updatePaymentStatus = async (workId: string, status: string, totalAmount: string): Promise<void> => {
         try {
-            await this._workRepositoy.updatePaymentStatus(workId, status);
+            await this._workRepositoy.updatePaymentStatus(workId, status, totalAmount);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);

@@ -35,7 +35,7 @@ const WorkHistory = () => {
         { key: 'location', label: 'Location', render: (u) => u.location?.address.split(' ').slice(0, 2).join(" ") ?? '-' },
         { key: 'sheduleDate', label: 'Date', render: (u) => new Date(u.sheduleDate).toLocaleDateString() },
         { key: 'sheduleTime', label: 'Sheduled' },
-        { key: 'wage', label: 'Wage', render: (u) => "₹" + u.wage },
+        { key: 'wagePerHour', label: 'Wage Per-Hour', render: (u) => "₹" + u.wagePerHour },
         { key: 'status', label: 'Status', render: (u) => <StatusBadge status={u.status} /> },
         {
             key: 'status',
@@ -71,8 +71,8 @@ const WorkHistory = () => {
                         }))}
                         itemsPerPage={6}
                         columns={columns}
-                        searchKeys={['userName', 'service', 'description', 'wage', 'workType', 'size', 'location', 'sheduleDate', 'sheduleTime', 'status']}
-                        advancedFilterKeys={['service', 'location', 'sheduleDate', 'sheduleTime', 'wage', 'status']}
+                        searchKeys={['userName', 'service', 'description', 'wagePerHour', 'size', 'location', 'sheduleDate', 'sheduleTime', 'status']}
+                        advancedFilterKeys={['service', 'location', 'sheduleDate', 'sheduleTime', 'wagePerHour', 'status']}
                     />
                 </div>
             )}

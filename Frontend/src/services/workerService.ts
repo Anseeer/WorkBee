@@ -133,9 +133,9 @@ export const acceptWork = async (workId: string) => {
   return response.data.data;
 };
 
-export const isCompletWork = async (workId: string, workerId: string) => {
+export const isCompletWork = async (workId: string, workerId: string, hoursWorked: string) => {
   const response = await axios.patch(
-    `${API_ROUTES.WORKER_SERVICE.COMPLETE_WORK}?workId=${workId}&workerId=${workerId}`
+    `${API_ROUTES.WORKER_SERVICE.COMPLETE_WORK}?workId=${workId}&workerId=${workerId}&hoursWorked=${hoursWorked}`
   );
   return response.data.data;
 };

@@ -143,7 +143,7 @@ const HomeHeroSection = () => {
                     services?.slice(0, visibleCount).map((service, index) => (
                         <button
                             onClick={() => HandleSelectedService(service)}
-                            key={service.id}
+                            key={service._id}
                             className="text-black text-sm sm:text-base px-3 sm:px-4 py-1 rounded-full font-medium shadow bg-white border-2 border-gray-300 hover:border-green-600 hover:text-green-600 transition break-words text-center opacity-0 animate-fadeInUp"
                             style={{
                                 animationDelay: `${index * 80}ms`,

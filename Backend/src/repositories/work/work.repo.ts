@@ -81,7 +81,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
-    async setIsWorkCompleted(workId: string): Promise<boolean> {
+    async setIsWorkCompleted(workId: string, hoursWorked: string): Promise<boolean> {
         try {
             const work = await this.model.findById(workId);
             if (!work) {
@@ -95,6 +95,16 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
             work.isCompleted = true;
             work.status = "Completed";
             work.paymentStatus = "Pending";
+            work.totalHours = hoursWorked;
+            if (work.wagePerHour != null && work.platformFee != null) {
+                const wage = Number(work.wagePerHour);
+                const hours = Number(hoursWorked);
+                const fee = Number(work.platformFee);
+
+                const total = (wage * hours) + fee;
+
+                work.totalAmount = total.toString();
+            }
 
             await work.save();
             return true;
@@ -131,10 +141,10 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
-    async updatePaymentStatus(workId: string, status: string): Promise<void> {
+    async updatePaymentStatus(workId: string, status: string, totalAmount: string): Promise<void> {
         try {
-            if (!workId || !status) {
-                throw new Error("workId or status not provided");
+            if (!workId || !status || !totalAmount) {
+                throw new Error("workId or status or totalAmount not provided");
             }
 
             const work = await this.model.findById(workId);
@@ -144,7 +154,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
 
             await this.model.updateOne(
                 { _id: workId },
-                { $set: { paymentStatus: status } }
+                { $set: { paymentStatus: status, totalAmount: totalAmount } }
             );
         } catch (error) {
             logger.error("Error in updatePaymentStatus:", error);
@@ -286,7 +296,6 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
                         image: "$service.image",
                         categoryId: "$service.category",
                         serviceDescription: "$service.description",
-                        wage: "$service.wage",
                         categoryName: "$category.name",
                         categoryIcon: "$category.imageUrl"
                     }

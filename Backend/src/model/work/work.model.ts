@@ -42,7 +42,7 @@ const workSchema = new Schema<IWork>({
         type: String,
         required: false,
     },
-    wage: {
+    wagePerHour: {
         type: String,
         required: false
     },
@@ -51,6 +51,10 @@ const workSchema = new Schema<IWork>({
         required: false
     },
     commission: {
+        type: String,
+        required: false
+    },
+    totalHours: {
         type: String,
         required: false
     },

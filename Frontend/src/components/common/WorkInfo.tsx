@@ -175,18 +175,24 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                                     <span className="text-gray-900 text-xs sm:text-sm break-words">{workDetails?.service}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600 font-medium text-xs sm:text-sm">Work Type:</span>
-                                    <span className="text-gray-900 text-xs sm:text-sm break-words">{workDetails?.workType}</span>
-                                </div>
-                                <div className="flex justify-between">
                                     <span className="text-gray-600 font-medium text-xs sm:text-sm">Size:</span>
                                     <span className="text-gray-900 text-xs sm:text-sm break-words">{workDetails?.size}</span>
                                 </div>
+                                {workDetails?.totalHours &&
+                                    <>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600 font-medium text-xs sm:text-sm">Total Hours Worked:</span>
+                                            <span className="text-gray-900  text-sm sm:text-base flex items-center gap-1">
+                                                {workDetails?.totalHours}
+                                            </span>
+                                        </div>
+                                    </>
+                                }
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600 font-medium text-xs sm:text-sm">Wage:</span>
+                                    <span className="text-gray-600 font-medium text-xs sm:text-sm">Wage Per Hour:</span>
                                     <span className="text-gray-900 font-bold text-sm sm:text-base text-green-600 flex items-center gap-1">
                                         <FaRupeeSign size={14} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                        {workDetails?.wage}
+                                        {workDetails?.wagePerHour}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
@@ -196,6 +202,17 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                                         {workDetails?.platformFee}
                                     </span>
                                 </div>
+                                {workDetails?.totalAmount &&
+                                    <>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600 font-medium text-xs sm:text-sm">Total Amount:</span>
+                                            <span className="text-gray-900 font-bold text-sm sm:text-base text-green-600 flex items-center gap-1">
+                                                <FaRupeeSign size={14} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                {workDetails?.totalAmount}
+                                            </span>
+                                        </div>
+                                    </>
+                                }
                             </div>
                         </div>
 
