@@ -12,13 +12,13 @@ const Router = express.Router();
 Router.post('/login', adminController.login);
 Router.post('/logout', auth, authorize(["Admin"]), adminController.logout);
 Router.get('/users', auth, authorize(["Admin"]), adminController.fetchUsers)
-Router.get('/users/set-status', auth, authorize(["Admin"]), adminController.setIsActiveUsers);
-Router.get('/workers/set-status', auth, authorize(["Admin"]), adminController.setIsActiveWorkers);
+Router.patch('/users/set-status', auth, authorize(["Admin"]), adminController.setIsActiveUsers);
+Router.patch('/workers/set-status', auth, authorize(["Admin"]), adminController.setIsActiveWorkers);
 Router.get('/workers', auth, authorize(["Admin"]), adminController.fetchWorkers)
 Router.get('/workers-nonVerify', auth, adminController.fetchWorkersNonVerified)
 Router.get('/fetch-availability', auth, authorize(["Admin"]), adminController.fetchAvailability)
-Router.get('/approve-worker', auth, authorize(["Admin"]), adminController.approveWorker)
-Router.get('/reject-worker', auth, authorize(["Admin"]), adminController.rejectedWorker)
+Router.patch('/approve-worker', auth, authorize(["Admin"]), adminController.approveWorker)
+Router.patch('/reject-worker', auth, authorize(["Admin"]), adminController.rejectedWorker)
 Router.get('/earnings', auth, authorize(["Admin"]), adminController.fetchEarnings)
 Router.get('/wallet', auth, authorize(["Admin"]), adminController.platformWallet)
 

@@ -14,7 +14,6 @@ const WorkerOtpVerification = () => {
   const handleResend = (email: string) => {
     dispatch(resendOtpUserThunk(email)).unwrap();
     toast.success("Resend Otp")
-    console.log("Resending OTP...");
   };
 
   const handleVerify = (verifyData: { email: string, otp: string }) => {

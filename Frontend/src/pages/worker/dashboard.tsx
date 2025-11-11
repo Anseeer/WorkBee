@@ -49,8 +49,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         setSelectedDetails(workerData);
-        console.log('WorkerData :', workerData.wallet);
-        console.log("Second")
     }, [workerData, setSelectedDetails, reload]);
 
     const handleTab = (tab: string) => {

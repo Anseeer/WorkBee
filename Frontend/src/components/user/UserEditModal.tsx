@@ -139,7 +139,6 @@ export default function EditUserModal({ onClose, setEdit }: props) {
       script.defer = true;
       script.onload = () => setTimeout(initializeAutocomplete, 200);
       script.onerror = () => {
-        console.error("Failed to load Google Maps API");
         toast.error("Failed to load location services");
       };
       document.head.appendChild(script);

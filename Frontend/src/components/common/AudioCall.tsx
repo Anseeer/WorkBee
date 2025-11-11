@@ -20,7 +20,6 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
     const [isMuted, setIsMuted] = useState(false);
     console.log(isAnimating)
     useEffect(() => {
-        console.log('CallComponent: Mounting for user', user._id, 'isOutgoing:', isOutgoing);
         const animationInterval = setInterval(() => {
             setIsAnimating(prev => !prev);
         }, 1000);
@@ -29,13 +28,11 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
 
         const startCall = async () => {
             if (isOutgoing && user._id) {
-                console.log('CallComponent: Initiating call to', user._id);
                 await initiateCall(user._id, me);
             }
         };
 
         const handleReject = () => {
-            console.log('CallComponent: Call rejected by', user._id);
             toast.error(`Call rejected by ${user.name || 'User'}`);
             endCall();
             setIsCallActive(false);
@@ -43,7 +40,6 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
         };
 
         const handleEnd = () => {
-            console.log('CallComponent: Call ended by', user._id);
             endCall();
             setIsCallActive(false);
             onCallEnd();
@@ -52,7 +48,6 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
         connectionCheck = setInterval(() => {
             if (isCallConnected()) {
                 if (!isCallActive) {
-                    console.log('CallComponent: Call is now connected');
                     setIsCallActive(true);
                 }
             }
@@ -66,7 +61,6 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
         socket.on('webrtc-end-call', handleEnd);
 
         return () => {
-            console.log('CallComponent: Cleaning up for user', user._id);
             clearInterval(animationInterval);
             if (connectionCheck) clearInterval(connectionCheck);
             socket.off('webrtc-reject', handleReject);
@@ -78,7 +72,6 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
     }, [user._id, isOutgoing, me, onCallEnd, isCallActive, user.name]);
 
     const handleEndCall = () => {
-        console.log('CallComponent: handleEndCall triggered for', user._id);
         socket.emit('webrtc-end-call', { targetUserId: user._id });
         endCall();
         setIsAnimating(false);
@@ -91,7 +84,6 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
         if (remoteAudio) {
             remoteAudio.muted = !remoteAudio.muted;
             setIsMuted(remoteAudio.muted);
-            console.log('CallComponent: Audio muted:', remoteAudio.muted);
             if (!remoteAudio.muted) {
                 remoteAudio.play().catch(error => console.error('CallComponent: Failed to play audio after unmute:', error));
             }

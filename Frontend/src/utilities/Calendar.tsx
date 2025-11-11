@@ -9,7 +9,6 @@ interface CalendarProps {
 }
 
 export const Calendar = ({ availability }: CalendarProps) => {
-    console.log("Availabilities :", availability)
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [calendarDays, setCalendarDays] = useState<(number | null)[]>([]);
 

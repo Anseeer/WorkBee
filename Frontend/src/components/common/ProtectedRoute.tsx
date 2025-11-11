@@ -23,7 +23,6 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
         const res = await axios.get("/auth/verify", { withCredentials: true });
         setAuthInfo({ isAuthenticated: true, userRole: res.data.role });
       } catch {
-        console.log("Auth verification failed");
         setAuthInfo({ isAuthenticated: false, userRole: null });
       } finally {
         setLoading(false);

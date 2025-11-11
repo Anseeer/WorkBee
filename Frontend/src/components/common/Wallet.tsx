@@ -29,7 +29,6 @@ const Wallet = ({ balancePrev, historyPrev, workerId, reload }: WalletPageProps)
         if (!workerId) throw new Error("WorkerID not get");
         const res = await fetchWallet(workerId);
         const wallet = res.wallet;
-        console.log("wallet :", wallet)
         setBalance(wallet.balance || 0);
         setHistory(wallet.transactions || []);
       } catch (err) {

@@ -22,7 +22,7 @@ export const fetchUsers = async (currentPage: number, pageSize: number) => {
 };
 
 export const setIsActiveUsers = async (userId: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.SET_USER_STATUS}?id=${userId}`);
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.SET_USER_STATUS}?id=${userId}`);
     return response;
 };
 
@@ -45,17 +45,17 @@ export const fetchAvailability = async (workerId: string | null) => {
 };
 
 export const setIsActiveWorkers = async (workerId: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.SET_WORKER_STATUS}?id=${workerId}`);
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.SET_WORKER_STATUS}?id=${workerId}`);
     return response;
 };
 
 export const approveWorker = async (workerId: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.APPROVE_WORKER}?workerId=${workerId}`);
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.APPROVE_WORKER}?workerId=${workerId}`);
     return response;
 };
 
 export const rejectedWorker = async (workerId: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.REJECT_WORKER}?workerId=${workerId}`);
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.REJECT_WORKER}?workerId=${workerId}`);
     return response;
 };
 
@@ -67,7 +67,7 @@ export const fetchCategory = async (currentPage: number, pageSize: number) => {
 };
 
 export const setIsActiveCategory = async (categoryId: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_CATEGORY_ACTIVE}?categoryId=${categoryId}`);
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_CATEGORY_ACTIVE}?categoryId=${categoryId}`);
     return response;
 };
 
@@ -106,7 +106,7 @@ export const fetchService = async (currentPage: number, pageSize: number) => {
 };
 
 export const setIsActiveService = async (serviceId: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_SERVICE_ACTIVE}?serviceId=${serviceId}`);
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_SERVICE_ACTIVE}?serviceId=${serviceId}`);
     return response;
 };
 
@@ -171,7 +171,7 @@ export const deleteSubscription = async (subscriptionId: string) => {
 };
 
 export const toggleStatus = async (subscriptionId: string) => {
-    const response = await axios.get(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_SUBSCRIPTION_STATUS}?subscriptionId=${subscriptionId}`);
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.TOGGLE_SUBSCRIPTION_STATUS}?subscriptionId=${subscriptionId}`);
     return response.data.data;
 };
 

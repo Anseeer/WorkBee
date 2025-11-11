@@ -136,7 +136,7 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                                                     </div>
                                                     <div className="text-right ml-4">
                                                         <p className="text-xs text-gray-500 mb-1">Payment</p>
-                                                        <p className="text-xl font-bold text-green-600">₹{work.wage}</p>
+                                                        <p className="text-xl font-bold text-green-600">₹{work.wagePerHour}</p>
                                                     </div>
                                                 </div>
                                             </div>

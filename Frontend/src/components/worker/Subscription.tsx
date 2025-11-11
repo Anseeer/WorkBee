@@ -74,7 +74,6 @@ export const SubscriptionPlans = () => {
     const [wallet, setWallet] = useState<IWallet | null>(null);
     const workerData = useSelector((state: RootState) => state.worker.worker);
     const walletData = useSelector((state: RootState) => state.worker.wallet);
-    console.log(wallet);
 
     const dispatch = useAppDispatch();
 

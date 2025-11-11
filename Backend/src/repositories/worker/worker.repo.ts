@@ -199,13 +199,13 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             }
 
             if (searchTerms.serviceId) {
-            const serviceId =
-                typeof searchTerms.serviceId === "string"
-                    ? searchTerms.serviceId
-                     : String(searchTerms.serviceId);
+                const serviceId =
+                    typeof searchTerms.serviceId === "string"
+                        ? searchTerms.serviceId
+                        : String(searchTerms.serviceId);
 
-            query["services.serviceId"] = serviceId;
-        }
+                query["services.serviceId"] = serviceId;
+            }
 
             const workers = await this.model.find(query);
 

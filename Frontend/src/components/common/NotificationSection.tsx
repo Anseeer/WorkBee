@@ -15,7 +15,7 @@ const NotificationItem = ({ notification }: { notification: INotification }) => 
         ? formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })
         : "Unknown time";
 
-    return ( 
+    return (
         <motion.div
             ref={ref}
             initial={{ opacity: 0, y: 20 }}

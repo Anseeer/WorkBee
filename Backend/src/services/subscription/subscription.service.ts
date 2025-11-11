@@ -131,7 +131,7 @@ export class SubscriptionService implements ISubscriptionService {
                 transactionId,
                 type: "DEBIT" as const,
                 amount: planData.amount,
-                description: planData.planName,
+                description: `Paid to subscription plan ${planData.planName}`,
                 createdAt: new Date()
             };
 

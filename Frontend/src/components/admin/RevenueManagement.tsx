@@ -21,7 +21,6 @@ const RevenueManagement = () => {
             const walletRes = await fetchWallet();
             setBalance(walletRes.earnings.balance);
             setHistory(walletRes.earnings.transactions);
-            console.log("WalletREs :", walletRes.earnings);
         };
         fetchData();
     }, [payoutModal]);

@@ -161,19 +161,11 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                     });
 
                     formik.setFieldTouched("location", false);
-
-                    console.log("Location selected:", {
-                        address: place.formatted_address,
-                        pincode,
-                        lat,
-                        lng
-                    });
                 }, 0);
             });
 
             autocompleteRef.current = autocomplete;
             setIsGoogleLoaded(true);
-            console.log("Autocomplete initialized successfully");
         } catch (error) {
             console.error("Error initializing Autocomplete:", error);
             toast.error("Failed to initialize location services");
@@ -182,7 +174,6 @@ const WorkDetailForm = ({ setStep }: Prop) => {
 
     useEffect(() => {
         if (window.google?.maps?.places) {
-            console.log("Google Maps already loaded");
             initializeAutocomplete();
             return;
         }
@@ -192,9 +183,7 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         );
 
         if (existingScript) {
-            console.log("Google Maps script found, waiting for load");
             const handleLoad = () => {
-                console.log("Google Maps loaded from existing script");
                 setTimeout(initializeAutocomplete, 200);
             };
 
@@ -205,14 +194,12 @@ const WorkDetailForm = ({ setStep }: Prop) => {
             };
         }
 
-        console.log("Loading Google Maps script");
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places&loading=async`;
         script.async = true;
         script.defer = true;
 
         script.onload = () => {
-            console.log("Google Maps script loaded successfully");
             setIsGoogleLoaded(true);
         };
 

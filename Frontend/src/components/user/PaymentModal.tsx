@@ -31,7 +31,6 @@ const PaymentModal = ({
     const handlePayment = async (amount: number) => {
         try {
             const { data } = await axios.post("rzp/create-order", { amount, workId, platformFee });
-            console.log("Data :", data)
 
             const script = document.createElement("script");
             script.src = "https://checkout.razorpay.com/v1/checkout.js";

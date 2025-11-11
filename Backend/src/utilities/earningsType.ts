@@ -4,7 +4,7 @@ interface BaseEarning {
 
 export interface MonthlyEarning extends BaseEarning {
     _id: {
-        month: number; 
+        month: number;
     };
 }
 

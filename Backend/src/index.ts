@@ -34,10 +34,8 @@ app.use(express.urlencoded({ extended: true }))
 const allowedOrigins = [
   process.env.CLIENT_URL_DOCKER,
   process.env.CLIENT_URL_HOST,
-  process.env.CLIENT_URL_CLOUD ,
+  process.env.CLIENT_URL_CLOUD,
 ].filter(Boolean);
-
-console.log("Allowed origins :", allowedOrigins)
 
 app.use(
   cors({

@@ -29,7 +29,6 @@ const notificationService = container.get<INotificationService>(TYPES.notificati
 router.post("/create-order", async (req: Request, res: Response) => {
     try {
         const { amount, workId, platformFee } = req.body;
-        console.log("Body :", req.body)
         const wage = amount - platformFee;
 
         const options = {
@@ -59,8 +58,7 @@ router.post("/create-order", async (req: Request, res: Response) => {
 
         res.json(order);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Unable to create order" });
+        res.status(500).json({ error: "Unable to create order", err });
     }
 });
 
@@ -80,7 +78,6 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         }
 
         const payment = await paymentService.findOne(workId, razorpay_order_id);
-        console.log("payment :", payment);
         if (!payment) {
             throw new Error("Payment record not found");
         }
@@ -91,13 +88,11 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         }
         const commission = parseInt(worker.subscription.commission as string) || 0;
 
-        console.log("Worker :", worker);
         if (!worker) throw new Error("Worker not found");
 
         await workerService.updateCompletedWorks(payment.workerId.toString());
 
         const work = await workService.findById(workId);
-        console.log("work :", work);
 
         if (!work) {
             throw new Error("Work not found");
@@ -199,7 +194,6 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         res.json({ success: true, message: "Payment verified successfully" });
     } catch (error) {
         logger.error(error);
-        console.error(error);
         const message = error instanceof Error ? error.message : "Something went wrong";
         res.status(500).json({ success: false, message });
     }
@@ -222,8 +216,7 @@ router.post("/create-wallet-order", async (req: Request, res: Response): Promise
         const order = await razorpay.orders.create(options);
         res.json(order);
     } catch (err) {
-        console.error("Error creating wallet order:", err);
-        res.status(500).json({ error: "Something went wrong" });
+        res.status(500).json({ error: "Something went wrong", err });
     }
 });
 
@@ -271,8 +264,7 @@ router.post("/verify-wallet-payment", async (req: Request, res: Response): Promi
 
         res.json({ success: true, wallet: updatedWallet });
     } catch (err) {
-        console.error("Error verifying wallet payment:", err);
-        res.status(500).json({ error: "Payment verification failed" });
+        res.status(500).json({ error: "Payment verification failed", err });
     }
 });
 
@@ -289,8 +281,7 @@ router.post("/create-subscription-order", async (req: Request, res: Response): P
         const order = await razorpay.orders.create(options);
         res.json(order);
     } catch (err) {
-        console.error("Error creating subscription order:", err);
-        res.status(500).json({ error: "Something went wrong with creating subscription order" });
+        res.status(500).json({ error: "Something went wrong with creating subscription order", err });
     }
 });
 
@@ -315,8 +306,7 @@ router.post("/verify-subscription-payment", async (req: Request, res: Response):
 
         res.json({ success: true });
     } catch (err) {
-        console.error("Error verifying wallet payment:", err);
-        res.status(500).json({ error: "Payment verification failed" });
+        res.status(500).json({ error: "Payment verification failed", err });
     }
 });
 
@@ -324,7 +314,6 @@ router.post("/payout/worker", async (req: Request, res: Response): Promise<void>
     try {
         const { workerId, accountName, accountNumber, amount } = req.body;
         const transactionId = generateTransactionId(accountNumber)
-        console.log("Body data :", req.body);
 
         if (workerId == "PLATFORM") {
             const platformTransaction = {
@@ -377,7 +366,6 @@ router.post("/payout/worker", async (req: Request, res: Response): Promise<void>
         //     { auth: { username: process.env.RAZORPAY_KEY_ID!, password: process.env.RAZORPAY_KEY_SECRET! } }
         // );
 
-        // console.log("Contact created :", contact)
 
         // const { data: fundAccount } = await axios.post(
         //     "https://api.razorpay.com/v1/fund_accounts",
@@ -392,7 +380,6 @@ router.post("/payout/worker", async (req: Request, res: Response): Promise<void>
         //     },
         //     { auth: { username: process.env.RAZORPAY_KEY_ID!, password: process.env.RAZORPAY_KEY_SECRET! } }
         // );
-        // console.log("fundAccount created :", fundAccount)
 
         // const { data: payout } = await axios.post(
         //     "https://api.razorpay.com/v1/payouts",
@@ -411,8 +398,7 @@ router.post("/payout/worker", async (req: Request, res: Response): Promise<void>
 
         res.json({ success: true, message: 'Payout success' });
     } catch (err) {
-        console.error("Error verifying wallet payment:", err);
-        res.status(500).json({ error: "Payment verification failed" });
+        res.status(500).json({ error: "Payment verification failed", err });
     }
 });
 

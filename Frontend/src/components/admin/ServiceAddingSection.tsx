@@ -74,8 +74,7 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                     category: values.category,
                     image: imageUrl,
                 };
-                const res = await addService(payload);
-                console.log("Service Created:", res.data.data);
+                await addService(payload);
                 toast.success("Service added successfully");
                 resetForm();
                 setAdded(true);

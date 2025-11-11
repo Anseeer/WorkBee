@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import GoogleAuth from "./GoogleSignButton";
 import type { CredentialResponse } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
   Submit: (credentials: { email: string; password: string }) => void;
@@ -20,6 +21,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotPass, HandleRegister, loading = false, role }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(true);
+  const navigate = useNavigate();
 
 
   const formik = useFormik({
@@ -28,7 +30,6 @@ const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotP
       password: "",
     },
     onSubmit: (values) => {
-      console.log(values)
       Submit(values);
     },
     validate: (values) => {
@@ -55,7 +56,9 @@ const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotP
       <div className="w-full max-w-md">
 
         <div className="absolute top-4 left-4 sm:top-8 sm:left-8 hide-below-300">
-          <h1 className="merienda-text text-2xl sm:text-3xl text-green-900">
+          <h1
+            onClick={() => navigate("/")}
+            className="merienda-text text-2xl sm:text-3xl text-green-900">
             WorkBee
           </h1>
         </div>

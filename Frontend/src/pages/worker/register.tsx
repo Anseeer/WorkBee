@@ -81,11 +81,9 @@ const WorkerRegistrationPage = () => {
             return errors;
         },
         onSubmit: async (values) => {
-            console.log("Values :", values)
             setLoading(true);
             try {
-                const res = await Dispatch(registerWorkerThunk(values)).unwrap();
-                console.log("res :", res);
+                await Dispatch(registerWorkerThunk(values)).unwrap();
                 toast.success("Registration successful!");
                 navigate(API_ROUTES.WORKER.DASHBOARD, { replace: true });
             } catch (error: unknown) {
@@ -207,7 +205,9 @@ const WorkerRegistrationPage = () => {
     return (
         <div className="min-h-screen bg-gray-50 w-full overflow-y-auto flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
             {/* Logo */}
-            <div className="absolute top-6 left-6 sm:top-8 sm:left-8">
+            <div
+                onClick={() => navigate("/workers")}
+                className="absolute top-6 left-6 sm:top-8 sm:left-8">
                 <h1 className="merienda-text text-2xl sm:text-3xl md:text-4xl text-green-900">WorkBee</h1>
             </div>
 

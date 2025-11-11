@@ -12,7 +12,7 @@ const Router = express.Router();
 Router.post('/create-subscription-plan', auth, authorize(["Admin"]), subscriptionController.createSubscriptionPlan);
 Router.get('/fetch-all', auth, subscriptionController.fetchAll);
 Router.delete('/delete', auth, authorize(["Admin"]), subscriptionController.deleteSubscription);
-Router.get('/toggle-status', auth, authorize(["Admin"]), subscriptionController.toggleStatus);
+Router.patch('/toggle-status', auth, authorize(["Admin"]), subscriptionController.toggleStatus);
 Router.post('/update', auth, authorize(["Admin"]), subscriptionController.updateSubscription);
 Router.get('/activate-plan', auth, subscriptionController.activateSubscriptionPlan);
 

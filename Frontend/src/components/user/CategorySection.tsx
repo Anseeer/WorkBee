@@ -71,7 +71,6 @@ const CategorySection: React.FC = () => {
 
             try {
                 const serv = await getServiceByCategory([selectedCategory]);
-                console.log("Services fetched :", serv)
                 if (typeof serv !== 'string') {
                     setServices(serv.data.data);
                 }

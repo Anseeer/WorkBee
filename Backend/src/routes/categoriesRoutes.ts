@@ -9,7 +9,7 @@ const categoryController = container.get<ICategoryController>(TYPES.categoryCont
 
 Router.get("/categories", categoryController.getAll);
 Router.post("/create-category", categoryController.createCategory);
-Router.get("/set-active", categoryController.setIsActive);
+Router.patch("/set-active", categoryController.setIsActive);
 Router.post("/update", categoryController.update);
 Router.delete("/delete", categoryController.delete);
 Router.post("/by-worker", categoryController.getByWorker);

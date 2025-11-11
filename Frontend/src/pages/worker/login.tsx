@@ -51,7 +51,6 @@ const WorkerLoginPage = () => {
     }
 
     const handleGoogleLogin = async (response: CredentialResponse) => {
-        console.log("Google Login Success:", response);
 
         if (!response.credential) {
             toast.error("Google login failed: No credential received");
@@ -62,8 +61,6 @@ const WorkerLoginPage = () => {
             const res = await axios.post("/workers/google-login", {
                 credential: response.credential,
             });
-
-            console.log("Backend worker:", res.data.data);
 
             await dispatch(googleLoginSuccess(res.data.data));
 
@@ -76,7 +73,6 @@ const WorkerLoginPage = () => {
     };
 
     const handleGoogleError = () => {
-        console.error("Google Login Failed");
         toast.error("Google login failed");
     };
 

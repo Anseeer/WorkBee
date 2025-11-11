@@ -6,7 +6,6 @@ import { fetchUserDataThunk } from "../slice/userSlice";
 export const fetchData = async (dispatch: any) => {
     try {
         const { data } = await axios.get("/auth/verify", { withCredentials: true });
-        console.log("Verified user:", data);
 
         if (data.role === "User") {
             dispatch(fetchUserDataThunk());

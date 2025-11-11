@@ -107,6 +107,7 @@ export class UserController implements IUserController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error: unknown) {
+            logger.error("Error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_SEND_OTP, errMsg));
         }

@@ -24,7 +24,6 @@ export default function MessageSection({ chats, me }: Props) {
   const joinedRef = useRef(false);
 
   const onCallEnd = () => {
-    console.log('MessageSection: onCallEnd triggered');
     endCall();
     setIsCall(false);
     setIsOutgoing(false);
@@ -41,10 +40,8 @@ export default function MessageSection({ chats, me }: Props) {
   }, [chats]);
 
   useEffect(() => {
-    console.log('MessageSection: Joining user room for', me);
     socket.emit('join-user-room', me);
     return () => {
-      console.log('MessageSection: Cleaning up socket listeners');
       socket.off('webrtc-offer');
       socket.off('webrtc-answer');
       socket.off('webrtc-ice-candidate');
@@ -67,24 +64,20 @@ export default function MessageSection({ chats, me }: Props) {
 
   useEffect(() => {
     if (!socket.connected) {
-      console.log('MessageSection: Reconnecting socket');
       socket.connect();
     }
 
     if (!joinedRef.current && chatId) {
-      console.log('MessageSection: Joining chat', chatId);
       socket.emit('joinChat', { chatId, userId: me });
       joinedRef.current = true;
     }
 
     const onMessage = (msg: IChatMessage, updatedChat: IChat) => {
-      console.log('MessageSection: Message received:', msg, 'for chat:', updatedChat._id);
       if (updatedChat._id === chatId) {
         setChatMessages((prev) => {
           const updatedMessages = [...prev, msg].sort((a, b) =>
             new Date(a.createdAt as string).getTime() - new Date(b.createdAt as string).getTime()
           );
-          console.log('MessageSection: Sorted messages:', updatedMessages.map(m => ({ content: m.content, createdAt: m.createdAt })));
           return updatedMessages;
         });
       }
@@ -102,7 +95,6 @@ export default function MessageSection({ chats, me }: Props) {
     };
 
     const onPrevious = (prevMsgs: IChatMessage[]) => {
-      console.log('MessageSection: Previous messages received:', prevMsgs.map(m => ({ content: m.content, createdAt: m.createdAt })));
       setChatMessages(
         prevMsgs.sort((a, b) =>
           new Date(a.createdAt as string).getTime() - new Date(b.createdAt as string).getTime()
@@ -132,7 +124,6 @@ export default function MessageSection({ chats, me }: Props) {
       });
 
     socket.on('webrtc-offer', ({ offer, callerId }) => {
-      console.log('MessageSection: Incoming call offer received from', callerId);
       setIncomingCall({ from: callerId, offer, callerId });
       const caller = chat?.find((c) =>
         c.participants.some((p) => p._id === callerId)
@@ -143,7 +134,6 @@ export default function MessageSection({ chats, me }: Props) {
     socket.on('webrtc-answer', handleAnswerCall);
     socket.on('webrtc-ice-candidate', handleIncomingIceCandidates);
     socket.on('webrtc-reject', () => {
-      console.log('MessageSection: Call rejected by the other user');
       endCall();
       onCallEnd();
     });
@@ -159,10 +149,8 @@ export default function MessageSection({ chats, me }: Props) {
 
     return () => {
       if (chatId) {
-        console.log('MessageSection: Leaving chat', chatId);
         socket.emit('leaveChat', chatId, me);
       }
-      console.log('MessageSection: Cleaning up socket listeners for chat', chatId);
       socket.off('message', onMessage);
       socket.off('previousMessages', onPrevious);
       socket.off('chatUpdate', onChatUpdate);
@@ -189,7 +177,6 @@ export default function MessageSection({ chats, me }: Props) {
     const receiverId = selectedChat?.participants.find((p) => p._id !== me)?._id;
     if (!receiverId) return;
 
-    console.log('MessageSection: Sending message to', receiverId);
     socket.emit('sendMessage', {
       chatId,
       senderId: me,
@@ -202,7 +189,6 @@ export default function MessageSection({ chats, me }: Props) {
 
   const handleAcceptCall = async () => {
     if (incomingCall) {
-      console.log('MessageSection: Accepting call from', incomingCall.callerId);
       await acceptCall(incomingCall.callerId, incomingCall.offer);
       setIncomingCall(null);
       setIsOutgoing(false);
@@ -216,7 +202,6 @@ export default function MessageSection({ chats, me }: Props) {
 
   const handleRejectCall = () => {
     if (incomingCall) {
-      console.log('MessageSection: Rejecting call from', incomingCall.callerId);
       socket.emit('webrtc-reject', { targetUserId: incomingCall.callerId });
       setIncomingCall(null);
       endCall();

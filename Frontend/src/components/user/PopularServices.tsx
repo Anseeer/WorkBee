@@ -31,7 +31,6 @@ const PopularProjects = () => {
         const fetchData = async () => {
             setIsLoading(true);
             const topService = await fetchTopService(6);
-            console.log("TopService :", topService)
             setService(topService);
             setIsLoading(false);
         }

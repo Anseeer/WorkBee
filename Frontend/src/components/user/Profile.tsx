@@ -39,7 +39,6 @@ const ProfileSection = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
 
-    console.log("User :", user);
     useEffect(() => {
         if (user?.profileImage) {
             setSelectedImg(user.profileImage as string);
@@ -77,7 +76,6 @@ const ProfileSection = () => {
     };
 
     const handleEdit = () => {
-        console.log('Edit clicked');
         setIsActiveTab('Edit')
     };
 

@@ -30,7 +30,6 @@ export class ServiceController implements IServiceController {
         }
     }
 
-
     getAllservices = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { currentPage, pageSize } = req.query;
@@ -174,6 +173,5 @@ export class ServiceController implements IServiceController {
             next(new errorResponse(StatusCode.BAD_REQUEST, SERVICE_MESSAGE.GET_ALL_SERVICES_FAILED, errMsg));
         }
     };
-
 
 }

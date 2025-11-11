@@ -16,11 +16,9 @@ export const WorkerRatingModal = ({ onClose, workId }: props) => {
 
     const handleRating = (rate: number) => {
         setRating(rate);
-        console.log(`Selected rating: ${rate}`);
     };
 
     const handleSubmit = async () => {
-        console.log(`Selected rating: ${rating}`);
         try {
             await rateWorker(work?.workerId.toString() as string, rating)
             onClose();

@@ -6,7 +6,6 @@
   :host {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* ✅ Add this line */
   }
 }
 
@@ -19,7 +18,6 @@ input:-webkit-autofill {
   background-color: transparent !important;
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
   -webkit-text-fill-color: #4B5563 !important;
-  /* Optional: tailwind text-gray-600 */
   transition: background-color 5000s ease-in-out 0s;
 }
 

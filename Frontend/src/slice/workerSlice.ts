@@ -12,7 +12,6 @@ interface BuildAccountResponse {
     wallet: IWallet;
 }
 
-
 export interface WorkerState {
     worker: IWorker | null;
     availability: IAvailability | null;

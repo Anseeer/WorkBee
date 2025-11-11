@@ -15,7 +15,7 @@ interface IAvailability {
 interface WorkerModalProps {
     work: Partial<IWork>;
     worker: IWorker;
-    price:string;
+    price: string;
     availability: IAvailability;
     onClose: () => void;
     onConfirm: (date: string, slot: string, PlatformFee: string, commissionAmount: string) => void;
@@ -35,16 +35,9 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     onClose,
     onConfirm
 }) => {
-    console.log("WorkerAvailability:", availability);
-    console.log("Worker :", worker);
-    console.log("work :", work);
-    console.log("Price :", price);
-
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
-
-
     const wage = Number(price) || 0;
     const PlatformFee = wage * 0.05;
     const commissionPercentage = Number(worker.subscription?.commission) || 0;

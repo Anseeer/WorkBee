@@ -16,5 +16,4 @@ export interface IWorkRepository {
     getTopThree(): Promise<TopThreeResult[]>;
     updatePaymentStatus(workId: string, status: string, totalAmount: string): Promise<void>;
     getTopServices(limit: number): Promise<IServices[]>
-
 }

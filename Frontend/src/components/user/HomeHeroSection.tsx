@@ -3,8 +3,6 @@ import { Search } from "lucide-react";
 import type { IService } from "../../types/IService";
 import { fetchService, fetchServiceBySearchTerm } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../Store";
 
 const HomeHeroSection = () => {
     const [services, setServices] = useState<IService[]>([]);
@@ -49,7 +47,6 @@ const HomeHeroSection = () => {
             if (searchTerm.trim() === "") {
                 setIsLoading(true);
                 const response = await fetchService();
-                console.log("Res:", response.data.data.services)
                 setServices(response.data.data.services);
                 setNotFound(false);
                 setIsLoading(false);
@@ -75,13 +72,10 @@ const HomeHeroSection = () => {
     const HandleSelectedService = (serv: IService) => {
         localStorage.removeItem("serviceId")
         localStorage.removeItem("categoryId")
-        console.log("Serve :", serv);
         localStorage.setItem("serviceId", serv._id as string || serv.id as string);
         localStorage.setItem("categoryId", serv.category);
         navigate('/work-details');
     }
-    const user = useSelector((state: RootState) => state?.user.user);
-    console.log("User in redux :", user);
 
     const truncateWords = (text: string, wordLimit: number) => {
         const words = text.split(" ");

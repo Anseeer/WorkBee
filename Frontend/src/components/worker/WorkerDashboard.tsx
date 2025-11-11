@@ -80,7 +80,7 @@ const WorkerDashboard = ({ worker, wallet, availability }: props) => {
                                         <p className="font-medium text-gray-800">{work.service}</p>
                                         <p className="text-sm text-gray-600">Assigned: {work.sheduleDate} {work.sheduleTime}</p>
                                     </div>
-                                    <p className="text-lg font-bold text-green-600">₹{work.wage}</p>
+                                    <p className="text-lg font-bold text-green-600">₹{work.wagePerHour}</p>
                                 </div>
                             ))}
                         </div>

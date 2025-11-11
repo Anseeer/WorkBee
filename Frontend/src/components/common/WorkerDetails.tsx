@@ -47,9 +47,7 @@ const StatCard = ({ icon: Icon, label, value, color = "blue" }: any) => {
 const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
     const { selectedDetails } = useWorkerDetails();
     const worker = selectedDetails?.worker;
-    console.log("Worker :", worker)
     const availability = selectedDetails?.availability;
-
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [services, setServices] = useState<ISelectedService[]>([]);
     const dispatch = useAppDispatch();
@@ -82,7 +80,6 @@ const WorkerDetails = ({ isEdit, setEdit }: Prop) => {
 
     const onSave = async (updatedData: { worker: Partial<IWorker>; availability: IAvailability }) => {
         try {
-            console.log("Updated Data:", updatedData);
             await updateWorkerData(updatedData);
 
             if (!updatedData.worker._id) throw new Error("Worker ID is missing");

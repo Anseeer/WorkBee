@@ -1,5 +1,5 @@
 .selected-date {
-  background-color: #16a34a !important; 
+  background-color: #16a34a !important;
   color: white !important;
   border-radius: 30% !important;
   font-weight: bold;
@@ -8,6 +8,6 @@
 }
 
 .custom-calendar .react-calendar__tile:hover {
-  background-color: #bbf7d0 !important; 
+  background-color: #bbf7d0 !important;
   border-radius: 30% !important;
 }

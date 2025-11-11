@@ -85,13 +85,11 @@ export const fetchServiceById = async (serviceId: string) => {
     return response;
 };
 
-
 export const fetchCategoryById = async (categoryId: string) => {
     if (!categoryId) throw new Error('Category Id not provided');
     const response = await axios.post(`${API_ROUTES.USER_SERVICE.FETCH_CATEGORY_BY_ID}?id=${categoryId}`);
     return response;
 };
-
 
 export const DraftWork = async (workDetails: IWork) => {
     if (!workDetails) throw new Error('Work details not provided');
@@ -104,7 +102,6 @@ export const fetchWorkHistory = async (
     currentPage: number,
     pageSize: number
 ) => {
-    console.log('userId:', userId, 'CurrentPage:', currentPage, 'pageSize:', pageSize);
     const response = await axios.get(
         `${API_ROUTES.USER_SERVICE.FETCH_WORK_HISTORY}?userId=${userId}&currentPage=${currentPage}&pageSize=${pageSize}`
     );

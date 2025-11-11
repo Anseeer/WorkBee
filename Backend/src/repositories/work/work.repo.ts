@@ -100,9 +100,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
                 const wage = Number(work.wagePerHour);
                 const hours = Number(hoursWorked);
                 const fee = Number(work.platformFee);
-
                 const total = (wage * hours) + fee;
-
                 work.totalAmount = total.toString();
             }
 

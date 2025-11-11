@@ -61,8 +61,7 @@ const AddingCategorySection = ({ setAdded }: Props) => {
                     imageUrl: imageUrl,
                 };
 
-                const res = await addCategory(payload);
-                console.log("Res AfterCreating :", res.data.data);
+                await addCategory(payload);
 
                 resetForm();
                 setPreview(null);
@@ -74,7 +73,6 @@ const AddingCategorySection = ({ setAdded }: Props) => {
                     err.response?.data?.message ||
                     err.message ||
                     "Failed to add category";
-                console.log("Error msg:", message);
                 toast.error(`Failed to add category: ${message}`);
             } finally {
                 setLoading(false);

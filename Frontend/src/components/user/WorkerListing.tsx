@@ -16,11 +16,14 @@ import { StarRatingDisplay } from '../common/StartRating';
 interface FilterState {
     selectedDate: string;
     selectedTimeSlots: string[];
+    maxPrice: number;
+    minRating: number;
+    minCompletedWorks: number;
 }
+
 
 const WorkerListing = () => {
     const workDetails = useSelector((state: RootState) => state?.work);
-    console.log("WorkDetails :", workDetails)
     const userDetails = useSelector((state: RootState) => state?.user?.user);
     const [workers, setWorkers] = useState<IWorker[]>([]);
     const [price, setPrice] = useState('');
@@ -30,9 +33,13 @@ const WorkerListing = () => {
     const navigate = useNavigate();
 
     const [filters, setFilters] = useState<FilterState>({
-        selectedDate: '',
+        selectedDate: "",
         selectedTimeSlots: [],
+        maxPrice: 10000,
+        minRating: 0,
+        minCompletedWorks: 0,
     });
+
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
@@ -69,20 +76,36 @@ const WorkerListing = () => {
 
         fetchWorkers();
     }, [workDetails]);
-    console.log('Worker ::', workers)
+
     useEffect(() => {
-        if (filters.selectedTimeSlots.length === 0) {
-            setFilteredWorkers(workers);
-        } else {
-            const newFilteredWorkers = workers.filter(worker =>
-                worker.preferredSchedule.some(scheduleSlot =>
-                    filters.selectedTimeSlots.includes(scheduleSlot)
+        let updated = [...workers];
+
+        if (filters.selectedTimeSlots.length > 0) {
+            updated = updated.filter(worker =>
+                worker.preferredSchedule.some(slot =>
+                    filters.selectedTimeSlots.includes(slot)
                 )
             );
-            setFilteredWorkers(newFilteredWorkers);
         }
+
+        updated = updated.filter(worker => {
+            const price = getWorkerServicePrice(worker, workDetails.serviceId);
+            if (price === null) return false;
+            return price <= filters.maxPrice;
+        });
+
+        updated = updated.filter(worker =>
+            Number(worker.ratings.average || 0) >= filters.minRating
+        );
+
+        updated = updated.filter(worker =>
+            (worker.completedWorks || 0) >= filters.minCompletedWorks
+        );
+
+        setFilteredWorkers(updated);
         setCurrentPage(1);
-    }, [filters.selectedTimeSlots, workers]);
+    }, [filters, workDetails.serviceId, workers]);
+
 
     const handleTimeSlotChange = (timeSlot: string) => {
         setFilters(prev => ({
@@ -98,7 +121,6 @@ const WorkerListing = () => {
         setPrice(price);
         setIsModalOpen(true);
         const availabilityResponse = await fetchAvailability(worker.id);
-        console.log(availabilityResponse.data.data.availableDates)
         setAvailability(availabilityResponse.data.data);
 
     };
@@ -119,7 +141,7 @@ const WorkerListing = () => {
 
     const Confirm = async (date: string, slot: string, PlatformFee: string, commissionAmount: string) => {
         try {
-            const res = await dispatch(workerDetails({
+            await dispatch(workerDetails({
                 date,
                 slot,
                 PlatformFee,
@@ -131,7 +153,6 @@ const WorkerListing = () => {
                 userId: userDetails?.id
             }));
 
-            console.log("Actual API Response:", res);
             toast.success("Requested");
             setIsModalOpen(false);
             setTriggerDraft(true);
@@ -150,13 +171,13 @@ const WorkerListing = () => {
     const paginatedWorkers = filteredWorkers.slice(startIndex, startIndex + itemsPerPage);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-10 animate-fadeInUp">
+        <div className="min-h-screen p-4 sm:p-6 md:p-10 animate-fadeInUp">
             <div className="flex flex-col md:flex-row justify-between gap-6 animate-fadeInDown">
 
                 {/* Sidebar */}
                 <div className="w-full md:w-80 flex-shrink-0 animate-slideInRight">
                     <div className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6 animate-fadeInScale">
-                        <h3 className="text-lg font-semibold mb-4 text-green-700">Time of day</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-green-700">Choose your slot</h3>
                         <div className="space-y-3">
                             {timeSlots.map((slot) => (
                                 <label key={slot.value} className="flex items-center space-x-3 cursor-pointer animate-fadeInUp">
@@ -169,6 +190,50 @@ const WorkerListing = () => {
                                     <span className="text-sm text-gray-700">{slot.label}</span>
                                 </label>
                             ))}
+                        </div>
+
+                        {/* Price Range Filter */}
+                        <div className="my-6 border-t border-gray-200" />
+                        <div>
+                            <h3 className="text-lg font-semibold text-green-700 mb-3">Max Price</h3>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-gray-700">Up to ₹{filters.maxPrice}</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min={0}
+                                    max={1000}
+                                    step={50}
+                                    value={filters.maxPrice}
+                                    onChange={(e) =>
+                                        setFilters(prev => ({ ...prev, maxPrice: Number(e.target.value) }))
+                                    }
+                                    className="w-full cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Rating Filter */}
+                        <div className="my-6 border-t border-gray-200" />
+                        <div>
+                            <h3 className="text-lg font-semibold text-green-700 mb-3">Minimum Rating</h3>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-gray-700">{filters.minRating.toFixed(1)} ⭐</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min={0}
+                                    max={5}
+                                    step={0.5}
+                                    value={filters.minRating}
+                                    onChange={(e) =>
+                                        setFilters(prev => ({ ...prev, minRating: Number(e.target.value) }))
+                                    }
+                                    className="w-full bg-green-800 cursor-pointer"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -295,7 +360,7 @@ const WorkerListing = () => {
 
             {/* Modal */}
             {isModalOpen && selectedWorker && (
-                <div className="animate-zoomIn">
+                <div >
                     <WorkerAvailabilityModal
                         work={workDetails}
                         price={price}

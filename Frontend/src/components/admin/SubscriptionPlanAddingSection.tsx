@@ -58,10 +58,7 @@ const SubscriptionPlansAddingSection = ({ setAdded }: Props) => {
                     comission: values.comission,
                 };
 
-                console.log("Subscription Values :", payload);
-
-                const res = await addSubscriptionPlan(payload);
-                console.log(res);
+                await addSubscriptionPlan(payload);
 
                 resetForm();
                 setAdded(true);
@@ -72,7 +69,6 @@ const SubscriptionPlansAddingSection = ({ setAdded }: Props) => {
                     err.response?.data?.message ||
                     err.message ||
                     "Failed to add plan";
-                console.log("Error msg:", message);
                 toast.error(`Failed to add SubscriptionPlan: ${message}`);
             } finally {
                 setLoading(false);

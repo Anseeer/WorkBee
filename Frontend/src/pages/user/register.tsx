@@ -35,7 +35,6 @@ const RegistrationPage = () => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        console.log("values", values)
         await Dispatch(registerUserThunk(values)).unwrap()
         toast.success("Registration successful!");
         navigate(API_ROUTES.USER.HOME, { replace: true })
@@ -187,7 +186,10 @@ const RegistrationPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 w-full overflow-y-auto">
       {/* Logo */}
-      <div className="absolute top-6 left-6">
+      <div
+        onClick={() => navigate("/")}
+        className="absolute top-6 left-6"
+      >
         <h1 className="merienda-text text-3xl text-green-900">WorkBee</h1>
       </div>
 
