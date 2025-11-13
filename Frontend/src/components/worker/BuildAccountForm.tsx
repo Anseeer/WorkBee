@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./workerStyle.css";
 import { getProfileImage } from "../../utilities/getProfile";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Store";
@@ -14,6 +13,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { toast } from "react-toastify";
 import { getServiceByCategory } from "../../services/workerService";
 import type { ISelectedService } from "../../types/IService";
+import "../../App.css"
 
 const workingHours = [
   { id: "morning", label: "Morning (9am - 1pm)" },

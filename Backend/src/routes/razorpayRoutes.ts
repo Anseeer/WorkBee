@@ -188,8 +188,7 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         const notificationEntity = mapNotificationToEntity(notification);
         const newNotification = await notificationService.create(notificationEntity);
         if (!newNotification) throw new Error("Failed to create notification");
-        io.emit("push-notification", newNotification);
-
+        io.to(notification?.recipient?.toString()).emit("new-notification", newNotification);
 
         res.json({ success: true, message: "Payment verified successfully" });
     } catch (error) {

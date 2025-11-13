@@ -14,14 +14,17 @@ const WorksTable = () => {
     useEffect(() => {
         const fetchData = async () => {
             const res = await fetchWorks(currentPage, 6);
-            const mappedWorks = res.data.data.paginatedWorks.map((work: IWork) => ({
-                ...work,
-                id: work._id || '',
-            }));
+            const mappedWorks = res.data.data.paginatedWorks
+                .filter((work: IWork) => work.status !== "Pending")
+                .map((work: IWork) => ({
+                    ...work,
+                    id: work._id || '',
+                }));
 
             setWorks(mappedWorks);
             setTotalPage(res.data.data.totalPage);
         };
+
         fetchData();
     }, [currentPage]);
 

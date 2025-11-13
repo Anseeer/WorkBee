@@ -10,7 +10,7 @@ const PendingApprovalMessage = ({
     estimatedTime = "within 24 hours",
 }: PendingApprovalProps) => {
     return (
-        <div className="max-h-screen flex items-center justify-center bg-gray-50 p-6 animate-fadeInUp">
+        <div className="max-h-screen flex items-center justify-center p-6 animate-fadeInUp">
             <div className="max-w-md w-full bg-white rounded-3xl shadow-lg p-8 text-center space-y-6">
                 <div className="flex flex-col items-center gap-4">
                     {status === "Pending Approval" && (

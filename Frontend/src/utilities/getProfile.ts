@@ -18,5 +18,11 @@ export const getProfileImage = (
       .toUpperCase()
     : "W";
 
-  return `https://ui-avatars.com/api/?name=${initials}&background=random`;
+  const hash = name
+    ? Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    : 0;
+
+  const color = ((hash * 1234567) % 0xffffff).toString(16).padStart(6, '0');
+
+  return `https://ui-avatars.com/api/?name=${initials}&background=${color}&color=ffffff`;
 };
