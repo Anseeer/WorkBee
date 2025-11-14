@@ -123,7 +123,6 @@ const HomeHeroSection = () => {
                 )}
             </div>
 
-
             {/* Service Buttons */}
             <div className="w-full max-w-6xl mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 px-4 sm:px-8">
                 {isLoading ? (

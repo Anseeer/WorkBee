@@ -140,6 +140,7 @@ const CategoryManagment = () => {
             label: 'Icon',
             render: (u) => (
                 <img
+                    loading='lazy'
                     src={u.imageUrl}
                     alt={u.name}
                     className="w-10 h-10 rounded-full object-cover"

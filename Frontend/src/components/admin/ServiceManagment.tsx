@@ -192,8 +192,11 @@ const ServiceManagment = () => {
             label: 'Icon',
             render: (u) => (
                 <img
+                    loading="lazy"
                     src={u.image}
                     alt={u.name}
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full object-cover"
                 />
             )

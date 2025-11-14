@@ -6,7 +6,6 @@ import HomeHeroSection from "../../components/user/HomeHeroSection";
 import PopularProjects from "../../components/user/PopularServices";
 
 const Home = () => {
-
   return (
     <>
       <Header />
