@@ -214,7 +214,7 @@ export class UserService implements IUserService {
 
             const existingUser = await this._userRepository.findByEmail(payload.email);
             if (!existingUser || existingUser.role !== Role.USER) {
-                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER_REGISTER_FIRST);
             }
 
             if (existingUser.isActive === false) {
@@ -236,7 +236,7 @@ export class UserService implements IUserService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 

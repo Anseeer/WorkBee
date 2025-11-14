@@ -133,7 +133,7 @@ const CategorySection: React.FC = () => {
 
                 <div
                     ref={scrollRef}
-                    className="flex justify-start sm:justify-center flex-nowrap overflow-x-auto w-full gap-6 sm:gap-10 mb-2 px-4 sm:px-8 scrollbar-hide"
+                    className="flex lg:justify-center justify-start flex-nowrap overflow-x-auto w-full gap-6 sm:gap-10 mb-2 scrollbar-hide"
                     style={{
                         scrollbarWidth: "none",
                         msOverflowStyle: "none",
@@ -141,12 +141,13 @@ const CategorySection: React.FC = () => {
                 >
                     {categories.map((category, index) => (
                         <div
+                            tabIndex={-1}
                             key={category._id}
                             onClick={() => {
                                 setSelectedCategory(category._id);
                                 setSelectedService("");
                             }}
-                            className={`flex flex-col items-center cursor-pointer transition-all duration-300 p-3 sm:p-4 rounded-lg min-w-[100px] sm:min-w-[120px] opacity-0 animate-fadeInUp ${selectedCategory === category._id
+                            className={`flex flex-col items-center cursor-pointer transition-all duration-300 p-3 sm:p-4 rounded-lg min-w-[100px] sm:min-w-[120px] opacity-0 animate-fadeInUp outline-none ${selectedCategory === category._id
                                 ? "text-green-800 bg-white shadow-md scale-105"
                                 : "text-gray-600 hover:text-green-600 hover:scale-105"
                                 }`}
@@ -159,10 +160,10 @@ const CategorySection: React.FC = () => {
                                 <img
                                     src={category.imageUrl}
                                     alt={category.name}
-                                    className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded transition-transform duration-300 hover:scale-110"
+                                    className="w-16 h-16 outline-none sm:w-20 sm:h-20 object-cover rounded transition-transform duration-300 hover:scale-110"
                                 />
                             </div>
-                            <span className="text-xs sm:text-sm font-medium text-center break-words">
+                            <span className="text-xs sm:text-sm outline-none font-medium text-center break-words">
                                 {category.name}
                             </span>
                         </div>

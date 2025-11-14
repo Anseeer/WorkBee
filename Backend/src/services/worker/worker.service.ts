@@ -337,7 +337,7 @@ export class WorkerService implements IWorkerService {
 
             const existingWorker = await this._workerRepository.findByEmail(payload.email);
             if (!existingWorker || existingWorker.role !== "Worker") {
-                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER_SIGNUP_FIRST);
             }
 
             if (existingWorker.isActive === false) {
@@ -370,7 +370,7 @@ export class WorkerService implements IWorkerService {
             };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to find workers by IDs: ${errMsg}`);
+            throw new Error(errMsg);
         }
     }
 

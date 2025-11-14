@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -66,9 +67,13 @@ const WorkerLoginPage = () => {
 
             toast.success("Login successful");
             navigate(API_ROUTES.WORKER.DASHBOARD);
-        } catch (error) {
-            console.error(error);
-            toast.error("Google Log-In failed");
+        } catch (error: any) {
+            console.error("Google login error:", error);
+
+            const backendMessage =
+                error?.response?.data?.message || "Google Log-In failed";
+
+            toast.error(backendMessage);
         }
     };
 

@@ -309,7 +309,7 @@ export class WorkerController implements IWorkerController {
             res.status(response.status).json(response);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.GOOGLE_LOGIN_FAILED, errMsg));
+            next(new errorResponse(StatusCode.BAD_REQUEST, errMsg || WORKER_MESSAGE.GOOGLE_LOGIN_FAILED, errMsg));
         }
     }
 
