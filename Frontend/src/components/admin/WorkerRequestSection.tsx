@@ -93,7 +93,7 @@ const WorkerApprovalComponent: React.FC = () => {
     };
 
     return (
-        <div className="h-[560px] overflow-y-auto p-6 animate-fadeIn">
+        <div className="h-screen overflow-y-auto p-6 animate-fadeIn">
             <div className="max-w-7xl mx-auto animate-fadeInUp">
                 <div className="mb-8 text-center md:text-left">
                     <p className="text-gray-600 animate-fadeIn delay-75">

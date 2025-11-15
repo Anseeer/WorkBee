@@ -14,6 +14,11 @@
   font-weight: 700;
 }
 
+div {
+  caret-color: transparent !important;
+  cursor: default !important;
+}
+
 input:-webkit-autofill {
   background-color: transparent !important;
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
@@ -182,7 +187,6 @@ input:-webkit-autofill {
 .animate-fadeInUp {
   animation: fadeInUp 0.8s ease-out forwards;
 }
-
 
 @media (max-width: 300px) {
   .hide-below-300 {

@@ -407,7 +407,7 @@ export default function BuildAccount() {
                                 formik.setFieldTouched(`service_price_${srv.id}`, true);
                                 formik.validateField(`service_price_${srv.id}`);
                               }}
-                              placeholder="Enter your price"
+                              placeholder="Enter your price (eg:₹250)"
                               className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent outline-none"
                             />
                             <span className="text-sm text-gray-500 whitespace-nowrap">/ hour</span>

@@ -77,6 +77,7 @@ const RevenueManagement = () => {
     };
 
     const columns: Column<ITransactions>[] = [
+        { key: 'createdAt', label: 'Date', render: (u) => formatDate(u.createdAt) },
         {
             key: 'amount',
             label: 'Amount',
@@ -88,7 +89,6 @@ const RevenueManagement = () => {
         },
         { key: 'type', label: 'Type' },
         { key: 'description', label: 'Description' },
-        { key: 'createdAt', label: 'Date', render: (u) => formatDate(u.createdAt) },
     ];
 
     return (
