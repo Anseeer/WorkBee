@@ -195,7 +195,7 @@ export class WorkerService implements IWorkerService {
     async forgotPass(email: string): Promise<string> {
         try {
             const otp = generateOTP();
-            await emailService(email, otp);
+            await emailService(email, otp, "RESET_PASSWORD");
             saveOtp(email, otp);
             return otp;
         } catch (error) {

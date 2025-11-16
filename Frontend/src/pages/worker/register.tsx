@@ -20,7 +20,7 @@ const WorkerRegistrationPage = () => {
     const [categoriesList, setCategoriesList] = useState<ICategory[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [showPassword, setShowPassword] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -63,7 +63,7 @@ const WorkerRegistrationPage = () => {
             if (!values.password) {
                 errors.password = "Password is required";
             } else if (!passRegex.test(values.password)) {
-                errors.password = "Invalid password format";
+                errors.password = "Invalid password format. Example: Abc123@";
             }
 
             if (!values.location.address) {
@@ -331,7 +331,7 @@ const WorkerRegistrationPage = () => {
                                     onClick={() => setShowPassword((prev) => !prev)}
                                     className="absolute right-2 top-7 text-gray-500"
                                 >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                             </div>
 

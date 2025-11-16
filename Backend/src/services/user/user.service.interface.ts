@@ -4,7 +4,7 @@ import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DT
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 
 export interface IUserService {
-    registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }>;
+    verifyRegister(verifyData: { userId: string, otp: string }): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }>;
     loginUser(email: string, password: string): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }>;
     forgotPass(email: string): Promise<string>;
     resendOtp(email: string): Promise<string>;

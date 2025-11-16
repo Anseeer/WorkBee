@@ -9,19 +9,35 @@ import { USERS_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { AuthRequest } from "../../middlewares/authMiddleware";
+import { ITempUserService } from "../../services/temp_user/temp.user.service.interface";
 
 @injectable()
 export class UserController implements IUserController {
     private _userService: IUserService;
+    private _tempUserService: ITempUserService;
     constructor(
         @inject(TYPES.userService) userService: IUserService,
+        @inject(TYPES.tempUserService) tempUserService: ITempUserService,
     ) {
         this._userService = userService
+        this._tempUserService = tempUserService
     }
 
-    register = async (req: Request, res: Response, next: NextFunction) => {
+    registerTemp = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { user, accessToken, refreshToken, wallet } = await this._userService.registerUser(req.body);
+            const userId = await this._tempUserService.register(req.body);
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.REGISTER_TEMP_USER_SUCCESSFULLY, { userId });
+
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.REGISTRATION_FAILED, errMsg));
+        }
+    }
+
+    verifyRegister = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user, accessToken, refreshToken, wallet } = await this._userService.verifyRegister(req.body);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.REGISTRATION_SUCCESS, { user, wallet });
 
             res.cookie("accessToken", accessToken, {
@@ -41,6 +57,7 @@ export class UserController implements IUserController {
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
+            console.log("Error :", errMsg)
             next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.REGISTRATION_FAILED, errMsg));
         }
     }
@@ -121,6 +138,19 @@ export class UserController implements IUserController {
                 throw new Error(USERS_MESSAGE.CANT_FIND_USER);
             }
             const otp = await this._userService.resendOtp(email);
+            const response = new successResponse(StatusCode.OK, USERS_MESSAGE.SUCCESSFULLY_RESEND_OTP, { otp });
+            logger.info(response);
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.FAILD_RESEND_OTP, errMsg));
+        }
+    }
+
+    reVerifyRegister = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { userId } = req.body;
+            const otp = await this._tempUserService.resendOtp(userId);
             const response = new successResponse(StatusCode.OK, USERS_MESSAGE.SUCCESSFULLY_RESEND_OTP, { otp });
             logger.info(response);
             res.status(response.status).json(response);

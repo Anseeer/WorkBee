@@ -68,12 +68,19 @@ import { IPaymentService } from "../services/payment/payment.service.interface";
 import { ISubscriptionRepository } from "../repositories/subscription/subscription.repo.interface";
 import { ISubscriptionService } from "../services/subscription/subscription.service.interface";
 import { ISubscriptionController } from "../controllers/subscription/subscription.controller.interface";
+import { ITempUserRepository } from "../repositories/temp_user/temp.user.interface.repo";
+import { ITempUserService } from "../services/temp_user/temp.user.service.interface";
+import { TempUserRepository } from "../repositories/temp_user/temp.user.repo";
+import { TempUserService } from "../services/temp_user/temp.user.service";
 
 const container = new Container();
 
 container.bind<IUserRepository>(TYPES.userRepository).to(UserRepository);
 container.bind<IUserService>(TYPES.userService).to(UserService);
 container.bind<IUserController>(TYPES.userController).to(UserController);
+
+container.bind<ITempUserRepository>(TYPES.tempUserRepository).to(TempUserRepository);
+container.bind<ITempUserService>(TYPES.tempUserService).to(TempUserService);
 
 container.bind<IAdminService>(TYPES.adminService).to(AdminService);
 container.bind<IAdminController>(TYPES.adminController).to(AdminController);

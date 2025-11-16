@@ -20,9 +20,8 @@ interface LoginFormProps {
 }
 
 const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotPass, HandleRegister, loading = false, role }: LoginFormProps) => {
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
 
   const formik = useFormik({
     initialValues: {
@@ -44,7 +43,7 @@ const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotP
       if (!values.password) {
         errors.password = "Password is required";
       } else if (!passRegex.test(values.password)) {
-        errors.password = "Invalid password format";
+        errors.password = "Invalid password format. Example: Abc123@";
       }
 
       return errors;
@@ -108,7 +107,7 @@ const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotP
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-3 text-gray-500"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
 

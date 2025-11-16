@@ -23,37 +23,57 @@ import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { Types } from "mongoose";
 import { Role } from "../../constants/role";
 import logger from "../../utilities/logger";
+import { ITempUserRepository } from "../../repositories/temp_user/temp.user.interface.repo";
 
 const client = new OAuth2Client();
 
 @injectable()
 export class UserService implements IUserService {
     private _userRepository: IUserRepository;
+    private _tempUserRepository: ITempUserRepository;
     private _availabilityRepository: IAvailabilityRepository;
     private _walletRepository: IWalletRepository;
     constructor(
         @inject(TYPES.userRepository) userRepo: IUserRepository,
+        @inject(TYPES.tempUserRepository) tempUserRepo: ITempUserRepository,
         @inject(TYPES.availabilityRepository) availabilityRepo: IAvailabilityRepository,
         @inject(TYPES.walletRepository) walletRepo: IWalletRepository
     ) {
         this._userRepository = userRepo;
+        this._tempUserRepository = tempUserRepo;
         this._availabilityRepository = availabilityRepo;
         this._walletRepository = walletRepo;
     }
 
-    async registerUser(userData: Partial<Iuser>): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }> {
+    async verifyRegister(verifyData: { userId: string, otp: string }): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }> {
         try {
-            if (!userData.email || !userData.password || !userData.name || !userData.location || !userData.phone) {
-                throw new Error(USERS_MESSAGE.ALL_FIELDS_REQUIRED_FOR_REGISTRATION);
+            if (!verifyData.userId || !verifyData.otp) {
+                throw new Error(USERS_MESSAGE.INVALID_CREDENTIALS_IN_VERIFY_REGISTER);
             }
 
-            const userExist = await this._userRepository.findByEmail(userData.email);
-            if (userExist) {
-                throw new Error(USERS_MESSAGE.USER_ALREADY_EXISTS_WITH_EMAIL);
+            const userExist = await this._tempUserRepository.findById(verifyData.userId);
+            if (!userExist) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER_REGISTER_FIRST);
             }
 
-            const hashedPass = await bcrypt.hash(userData.password, 10);
-            userData.password = hashedPass;
+            if (userExist.otp !== verifyData.otp) {
+                throw new Error(USERS_MESSAGE.INVALID_OTP)
+            }
+
+            const userData = {
+                _id: userExist.id,
+                name: userExist.name,
+                email: userExist.email,
+                phone: userExist.phone,
+                password: userExist.password,
+                location: userExist.location,
+                profileImage: userExist.profileImage,
+                isActive: true,
+                role: 'User',
+                createdAt: userExist.createdAt,
+                updatedAt: userExist.updatedAt
+            }
+
             const userEntity = await mapToUserEntity(userData);
             const newUser = await this._userRepository.create(userEntity);
 
@@ -75,11 +95,13 @@ export class UserService implements IUserService {
             const user = mapUserToDTO(newUser);
             const wallet = mapWalletToDTO(walletData as IWallet);
 
+            await this._tempUserRepository.delete(verifyData.userId);
+
             return { user, accessToken, refreshToken, wallet };
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -118,7 +140,7 @@ export class UserService implements IUserService {
     async forgotPass(email: string): Promise<string> {
         try {
             const otp = await generateOTP();
-            await emailService(email, otp);
+            await emailService(email, otp, "RESET_PASSWORD");
             saveOtp(email, otp);
             return otp;
         } catch (error) {

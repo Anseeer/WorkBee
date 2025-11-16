@@ -3,6 +3,9 @@ const TYPES = {
     userService: Symbol.for("userService"),
     userController: Symbol.for("userController"),
 
+    tempUserRepository: Symbol.for("tempUserRepository"),
+    tempUserService: Symbol.for("tempUserService"),
+
     adminRepository: Symbol.for("adminRepository"),
     adminService: Symbol.for("adminService"),
     adminController: Symbol.for("adminController"),

@@ -1,13 +1,12 @@
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 interface VerifyOtpFormProps {
-  onResend: (email: string) => void;
-  verify: (verifyData: { email: string; otp: string }) => void;
+  onResend: () => void;
+  onSubmit: (otp: string) => void;
 }
 
-const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
+const VerifyOtpForm = ({ onResend, onSubmit }: VerifyOtpFormProps) => {
   const [timeLeft, setTimeLeft] = useState<number>(60);
   const [expired, setExpired] = useState<boolean>(false);
 
@@ -23,18 +22,6 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
 
     return () => clearInterval(timer);
   }, [timeLeft]);
-
-  const handleResend = () => {
-    const email = localStorage.getItem("resetEmail");
-    if (!email) {
-      toast.error("Email not found. Please try again.");
-      return;
-    }
-
-    setTimeLeft(60);
-    setExpired(false);
-    onResend(email);
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -52,15 +39,15 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
       return errors;
     },
     onSubmit: (values) => {
-      const email = localStorage.getItem("resetEmail");
-      if (!email) {
-        toast.error("Email not found. Please try again.");
-        return;
-      }
-
-      verify({ email, otp: values.otp });
+      onSubmit(values.otp);
     },
   });
+
+  const handleResendClick = () => {
+    setTimeLeft(60);
+    setExpired(false);
+    onResend();
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -70,12 +57,10 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
 
   return (
     <div className="bg-gray-50 w-full min-h-screen relative px-4">
-      {/* Logo */}
       <div className="absolute top-4 left-4 sm:top-8 sm:left-8">
         <h1 className="merienda-text text-2xl sm:text-3xl text-green-900">WorkBee</h1>
       </div>
 
-      {/* Centered Form */}
       <div className="flex justify-center items-center min-h-screen">
         <div className="bg-white rounded-3xl border-2 border-green-600 shadow-md w-full max-w-md sm:max-w-lg md:max-w-xl p-4 sm:p-6 md:p-8">
           <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 text-center mb-6">
@@ -99,12 +84,14 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
             </div>
 
             {expired ? (
-              <div className="text-center space-y-3">
-                <p className="text-red-600 font-semibold text-sm sm:text-base">Time expired</p>
+              <div className="text-center space-y-2">
+                <p className="text-red-700 font-bold text-base sm:text-lg bg-red-100 px-4 py-1 rounded-full inline-block shadow-sm">
+                  Time Expired
+                </p>
                 <button
                   type="button"
-                  onClick={handleResend}
-                  className="text-green-700 underline font-medium text-sm sm:text-base"
+                  onClick={handleResendClick}
+                  className="w-full bg-green-900 py-2 sm:py-3 mt-2 sm:mt-4 text-white font-semibold rounded-full text-sm sm:text-base"
                 >
                   Resend OTP
                 </button>
@@ -122,7 +109,6 @@ const VerifyOtpForm = ({ onResend, verify }: VerifyOtpFormProps) => {
       </div>
     </div>
   );
-
 };
 
 export default VerifyOtpForm;

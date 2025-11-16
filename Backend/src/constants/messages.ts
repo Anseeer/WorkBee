@@ -68,6 +68,8 @@ export const SERVICE_MESSAGE = {
 };
 
 export const USERS_MESSAGE = {
+    REGISTER_TEMP_USER_SUCCESSFULLY: "successfully regiter tempUser.",
+    REGISTER_TEMP_USER_FAILD: "faild to regiter tempUser.",
     FETCH_CHAT_SUCCESS: "User chat fetched successfull.",
     FETCH_CHAT_FAILD: "User chat fetch faild.",
     USER_UPDATE_SUCCESS: "User update successfull.",
@@ -101,6 +103,7 @@ export const USERS_MESSAGE = {
     NO_OTP_FOUND_FOR_THIS_EMAIL: "No OTP found for this email.",
     OTP_EXPIRED: "OTP has expired.",
     INVALID_OTP: "Invalid OTP entered.",
+    INVALID_CREDENTIALS_IN_VERIFY_REGISTER: "Invalid credentials .",
     USER_ID_NOT_GET: "User Id not get.",
     USER_BLOCKED: "User blocked by admin.",
 };

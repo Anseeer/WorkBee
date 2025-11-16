@@ -13,6 +13,7 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 import GuestRoute from "../components/common/GuestRoute";
 import { ROLE } from "../constant/roles";
 import { API_ROUTES } from "../constant/api.routes";
+import { VerifyRegistration } from "../pages/user/verifyRegistration";
 
 export const userRoutes = [
     {
@@ -27,6 +28,13 @@ export const userRoutes = [
         path: API_ROUTES.USER.REGISTER, element: (
             <GuestRoute role={ROLE.USER}>
                 <RegistrationPage />
+            </GuestRoute>
+        )
+    },
+    {
+        path: API_ROUTES.USER.VERIFY_REGISTERATION, element: (
+            <GuestRoute role={ROLE.USER}>
+                <VerifyRegistration />
             </GuestRoute>
         )
     },

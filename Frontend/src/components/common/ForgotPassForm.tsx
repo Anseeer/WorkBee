@@ -1,16 +1,21 @@
 import { useFormik } from "formik";
 import { emailRegex } from "../../constant/regexs";
+import { useState } from "react";
 
 interface ForgotPasswordFormProps {
   Submit: (email: string) => void;
 }
 
 const ForgotPasswordForm = ({ Submit }: ForgotPasswordFormProps) => {
+
+  const [loading, setLoading] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: "",
     },
     onSubmit: () => {
+      setLoading(true)
       Submit(formik.values.email);
     },
     validate: (values) => {
@@ -55,7 +60,7 @@ const ForgotPasswordForm = ({ Submit }: ForgotPasswordFormProps) => {
             type="submit"
             className="w-full bg-green-900 py-2 sm:py-3 mt-4 sm:mt-6 text-white font-semibold rounded-full text-sm sm:text-base"
           >
-            Send OTP
+            {loading ? `Sending..` : `Send OTP`}
           </button>
         </form>
       </div>

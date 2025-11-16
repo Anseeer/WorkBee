@@ -12,6 +12,14 @@ export const register = async (userData: Partial<Iuser>) => {
     return response;
 };
 
+export const verifyRegister = async (verifyData: { userId: string, otp: string }) => {
+    const response = await axios.post(API_ROUTES.USER_SERVICE.VERIFY_REGISTRATION, verifyData, {
+        withCredentials: true,
+    });
+    console.log("VerifyRegisteration requested")
+    return response;
+};
+
 export const login = async (credentials: { email: string; password: string }) => {
     const response = await axios.post(API_ROUTES.USER_SERVICE.LOGIN, credentials, {
         withCredentials: true,
@@ -30,6 +38,11 @@ export const forgotPassword = async (email: string) => {
 
 export const resendOtp = async (email: string) => {
     const response = await axios.post(API_ROUTES.USER_SERVICE.RESEND_OTP, { email });
+    return response;
+};
+
+export const reVerify = async (userId: string) => {
+    const response = await axios.post(API_ROUTES.USER_SERVICE.REVERIFY_REGISTER, { userId });
     return response;
 };
 

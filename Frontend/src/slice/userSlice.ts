@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { Iuser } from "../types/IUser";
-import { fetchUser, forgotPassword, login, register, resendOtp, resetPass, verifyOtp } from "../services/userService";
+import { fetchUser, forgotPassword, login, register, resendOtp, resetPass, reVerify, verifyOtp, verifyRegister } from "../services/userService";
 import type { AxiosError } from "axios";
 import type { IWallet } from "../types/IWallet";
 import { API_ROUTES } from "../constant/api.routes";
@@ -20,15 +20,31 @@ const initialState: userState = {
 }
 
 export const registerUserThunk = createAsyncThunk(
-    API_ROUTES.USER.REGISTER,
+    API_ROUTES.USER_SERVICE.REGISTER,
     async (userData: Partial<Iuser>, { rejectWithValue }) => {
         try {
             const response = await register(userData);
-            console.log("response.data :", response.data)
+            localStorage.setItem('temp_userId', response?.data?.data?.userId);
             return response.data.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             const errorMessage = error || "Something went wrong";
+            return rejectWithValue(errorMessage);
+        }
+    }
+)
+
+export const verifyRegisterUserThunk = createAsyncThunk(
+    API_ROUTES.USER_SERVICE.VERIFY_REGISTRATION,
+    async (verifyData: { userId: string, otp: string }, { rejectWithValue }) => {
+        try {
+            const response = await verifyRegister(verifyData);
+            console.log("response.data :", response.data)
+            return response.data.data;
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ data: string }>;
+            console.log("err response.data :", error.response?.data)
+            const errorMessage = error.response?.data || "Something went wrong";
             return rejectWithValue(errorMessage);
         }
     }
@@ -68,6 +84,21 @@ export const resendOtpUserThunk = createAsyncThunk(
     async (email: string, { rejectWithValue }) => {
         try {
             const response = await resendOtp(email);
+            console.log("response :", response);
+            return response.data;
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ data: string }>;
+            const errorMessage = error.response?.data?.data || "Something went wrong";
+            return rejectWithValue(errorMessage);
+        }
+    }
+)
+
+export const reVerifyRegister = createAsyncThunk(
+    API_ROUTES.USER_SERVICE.REVERIFY_REGISTER,
+    async (userId: string, { rejectWithValue }) => {
+        try {
+            const response = await reVerify(userId);
             console.log("response :", response);
             return response.data;
         } catch (err: unknown) {
@@ -136,15 +167,15 @@ const userSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(registerUserThunk.pending, (state) => {
+            .addCase(verifyRegisterUserThunk.pending, (state) => {
                 state.error = null;
             })
-            .addCase(registerUserThunk.fulfilled, (state, action) => {
+            .addCase(verifyRegisterUserThunk.fulfilled, (state, action) => {
                 state.user = action.payload.newUser;
                 state.wallet = action.payload.wallet;
                 state.error = null;
             })
-            .addCase(registerUserThunk.rejected, (state, action) => {
+            .addCase(verifyRegisterUserThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
 
             })

@@ -15,8 +15,8 @@ const RegistrationPage = () => {
   const autocompleteRef = useRef<any>(null); const [loading, setLoading] = useState<boolean>(false);
   const Dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(true);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -35,9 +35,9 @@ const RegistrationPage = () => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        await Dispatch(registerUserThunk(values)).unwrap()
-        toast.success("Registration successful!");
-        navigate(API_ROUTES.USER.HOME, { replace: true })
+        await Dispatch(registerUserThunk(values)).unwrap();
+        toast.success("Please enter the OTP to verify.");
+        navigate(API_ROUTES.USER.VERIFY_REGISTERATION, { replace: true })
       } catch (error: unknown) {
         const err = error as AxiosError<{ data: string }>;
         const message = err.response?.data?.data || "Registration failed";
@@ -77,7 +77,7 @@ const RegistrationPage = () => {
       if (!values.password) {
         errors.password = "Password is required";
       } else if (!passRegex.test(values.password)) {
-        errors.password = "Invalid password format";
+        errors.password = "Invalid password format. Example: Abc123@";
       }
 
       if (!values.confirmPassword) {
@@ -295,7 +295,7 @@ const RegistrationPage = () => {
               {/* Password & Confirm Password */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
-                  <div className="h-5">
+                  <div className="h-5 mb-2">
                     {formik.touched.password && formik.errors.password && (
                       <span className="text-sm text-red-500">{formik.errors.password}</span>
                     )}
@@ -316,12 +316,12 @@ const RegistrationPage = () => {
                     className="absolute right-2 top-7 text-gray-500"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
 
                 <div className="relative">
-                  <div className="h-5">
+                  <div className="h-5 mb-2">
                     {formik.touched.confirmPassword && formik.errors.confirmPassword && (
                       <span className="text-sm text-red-500">{formik.errors.confirmPassword}</span>
                     )}
@@ -342,7 +342,7 @@ const RegistrationPage = () => {
                     className="absolute right-2 top-7 text-gray-500"
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                   >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
               </div>

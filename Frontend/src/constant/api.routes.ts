@@ -15,6 +15,7 @@ export const API_ROUTES = {
     MESSAGE: "/message",
     FETCH_DATA: "/fetch-data",
     DRAFT_WORK: "/create-work",
+    VERIFY_REGISTERATION: "/verify-registration",
   },
 
   ADMIN: {
@@ -73,6 +74,8 @@ export const API_ROUTES = {
 
   USER_SERVICE: {
     REGISTER: "users/register",
+    REVERIFY_REGISTER: "/resendOtp-verifyRegister",
+    VERIFY_REGISTRATION: "users/verify-register",
     LOGIN: "users/login",
     LOGOUT: "users/logout",
     FORGOT_PASSWORD: "users/forgot-password",
