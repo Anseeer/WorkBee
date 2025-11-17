@@ -72,6 +72,10 @@ import { ITempUserRepository } from "../repositories/temp_user/temp.user.interfa
 import { ITempUserService } from "../services/temp_user/temp.user.service.interface";
 import { TempUserRepository } from "../repositories/temp_user/temp.user.repo";
 import { TempUserService } from "../services/temp_user/temp.user.service";
+import { ITempWorkerRepository } from "../repositories/temp_worker/temp.worker.interface.repo";
+import { TempWorkerRepository } from "../repositories/temp_worker/temp.worker.repo";
+import { TempWorkerService } from "../services/temp_worker/temp.worker.service";
+import { ITempWorkerService } from "../services/temp_worker/temp.worker.service.interface";
 
 const container = new Container();
 
@@ -88,6 +92,9 @@ container.bind<IAdminController>(TYPES.adminController).to(AdminController);
 container.bind<IWorkerRepository>(TYPES.workerRepository).to(WorkerRepository);
 container.bind<IWorkerService>(TYPES.workerService).to(WorkerService);
 container.bind<IWorkerController>(TYPES.workerController).to(WorkerController);
+
+container.bind<ITempWorkerRepository>(TYPES.tempWorkerRepository).to(TempWorkerRepository);
+container.bind<ITempWorkerService>(TYPES.tempWorkerService).to(TempWorkerService);
 
 container.bind<ICategoryRepository>(TYPES.categoryRepository).to(CategoryRepository);
 container.bind<ICategoryService>(TYPES.categoryService).to(CategoryService);

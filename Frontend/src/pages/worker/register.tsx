@@ -21,6 +21,7 @@ const WorkerRegistrationPage = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -28,6 +29,7 @@ const WorkerRegistrationPage = () => {
             email: "",
             phone: "",
             password: "",
+            confirmPassword: "",
             location: {
                 address: "",
                 pincode: "",
@@ -42,6 +44,7 @@ const WorkerRegistrationPage = () => {
                 email?: string;
                 phone?: string;
                 password?: string;
+                confirmPassword?: string;
                 location?: { address?: string };
                 categories?: string;
             } = {};
@@ -66,6 +69,17 @@ const WorkerRegistrationPage = () => {
                 errors.password = "Invalid password format. Example: Abc123@";
             }
 
+            if (!values.confirmPassword) {
+                errors.password = "Confirm Password is required";
+            } else if (!passRegex.test(values.password)) {
+                errors.password = "Invalid password format. Example: Abc123@";
+            }
+
+            if (values.confirmPassword !== values.password) {
+                errors.password = "Passwords must match"
+                errors.confirmPassword = "Passwords must match"
+            }
+
             if (!values.location.address) {
                 errors.location = { address: "Location is required" };
             }
@@ -83,16 +97,18 @@ const WorkerRegistrationPage = () => {
         onSubmit: async (values) => {
             setLoading(true);
             try {
-                await Dispatch(registerWorkerThunk(values)).unwrap();
+                const workerId = await Dispatch(registerWorkerThunk(values)).unwrap();
+                console.log("WorkerID :", workerId)
                 toast.success("Registration successful!");
-                navigate(API_ROUTES.WORKER.DASHBOARD, { replace: true });
-            } catch (error: unknown) {
-                const message = error as string || "Registration failed";
-                toast.error(message);
+                navigate(API_ROUTES.WORKER.VERIFY_REGISTERATION, { replace: true });
+
+            } catch (error: any) {
+                toast.error(error);
             } finally {
                 setLoading(false);
             }
         },
+
     });
 
     useEffect(() => {
@@ -306,7 +322,7 @@ const WorkerRegistrationPage = () => {
                             </div>
                         </div>
 
-                        {/* Password & Categories */}
+                        {/* ----------  Password & Confirm Password  ---------- */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* Password */}
                             <div className="relative">
@@ -323,8 +339,8 @@ const WorkerRegistrationPage = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     placeholder="Password"
                                     className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                border-0 border-b-2 border-gray-300 focus:border-green-600 
-                focus:outline-none bg-transparent pr-8"
+                 border-0 border-b-2 border-gray-300 focus:border-green-600 
+                 focus:outline-none bg-transparent pr-8"
                                 />
                                 <button
                                     type="button"
@@ -335,75 +351,114 @@ const WorkerRegistrationPage = () => {
                                 </button>
                             </div>
 
-                            {/* Categories Dropdown */}
+                            {/* Confirm Password */}
                             <div className="relative">
                                 <div className="h-5">
-                                    {formik.touched.categories && formik.errors.categories && (
-                                        <span className="text-sm text-red-500">{formik.errors.categories}</span>
+                                    {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                                        <span className="text-sm text-red-500">{formik.errors.confirmPassword}</span>
                                     )}
                                 </div>
-
-                                <div
-                                    onClick={() => setShowDropdown(!showDropdown)}
-                                    className="w-full h-[40px] flex items-center justify-between cursor-pointer 
-                                                border-b-2 border-gray-300 text-gray-600 bg-transparent px-2
-                                                hover:border-green-600 transition-colors duration-200 rounded-sm"
+                                <input
+                                    name="confirmPassword"
+                                    value={formik.values.confirmPassword ?? ''}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    placeholder="Confirm Password"
+                                    className="w-full relative px-0 py-2 text-gray-600 placeholder-gray-400 
+                 border-0 border-b-2 border-gray-300 focus:border-green-600 
+                 focus:outline-none bg-transparent pr-8"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                    className="absolute right-2 top-7 text-gray-500"
                                 >
-                                    <span className="truncate flex flex-wrap gap-1">
+                                    {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* ----------  BIG CATEGORY SELECTION (full row)  ---------- */}
+                        <div className="col-span-1 md:col-span-2">
+                            <div className="h-5">
+                                {formik.touched.categories && formik.errors.categories && (
+                                    <span className="text-sm text-red-500">{formik.errors.categories}</span>
+                                )}
+                            </div>
+
+                            <div className="relative w-full">
+                                {/* Trigger */}
+                                <div
+                                    onClick={() => setShowDropdown((p) => !p)}
+                                    className="w-full min-h-[42px] flex items-center justify-between 
+        cursor-pointer border border-gray-300 hover:border-green-600 
+        transition-all duration-200 bg-white px-3 py-2 rounded-md shadow-sm"
+                                >
+                                    <div className="flex flex-wrap gap-1 flex-1">
                                         {formik.values.categories.length > 0 ? (
                                             (() => {
-                                                const selectedCats = categoriesList.filter((cat) =>
-                                                    formik.values.categories.includes(cat.id)
+                                                const selected = categoriesList.filter((c) =>
+                                                    formik.values.categories.includes(c.id)
                                                 );
-                                                const screenWidth = window.innerWidth;
-                                                const visibleCount = screenWidth < 640 ? 1 : 2; // 1 for mobile, 2 for tablet/desktop
-                                                const visibleCats = selectedCats.slice(0, visibleCount);
-                                                const remainingCount = selectedCats.length - visibleCats.length;
+                                                const screen = window.innerWidth;
+                                                const visible = screen < 640 ? 2 : 4;
+                                                const shown = selected.slice(0, visible);
+                                                const more = selected.length - shown.length;
 
                                                 return (
                                                     <>
-                                                        {visibleCats.map((cat) => (
+                                                        {shown.map((cat) => (
                                                             <span
                                                                 key={cat.id}
-                                                                className="bg-green-100 text-green-700 text-xs sm:text-sm font-medium px-2 py-1 rounded-md"
+                                                                className="bg-green-100 text-green-700 text-xs sm:text-sm 
+                             font-medium px-2.5 py-1 rounded-md"
                                                             >
                                                                 {cat.name}
                                                             </span>
                                                         ))}
-                                                        {remainingCount > 0 && (
+                                                        {more > 0 && (
                                                             <span className="text-gray-500 text-xs sm:text-sm font-medium">
-                                                                +{remainingCount} more
+                                                                +{more} more
                                                             </span>
                                                         )}
                                                     </>
                                                 );
                                             })()
                                         ) : (
-                                            <span className="text-gray-400">Choose Categories</span>
+                                            <span className="text-gray-400">Choose Categories (click to open)</span>
                                         )}
-                                    </span>
-                                    <span className="text-gray-400">▼</span>
-                                </div>
-
-                                {showDropdown && (
-                                    <div className="absolute mt-1 w-full bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
-                                        {categoriesList.map((cat) => (
-                                            <div
-                                                key={cat.id}
-                                                onClick={() => handleCategorySelect(cat.id)}
-                                                className={`px-4 py-2 flex justify-between items-center cursor-pointer
-                                                        hover:bg-green-100 transition-colors duration-150
-                                                        ${formik.values.categories.includes(cat.id) ? 'bg-green-50' : ''}`}
-                                            >
-                                                <span>{cat.name}</span>
-                                                {formik.values.categories.includes(cat.id) && (
-                                                    <span className="text-green-600 font-bold">✓</span>
-                                                )}
-                                            </div>
-                                        ))}
                                     </div>
-                                )}
+                                    <span className="text-gray-400 ml-2">▼</span>
+                                </div>
                             </div>
+
+                            {/* Dropdown – BIG, scrollable, same design */}
+                            {showDropdown && (
+                                <div
+                                    className="absolute mt-1 mb-2 bg-white rounded-md shadow-lg 
+                                            max-h-64 overflow-y-auto z-20 border border-gray-200 
+                                            w-max min-w-[200px]"
+                                >
+                                    {categoriesList.map((cat) => (
+                                        <div
+                                            key={cat.id}
+                                            onClick={() => handleCategorySelect(cat.id)}
+                                            className={`flex justify-between items-center px-4 py-2 
+                                                     hover:bg-green-50 transition-colors ${formik.values.categories.includes(cat.id)
+                                                    ? "bg-green-50"
+                                                    : ""
+                                                }`}
+                                        >
+                                            <span className="text-gray-700">{cat.name}</span>
+
+                                            {formik.values.categories.includes(cat.id) && (
+                                                <span className="text-green-600 font-bold">✓</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Submit Button */}

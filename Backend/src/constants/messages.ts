@@ -111,6 +111,7 @@ export const USERS_MESSAGE = {
 export const WORKER_MESSAGE = {
     GET_WORKERS_SUCCESSFULL: "Workers get successfull",
     GET_WORKERS_FAILD: "Workers get faild",
+    WORKER_ID_OR_OTP_NOT_GET: "WorkerId or Otp not get",
     EMAIL_AND_PASS_REQUIRED: "Email and password are required.",
     LOGIN_FAILD: "Worker login failed. Please check credentials.",
     LOGIN_SUCCESS: "Worker login successful.",

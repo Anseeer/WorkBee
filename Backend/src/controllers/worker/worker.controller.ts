@@ -10,18 +10,22 @@ import { SEARCH_TERMS, WALLET_MESSAGE, WORKER_MESSAGE } from "../../constants/me
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { IWalletService } from "../../services/wallet/wallet.service.interface";
+import { ITempWorkerService } from "../../services/temp_worker/temp.worker.service.interface";
 
 @injectable()
 export class WorkerController implements IWorkerController {
     private _workerService: IWorkerService;
+    private _tempWorkerService: ITempWorkerService;
     private _availabilityService: IAvailabilityService;
     private _walletService: IWalletService;
     constructor(
         @inject(TYPES.workerService) workerService: IWorkerService,
+        @inject(TYPES.tempWorkerService) tempWorkerService: ITempWorkerService,
         @inject(TYPES.walletService) walletService: IWalletService,
         @inject(TYPES.availabilityService) availabilityService: IAvailabilityService
     ) {
         this._workerService = workerService;
+        this._tempWorkerService = tempWorkerService;
         this._walletService = walletService;
         this._availabilityService = availabilityService;
     }
@@ -60,7 +64,24 @@ export class WorkerController implements IWorkerController {
 
     register = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { accessToken, refreshToken, worker, wallet } = await this._workerService.registerWorker(req.body);
+            const workerId = await this._tempWorkerService.register(req.body);
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.REGISTRATION_SUCCESS, { workerId });
+
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg));
+        }
+    };
+
+    verifyRegister = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { tempWorkerId, otp } = req.body;
+            if (!tempWorkerId || !otp) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_OR_OTP_NOT_GET);
+            }
+            const { accessToken, refreshToken, worker, wallet } = await this._workerService.registerWorker(tempWorkerId, otp);
             const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.REGISTRATION_SUCCESS, { worker, wallet });
 
             res.cookie("accessToken", accessToken, {
@@ -83,6 +104,23 @@ export class WorkerController implements IWorkerController {
             logger.error("Error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.REGISTRATION_FAILD, errMsg));
+        }
+    };
+
+    reVerifyRegister = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { tempWorkerId } = req.body;
+            if (!tempWorkerId) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_OR_OTP_NOT_GET);
+            }
+            const workerId = await this._tempWorkerService.resendOtp(tempWorkerId);
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.SUCCESSFULLUY_RESEND_OTP, { workerId });
+            logger.info(response)
+            res.status(response.status).json({ response });
+        } catch (error: unknown) {
+            logger.error("Error :", error)
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.FAILD_RESEND_OTP, errMsg));
         }
     };
 

@@ -11,6 +11,7 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 import GuestRoute from "../components/common/GuestRoute";
 import { ROLE } from "../constant/roles";
 import { API_ROUTES } from "../constant/api.routes";
+import { VerifyRegistration } from "../pages/worker/verifyRegistration";
 
 export const workerRoutes = [
     {
@@ -26,6 +27,14 @@ export const workerRoutes = [
         element: (
             <GuestRoute role={ROLE.WORKER}>
                 <WorkerRegistrationPage />
+            </GuestRoute>
+        ),
+    },
+    {
+        path: API_ROUTES.WORKER.VERIFY_REGISTERATION,
+        element: (
+            <GuestRoute role={ROLE.WORKER}>
+                <VerifyRegistration />
             </GuestRoute>
         ),
     },

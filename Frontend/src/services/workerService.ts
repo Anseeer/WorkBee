@@ -4,9 +4,22 @@ import type { ICategory } from "../types/ICategory";
 import type { IWorker } from "../types/IWorker";
 import axios from "./axios";
 
-
 export const register = async (workerData: Partial<IWorker>) => {
   const response = await axios.post(API_ROUTES.WORKER_SERVICE.REGISTER, workerData, {
+    withCredentials: true,
+  });
+  return response;
+};
+
+export const verifyRegister = async (verifyData: { tempWorkerId: string, otp: string }) => {
+  const response = await axios.post(API_ROUTES.WORKER_SERVICE.VERIFY_REGISTER, verifyData, {
+    withCredentials: true,
+  });
+  return response;
+};
+
+export const reVerify = async (tempWorkerId: string) => {
+  const response = await axios.post(API_ROUTES.WORKER_SERVICE.REVERIFY_REGISTER, { tempWorkerId }, {
     withCredentials: true,
   });
   return response;

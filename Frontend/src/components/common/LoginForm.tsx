@@ -164,8 +164,6 @@ const LoginForm = ({ Submit, handleGoogleLogin, handleGoogleError, HandleForgotP
       </div>
     </div>
   );
-
-
 };
 
 export default LoginForm;

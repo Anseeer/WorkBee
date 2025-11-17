@@ -13,10 +13,39 @@
   font-family: 'Merienda', cursive;
   font-weight: 700;
 }
- 
+
 div {
-  caret-color: transparent !important;
-  cursor: default !important;
+  caret-color: transparent;
+  user-select: none;
+  cursor: default;
+}
+
+input,
+textarea,
+[contenteditable] {
+  caret-color: auto !important;
+  cursor: text !important;
+  user-select: auto !important;
+}
+
+button,
+[role="button"],
+a,
+label,
+[onclick],
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.clickable-image {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 input:-webkit-autofill {

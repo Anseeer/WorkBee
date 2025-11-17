@@ -28,6 +28,7 @@ export const API_ROUTES = {
 
   WORKER: {
     REGISTER: "/workers/register",
+    VERIFY_REGISTERATION: "/workers/verify-registration",
     DASHBOARD: "/workers/dashboard",
     LOGIN: "/workers/login",
     LANDING: "/workers",
@@ -74,7 +75,7 @@ export const API_ROUTES = {
 
   USER_SERVICE: {
     REGISTER: "users/register",
-    REVERIFY_REGISTER: "/resendOtp-verifyRegister",
+    REVERIFY_REGISTER: "/re-verifyRegister",
     VERIFY_REGISTRATION: "users/verify-register",
     LOGIN: "users/login",
     LOGOUT: "users/logout",
@@ -105,6 +106,8 @@ export const API_ROUTES = {
 
   WORKER_SERVICE: {
     REGISTER: "workers/register",
+    VERIFY_REGISTER: "workers/verify-register",
+    REVERIFY_REGISTER: "workers/re-verify-register",
     LOGIN: "workers/login",
     LOGOUT: "workers/logout",
     BUILD_ACCOUNT: "workers/build-account",

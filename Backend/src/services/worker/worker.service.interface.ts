@@ -6,7 +6,7 @@ import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 
 export interface IWorkerService {
-    registerWorker(workerData: Partial<IWorker>): Promise<{ accessToken: string, refreshToken: string, worker?: IWorkerDTO, wallet: IWalletDTO | null }>;
+    registerWorker(tempWorkerId: string, otp: string): Promise<{ accessToken: string, refreshToken: string, worker?: IWorkerDTO, wallet: IWalletDTO | null }>;
     findById(workerId: string): Promise<IWorkerDTO | null>;
     loginWorker(credentials: { email: string; password: string }): Promise<{ accessToken: string; refreshToken: string; worker: IWorkerDTO; wallet: IWalletDTO | null, availability?: IAvailabilityDTO }>;
     buildAccount(workerId: string, availability: IAvailability, workerData: Partial<IWorker>): Promise<{ updatedWorker: IWorkerDTO; updatedAvailability: IAvailabilityDTO | null }>;

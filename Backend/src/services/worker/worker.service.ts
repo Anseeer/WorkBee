@@ -23,20 +23,24 @@ import { mapAvailabilityToDTO, mapAvailabilityToEntity } from "../../mappers/ava
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { Types } from "mongoose";
 import logger from "../../utilities/logger";
+import { ITempWorkerRepository } from "../../repositories/temp_worker/temp.worker.interface.repo";
 
 const client = new OAuth2Client();
 
 @injectable()
 export class WorkerService implements IWorkerService {
     private _workerRepository: IWorkerRepository
+    private _tempWorkerRepository: ITempWorkerRepository
     private _availabilityRepository: IAvailabilityRepository
     private _walletRepository: IWalletRepository
     constructor(
         @inject(TYPES.workerRepository) workerRepo: IWorkerRepository,
+        @inject(TYPES.tempWorkerRepository) tempWorkerRepo: ITempWorkerRepository,
         @inject(TYPES.availabilityRepository) availibilityRepo: IAvailabilityRepository,
         @inject(TYPES.walletRepository) walletRepo: IWalletRepository,
     ) {
         this._workerRepository = workerRepo;
+        this._tempWorkerRepository = tempWorkerRepo;
         this._availabilityRepository = availibilityRepo;
         this._walletRepository = walletRepo;
     }
@@ -95,24 +99,43 @@ export class WorkerService implements IWorkerService {
         }
     }
 
-    async registerWorker(workerData: Partial<IWorker>): Promise<{
+    async registerWorker(tempWorkerId: string, otp: string): Promise<{
         accessToken: string,
         refreshToken: string,
         worker: IWorkerDTO,
         wallet: IWalletDTO | null
     }> {
         try {
-            if (!workerData.name || !workerData.email || !workerData.password || !workerData.phone || !workerData.categories || !workerData.location) {
-                throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
+            if (!tempWorkerId || !otp) {
+                throw new Error(WORKER_MESSAGE.WORKER_ID_OR_OTP_NOT_GET);
             }
 
-            const existingWorker = await this._workerRepository.findByEmail(workerData.email);
+            const tempWorker = await this._tempWorkerRepository.findById(tempWorkerId);
+
+            if (!tempWorker) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER_SIGNUP_FIRST)
+            }
+
+            if (otp !== tempWorker.otp) {
+                throw new Error(WORKER_MESSAGE.INVALID_OTP)
+            }
+
+            const existingWorker = await this._workerRepository.findByEmail(tempWorker.email);
             if (existingWorker) {
                 throw new Error(WORKER_MESSAGE.WORKER_ALREADY_EXIST);
             }
 
-            const hashedPass = await bcrypt.hash(workerData.password, 10);
-            workerData.password = hashedPass;
+            const workerData = {
+                name: tempWorker.name,
+                email: tempWorker.email,
+                phone: tempWorker.phone,
+                password: tempWorker.password,
+                categories: tempWorker.categories,
+                location: tempWorker.location,
+                createdAt: tempWorker.createdAt,
+                updatedAt: tempWorker.updatedAt,
+            }
+
             const workerEntity = await mapWorkerToEntity(workerData);
             const newWorker = await this._workerRepository.create(workerEntity);
             const worker = mapWorkerToDTO(newWorker as IWorker);
@@ -132,6 +155,8 @@ export class WorkerService implements IWorkerService {
 
             const accessToken = generate_Access_Token(newWorker.id.toString(), newWorker.role);
             const refreshToken = generate_Refresh_Token(newWorker.id.toString(), newWorker.role);
+
+            await this._tempWorkerRepository.delete(tempWorker?.id)
 
             return { accessToken, refreshToken, worker, wallet };
         } catch (error) {

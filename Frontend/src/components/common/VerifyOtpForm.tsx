@@ -36,6 +36,10 @@ const VerifyOtpForm = ({ onResend, onSubmit }: VerifyOtpFormProps) => {
         errors.otp = "OTP must be 6 digits";
       }
 
+      if (expired) {
+        errors.otp = "Your time expired !. resend otp"
+      }
+
       return errors;
     },
     onSubmit: (values) => {

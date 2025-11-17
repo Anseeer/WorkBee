@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AxiosError } from "axios";
-import { buildAccount, forgotPassword, getWorkerDetails, login, register, resendOtp, resetPass, verifyOtp } from "../services/workerService";
+import { buildAccount, forgotPassword, getWorkerDetails, login, register, resendOtp, resetPass, reVerify, verifyOtp, verifyRegister } from "../services/workerService";
 import type { IWorker } from "../types/IWorker";
 import type { IAvailability } from "../types/IAvailability";
 import type { IWallet } from "../types/IWallet";
@@ -31,6 +31,8 @@ export const registerWorkerThunk = createAsyncThunk(
     async (workerData: Partial<IWorker>, { rejectWithValue }) => {
         try {
             const response = await register(workerData);
+            localStorage.setItem('temp_workerId', response.data.data.workerId)
+            console.log(response.data.data)
             return response.data.data
         } catch (error: unknown) {
             const err = error as AxiosError<{ data: string }>;
@@ -38,6 +40,38 @@ export const registerWorkerThunk = createAsyncThunk(
         }
     }
 );
+
+
+export const verifyRegisterWorkerThunk = createAsyncThunk(
+    API_ROUTES.USER_SERVICE.VERIFY_REGISTRATION,
+    async (verifyData: { tempWorkerId: string, otp: string }, { rejectWithValue }) => {
+        try {
+            const response = await verifyRegister(verifyData);
+            console.log("response.data :", response.data)
+            return response.data.data;
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ data: string }>;
+            console.log("err response.data :", error.response?.data)
+            const errorMessage = error.response?.data || "Something went wrong";
+            return rejectWithValue(errorMessage);
+        }
+    }
+)
+
+export const reVerifyRegister = createAsyncThunk(
+    API_ROUTES.WORKER_SERVICE.REVERIFY_REGISTER,
+    async (tempWorkerId: string, { rejectWithValue }) => {
+        try {
+            const response = await reVerify(tempWorkerId);
+            console.log("response :", response);
+            return response.data;
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ data: string }>;
+            const errorMessage = error.response?.data?.data || "Something went wrong";
+            return rejectWithValue(errorMessage);
+        }
+    }
+)
 
 export const loginWorkerThunk = createAsyncThunk(
     API_ROUTES.WORKER.LOGIN,
@@ -155,7 +189,7 @@ const workerSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(registerWorkerThunk.fulfilled, (state, action) => {
+            .addCase(verifyRegisterWorkerThunk.fulfilled, (state, action) => {
                 const worker = action.payload.worker;
                 const wallet = action.payload.wallet;
 
@@ -168,7 +202,7 @@ const workerSlice = createSlice({
                 localStorage.setItem("workerId", state.worker?.id as string);
             })
 
-            .addCase(registerWorkerThunk.rejected, (state, action) => {
+            .addCase(verifyRegisterWorkerThunk.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
             .addCase(loginWorkerThunk.fulfilled, (state, action) => {

@@ -11,6 +11,8 @@ const workerController = container.get<IWorkerController>(TYPES.workerController
 Router.post("/login", workerController.login);
 Router.post("/logout", auth, authorize(["Worker"]), workerController.logout);
 Router.post("/register", workerController.register);
+Router.post("/verify-register", workerController.verifyRegister);
+Router.post("/re-verify-register", workerController.reVerifyRegister);
 Router.post("/build-account", auth, authorize(["Worker"]), workerController.buildAccount);
 Router.get("/fetch-details", auth, workerController.fetchDetails);
 Router.post("/forgot-password", workerController.forgotPass);

@@ -30,6 +30,9 @@ const TYPES = {
     workService: Symbol.for("workService"),
     workController: Symbol.for("workController"),
 
+    tempWorkerRepository: Symbol.for("tempWorkerRepository"),
+    tempWorkerService: Symbol.for("tempWorkerService"),
+
     walletRepository: Symbol.for("walletRepository"),
     walletService: Symbol.for("walletService"),
 

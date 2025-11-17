@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 
 export interface IWorkerController {
     register(req: Request, res: Response, next: NextFunction): Promise<void>;
+    verifyRegister(req: Request, res: Response, next: NextFunction): Promise<void>;
+    reVerifyRegister(req: Request, res: Response, next: NextFunction): Promise<void>;
     login(req: Request, res: Response, next: NextFunction): Promise<void>;
     googleLogin(req: Request, res: Response, next: NextFunction): Promise<void>;
     logout(req: Request, res: Response, next: NextFunction): Promise<void>;
