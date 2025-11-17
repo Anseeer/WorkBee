@@ -5,7 +5,6 @@ import Worker from "../../model/worker/worker.model";
 import BaseRepository from "../base/base.repo";
 import { IWorkerRepository } from "./worker.repo.interface";
 import { Availability } from "../../model/availablity/availablity.model";
-import { IWork } from "../../model/work/work.interface";
 import haversine from 'haversine-distance';
 import mongoose, { Types } from "mongoose";
 import { SUBSCRIPTION_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
@@ -13,6 +12,7 @@ import { FilterQuery } from "mongoose";
 import { Role } from "../../constants/role";
 import { ISubscription } from "../../model/subscription/subscription.interface";
 import logger from "../../utilities/logger";
+import { ISearchTerm } from "../../utilities/Types";
 
 @injectable()
 export class WorkerRepository extends BaseRepository<IWorker> implements IWorkerRepository {
@@ -180,7 +180,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async search(searchTerms: Partial<IWork>): Promise<IWorker[]> {
+    async search(searchTerms: ISearchTerm): Promise<IWorker[]> {
         try {
             const query: FilterQuery<IWorker> = {
                 isAccountBuilt: true,
@@ -190,24 +190,29 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
             };
 
             if (searchTerms.categoryId) {
-                const categoryId =
-                    typeof searchTerms.categoryId === "string"
-                        ? new Types.ObjectId(searchTerms.categoryId)
-                        : searchTerms.categoryId;
-
-                query.categories = { $in: [categoryId] };
+                query.categories = {
+                    $in: [new Types.ObjectId(searchTerms.categoryId)]
+                };
             }
 
             if (searchTerms.serviceId) {
-                const serviceId =
-                    typeof searchTerms.serviceId === "string"
-                        ? searchTerms.serviceId
-                        : String(searchTerms.serviceId);
-
-                query["services.serviceId"] = serviceId;
+                query["services.serviceId"] = searchTerms.serviceId;
             }
 
-            const workers = await this.model.find(query);
+            if (searchTerms.selectedTimeSlots?.length) {
+                console.log("SelectedSlots :", searchTerms.selectedTimeSlots)
+                query.preferredSchedule = { $in: searchTerms.selectedTimeSlots };
+            }
+
+            if (searchTerms.minRating && searchTerms.minRating > 0) {
+                query["ratings.average"] = { $gte: searchTerms.minRating };
+            }
+
+            if (searchTerms.minCompletedWorks && searchTerms.minCompletedWorks > 0) {
+                query.completedWorks = { $gte: searchTerms.minCompletedWorks };
+            }
+
+            let workers = await this.model.find(query);
 
             if (!searchTerms.location) {
                 return workers;
@@ -215,10 +220,8 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             const { lat, lng } = searchTerms.location;
 
-            const filteredWorkers = workers.filter(worker => {
-                if (!worker.location || !worker.radius) {
-                    return false;
-                }
+            let filteredWorkers = workers.filter(worker => {
+                if (!worker.location || !worker.radius) return false;
 
                 const workerCoords = {
                     latitude: worker.location.lat,
@@ -231,10 +234,47 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 };
 
                 const distanceKm = haversine(workerCoords, searchCoords) / 1000;
+
                 return distanceKm <= worker.radius;
             });
 
+            if (searchTerms.maxPrice && searchTerms.maxPrice > 0 && searchTerms.serviceId) {
+                filteredWorkers = filteredWorkers.filter(worker => {
+                    const service = worker.services.find(
+                        s => s.serviceId.toString() === searchTerms.serviceId.toString()
+                    );
+
+                    if (!service) return false;
+                    return service.price <= searchTerms.maxPrice;
+                });
+            }
+
+            if (searchTerms.sortBy && searchTerms.serviceId) {
+                filteredWorkers = filteredWorkers.sort((a, b) => {
+                    const serviceA = a.services.find(
+                        s => s.serviceId.toString() === searchTerms.serviceId.toString()
+                    );
+                    const serviceB = b.services.find(
+                        s => s.serviceId.toString() === searchTerms.serviceId.toString()
+                    );
+
+                    const priceA = serviceA?.price ?? 0;
+                    const priceB = serviceB?.price ?? 0;
+
+                    if (searchTerms.sortBy === "priceLowToHigh") {
+                        return priceA - priceB;
+                    }
+
+                    if (searchTerms.sortBy === "priceHighToLow") {
+                        return priceB - priceA;
+                    }
+
+                    return 0;
+                });
+            }
+
             return filteredWorkers;
+
         } catch (error) {
             logger.error('Error in search:', error);
             throw new Error('Error in search');

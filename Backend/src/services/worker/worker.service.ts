@@ -11,7 +11,6 @@ import { IWorkerService } from "./worker.service.interface";
 import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { WORKER_MESSAGE } from "../../constants/messages";
-import { IWork } from "../../model/work/work.interface";
 import { IAvailabilityRepository } from "../../repositories/availability/availability.repo.interface";
 import { IWorkerRepository } from "../../repositories/worker/worker.repo.interface";
 import { IWalletRepository } from "../../repositories/wallet/wallet.repo.interface";
@@ -24,6 +23,7 @@ import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { Types } from "mongoose";
 import logger from "../../utilities/logger";
 import { ITempWorkerRepository } from "../../repositories/temp_worker/temp.worker.interface.repo";
+import { ISearchTerm } from "../../utilities/Types";
 
 const client = new OAuth2Client();
 
@@ -309,20 +309,32 @@ export class WorkerService implements IWorkerService {
         }
     }
 
-    async searchWorker(searchTerm: Partial<IWork>): Promise<IWorkerDTO[]> {
+    async searchWorker(searchTerm: ISearchTerm): Promise<IWorkerDTO[]> {
         try {
             if (!searchTerm) {
                 throw new Error("Search term not provided");
             }
 
-            const { location, serviceId, categoryId } = searchTerm;
-            if (!location?.lat || !location?.lng || !serviceId || !categoryId) {
-                throw new Error("All search terms are required: location, workType, serviceId, categoryId");
+            console.log("Terms :", searchTerm)
+
+            const { location, serviceId, categoryId, selectedTimeSlots, minCompletedWorks, minRating, maxPrice } = searchTerm;
+            if (
+                !location?.lat ||
+                !location?.lng ||
+                !serviceId ||
+                !categoryId ||
+                !selectedTimeSlots ||
+                minCompletedWorks === undefined ||
+                minRating === undefined ||
+                maxPrice === undefined
+            ) {
+                throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
             }
 
             const filteredWorkers = await this._workerRepository.search(searchTerm);
             return filteredWorkers.map(mapWorkerToDTO);
         } catch (error) {
+            console.log("error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             throw new Error(`Failed to search workers: ${errMsg}`);
         }

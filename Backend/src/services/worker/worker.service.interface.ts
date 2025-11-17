@@ -2,8 +2,8 @@ import { IAvailabilityDTO } from "../../mappers/availability/availability.map.DT
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
-import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
+import { ISearchTerm } from "../../utilities/Types";
 
 export interface IWorkerService {
     registerWorker(tempWorkerId: string, otp: string): Promise<{ accessToken: string, refreshToken: string, worker?: IWorkerDTO, wallet: IWalletDTO | null }>;
@@ -17,7 +17,7 @@ export interface IWorkerService {
     verifyOtp(email: string, otp: string): Promise<boolean>;
     resetPass(email: string, password: string): Promise<void>;
     updateWorker(workerData: IWorker): Promise<boolean>;
-    searchWorker(serachTerm: Partial<IWork>): Promise<IWorkerDTO[]>;
+    searchWorker(serachTerm: ISearchTerm): Promise<IWorkerDTO[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorkerDTO[]>;
     findWallet(workerId: string): Promise<IWalletDTO | null>;
     googleLogin(credential: string): Promise<{ accessToken: string; refreshToken: string; worker: IWorkerDTO; wallet: IWalletDTO | null, availability?: IAvailabilityDTO; }>;

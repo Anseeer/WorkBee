@@ -1,6 +1,6 @@
 import { IServices } from "../../model/service/service.interface";
 import { IWork } from "../../model/work/work.interface";
-import { TopThreeResult } from "../../utilities/topThreeTypes";
+import { TopThreeResult } from "../../utilities/Types";
 
 export interface IWorkRepository {
     create(workDetails: Partial<IWork>): Promise<IWork>;

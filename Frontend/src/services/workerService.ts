@@ -1,6 +1,7 @@
 import { API_ROUTES } from "../constant/api.routes";
 import type { IAvailability } from "../types/IAvailability";
 import type { ICategory } from "../types/ICategory";
+import type { ISearchTerm } from "../types/ISearchTerm";
 import type { IWorker } from "../types/IWorker";
 import axios from "./axios";
 
@@ -110,16 +111,7 @@ export const fetchWorkerService = async (serviceIds: string[]) => {
   return response;
 };
 
-export const fetchWorkerByWorkDetails = async (details: {
-  categoryId: string;
-  serviceId: string;
-  location: {
-    lat: number;
-    lng: number;
-    pincode: string;
-    address: string;
-  };
-}) => {
+export const fetchWorkerByWorkDetails = async (details: ISearchTerm) => {
   const { data } = await axios.post(API_ROUTES.WORKER_SERVICE.SEARCH, details);
   return data;
 };

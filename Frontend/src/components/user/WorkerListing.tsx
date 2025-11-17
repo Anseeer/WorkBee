@@ -19,6 +19,7 @@ interface FilterState {
     maxPrice: number;
     minRating: number;
     minCompletedWorks: number;
+    sortBy: string,
 }
 
 
@@ -27,8 +28,9 @@ const WorkerListing = () => {
     const userDetails = useSelector((state: RootState) => state?.user?.user);
     const [workers, setWorkers] = useState<IWorker[]>([]);
     const [price, setPrice] = useState('');
-    const [filteredWorkers, setFilteredWorkers] = useState<IWorker[]>([]);
     const [availability, setAvailability] = useState<IAvailability | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedWorker, setSelectedWorker] = useState<IWorker | null>(null);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -38,14 +40,12 @@ const WorkerListing = () => {
         maxPrice: 10000,
         minRating: 0,
         minCompletedWorks: 0,
+        sortBy: "priceLowToHigh",
     });
-
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedWorker, setSelectedWorker] = useState<IWorker | null>(null);
 
     const timeSlots = [
         { value: "morning", label: "Morning (9am - 1pm)" },
@@ -53,7 +53,6 @@ const WorkerListing = () => {
         { value: "evening", label: "Evening (5pm - 9pm)" },
         { value: "full-day", label: "Full Day (9am - 5pm)" },
     ];
-
     useEffect(() => {
         const fetchWorkers = async () => {
             if (!workDetails?.categoryId || !workDetails?.serviceId) return;
@@ -67,45 +66,27 @@ const WorkerListing = () => {
                     pincode: workDetails.location.pincode,
                     address: workDetails.location.address,
                 },
+                selectedTimeSlots: filters.selectedTimeSlots,
+                maxPrice: filters.maxPrice,
+                minRating: filters.minRating,
+                minCompletedWorks: filters.minCompletedWorks,
+                sortBy: filters.sortBy
             };
 
             const res = await fetchWorkerByWorkDetails(fetchDetails);
             setWorkers(res.data.workers);
-            setFilteredWorkers(res.data.workers);
+
         };
 
         fetchWorkers();
-    }, [workDetails]);
-
-    useEffect(() => {
-        let updated = [...workers];
-
-        if (filters.selectedTimeSlots.length > 0) {
-            updated = updated.filter(worker =>
-                worker.preferredSchedule.some(slot =>
-                    filters.selectedTimeSlots.includes(slot)
-                )
-            );
-        }
-
-        updated = updated.filter(worker => {
-            const price = getWorkerServicePrice(worker, workDetails.serviceId);
-            if (price === null) return false;
-            return price <= filters.maxPrice;
-        });
-
-        updated = updated.filter(worker =>
-            Number(worker.ratings.average || 0) >= filters.minRating
-        );
-
-        updated = updated.filter(worker =>
-            (worker.completedWorks || 0) >= filters.minCompletedWorks
-        );
-
-        setFilteredWorkers(updated);
-        setCurrentPage(1);
-    }, [filters, workDetails.serviceId, workers]);
-
+    }, [
+        filters.maxPrice,
+        filters.minCompletedWorks,
+        filters.minRating,
+        filters.selectedTimeSlots,
+        filters.sortBy,
+        workDetails
+    ]);
 
     const handleTimeSlotChange = (timeSlot: string) => {
         setFilters(prev => ({
@@ -166,9 +147,9 @@ const WorkerListing = () => {
         return worker.services.find(s => s.serviceId === serviceId)?.price ?? null;
     };
 
-    const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);
+    const totalPages = Math.ceil(workers.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedWorkers = filteredWorkers.slice(startIndex, startIndex + itemsPerPage);
+    const paginatedWorkers = workers.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <div className="min-h-screen p-4 sm:p-6 md:p-10 animate-fadeInUp">
@@ -235,6 +216,21 @@ const WorkerListing = () => {
                                 />
                             </div>
                         </div>
+                        {/* Sorting Filter */}
+                        <div className="my-6 border-t border-gray-200" />
+                        <div>
+                            <h3 className="text-lg font-semibold text-green-700 mb-3">Sort By</h3>
+                            <select
+                                value={filters.sortBy}
+                                onChange={(e) =>
+                                    setFilters(prev => ({ ...prev, sortBy: e.target.value }))
+                                }
+                                className="w-full border border-gray-300 rounded-lg p-2 cursor-pointer text-sm focus:border-green-700 focus:ring-green-700 focus:ring-1 outline-none"                            >
+                                <option value="priceLowToHigh">Price: Low → High</option>
+                                <option value="priceHighToLow">Price: High → Low</option>
+                            </select>
+                        </div>
+
                     </div>
                 </div>
 

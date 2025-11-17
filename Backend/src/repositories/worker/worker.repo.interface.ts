@@ -2,8 +2,8 @@ import { IAvailabilitEntity } from "../../mappers/availability/availability.map.
 import { IWorkerEntity } from "../../mappers/worker/worker.map.DTO.interface";
 import { IAvailability } from "../../model/availablity/availablity.interface";
 import { ISubscription } from "../../model/subscription/subscription.interface";
-import { IWork } from "../../model/work/work.interface";
 import { IWorker } from "../../model/worker/worker.interface";
+import { ISearchTerm } from "../../utilities/Types";
 
 export interface IWorkerRepository {
     find(): Promise<IWorker[] | []>;
@@ -21,7 +21,7 @@ export interface IWorkerRepository {
     approveWorker(workerId: string): Promise<boolean>;
     rejectedWorker(workerId: string): Promise<boolean>;
     update(worker: Partial<IWorker | IWorkerEntity>): Promise<boolean>;
-    search(searchTerms: Partial<IWork>): Promise<IWorker[]>;
+    search(searchTerms: ISearchTerm): Promise<IWorker[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorker[]>;
     rateWorker(workerId: string, rating: number): Promise<{ average: number, ratingsCount: number }>;
     updateCompletedWorks(workerId: string): Promise<void>;

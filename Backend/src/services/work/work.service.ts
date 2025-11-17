@@ -17,7 +17,7 @@ import { mapChatToEntity } from "../../mappers/chatMessage/chat.map.DTO";
 import { IChat } from "../../model/chatMessage/IChat";
 import { toISTDateOnly } from "../../utilities/toISTDate";
 import { Role } from "../../constants/role";
-import { TopThreeResultDTO } from "../../utilities/topThreeTypes";
+import { TopThreeResultDTO } from "../../utilities/Types";
 import { INotification } from "../../model/notification/notification.interface";
 import { getIO } from "../../socket/socket";
 import { mapNotificationToEntity } from "../../mappers/notification/mapNotificationToEntity";

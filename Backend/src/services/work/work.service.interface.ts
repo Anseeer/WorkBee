@@ -1,7 +1,7 @@
 import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
 import { IWorkDTO } from "../../mappers/work/work.map.DTO.interface";
 import { IWork } from "../../model/work/work.interface";
-import { TopThreeResultDTO } from "../../utilities/topThreeTypes";
+import { TopThreeResultDTO } from "../../utilities/Types";
 
 export interface IWorkService {
     createWork(workDetails: IWork): Promise<IWorkDTO>;

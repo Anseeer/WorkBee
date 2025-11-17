@@ -4,7 +4,7 @@ import { IWork } from "../../model/work/work.interface";
 import { IWorkRepository } from "./work.repo.interface";
 import Work from "../../model/work/work.model";
 import { WORK_MESSAGE } from "../../constants/messages";
-import { TopThreeResult } from "../../utilities/topThreeTypes";
+import { TopThreeResult } from "../../utilities/Types";
 import { IServices } from "../../model/service/service.interface";
 import logger from "../../utilities/logger";
 
