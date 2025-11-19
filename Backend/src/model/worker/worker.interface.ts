@@ -16,6 +16,7 @@ export interface IWorker extends Document {
     preferredSchedule: string[],
     isVerified: boolean,
     status: string,
+    rejectionReason: string,
     isActive: boolean,
     location: ILocation,
     govId: string[],

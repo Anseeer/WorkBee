@@ -127,16 +127,18 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         }
     }
 
-    async rejectedWorker(workerId: string): Promise<boolean> {
+    async rejectedWorker(workerId: string, reason: string): Promise<boolean> {
         try {
             const worker = await this.model.findById(workerId);
             if (!worker) {
                 throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
             }
 
+            console.log("RESon ::::::::",reason)
+
             await this.model.updateOne(
                 { _id: workerId },
-                { $set: { isVerified: false, status: "Rejected" } }
+                { $set: { isVerified: false, status: "Rejected", rejectionReason: reason } }
             );
 
             return true;

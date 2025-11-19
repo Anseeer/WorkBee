@@ -1,4 +1,4 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { INotificationRepository } from "../../repositories/notification/notification.repo.interface";
 import { INotificationService } from "./notification.service.interface";
 import TYPES from "../../inversify/inversify.types";
@@ -9,7 +9,7 @@ import logger from "../../utilities/logger";
 import { INotificationDTO } from "../../mappers/notification/INotification.DTO";
 import { mapNotificationToDTO } from "../../mappers/notification/mapNotificationToDTO";
 
-
+@injectable()
 export class NotificationServices implements INotificationService {
     private _notificationRepository: INotificationRepository;
     constructor(@inject(TYPES.notificationRepository) notificationRepo: INotificationRepository) {
@@ -38,6 +38,19 @@ export class NotificationServices implements INotificationService {
             }
             const res = await this._notificationRepository.getUserNotification(userId);
             return res ? res?.map((not) => mapNotificationToDTO(not)) : null;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            throw error;
+        }
+    }
+
+    async clearNotification(userId: string): Promise<void> {
+        try {
+            if (!userId) {
+                throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
+            }
+            await this._notificationRepository.clearNotification(userId);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);

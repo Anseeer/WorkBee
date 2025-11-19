@@ -76,7 +76,7 @@ export class SubscriptionService implements ISubscriptionService {
             throw error;
         }
     }
-
+    
     async delete(subscriptionId: string): Promise<boolean> {
         try {
             if (!subscriptionId) throw new Error(SUBSCRIPTION_MESSAGE.ID_NOT_FOUND);
@@ -149,7 +149,6 @@ export class SubscriptionService implements ISubscriptionService {
             };
 
             const updateWalletData = {
-                balance: -planData.amount,
                 transactions: [workerTransaction]
             };
 

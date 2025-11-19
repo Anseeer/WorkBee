@@ -76,6 +76,8 @@ import { ITempWorkerRepository } from "../repositories/temp_worker/temp.worker.i
 import { TempWorkerRepository } from "../repositories/temp_worker/temp.worker.repo";
 import { TempWorkerService } from "../services/temp_worker/temp.worker.service";
 import { ITempWorkerService } from "../services/temp_worker/temp.worker.service.interface";
+import { INotificationController } from "../controllers/notifications/notificatinos.controller.interface";
+import { NotificationController } from "../controllers/notifications/notification.controller.";
 
 const container = new Container();
 
@@ -116,6 +118,7 @@ container.bind<IWalletService>(TYPES.walletService).to(WalletService);
 
 container.bind<INotificationRepository>(TYPES.notificationRepository).to(NotificationRepository);
 container.bind<INotificationService>(TYPES.notificationService).to(NotificationServices);
+container.bind<INotificationController>(TYPES.notificationController).to(NotificationController);
 
 container.bind<IChatRepositoy>(TYPES.chatRepository).to(ChatRepository);
 container.bind<IChatService>(TYPES.chatService).to(ChatService);

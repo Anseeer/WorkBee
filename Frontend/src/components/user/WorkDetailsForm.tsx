@@ -1,13 +1,19 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { workDetails } from '../../slice/workDraftSlice';
 import { fetchCategoryById, fetchServiceById, } from '../../services/userService';
 import type { IService } from '../../types/IService';
 import type { ICategory } from '../../types/ICategory';
-import { toast } from 'react-toastify';
+import { fetchLocationSuggestions } from '../../utilities/fetchLocation';
+
+interface Suggestion {
+    address: string;
+    pincode: string;
+    lat: string | number;
+    lng: string | number;
+}
 
 interface WorkFormValues {
     location: {
@@ -36,9 +42,8 @@ const WorkDetailForm = ({ setStep }: Prop) => {
     const [service, setService] = useState<IService | null>(null);
     const [category, setCategory] = useState<ICategory | null>(null);
     const locationRef = useRef<HTMLInputElement>(null);
-    const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
-    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-    const listenerRef = useRef<google.maps.MapsEventListener | null>(null);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [locationError, setLocationError] = useState("");
 
     const initialValues: WorkFormValues = {
         location: {
@@ -82,11 +87,17 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         enableReinitialize: true,
         validate: (values) => {
             const errors: Partial<Record<keyof WorkFormValues, any>> = {};
+            errors.location = {};
 
             if (!values.location.address) {
-                errors.location = 'Address is required';
-            } else if (!values.location.pincode || values.location.pincode === "" || !values.location.lat || !values.location.lng) {
-                errors.location = 'Please select a valid location from the dropdown suggestions';
+                errors.location.address = "Address is required";
+            } else if (
+                !values.location.pincode ||
+                !values.location.lat ||
+                !values.location.lng
+            ) {
+                errors.location.address =
+                    "Please select a valid location from the dropdown suggestions";
             }
 
             if (!values.taskSize) {
@@ -105,137 +116,6 @@ const WorkDetailForm = ({ setStep }: Prop) => {
             setStep(2);
         }
     });
-
-    const initializeAutocomplete = useCallback(() => {
-        if (!window.google?.maps?.places) {
-            console.error("Google Maps API not loaded properly");
-            return;
-        }
-
-        if (!locationRef.current) {
-            console.error("Location input ref not available");
-            return;
-        }
-
-        if (listenerRef.current) {
-            google.maps.event.removeListener(listenerRef.current);
-            listenerRef.current = null;
-        }
-
-        try {
-            const autocomplete = new google.maps.places.Autocomplete(
-                locationRef.current,
-                {
-                    componentRestrictions: { country: "IN" },
-                    fields: ["formatted_address", "geometry", "address_components", "name"],
-                }
-            );
-
-            listenerRef.current = autocomplete.addListener("place_changed", () => {
-                const place = autocomplete.getPlace();
-
-                if (!place || !place.geometry) {
-                    toast.warning("Please select a location from the dropdown");
-                    return;
-                }
-
-                const addressComponents = place.address_components || [];
-                let pincode = "";
-
-                for (const component of addressComponents) {
-                    if (component.types.includes("postal_code")) {
-                        pincode = component.long_name;
-                        break;
-                    }
-                }
-
-                const lat = place.geometry.location?.lat() ?? 0;
-                const lng = place.geometry.location?.lng() ?? 0;
-
-                setTimeout(() => {
-                    formik.setFieldValue("location", {
-                        address: place.formatted_address || "",
-                        pincode,
-                        lat,
-                        lng,
-                    });
-
-                    formik.setFieldTouched("location", false);
-                }, 0);
-            });
-
-            autocompleteRef.current = autocomplete;
-            setIsGoogleLoaded(true);
-        } catch (error) {
-            console.error("Error initializing Autocomplete:", error);
-            toast.error("Failed to initialize location services");
-        }
-    }, [formik]);
-
-    useEffect(() => {
-        if (window.google?.maps?.places) {
-            initializeAutocomplete();
-            return;
-        }
-
-        const existingScript = document.querySelector(
-            'script[src*="maps.googleapis.com"]'
-        );
-
-        if (existingScript) {
-            const handleLoad = () => {
-                setTimeout(initializeAutocomplete, 200);
-            };
-
-            existingScript.addEventListener("load", handleLoad);
-
-            return () => {
-                existingScript.removeEventListener("load", handleLoad);
-            };
-        }
-
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&libraries=places&loading=async`;
-        script.async = true;
-        script.defer = true;
-
-        script.onload = () => {
-            setIsGoogleLoaded(true);
-        };
-
-        script.onerror = (error) => {
-            console.error("Failed to load Google Maps API", error);
-            toast.error("Failed to load location services. Please refresh the page.");
-        };
-
-        document.head.appendChild(script);
-
-        return () => {
-            if (listenerRef.current) {
-                google.maps.event.removeListener(listenerRef.current);
-            }
-        };
-    }, [isGoogleLoaded, locationRef.current]);
-
-    const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        // Only update address, don't reset other fields immediately
-        formik.setFieldValue("location.address", value);
-
-        // Reset coordinates only if user is typing (not selecting)
-        if (formik.values.location.lat !== 0 || formik.values.location.lng !== 0) {
-            formik.setFieldValue("location.pincode", "");
-            formik.setFieldValue("location.lat", 0);
-            formik.setFieldValue("location.lng", 0);
-        }
-    };
-
-    useEffect(() => {
-        if (activeStep === 1 && window.google?.maps?.places && locationRef.current) {
-            initializeAutocomplete();
-        }
-    }, [activeStep]);
-
 
     return (
         <form
@@ -256,33 +136,62 @@ const WorkDetailForm = ({ setStep }: Prop) => {
                         Your Work Location
                     </h2>
 
-                    {activeStep === 1 || formik.errors.location ? (
-                        <div className="animate-fadeInUp">
+                    {(activeStep === 1 || formik.errors.location?.address) && (
+                        <div className="relative">
                             <input
                                 ref={locationRef}
                                 name="location.address"
                                 value={formik.values.location.address}
-                                onChange={handleLocationInputChange}
-                                onBlur={formik.handleBlur}
-                                onFocus={() => {
-                                    if (formik.errors.location) {
-                                        formik.setFieldTouched("location", false);
-                                    }
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    formik.setFieldValue("location.address", value);
+                                    fetchLocationSuggestions(value, setSuggestions, setLocationError);
                                 }}
+                                onBlur={formik.handleBlur}
                                 placeholder="Start typing your address..."
-                                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-700 mb-2 text-base"
                                 autoComplete="off"
+                                className={`w-full p-4 border-2 rounded-xl
+                                        border-green-700 focus:border-green-700
+                                        ${formik.touched.location?.address && formik.errors.location?.address
+                                        ? "border-red-500 focus:border-red-500"
+                                        : ""
+                                    }`}
                             />
-                            {formik.touched.location && formik.errors.location && (
-                                <p className="text-red-500 text-sm animate-fadeInDown">
-                                    {typeof formik.errors.location === 'string' ? formik.errors.location : 'Invalid location'}
+
+                            {formik.touched.location?.address && formik.errors.location?.address && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {formik.errors.location.address}
                                 </p>
                             )}
-                            {!isGoogleLoaded && (
-                                <p className="text-xs text-gray-500 mt-1">Loading location services...</p>
+
+                            {/* Suggestions dropdown */}
+                            {suggestions?.length > 0 && (
+                                <div className="absolute bg-white border mt-1 w-full rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                                    {suggestions.map((s, idx) => (
+                                        <div
+                                            key={idx}
+                                            onClick={() => {
+                                                formik.setFieldValue("location", {
+                                                    address: s.address,
+                                                    pincode: s.pincode,
+                                                    lat: Number(s.lat),
+                                                    lng: Number(s.lng),
+                                                });
+                                                setSuggestions([]);
+                                            }}
+                                            className="p-3 hover:bg-gray-100 cursor-pointer"
+                                        >
+                                            {s.address}
+                                        </div>
+                                    ))}
+
+                                    {locationError && (
+                                        <p className="text-red-500 text-sm mt-1">{locationError}</p>
+                                    )}
+                                </div>
                             )}
                         </div>
-                    ) : null}
+                    )}
                 </div>
             </div>
 

@@ -156,6 +156,7 @@ const Dashboard = () => {
                                 ) : !workerData.worker.isVerified || workerData.worker.status == "Rejected" && workerData.worker.subscription == null ? (
                                     <PendingApprovalMessage
                                         status={workerData.worker.status}
+                                        message={workerData.worker.rejectionReason}
                                         estimatedTime="42hrs" />
                                 ) : (
                                     <WorkerDashboard

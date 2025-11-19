@@ -7,6 +7,7 @@ import { useFormik } from 'formik';
 import type { ISubscription } from '../../types/ISubscription';
 import { deleteSubscription, fetchSubscriptionPlans, toggleStatus, updateSubscription } from '../../services/adminService';
 import SubscriptionPlansAddingSection from './SubscriptionPlanAddingSection';
+import ConfirmModal from '../common/ConfirmToogle';
 
 const SubscriptionManagment = () => {
     const [subscription, setSubscription] = useState<ISubscription[]>([]);
@@ -16,6 +17,17 @@ const SubscriptionManagment = () => {
     const [editData, setEditData] = useState<ISubscription | null>(null);
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPage, setTotalPage] = useState(0)
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmType, setConfirmType] = useState<"toggle" | "delete" | null>(null);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+
+
+    const openConfirm = (id: string, type: "toggle" | "delete") => {
+        setSelectedId(id);
+        setConfirmType(type);
+        setConfirmOpen(true);
+    };
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -125,15 +137,17 @@ const SubscriptionManagment = () => {
         { key: 'durationInDays', label: 'Duration', render: (u) => `${u.durationInDays}(days)` },
         { key: 'description', label: 'Description', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
         {
-            key: 'isActive',
-            label: 'Status',
+            key: "isActive",
+            label: "Active",
             render: (u) => (
                 <div
-                    onClick={() => handleToggle(u.id as string)}
-                    className={`cursor-pointer w-11 h-6 rounded-full flex items-center ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}
+                    onClick={() => openConfirm(u.id, "toggle")}
+                    className={`cursor-pointer w-11 h-6 rounded-full flex items-center 
+                ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
                 >
                     <div
-                        className={`w-4 h-4 rounded-full bg-white transform transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'}`}
+                        className={`w-4 h-4 rounded-full bg-white transform transition-transform 
+                    ${u.isActive ? "translate-x-6" : "translate-x-1"}`}
                     />
                 </div>
             )
@@ -151,7 +165,7 @@ const SubscriptionManagment = () => {
                         <Edit className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => handleDelete(u.id)}
+                        onClick={() => openConfirm(u.id, "delete")}
                         className="text-red-500 hover:text-red-700"
                         title="Delete"
                     >
@@ -174,6 +188,30 @@ const SubscriptionManagment = () => {
                 searchKeys={['planName', 'description', 'amount', 'comission']}
                 advancedFilterKeys={['planName', 'amount', 'durationInDays', 'comission', 'isActive']}
             />
+
+            {confirmOpen && (
+                <ConfirmModal
+                    title={
+                        confirmType === "delete"
+                            ? "Delete SubscriptionPlan ?"
+                            : "Confirm Status Change"
+                    }
+                    message={
+                        confirmType === "delete"
+                            ? "This action cannot be undone. Are you sure?"
+                            : "Do you want to update the status?"
+                    }
+                    confirmText={confirmType === "delete" ? "Delete" : "Confirm"}
+                    onCancel={() => setConfirmOpen(false)}
+                    onConfirm={() => {
+                        if (selectedId) {
+                            if (confirmType === "toggle") handleToggle(selectedId);
+                            if (confirmType === "delete") handleDelete(selectedId);
+                        }
+                        setConfirmOpen(false);
+                    }}
+                />
+            )}
 
             {/* Edit Modal */}
             {isEditing && (

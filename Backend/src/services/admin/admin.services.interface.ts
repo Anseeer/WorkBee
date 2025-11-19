@@ -14,7 +14,7 @@ export interface IAdminService {
     fetchWorkersNonVerified(): Promise<IWorkerDTO[] | undefined>;
     fetchAvailability(userId: string): Promise<IAvailabilityDTO | null>;
     approveWorker(workerId: string): Promise<void>;
-    rejectedWorker(workerId: string): Promise<void>;
+    rejectedWorker(workerId: string, reason: string): Promise<void>;
     fetchEarnings(userId: string | null, filter: string): Promise<MappedEarningDTO[]>;
     platformWallet(): Promise<IWalletDTO | null>;
 }

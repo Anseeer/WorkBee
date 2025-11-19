@@ -24,6 +24,7 @@ import { startOfDay } from "date-fns";
 import type { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import type { IService, ISelectedService } from "../../types/IService";
+import { fetchLocationSuggestions } from "../../utilities/fetchLocation";
 
 interface WorkerFormData {
     name: string;
@@ -58,6 +59,13 @@ declare global {
     }
 }
 
+interface Suggestion {
+    address: string;
+    pincode: string;
+    lat: string | number;
+    lng: string | number;
+}
+
 const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     workerData,
     onClose,
@@ -66,9 +74,9 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     const [allCategories, setAllCategories] = useState<ICategory[]>([]);
     const [allServices, setAllServices] = useState<IService[]>([]);
     const locationRef = useRef<HTMLInputElement>(null);
-    const autocompleteRef = useRef<any>(null);
-    const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
     const [servicePriceErrors, setServicePriceErrors] = useState<{ [key: string]: string }>({});
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [locationError, setLocationError] = useState("");
 
     const formik = useFormik<WorkerFormData>({
         initialValues: {
@@ -94,7 +102,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         validate: (values) => {
             const errors: any = {};
 
-            // Validate service prices
             values.services.forEach((service) => {
                 if (!service.price || service.price <= 0) {
                     setServicePriceErrors(prev => ({
@@ -110,10 +117,55 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 }
             });
 
+            if (!values.name.trim()) {
+                errors.name = "Username is required";
+            }
+
+            if (!values.age) {
+                errors.age = "Age is required";
+            }
+
+            if (!values.radius) {
+                errors.radius = "Radius is required";
+            }
+
+            if (!values.preferredSchedule.length) {
+                errors.preferredSchedule = "PreferredSchedule is required";
+            }
+
+            if (!values.location.address.trim()) {
+                errors.location = { address: "Location is required" };
+            }
+
+            if (!values.phone.trim()) {
+                errors.phone = "Phone number is required";
+            } else if (!/^[0-9]{10}$/.test(values.phone)) {
+                errors.phone = "Enter a valid 10-digit phone number";
+            }
+
+            if (!values.services || values.services.length === 0) {
+                errors.services = "Services are required";
+            }
+
+            if (!values.categories || !values.categories.length) {
+                errors.categories = "Category is required";
+            }
+
+            if (!values.services) {
+                errors.services = "Subcategory is required";
+            }
+
+            if (!values.bio.trim()) {
+                errors.bio = "Description is required";
+            }
+
+            if (!values.availability || values.availability.length === 0) {
+                errors.availability = "Please select at least one available date";
+            }
+
             return errors;
         },
         onSubmit: (values) => {
-            // Check if all services have valid prices
             const hasInvalidPrices = values.services.some(service => !service.price || service.price <= 0);
 
             if (hasInvalidPrices) {
@@ -167,96 +219,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             onSave(payload);
         },
     });
-
-    useEffect(() => {
-        const initializeAutocomplete = () => {
-            if (!window.google?.maps?.places) {
-                console.error("Google Maps API not loaded properly");
-                return;
-            }
-
-            try {
-                const autocomplete = new window.google.maps.places.Autocomplete(
-                    locationRef.current!,
-                    {
-                        componentRestrictions: { country: "IN" },
-                        fields: ["formatted_address", "geometry", "address_components", "name"],
-                    }
-                );
-
-                autocomplete.addListener("place_changed", () => {
-                    const place = autocomplete.getPlace();
-                    if (!place || !place.geometry) return;
-
-                    const addressComponents = place.address_components || [];
-                    let pincode = "";
-
-                    for (const component of addressComponents) {
-                        if (component.types.includes("postal_code")) {
-                            pincode = component.long_name;
-                            break;
-                        }
-                    }
-
-                    const lat = place.geometry.location?.lat() ?? 0;
-                    const lng = place.geometry.location?.lng() ?? 0;
-
-                    formik.setFieldValue("location", {
-                        address: place.formatted_address || "",
-                        pincode,
-                        lat,
-                        lng,
-                    });
-                });
-
-                autocompleteRef.current = autocomplete;
-                setIsGoogleLoaded(true);
-            } catch (error) {
-                console.error("Error initializing Autocomplete:", error);
-            }
-        };
-
-        const loadGoogleMapsAPI = () => {
-            if (window.google?.maps?.places) {
-                initializeAutocomplete();
-                return;
-            }
-
-            const existingScript = document.querySelector(
-                'script[src*="maps.googleapis.com"]'
-            );
-
-            if (existingScript) {
-                existingScript.addEventListener("load", () => {
-                    setTimeout(initializeAutocomplete, 100);
-                });
-                return;
-            }
-
-            const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY
-                }&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => setTimeout(initializeAutocomplete, 100);
-            script.onerror = () => {
-                toast.error("Failed to load location services");
-            };
-            document.head.appendChild(script);
-        };
-
-        loadGoogleMapsAPI();
-
-        return () => {
-            if (autocompleteRef.current) {
-                window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
-            }
-        };
-    }, []);
-
-    const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        formik.setFieldValue("location.address", e.target.value);
-    };
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -433,9 +395,15 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         name="name"
                                         value={formik.values.name}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         placeholder="Full Name"
                                         className="w-full px-4 py-3 border rounded-lg"
                                     />
+                                    {formik.touched.name && formik.errors.name && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {formik.errors.name}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
@@ -447,9 +415,15 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                             name="phone"
                                             value={formik.values.phone}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             placeholder="Phone"
                                             className="w-full px-4 py-3 border rounded-lg"
                                         />
+                                        {formik.touched.phone && formik.errors.phone && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                                {formik.errors.phone}
+                                            </p>
+                                        )}
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -462,9 +436,15 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                             max="70"
                                             value={formik.values.age}
                                             onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
                                             placeholder="Age"
                                             className="w-full px-4 py-3 border rounded-lg"
                                         />
+                                        {formik.touched.age && formik.errors.age && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                                {formik.errors.age}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -476,35 +456,74 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         name="bio"
                                         value={formik.values.bio}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         rows={3}
                                         placeholder="Bio"
                                         className="w-full px-4 py-3 border rounded-lg"
                                     />
+                                    {formik.touched.bio && formik.errors.bio && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {formik.errors.bio}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Location
                                     </label>
-                                    <div className="h-5">
-                                        {formik.touched.location?.address && formik.errors.location?.address && (
-                                            <span className="text-sm text-red-500">
-                                                {formik.errors.location.address}
-                                            </span>
-                                        )}
-                                        {!isGoogleLoaded && (
-                                            <p className="text-xs text-gray-500 mt-1">Loading location services...</p>
+
+                                    <div className="relative">
+                                        <input
+                                            ref={locationRef}
+                                            name="location.address"
+                                            value={formik.values.location.address}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                formik.setFieldValue("location.address", value);
+                                                fetchLocationSuggestions(value, setSuggestions, setLocationError);
+                                            }}
+                                            onBlur={formik.handleBlur}
+                                            placeholder="Start typing your address..."
+                                            autoComplete="off"
+                                            className={`w-full p-4 border-2 rounded-xl ${formik.touched.location?.address &&
+                                                formik.errors.location?.address
+                                                ? "border-red-500"
+                                                : ""
+                                                }`}
+                                        />
+
+                                        {suggestions?.length > 0 && (
+                                            <div className="absolute bg-white border mt-1 w-full rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                                                {suggestions.map((s, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            formik.setFieldValue("location", {
+                                                                address: s.address,
+                                                                pincode: s.pincode,
+                                                                lat: Number(s.lat),
+                                                                lng: Number(s.lng),
+                                                            });
+                                                            setSuggestions([]);
+                                                        }}
+                                                        className="p-3 hover:bg-gray-100 cursor-pointer"
+                                                    >
+                                                        {s.address}
+                                                    </div>
+                                                ))}
+
+                                                {locationError && (
+                                                    <p className="text-red-500 text-sm mt-1">{locationError}</p>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
-                                    <input
-                                        ref={locationRef}
-                                        name="location.address"
-                                        value={formik.values.location.address}
-                                        onChange={handleLocationInputChange}
-                                        onBlur={formik.handleBlur}
-                                        placeholder="Enter your address"
-                                        className="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-xs sm:text-sm"
-                                    />
+                                    {formik.touched.location?.address && formik.errors.location?.address && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {formik.errors.location.address}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -524,8 +543,14 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         placeholder="e.g., 15"
                                         value={formik.values.radius}
                                         onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         className="w-full px-4 py-3 border rounded-lg"
                                     />
+                                    {formik.touched.radius && formik.errors.radius && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {formik.errors.radius}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -555,6 +580,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                                 )}
                                             </label>
                                         ))}
+                                        {formik.errors.preferredSchedule && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                                {formik.errors.preferredSchedule}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -571,6 +601,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     selected: "bg-green-700 text-white rounded-full",
                                 }}
                             />
+                            {formik.errors.availability && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {formik.errors.availability as string[]}
+                                </p>
+                            )}
                         </div>
 
                         <div className="space-y-6">
@@ -592,6 +627,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         type="file"
                                         hidden
                                         accept="image/*"
+                                        onBlur={formik.handleBlur}
                                         onChange={async (e) => {
                                             if (e.target.files) {
                                                 const file = e.target.files[0];
@@ -600,6 +636,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                             }
                                         }}
                                     />
+                                    {formik.touched.profileImage && formik.errors.profileImage && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {formik.errors.profileImage}
+                                        </p>
+                                    )}
                                 </label>
                             </div>
 
@@ -628,6 +669,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                                 }
                                             }}
                                         />
+                                        {formik.errors.govIdFront && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                                {formik.errors.govIdFront}
+                                            </p>
+                                        )}
                                     </label>
                                 </div>
                                 <div>
@@ -654,6 +700,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                                 }
                                             }}
                                         />
+                                        {formik.errors.govIdBack && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                                {formik.errors.govIdBack}
+                                            </p>
+                                        )}
                                     </label>
                                 </div>
                             </div>
@@ -671,6 +722,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                             {cat.name}
                                         </label>
                                     ))}
+                                    {formik.errors.categories && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {formik.errors.categories}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -740,6 +796,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                             </div>
                                         );
                                     })}
+                                    {formik.errors.services && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {formik.errors.services as string}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Summary */}

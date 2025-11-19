@@ -97,6 +97,8 @@ export const API_ROUTES = {
 
     RATE_WORKER: "workers/ratings",
 
+    CLEAR_NOTIFICATION: "notification/clear",
+
     FETCH_SERVICES: "services/getAll-services",
     FETCH_SERVICE_BY_ID: "services/By-Id",
     FETCH_CATEGORY_BY_ID: "categories/By-Id",
@@ -120,6 +122,7 @@ export const API_ROUTES = {
     RESEND_OTP: "workers/resend-otp",
     VERIFY_OTP: "workers/verify-otp",
     RESET_PASSWORD: "workers/reset-password",
+    CLEAR_NOTIFICATION: "notification/clear",
     SEARCH: "workers/search",
     FETCH_WORK_HISTORY: "works/workers",
     FETCH_WORK_DETAILS: "works/details",

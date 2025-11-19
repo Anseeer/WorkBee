@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -10,18 +10,27 @@ import { emailRegex, passRegex, phoneRegex } from "../../constant/regexs";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { API_ROUTES } from "../../constant/api.routes";
+import { fetchLocationSuggestions } from "../../utilities/fetchLocation";
 
+interface Suggestion {
+    address: string;
+    pincode: string;
+    lat: string | number;
+    lng: string | number;
+}
 
 const WorkerRegistrationPage = () => {
     const Dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const inputRef = useRef<HTMLInputElement>(null);
-    const autocompleteRef = useRef<any>(null);
-    const [categoriesList, setCategoriesList] = useState<ICategory[]>([]);
+    const locationRef = useRef<HTMLInputElement>(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
+    const [categoriesList, setCategoriesList] = useState<ICategory[]>([]);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [locationError, setLocationError] = useState("");
+
 
     const formik = useFormik({
         initialValues: {
@@ -123,93 +132,6 @@ const WorkerRegistrationPage = () => {
         fetchCategories();
     }, []);
 
-    const updateLocation = useCallback(
-        (locationData: typeof formik.values.location) => {
-            formik.setFieldValue("location", locationData);
-        },
-        [formik]
-    );
-
-    useEffect(() => {
-        const initializeAutocomplete = () => {
-            if (!inputRef.current || !window.google?.maps?.places) {
-                console.error("Google Maps Places API not loaded properly");
-                return;
-            }
-
-            try {
-                const autocomplete = new window.google.maps.places.Autocomplete(
-                    inputRef.current,
-                    {
-                        componentRestrictions: { country: "IN" },
-                        fields: ["formatted_address", "geometry", "address_components", "name"],
-                    }
-                );
-
-                autocomplete.addListener("place_changed", () => {
-                    const place = autocomplete.getPlace();
-                    if (!place || !place.geometry) return;
-
-                    const addressComponents = place.address_components || [];
-                    const pincode =
-                        addressComponents.find((c: any) => c.types.includes("postal_code"))?.long_name || "";
-
-                    const lat = place.geometry.location?.lat() ?? 0;
-                    const lng = place.geometry.location?.lng() ?? 0;
-
-                    updateLocation({
-                        address: place.formatted_address || "",
-                        pincode,
-                        lat,
-                        lng,
-                    });
-                });
-
-                autocompleteRef.current = autocomplete;
-            } catch (error) {
-                console.error("Error initializing Autocomplete:", error);
-            }
-        };
-
-        const loadGoogleMapsAPI = () => {
-            if (window.google?.maps?.places) {
-                initializeAutocomplete();
-                return;
-            }
-
-            const existingScript = document.querySelector(
-                'script[src*="maps.googleapis.com"]'
-            );
-
-            if (existingScript) {
-                existingScript.addEventListener("load", () => {
-                    setTimeout(initializeAutocomplete, 100);
-                });
-                return;
-            }
-
-            const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY
-                }&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => setTimeout(initializeAutocomplete, 100);
-            script.onerror = () => {
-                console.error("Failed to load Google Maps API");
-            };
-            document.head.appendChild(script);
-        };
-
-        loadGoogleMapsAPI();
-
-        return () => {
-            if (autocompleteRef.current) {
-                window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
-            }
-        };
-    }, [updateLocation]);
-
-
     const handleCategorySelect = (categoryId: string) => {
         const newSelection = formik.values.categories.includes(categoryId)
             ? formik.values.categories.filter((c) => c !== categoryId)
@@ -238,7 +160,9 @@ const WorkerRegistrationPage = () => {
                     <form onSubmit={formik.handleSubmit} className="space-y-5 sm:space-y-6">
                         {/* Username & Location */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
+
+                            {/* Username */}
+                            <div className="relative">
                                 <div className="h-5">
                                     {formik.touched.name && formik.errors.name && (
                                         <span className="text-sm text-red-500">{formik.errors.name}</span>
@@ -252,33 +176,67 @@ const WorkerRegistrationPage = () => {
                                     type="text"
                                     placeholder="Username"
                                     className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                border-0 border-b-2 border-gray-300 focus:border-green-600 
-                focus:outline-none bg-transparent"
+            border-0 border-b-2 border-gray-300 focus:border-green-600 
+            focus:outline-none bg-transparent"
                                 />
                             </div>
 
-                            <div>
+                            {/* Location */}
+                            <div className="relative">
                                 <div className="h-5">
                                     {formik.touched.location?.address && formik.errors.location?.address && (
                                         <span className="text-sm text-red-500">{formik.errors.location.address}</span>
                                     )}
                                 </div>
+
                                 <input
-                                    onKeyDown={(e) => {
-                                        const keysToPrevent = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Tab', 'Enter'];
-                                        if (keysToPrevent.includes(e.key)) e.preventDefault();
-                                    }}
+                                    ref={locationRef}
                                     name="location.address"
                                     value={formik.values.location.address}
-                                    onChange={(e) => formik.setFieldValue('location.address', e.target.value)}
-                                    ref={inputRef}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        formik.setFieldValue("location.address", value);
+                                        fetchLocationSuggestions(value, setSuggestions, setLocationError);
+                                    }}
+                                    autoComplete="off"
                                     type="text"
                                     placeholder="Location"
                                     className="w-full px-0 py-2 text-gray-600 placeholder-gray-400 
-                border-0 border-b-2 border-gray-300 focus:border-green-600 
-                focus:outline-none bg-transparent"
+            border-0 border-b-2 border-gray-300 focus:border-green-600 
+            focus:outline-none bg-transparent"
                                 />
+
+                                {/* Suggestions */}
+                                {suggestions?.length > 0 && (
+                                    <div className="absolute left-0 right-0 bg-white border border-gray-200 
+                            mt-1 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+
+                                        {suggestions.map((s, idx) => (
+                                            <div
+                                                key={idx}
+                                                onClick={() => {
+                                                    formik.setFieldValue("location", {
+                                                        address: s.address,
+                                                        pincode: s.pincode,
+                                                        lat: Number(s.lat),
+                                                        lng: Number(s.lng),
+                                                    });
+                                                    setSuggestions([]);
+                                                }}
+                                                className="p-3 text-gray-700 hover:bg-gray-100 cursor-pointer 
+                                   transition-all duration-150"
+                                            >
+                                                {s.address}
+                                            </div>
+                                        ))}
+
+                                        {locationError && (
+                                            <p className="text-red-500 text-sm p-3">{locationError}</p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
+
                         </div>
 
                         {/* Email & Phone */}

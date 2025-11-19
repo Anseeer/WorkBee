@@ -181,6 +181,11 @@ export const AUTH_MESSAGE = {
     USER_BLOCKED: 'Access denied: User account is blocked',
 }
 
+export const NOTIFICATION_MESSAGE = {
+    CLEAT_NOTIFICATION_SUCCESSFULL: 'Cleat notification successfull',
+    CLEAT_NOTIFICATION_FAILD: 'Cleat notification faild',
+}
+
 export const WALLET_MESSAGE = {
     WALLET_GET_SUCCESSFULL: 'Wallet get successfull.',
     WALLET_GET_FAILD: 'Wallet get faild.',

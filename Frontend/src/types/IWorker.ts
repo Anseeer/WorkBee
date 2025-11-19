@@ -17,6 +17,7 @@ export interface IWorker {
     preferredSchedule: string[],
     isVerified: boolean,
     status: string,
+    rejectionReason: string,
     isActive: boolean,
     location: {
         address: string,

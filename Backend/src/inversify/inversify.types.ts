@@ -44,6 +44,7 @@ const TYPES = {
 
     notificationRepository: Symbol.for("notificationRepository"),
     notificationService: Symbol.for("notificationService"),
+    notificationController: Symbol.for("notificationController"),
 
     paymentRepository: Symbol.for("paymentRepository"),
     paymentService: Symbol.for("paymentService"),

@@ -13,13 +13,22 @@ export class NotificationRepository extends BaseRepository<INotification> implem
 
     async getUserNotification(userId: string): Promise<INotification[] | null> {
         try {
-            const notification = this.model.find({ recipient: userId })
+            const notification = await this.model.find({ recipient: userId })
                 .sort({ createdAt: -1 })
                 .populate("actor", "name location");
             return notification;
         } catch (error) {
             logger.error('Error in getUserNotification:', error);
             throw new Error('Error in getUserNotification');
+        }
+    }
+
+    async clearNotification(userId: string): Promise<void> {
+        try {
+            await this.model.deleteMany({ recipient: userId });
+        } catch (error) {
+            logger.error('Error in clearNotification:', error);
+            throw new Error('Error in clearNotification');
         }
     }
 

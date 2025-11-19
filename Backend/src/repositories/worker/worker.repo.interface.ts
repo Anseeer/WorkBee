@@ -19,7 +19,7 @@ export interface IWorkerRepository {
     getAllNonVerifiedWorkers(): Promise<IWorker[]>;
     setIsActive(workerId: string): Promise<boolean>;
     approveWorker(workerId: string): Promise<boolean>;
-    rejectedWorker(workerId: string): Promise<boolean>;
+    rejectedWorker(workerId: string, reason: string): Promise<boolean>;
     update(worker: Partial<IWorker | IWorkerEntity>): Promise<boolean>;
     search(searchTerms: ISearchTerm): Promise<IWorker[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorker[]>;

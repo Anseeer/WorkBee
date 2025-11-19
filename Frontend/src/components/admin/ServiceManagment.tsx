@@ -9,6 +9,8 @@ import type { IService } from '../../types/IService';
 import { deleteService, fetchCategory, fetchService, setIsActiveService, updateService } from '../../services/adminService';
 import AddingServiceSection from './ServiceAddingSection';
 import { uploadToCloud } from '../../utilities/uploadToCloud';
+import ConfirmModal from '../common/ConfirmToogle';
+
 
 const ServiceManagment = () => {
     const [isLoading, setLoading] = useState(false);
@@ -21,6 +23,17 @@ const ServiceManagment = () => {
     const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
     const [currrentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(10);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmType, setConfirmType] = useState<"toggle" | "delete" | null>(null);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+
+
+    const openConfirm = (id: string, type: "toggle" | "delete") => {
+        setSelectedId(id);
+        setConfirmType(type);
+        setConfirmOpen(true);
+    };
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -202,20 +215,20 @@ const ServiceManagment = () => {
             )
         },
         {
-            key: 'isActive',
-            label: 'Active',
-            render: u => (
+            key: "isActive",
+            label: "Active",
+            render: (u) => (
                 <div
-                    onClick={() => handleToggle(u.id)}
-                    className={`cursor-pointer w-11 h-6 rounded-full flex items-center ${u.isActive ? 'bg-green-500' : 'bg-red-500'
-                        }`}
+                    onClick={() => openConfirm(u.id, "toggle")}
+                    className={`cursor-pointer w-11 h-6 rounded-full flex items-center 
+                ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
                 >
                     <div
-                        className={`w-4 h-4 rounded-full bg-white transform transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'
-                            }`}
+                        className={`w-4 h-4 rounded-full bg-white transform transition-transform 
+                    ${u.isActive ? "translate-x-6" : "translate-x-1"}`}
                     />
                 </div>
-            ),
+            )
         },
         {
             key: 'actions' as keyof IService,
@@ -253,6 +266,30 @@ const ServiceManagment = () => {
                 searchKeys={['name', 'description']}
                 advancedFilterKeys={['name', 'categoryName', 'isActive']}
             />
+
+            {confirmOpen && (
+                <ConfirmModal
+                    title={
+                        confirmType === "delete"
+                            ? "Delete Service ?"
+                            : "Confirm Status Change"
+                    }
+                    message={
+                        confirmType === "delete"
+                            ? "This action cannot be undone. Are you sure?"
+                            : "Do you want to update the status?"
+                    }
+                    confirmText={confirmType === "delete" ? "Delete" : "Confirm"}
+                    onCancel={() => setConfirmOpen(false)}
+                    onConfirm={() => {
+                        if (selectedId) {
+                            if (confirmType === "toggle") handleToggle(selectedId);
+                            if (confirmType === "delete") handleDelete(selectedId);
+                        }
+                        setConfirmOpen(false);
+                    }}
+                />
+            )}
 
             {isEditing && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4">

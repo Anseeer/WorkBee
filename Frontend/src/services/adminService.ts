@@ -54,8 +54,8 @@ export const approveWorker = async (workerId: string) => {
     return response;
 };
 
-export const rejectedWorker = async (workerId: string) => {
-    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.REJECT_WORKER}?workerId=${workerId}`);
+export const rejectedWorker = async (workerId: string, reason: string) => {
+    const response = await axios.patch(`${API_ROUTES.ADMIN_SERVICE.REJECT_WORKER}?workerId=${workerId}&reason=${reason}`);
     return response;
 };
 

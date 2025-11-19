@@ -166,9 +166,9 @@ export class AdminService implements IAdminService {
         }
     }
 
-    async rejectedWorker(workerId: string): Promise<void> {
+    async rejectedWorker(workerId: string, reason: string): Promise<void> {
         try {
-            await this._workerRepository.rejectedWorker(workerId);
+            await this._workerRepository.rejectedWorker(workerId, reason);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);

@@ -11,6 +11,7 @@ export interface IWorkerDTO {
     preferredSchedule: string[];
     isActive: boolean;
     isVerified: boolean;
+    rejectionReason: string;
     status: string;
     radius: number;
     isAccountBuilt: boolean;

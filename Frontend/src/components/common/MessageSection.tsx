@@ -221,6 +221,12 @@ export default function MessageSection({ chats, me }: Props) {
     profileImage: selectedUser?.profileImage,
   };
 
+  const sortedChats = filteredChats?.sort((a, b) => {
+    const aTime = new Date(a.lastMessage?.createdAt || 0).getTime();
+    const bTime = new Date(b.lastMessage?.createdAt || 0).getTime();
+    return bTime - aTime;
+  });
+
   return (
     <div className="border-2 h-screen border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row min-h-screen md:h-[calc(100vh-4rem)] gap-0 md:gap-4">
       <audio id="remote-audio" autoPlay playsInline />
@@ -244,10 +250,18 @@ export default function MessageSection({ chats, me }: Props) {
 
           {/* Chat Users */}
           <div className="flex flex-col gap-3">
-            {filteredChats?.map((chat, index) => {
+            {sortedChats?.map((chat, index) => {
               const otherParticipant = chat.participants.find((p) => p._id !== me);
               if (!otherParticipant) return null;
               const unreadCount = chat.unreadCounts?.[me] || 0;
+              const time = chat.lastMessage?.createdAt
+                ? new Date(chat.lastMessage.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                : "";
+
 
               return (
                 <div
@@ -270,18 +284,30 @@ export default function MessageSection({ chats, me }: Props) {
                       alt={otherParticipant.name}
                     />
                   </div>
-                  <div className="flex flex-col min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{otherParticipant.name}</h3>
+                  <div className="flex flex-col min-w-0 flex-grow">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                        {otherParticipant.name}
+                      </h3>
+
+                      {/* Time on the FAR RIGHT */}
+                      <span className="text-gray-500 text-[10px] sm:text-xs whitespace-nowrap ml-2">
+                        {time}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-gray-600 text-xs sm:text-sm truncate max-w-[70%]">
+                        {chat?.lastMessage?.content ?? "No messages yet"}
+                      </p>
+
+                      {/* Unread count */}
                       {unreadCount > 0 && (
-                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-2 flex-shrink-0">
                           {unreadCount}
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-600 text-xs sm:text-sm truncate">
-                      {chat?.lastMessage?.content ?? 'No messages yet'}
-                    </p>
                   </div>
                 </div>
               );

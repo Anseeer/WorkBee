@@ -1,6 +1,7 @@
 import type { IChatMessage } from "./IChatMessage";
 
 export interface IChat {
+    createdAt: string;
     _id: string;
     lastMessage: IChatMessage;
     participants: {

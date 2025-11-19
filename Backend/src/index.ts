@@ -4,8 +4,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
 import workerRoutes from "./routes/workerRoutes";
-import rzpRoutes from "./routes/razorpayRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import notificationRoutes from "./routes/notificationRoutes";
 import auth from "./routes/authVerifyRoutes";
 import categoriesRoutes from "./routes/categoriesRoutes";
 import servicesRoutes from "./routes/servicesRoutes";
@@ -59,7 +60,8 @@ app.use('/api/categories', categoriesRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/works', workRoutes);
 app.use('/api/chats', chatRoutes);
-app.use('/api/rzp', rzpRoutes);
+app.use('/api/rzp', paymentRoutes);
+app.use('/api/notification', notificationRoutes);
 app.use('/api/auth', auth);
 
 app.get('/', (_, res) => {

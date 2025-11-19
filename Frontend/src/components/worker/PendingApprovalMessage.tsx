@@ -3,11 +3,13 @@ import { Info } from "lucide-react";
 interface PendingApprovalProps {
     status?: string;
     estimatedTime?: string;
+    message?: string;
 }
 
 const PendingApprovalMessage = ({
     status = "Pending Approval",
     estimatedTime = "within 24 hours",
+    message,
 }: PendingApprovalProps) => {
     return (
         <div className="max-h-screen flex items-center justify-center p-6 animate-fadeInUp">
@@ -35,9 +37,14 @@ const PendingApprovalMessage = ({
                         <>
                             <Info className="w-12 h-12 text-red-600 animate-pulse" />
                             <h2 className="text-2xl font-bold text-gray-800">Account Rejected</h2>
+
+                            <h2 className="text-red-600 font-semibold">
+                                Reason: {message || "No reason provided"}
+                            </h2>
+
                             <p className="text-gray-600">
                                 Unfortunately, your account has been rejected by the admin.
-                                Please review your profile, update any necessary information, and submit a re-approval request.
+                                Please review your profile, update necessary info, and submit a re-approval request.
                             </p>
                         </>
                     )}

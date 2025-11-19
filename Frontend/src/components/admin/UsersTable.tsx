@@ -2,11 +2,21 @@ import { useEffect, useState } from 'react';
 import { fetchUsers, setIsActiveUsers } from '../../services/adminService';
 import type { Iuser } from '../../types/IUser';
 import { DataTable, type Column } from '../common/Table';
+import ConfirmModal from '../common/ConfirmToogle.tsx';
 
 const UserTable = () => {
     const [users, setUsers] = useState<Iuser[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmType, setConfirmType] = useState<"toggle" | "delete" | null>(null);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+
+    const openConfirm = (id: string, type: "toggle" | "delete") => {
+        setSelectedId(id);
+        setConfirmType(type);
+        setConfirmOpen(true);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -17,7 +27,10 @@ const UserTable = () => {
         fetchData();
     }, [currentPage]);
 
+
+
     const handleToggle = async (id: string) => {
+
         try {
             await setIsActiveUsers(id);
             setUsers(prev =>
@@ -41,15 +54,17 @@ const UserTable = () => {
             render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
         },
         {
-            key: 'isActive',
-            label: 'Active',
+            key: "isActive",
+            label: "Active",
             render: (u) => (
                 <div
-                    onClick={() => handleToggle(u.id)}
-                    className={`cursor-pointer w-11 h-6 rounded-full flex items-center ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}
+                    onClick={() => openConfirm(u.id, "toggle")}
+                    className={`cursor-pointer w-11 h-6 rounded-full flex items-center 
+                ${u.isActive ? "bg-green-500" : "bg-red-500"}`}
                 >
                     <div
-                        className={`w-4 h-4 rounded-full bg-white transform transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'}`}
+                        className={`w-4 h-4 rounded-full bg-white transform transition-transform 
+                    ${u.isActive ? "translate-x-6" : "translate-x-1"}`}
                     />
                 </div>
             )
@@ -68,6 +83,28 @@ const UserTable = () => {
                 searchKeys={['name', 'email', 'phone']}
                 advancedFilterKeys={['name', 'email', 'phone', 'isActive', 'location']}
             />
+            {confirmOpen && (
+                <ConfirmModal
+                    title={
+                        confirmType === "delete"
+                            ? "Delete User?"
+                            : "Confirm Status Change"
+                    }
+                    message={
+                        confirmType === "delete"
+                            ? "This action cannot be undone. Are you sure?"
+                            : "Do you want to update the status?"
+                    }
+                    confirmText={confirmType === "delete" ? "Delete" : "Confirm"}
+                    onCancel={() => setConfirmOpen(false)}
+                    onConfirm={() => {
+                        if (selectedId) {
+                            if (confirmType === "toggle") handleToggle(selectedId);
+                        }
+                        setConfirmOpen(false);
+                    }}
+                />
+            )}
         </div>
     );
 };

@@ -29,6 +29,21 @@ export class PaymentService implements IPaymentService {
         }
     }
 
+    async findPaymentByWorkId(workId: string): Promise<IPaymentDTO | null> {
+        try {
+            if (!workId) {
+                throw new Error('Cant get the workId ')
+            }
+            const payment = await this._paymentRepository.findPaymentByWorkId(workId);
+            if (!payment) return null;
+            return mapPaymentToDTO(payment);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            throw error;
+        }
+    }
+
     async create(paymentData: Partial<IPayment>): Promise<IPaymentDTO | null> {
         try {
             if (!paymentData) {

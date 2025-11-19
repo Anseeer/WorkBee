@@ -46,6 +46,11 @@ const WorkerApprovalComponent: React.FC = () => {
 
     const [requests, setRequests] = useState<IWorker[]>([]);
     const [rejected, setRejected] = useState(false);
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null);
+    const [rejectReason, setRejectReason] = useState("");
+    const [reasonError, setReasonError] = useState("");
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -70,8 +75,8 @@ const WorkerApprovalComponent: React.FC = () => {
         );
     };
 
-    const handleReject = async (workerId: string) => {
-        await rejectedWorker(workerId)
+    const handleReject = async (workerId: string, reason: string) => {
+        await rejectedWorker(workerId, reason);
         toast.success("Rejected");
         setRejected(true)
     };
@@ -252,7 +257,10 @@ const WorkerApprovalComponent: React.FC = () => {
                                         </button>
                                         {request.status !== "Rejected" && (
                                             <button
-                                                onClick={() => handleReject(request.id)}
+                                                onClick={() => {
+                                                    setSelectedWorkerId(request.id);
+                                                    setShowRejectModal(true);
+                                                }}
                                                 className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                                             >
                                                 <X className="w-5 h-5" />
@@ -276,8 +284,71 @@ const WorkerApprovalComponent: React.FC = () => {
                     onClose={() => setSelectedImage(null)}
                 />
             </div>
+
+            {showRejectModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4 animate-fadeInUp">
+
+                        <h3 className="text-xl font-semibold text-gray-800">
+                            Reject Worker Request
+                        </h3>
+
+                        <p className="text-sm text-gray-600">
+                            Please provide a reason for rejection.
+                        </p>
+
+                        <textarea
+                            className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-red-500 outline-none ${reasonError ? "border-red-500" : "border-gray-300"
+                                }`}
+                            rows={4}
+                            placeholder="Type rejection reason..."
+                            value={rejectReason}
+                            onChange={(e) => {
+                                setRejectReason(e.target.value);
+                                setReasonError("");
+                            }}
+                        />
+
+                        {reasonError && (
+                            <div className="text-red-600 text-sm">{reasonError}</div>
+                        )}
+
+                        <div className="flex justify-end gap-3 pt-3">
+                            <button
+                                onClick={() => {
+                                    setShowRejectModal(false);
+                                    setRejectReason("");
+                                    setReasonError("");
+                                }}
+                                className="px-5 py-2 rounded-xl border bg-gray-100 hover:bg-gray-200 transition"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    if (!rejectReason.trim()) {
+                                        setReasonError("Reason is required");
+                                        return;
+                                    }
+
+                                    handleReject(selectedWorkerId!, rejectReason); // ⬅ reason passed
+                                    setShowRejectModal(false);
+                                    setRejectReason("");
+                                }}
+                                className="px-5 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition"
+                            >
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
+
     );
+
 };
 
 export default WorkerApprovalComponent;

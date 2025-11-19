@@ -10,7 +10,6 @@ import { toast } from 'react-toastify';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { fetchWorkerDetails } from '../../slice/workerSlice';
 import type { IWorker } from '../../types/IWorker';
-import type { IWallet } from '../../types/IWallet';
 
 interface PlanCardProps {
     title: string;
@@ -71,15 +70,12 @@ export const SubscriptionPlans = () => {
     const [plans, setPlan] = useState<ISubscription[]>([]);
     const [loading, setIsLoading] = useState(false);
     const [worker, setWorkerData] = useState<IWorker | null>(null);
-    const [wallet, setWallet] = useState<IWallet | null>(null);
     const workerData = useSelector((state: RootState) => state.worker.worker);
-    const walletData = useSelector((state: RootState) => state.worker.wallet);
 
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         setWorkerData(workerData);
-        setWallet(walletData);
     }, []);
 
     useEffect(() => {
@@ -160,10 +156,6 @@ export const SubscriptionPlans = () => {
             if (!selectedPlanData) throw new Error("Invalid plan");
 
             if (Number(selectedPlanData.amount) > 0) {
-                if (wallet?.balance as number < Number(selectedPlanData.amount)) {
-                    setIsLoading(false);
-                    return toast.error("Insufficient wallet balance. Please add money to your wallet.");
-                }
                 await handlePayment(selectedPlanData.amount as number, async () => {
                     await dispatch(fetchWorkerDetails(worker?.id as string));
                     toast.success("Plan activated successfully!");

@@ -25,10 +25,10 @@ const walletService = container.get<IWalletService>(TYPES.walletService);
 const subscriptionService = container.get<ISubscriptionService>(TYPES.subscriptionService);
 const notificationService = container.get<INotificationService>(TYPES.notificationService);
 
-
 router.post("/create-order", async (req: Request, res: Response) => {
     try {
         const { amount, workId, platformFee } = req.body;
+
         const wage = amount - platformFee;
 
         const options = {
@@ -142,7 +142,6 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
 
         await walletService.update(
             {
-                balance: -userTransaction.amount,
                 transactions: [userTransaction]
             },
             work.userId.toString()
@@ -197,6 +196,139 @@ router.post("/verify-payment", async (req: Request, res: Response): Promise<void
         res.status(500).json({ success: false, message });
     }
 });
+
+router.post("/pay-with-wallet", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const io = getIO();
+        const { amount, workId, platformFee } = req.body;
+
+        const wage = amount - platformFee;
+
+        const work = await workService.findById(workId);
+        if (!work) throw new Error("Work not found");
+
+        const transactionId = await generateTransactionId("WALLET");
+
+        let payment = await paymentService.findPaymentByWorkId(workId);
+
+        if (!payment) {
+            payment = await paymentService.create({
+                workId,
+                userId: work.userId,
+                workerId: work.workerId,
+                amount: wage,
+                platformFee,
+                transactionId,
+                status: "Pending"
+            });
+        }
+
+        const userWallet = await walletService.findByUser(work.userId.toString());
+        if (!userWallet) throw new Error("User wallet not found");
+
+        const totalAmount = wage + platformFee;
+
+        if (userWallet.balance < totalAmount) {
+            throw new Error("Insufficient wallet balance")
+        }
+
+        const worker = await workerService.getUserById(payment?.workerId?.toString() as string);
+        if (!worker) throw new Error("Worker not found");
+        if (!worker.subscription) throw new Error("Worker subscription not found");
+
+        const commission = parseInt(worker.subscription.commission) || 0;
+        const commissionAmount = (wage * commission) / 100;
+        const workerCredit = wage - commissionAmount;
+        const platformCredit = platformFee + commissionAmount;
+
+        const userTransaction = {
+            transactionId,
+            type: "DEBIT" as const,
+            amount: totalAmount,
+            description: `Wallet payment for ${work.service}`,
+            createdAt: new Date()
+        };
+
+        await walletService.update(
+            {
+                balance: -totalAmount,
+                transactions: [userTransaction]
+            },
+            work.userId.toString()
+        );
+
+        const workerTransaction = {
+            transactionId,
+            type: "CREDIT" as const,
+            amount: workerCredit,
+            description: `${work.service} wage`,
+            createdAt: new Date()
+        };
+
+        await walletService.update(
+            {
+                balance: workerCredit,
+                transactions: [workerTransaction]
+            },
+            work.workerId.toString()
+        );
+
+        await walletService.updatePlatformWallet(
+            {
+                balance: platformCredit,
+                transactions: [
+                    {
+                        transactionId,
+                        type: "CREDIT",
+                        amount: platformFee,
+                        description: `Platform fee for ${work.service}`,
+                        createdAt: new Date()
+                    },
+                    {
+                        transactionId,
+                        type: "CREDIT",
+                        amount: commissionAmount,
+                        description: `Commission for ${work.service}`,
+                        createdAt: new Date()
+                    }
+                ]
+            },
+            "PLATFORM"
+        );
+
+        await paymentService.update(payment?.id?.toString() as string, {
+            status: "Paid",
+            transactionId,
+            paidAt: new Date(),
+            notes: `Wallet payment for ${work.service}`
+        });
+
+        await workService.updatePaymentStatus(workId, "Completed", totalAmount.toString());
+
+        await workerService.updateCompletedWorks(work.workerId.toString());
+
+        const notification = await notificationService.create({
+            recipient: new mongoose.Types.ObjectId(work.workerId.toString()),
+            recipientModel: "Worker",
+            actor: new mongoose.Types.ObjectId(work.userId.toString()),
+            actorModel: "User",
+            type: "job_paid",
+            title: work.service,
+            body: `Payment of ₹${totalAmount} completed by the user.`,
+            read: false
+        });
+
+        io.to(work.workerId.toString()).emit("new-notification", notification);
+
+        res.json({ success: true, message: "Wallet payment completed successfully" });
+
+    } catch (error) {
+        logger.error(error);
+        const message = error instanceof Error ? error.message : "Something went wrong";
+        res.status(500).json({ success: false, message });
+    }
+});
+
 
 router.post("/create-wallet-order", async (req: Request, res: Response): Promise<void> => {
     try {

@@ -8,6 +8,7 @@ import { IAdminService } from "../../services/admin/admin.services.interface";
 import { ADMIN_MESSAGES, WALLET_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
+import { query } from "winston";
 
 @injectable()
 export class AdminController implements IAdminController {
@@ -159,8 +160,8 @@ export class AdminController implements IAdminController {
 
     rejectedWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workerId } = req.query;
-            const rejected = await this._adminService.rejectedWorker(workerId as string);
+            const { workerId, reason } = req.query;
+            const rejected = await this._adminService.rejectedWorker(workerId as string, reason as string);
             const response = new successResponse(StatusCode.OK, ADMIN_MESSAGES.REJECT_WORKER_SUCCESS, rejected)
             logger.info(response);
             res.status(response.status).json(response);
