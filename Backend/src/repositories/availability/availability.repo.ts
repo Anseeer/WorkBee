@@ -21,6 +21,38 @@ export class AvailabilityRepository extends BaseRepository<IAvailability> implem
         }
     }
 
+
+    async findAvailabilityByWorkerId(workerId: string): Promise<IAvailability | null> {
+        try {
+            return await this.model.findOne({ workerId });
+        } catch (error) {
+            logger.error('Error in findAvailabilityByWorkerId:', error);
+            throw new Error('Error in findAvailabilityByWorkerId');
+        }
+    }
+
+    async setAvailability(availability: IAvailability): Promise<IAvailability> {
+        try {
+            return await this.model.create(availability);
+        } catch (error) {
+            logger.error('Error in setAvailability:', error);
+            throw new Error('Error in setAvailability');
+        }
+    }
+
+    async updateAvailability(workerId: string, availability: IAvailability): Promise<IAvailability | null> {
+        try {
+            return await this.model.findOneAndUpdate(
+                { workerId },
+                { $set: availability },
+                { new: true }
+            );
+        } catch (error) {
+            logger.error('Error in updateAvailability:', error);
+            throw new Error('Error in updateAvailability');
+        }
+    }
+
     update = async (availability: IAvailability): Promise<boolean> => {
         try {
             const result = await this.model.updateOne(

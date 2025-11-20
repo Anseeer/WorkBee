@@ -5,17 +5,16 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../Store';
 import type { IWorker } from '../../types/IWorker';
 import WorkerAvailabilityModal from './WorkerAvailabilityModal';
-import type { IAvailability } from '../../types/IAvailability';
 import { fetchAvailability } from '../../services/userService';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { WorkDraftThunk, workerDetails } from '../../slice/workDraftSlice';
 import { StarRatingDisplay } from '../common/StartRating';
+import type { IAvailability } from '../../types/IAvailability';
 
 interface FilterState {
     selectedDate: string;
-    selectedTimeSlots: string[];
     maxPrice: number;
     minRating: number;
     minCompletedWorks: number;
@@ -36,7 +35,6 @@ const WorkerListing = () => {
 
     const [filters, setFilters] = useState<FilterState>({
         selectedDate: "",
-        selectedTimeSlots: [],
         maxPrice: 10000,
         minRating: 0,
         minCompletedWorks: 0,
@@ -46,13 +44,6 @@ const WorkerListing = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
-
-    const timeSlots = [
-        { value: "morning", label: "Morning (9am - 1pm)" },
-        { value: "afternoon", label: "Afternoon (1pm - 5pm)" },
-        { value: "evening", label: "Evening (5pm - 9pm)" },
-        { value: "full-day", label: "Full Day (9am - 5pm)" },
-    ];
     useEffect(() => {
         const fetchWorkers = async () => {
             if (!workDetails?.categoryId || !workDetails?.serviceId) return;
@@ -66,7 +57,6 @@ const WorkerListing = () => {
                     pincode: workDetails.location.pincode,
                     address: workDetails.location.address,
                 },
-                selectedTimeSlots: filters.selectedTimeSlots,
                 maxPrice: filters.maxPrice,
                 minRating: filters.minRating,
                 minCompletedWorks: filters.minCompletedWorks,
@@ -83,19 +73,9 @@ const WorkerListing = () => {
         filters.maxPrice,
         filters.minCompletedWorks,
         filters.minRating,
-        filters.selectedTimeSlots,
         filters.sortBy,
         workDetails
     ]);
-
-    const handleTimeSlotChange = (timeSlot: string) => {
-        setFilters(prev => ({
-            ...prev,
-            selectedTimeSlots: prev.selectedTimeSlots.includes(timeSlot)
-                ? prev.selectedTimeSlots.filter(slot => slot !== timeSlot)
-                : [...prev.selectedTimeSlots, timeSlot]
-        }));
-    };
 
     const handleSelectWorker = async (worker: IWorker, price: string) => {
         setSelectedWorker(worker);
@@ -158,21 +138,6 @@ const WorkerListing = () => {
                 {/* Sidebar */}
                 <div className="w-full md:w-80 flex-shrink-0 animate-slideInRight">
                     <div className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6 animate-fadeInScale">
-                        <h3 className="text-lg font-semibold mb-4 text-green-700">Choose your slot</h3>
-                        <div className="space-y-3">
-                            {timeSlots.map((slot) => (
-                                <label key={slot.value} className="flex items-center space-x-3 cursor-pointer animate-fadeInUp">
-                                    <input
-                                        type="checkbox"
-                                        checked={filters.selectedTimeSlots.includes(slot.value)}
-                                        onChange={() => handleTimeSlotChange(slot.value)}
-                                        className="w-4 h-4 border-2 border-gray-300 rounded focus:ring-green-500 text-green-600"
-                                    />
-                                    <span className="text-sm text-gray-700">{slot.label}</span>
-                                </label>
-                            ))}
-                        </div>
-
                         {/* Price Range Filter */}
                         <div className="my-6 border-t border-gray-200" />
                         <div>

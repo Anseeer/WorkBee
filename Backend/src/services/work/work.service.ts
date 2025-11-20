@@ -255,22 +255,25 @@ export class WorkService implements IWorkService {
 
             if (!dateEntry) throw new Error("No availability on this date");
 
-            if (!Array.isArray(dateEntry.bookedSlots)) {
-                dateEntry.bookedSlots = [];
-            }
+            if (!Array.isArray(dateEntry.availableSlots)) throw new Error("No availableSlots on this date");
 
-            const bookedSlots = dateEntry.bookedSlots as { slot: string; jobId?: mongoose.Types.ObjectId }[];
+            const slots = dateEntry.availableSlots as {
+                slot: string;
+                booked: boolean;
+                jobId?: mongoose.Types.ObjectId;
+            }[];
 
-            if (bookedSlots.some(slotObj => slotObj.slot === time)) {
+            const slotObj = slots.find(s => s.slot === time);
+            if (!slotObj) throw new Error("Requested time slot does not exist");
+
+            if (slotObj.booked === true) {
                 throw new Error("Slot already booked");
             }
 
-            bookedSlots.push({
-                slot: time,
-                jobId: work._id as mongoose.Types.ObjectId
-            });
+            slotObj.booked = true;
+            slotObj.jobId = work._id as mongoose.Types.ObjectId;
 
-            await this._availabilityRepositoy.markBookedSlot(availability);
+            await this._availabilityRepositoy.updateAvailability(workerId.toString(), availability);
 
             const chatExisting = await this._chatRepositoy.findChat([work.userId.toString(), work.workerId.toString()]);
             if (!chatExisting || chatExisting.length < 1) {

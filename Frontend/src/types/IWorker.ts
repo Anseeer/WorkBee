@@ -14,7 +14,6 @@ export interface IWorker {
     completedWorks: number,
     radius: number,
     workType: string[],
-    preferredSchedule: string[],
     isVerified: boolean,
     status: string,
     rejectionReason: string,

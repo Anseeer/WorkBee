@@ -46,7 +46,6 @@ export interface ISearchTerm {
         pincode: string;
         address: string;
     };
-    selectedTimeSlots: string[];
     maxPrice: number;
     minRating: number;
     minCompletedWorks: number;

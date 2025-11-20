@@ -15,13 +15,6 @@ import { getServiceByCategory } from "../../services/workerService";
 import type { ISelectedService } from "../../types/IService";
 import "../../App.css"
 
-const workingHours = [
-  { id: "morning", label: "Morning (9am - 1pm)" },
-  { id: "afternoon", label: "Afternoon (1pm - 5pm)" },
-  { id: "evening", label: "Evening (5pm - 9pm)" },
-  { id: "full-day", label: "Full Day (9am - 5pm)" },
-];
-
 interface IServiceOption {
   id: string;
   name: string;
@@ -31,6 +24,10 @@ interface IServiceOption {
 export default function BuildAccount() {
   const worker = useSelector((state: RootState) => state?.worker.worker);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [slotSelection, setSlotSelection] = useState<{
+    [dateString: string]: string[];
+  }>({});
+
   const [selectedImg, setSelectedImg] = useState<File | null>(null);
   const Profile = getProfileImage(worker?.name, selectedImg);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +65,6 @@ export default function BuildAccount() {
       gender: "",
       govId: [] as File[],
       bio: "",
-      workingHours: [] as string[],
       radius: "5",
       selectedServices: [] as ISelectedService[],
       availableDates: [] as string[],
@@ -85,10 +81,6 @@ export default function BuildAccount() {
       if (!values.gender) errors.gender = "Gender is required";
 
       if (!values.bio) errors.bio = "Bio is required";
-
-      if (!values.workingHours || values.workingHours.length === 0) {
-        errors.workingHours = "Select at least one slot";
-      }
 
       if (!values.radius || Number(values.radius) < 1) {
         errors.radius = "Select distance (in km) you're willing to travel for work";
@@ -107,7 +99,17 @@ export default function BuildAccount() {
 
       if (selectedDates.length === 0) {
         errors.availableDates = "Select at least one available date";
+      } else {
+        selectedDates.forEach((date) => {
+          const dateKey = date.toDateString();
+          const slots = slotSelection[dateKey];
+
+          if (!slots || slots.length === 0) {
+            errors.availableDates = "Select at least one time slot for each selected date";
+          }
+        });
       }
+
 
       if (!values.govId || values.govId.length < 2) {
         errors.govId = "Upload 2 government IDs";
@@ -130,12 +132,20 @@ export default function BuildAccount() {
 
         const availability = {
           workerId: worker?._id,
-          availableDates: selectedDates.map((date) => ({
-            date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-              date.getDate()
-            ).padStart(2, "0")}`,
-            bookedSlots: [],
-          })),
+          availableDates: selectedDates.map((date) => {
+            const dateKey = date.toDateString();
+
+            return {
+              date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+                date.getDate()
+              ).padStart(2, "0")}`,
+
+              availableSlots: slotSelection[dateKey].map((slot) => ({
+                slot,
+                jobId: null
+              }))
+            };
+          })
         };
 
         const servicesPayload = values.selectedServices.map((s) => ({
@@ -152,7 +162,6 @@ export default function BuildAccount() {
           age: Number(values.age),
           services: servicesPayload,
           radius: Number(values.radius),
-          preferredSchedule: values.workingHours,
           govId: govUrls.length === 1 ? govUrls[0] : govUrls,
           availability,
         };
@@ -196,21 +205,25 @@ export default function BuildAccount() {
     formik.setFieldValue("selectedServices", updated);
   };
 
-  const handleCheckbox = (field: "workingHours", value: string) => {
-    const current = formik.values[field] as string[];
-    const updated = current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
-    formik.setFieldValue(field, updated);
-  };
-
   const handleDateClick = (date: Date) => {
-    const exists = selectedDates.find((d) => d.toDateString() === date.toDateString());
+    const dateKey = date.toDateString();
+    const exists = selectedDates.find((d) => d.toDateString() === dateKey);
+
     if (exists) {
-      setSelectedDates(selectedDates.filter((d) => d.toDateString() !== date.toDateString()));
+      setSelectedDates(selectedDates.filter((d) => d.toDateString() !== dateKey));
+
+      const newSlots = { ...slotSelection };
+      delete newSlots[dateKey];
+      setSlotSelection(newSlots);
     } else {
       setSelectedDates([...selectedDates, date]);
+      setSlotSelection({
+        ...slotSelection,
+        [dateKey]: []
+      });
     }
-    formik.setFieldTouched("availableDates", true, true);
   };
+
 
   const handleGovIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.currentTarget.files) return;
@@ -222,7 +235,6 @@ export default function BuildAccount() {
     const invalidFiles = newFiles.filter((file) => !validTypes.includes(file.type));
 
     const updatedFiles = [...formik.values.govId, ...validFiles];
-    e.currentTarget.value = "";
 
     formik.setFieldValue("govId", updatedFiles);
 
@@ -367,9 +379,48 @@ export default function BuildAccount() {
                 }}
                 className="custom-calendar w-full"
               />
+              <div className="mt-4 space-y-4">
+                {selectedDates.map((date) => {
+                  const dateKey = date.toDateString();
+                  const slots = ["morning", "afternoon", "evening", "full-day"];
+
+                  return (
+                    <div key={dateKey} className="border p-3 rounded-lg bg-gray-50">
+                      <p className="font-medium mb-2">{dateKey}</p>
+
+                      <div className="flex gap-4 flex-wrap">
+                        {slots.map((slot) => (
+                          <label key={slot} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={slotSelection[dateKey]?.includes(slot)}
+                              onChange={() => {
+                                let updatedSlots = [...(slotSelection[dateKey] || [])];
+
+                                if (updatedSlots.includes(slot)) {
+                                  updatedSlots = updatedSlots.filter((s) => s !== slot);
+                                } else {
+                                  updatedSlots.push(slot);
+                                }
+
+                                setSlotSelection({
+                                  ...slotSelection,
+                                  [dateKey]: updatedSlots
+                                });
+                              }}
+                            />
+                            <span className="capitalize">{slot.replace("-", " ")}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
               {formik.errors.availableDates && formik.touched.availableDates && <div className="text-red-500 text-sm mt-2">{formik.errors.availableDates}</div>}
             </div>
           </div>
+
 
           {/* Right Column */}
           <div className="space-y-6 animate-fadeInUp">
@@ -437,22 +488,6 @@ export default function BuildAccount() {
                 className="w-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent outline-none" />
               <p className="text-xs text-gray-500 mt-2">You will only receive work within this distance from your location.</p>
               {formik.errors.radius && formik.touched.radius && <div className="text-red-500 text-sm mt-1">{formik.errors.radius}</div>}
-            </div>
-
-            {/* Working Hours */}
-            <div className="animate-fadeInUp">
-              <h3 className="text-sm font-medium mb-3">Working Hours</h3>
-              <div className="space-y-3">
-                {workingHours.map((hour) => (
-                  <label key={hour.id} className="flex items-center gap-3 cursor-pointer animate-zoomIn">
-                    <input type="checkbox" checked={formik.values.workingHours.includes(hour.id)}
-                      onChange={() => handleCheckbox("workingHours", hour.id)} onBlur={formik.handleBlur}
-                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-2 focus:ring-green-600" />
-                    <span className="text-sm">{hour.label}</span>
-                  </label>
-                ))}
-              </div>
-              {formik.errors.workingHours && formik.touched.workingHours && <div className="text-red-500 text-sm mt-2">{formik.errors.workingHours}</div>}
             </div>
 
             {/* Submit Button */}

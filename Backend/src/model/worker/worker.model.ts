@@ -54,11 +54,6 @@ const workerSchema = new Schema<IWorker>({
         type: Number,
         required: false
     },
-    preferredSchedule: {
-        type: [String],
-        enum: ['morning', 'afternoon', 'evening', 'night', 'full-day'],
-        required: false
-    },
     age: {
         type: Number,
         required: false

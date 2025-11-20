@@ -8,7 +8,6 @@ export interface IWorkerDTO {
     email: string;
     phone: string;
     role: string;
-    preferredSchedule: string[];
     isActive: boolean;
     isVerified: boolean;
     rejectionReason: string;
@@ -49,7 +48,6 @@ export interface IWorkerEntity {
     phone: string;
     password?: string;
     role: string;
-    preferredSchedule: string[];
     isActive: boolean;
     isVerified: boolean;
     status: string;

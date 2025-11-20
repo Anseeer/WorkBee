@@ -154,6 +154,7 @@ export class WorkerController implements IWorkerController {
             }
 
             const { availability, ...workerData } = req.body;
+            console.log("Availability:", availability)
 
             const result = await this._workerService.buildAccount(workerId, availability, workerData);
 

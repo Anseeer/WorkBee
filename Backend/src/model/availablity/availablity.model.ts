@@ -12,11 +12,15 @@ const availabilitySchema = new Schema<IAvailability>({
             type: Date,
             required: true
         },
-        bookedSlots: [{
+        availableSlots: [{
             slot: {
                 type: String,
                 enum: ["morning", "afternoon", "evening", "full-day"],
                 required: true
+            },
+            booked: {
+                type: Boolean,
+                default: false
             },
             jobId: {
                 type: mongoose.Schema.Types.ObjectId,

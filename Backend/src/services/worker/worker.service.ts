@@ -190,17 +190,17 @@ export class WorkerService implements IWorkerService {
             if (!updatedWorkerEntity) throw new Error(WORKER_MESSAGE.UPDATE_WORKER_SUCCESSFULLY);
 
             let updatedAvailability: IAvailabilityDTO | null = null;
-            const existingAvailability = await this._workerRepository.findAvailabilityByWorkerId(workerId);
+            const existingAvailability = await this._availabilityRepository.findAvailabilityByWorkerId(workerId);
 
             if (existingAvailability) {
                 const updatedFields = mapAvailabilityToEntity(availability);
-                const updatedValue = await this._workerRepository.updateAvailability(workerId, updatedFields);
+                const updatedValue = await this._availabilityRepository.updateAvailability(workerId, updatedFields);
 
                 if (!updatedValue) throw new Error(WORKER_MESSAGE.FAILDTO_UPDATE_AVAILABILITY);
 
                 updatedAvailability = mapAvailabilityToDTO(updatedValue);
             } else {
-                const createdValue = await this._workerRepository.setAvailability(availability);
+                const createdValue = await this._availabilityRepository.setAvailability(availability);
 
                 if (!createdValue) throw new Error(WORKER_MESSAGE.FAILDTO_CREATE_AVAILABILITY);
 

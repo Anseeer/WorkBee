@@ -87,17 +87,10 @@ const WorkDetailForm = ({ setStep }: Prop) => {
         enableReinitialize: true,
         validate: (values) => {
             const errors: Partial<Record<keyof WorkFormValues, any>> = {};
-            errors.location = {};
-
             if (!values.location.address) {
-                errors.location.address = "Address is required";
-            } else if (
-                !values.location.pincode ||
-                !values.location.lat ||
-                !values.location.lng
-            ) {
-                errors.location.address =
-                    "Please select a valid location from the dropdown suggestions";
+                errors.location = { address: "Address is required" };
+            } else if (!values.location.pincode || !values.location.lat || !values.location.lng) {
+                errors.location = { address: "Please select a valid location from suggestions" };
             }
 
             if (!values.taskSize) {

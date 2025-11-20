@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export interface ISlotDTO {
     date: Date;
-    bookedSlots: {
+    availableSlots: {
         slot: "morning" | "afternoon" | "evening" | "full-day";
         jobId?: mongoose.Types.ObjectId;
     }[];

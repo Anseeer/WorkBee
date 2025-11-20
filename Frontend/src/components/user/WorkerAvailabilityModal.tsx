@@ -2,15 +2,7 @@ import React, { useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { IWorker } from "../../types/IWorker";
 import type { IWork } from "../../types/IWork";
-
-type BookedSlot = string | { slot: string; jobId?: string };
-
-interface IAvailability {
-    availableDates: Array<{
-        date: string;
-        bookedSlots: BookedSlot[];
-    }>;
-}
+import type { IAvailability, IAvailableSlot } from "../../types/IAvailability";
 
 interface WorkerModalProps {
     work: Partial<IWork>;
@@ -21,11 +13,6 @@ interface WorkerModalProps {
     onConfirm: (date: string, slot: string, PlatformFee: string, commissionAmount: string) => void;
 }
 
-type AvailableSlot = {
-    slot: string;
-    label: string;
-    booked: boolean;
-};
 
 const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     work,
@@ -54,24 +41,20 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
         setSelectedSlot(null);
     };
 
-    const getAvailableSlotsForDate = (date: string): AvailableSlot[] => {
+    const getAvailableSlotsForDate = (date: string): IAvailableSlot[] => {
         if (!availability?.availableDates) return [];
 
         const dayAvailability = availability.availableDates.find(av => {
             return formatDate(new Date(av.date)) === date;
         });
 
+        console.log("DAy availabilit :", dayAvailability)
+
         if (!dayAvailability) return [];
 
-        const allSlots = worker.preferredSchedule || [];
+        const slotArray = dayAvailability.availableSlots || [];
 
-        return allSlots.map(slot => ({
-            slot,
-            label: slot.charAt(0).toUpperCase() + slot.slice(1),
-            booked: dayAvailability.bookedSlots?.some(b =>
-                typeof b === "string" ? b === slot : b.slot === slot
-            ) ?? false
-        }));
+        return slotArray
     };
 
     const availableSlots = selectedDate ? getAvailableSlotsForDate(selectedDate) : [];
@@ -208,21 +191,21 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
                                             onClick={() => handleDateClick(date)}
                                             disabled={!isAvailable}
                                             className={`
-                      h-8 w-8 rounded-lg text-sm font-semibold transition-all duration-200 m-1
-                      ${!isCurrentMonth
+                                                         ${!isCurrentMonth
                                                     ? 'text-gray-300'
                                                     : isSelected
                                                         ? 'bg-green-900 text-white shadow-lg scale-105'
                                                         : isAvailable
                                                             ? 'text-gray-900 hover:bg-green-500 hover:scale-105'
                                                             : 'text-gray-400 cursor-not-allowed'}
-                    `}
+                                                `}
                                         >
                                             {date.getDate()}
                                         </button>
                                     );
                                 })}
                             </div>
+
                         </div>
                     </div>
 
@@ -243,28 +226,32 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
 
                                     {availableSlots.length > 0 ? (
                                         <div className="grid grid-cols-2 gap-2">
-                                            {availableSlots.map(({ slot, booked, label }) => (
-                                                <button
-                                                    key={slot}
-                                                    disabled={booked}
-                                                    onClick={() => !booked && setSelectedSlot(slot)}
-                                                    className={`
-                          p-3 rounded-lg border text-sm font-medium transition-all
-                          ${selectedSlot === slot
-                                                            ? 'bg-green-900 text-white border-green-900'
-                                                            : 'bg-white border-gray-300'}
-                          ${booked
-                                                            ? 'opacity-50 cursor-not-allowed text-gray-400'
-                                                            : 'hover:bg-green-500 hover:border-green-500'}
-                        `}
-                                                >
-                                                    {label.split(' (')[0]}
-                                                </button>
-                                            ))}
+                                            {availableSlots.map((s) => {
+                                                const isBooked = s?.booked;
+                                                return (
+                                                    <button
+                                                        key={s.slot}
+                                                        onClick={() => !isBooked && setSelectedSlot(s.slot)}
+                                                        disabled={isBooked}
+                                                        className={`
+                                                                 p-3 rounded-lg border text-sm font-medium transition-all
+
+                                                                  ${isBooked
+                                                                ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed"
+                                                                : selectedSlot === s.slot
+                                                                    ? "bg-green-900 text-white border-green-900"
+                                                                    : "bg-white border-gray-300 hover:bg-green-50"} 
+                                                             `}
+                                                    >
+                                                        {s.slot.split(" (")[0]}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     ) : (
                                         <p className="text-sm text-gray-400">No time slots available for this date.</p>
                                     )}
+
                                 </div>
                             )}
 

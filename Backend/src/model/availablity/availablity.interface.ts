@@ -2,8 +2,9 @@ import mongoose, { Document } from "mongoose";
 
 export interface ISlot extends Document {
     date: Date;
-    bookedSlots: {
+    availableSlots: {
         slot: "morning" | "afternoon" | "evening" | "full-day";
+        booked?: boolean;
         jobId?: mongoose.Types.ObjectId;
     }[];
 }

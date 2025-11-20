@@ -13,7 +13,6 @@ export interface IWorker extends Document {
     role: string,
     radius: number,
     completedWorks: number,
-    preferredSchedule: string[],
     isVerified: boolean,
     status: string,
     rejectionReason: string,

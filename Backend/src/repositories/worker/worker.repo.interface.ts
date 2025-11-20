@@ -1,6 +1,4 @@
-import { IAvailabilitEntity } from "../../mappers/availability/availability.map.DTO.interface";
 import { IWorkerEntity } from "../../mappers/worker/worker.map.DTO.interface";
-import { IAvailability } from "../../model/availablity/availablity.interface";
 import { ISubscription } from "../../model/subscription/subscription.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 import { ISearchTerm } from "../../utilities/Types";
@@ -12,9 +10,6 @@ export interface IWorkerRepository {
     findWorkerById(workerId: string): Promise<IWorker | null>;
     resetPassword(email: string, hashedPass: string): Promise<boolean>;
     findByIdAndUpdate(workerId: string, updatedFields: Partial<IWorker>): Promise<IWorker | null>;
-    findAvailabilityByWorkerId(workerId: string): Promise<IAvailability | null>;
-    setAvailability(availability: IAvailability): Promise<IAvailability | null>;
-    updateAvailability(iworkerIdd: string, availability: IAvailabilitEntity): Promise<IAvailability | null>;
     getAllWorkers(): Promise<IWorker[]>;
     getAllNonVerifiedWorkers(): Promise<IWorker[]>;
     setIsActive(workerId: string): Promise<boolean>;

@@ -1,10 +1,8 @@
 import { injectable } from "inversify";
-import { IAvailability } from "../../model/availablity/availablity.interface";
 import { IWorker } from "../../model/worker/worker.interface";
 import Worker from "../../model/worker/worker.model";
 import BaseRepository from "../base/base.repo";
 import { IWorkerRepository } from "./worker.repo.interface";
-import { Availability } from "../../model/availablity/availablity.model";
 import haversine from 'haversine-distance';
 import mongoose, { Types } from "mongoose";
 import { SUBSCRIPTION_MESSAGE, WORKER_MESSAGE } from "../../constants/messages";
@@ -39,37 +37,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
         } catch (error) {
             logger.error('Error in findByIdAndUpdate:', error);
             throw new Error('Error in findByIdAndUpdate');
-        }
-    }
-
-    async findAvailabilityByWorkerId(workerId: string): Promise<IAvailability | null> {
-        try {
-            return await Availability.findOne({ workerId });
-        } catch (error) {
-            logger.error('Error in findAvailabilityByWorkerId:', error);
-            throw new Error('Error in findAvailabilityByWorkerId');
-        }
-    }
-
-    async setAvailability(availability: IAvailability): Promise<IAvailability> {
-        try {
-            return await Availability.create(availability);
-        } catch (error) {
-            logger.error('Error in setAvailability:', error);
-            throw new Error('Error in setAvailability');
-        }
-    }
-
-    async updateAvailability(workerId: string, availability: IAvailability): Promise<IAvailability | null> {
-        try {
-            return await Availability.findOneAndUpdate(
-                { workerId },
-                { $set: availability },
-                { new: true }
-            );
-        } catch (error) {
-            logger.error('Error in updateAvailability:', error);
-            throw new Error('Error in updateAvailability');
         }
     }
 
@@ -134,7 +101,7 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
             }
 
-            console.log("RESon ::::::::",reason)
+            console.log("RESon ::::::::", reason)
 
             await this.model.updateOne(
                 { _id: workerId },
@@ -162,7 +129,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 bio: workerData.bio,
                 profileImage: workerData.profileImage,
                 radius: workerData.radius,
-                preferredSchedule: workerData.preferredSchedule,
                 location: workerData.location,
                 govId: workerData.govId,
                 services: workerData.services,
@@ -199,11 +165,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
 
             if (searchTerms.serviceId) {
                 query["services.serviceId"] = searchTerms.serviceId;
-            }
-
-            if (searchTerms.selectedTimeSlots?.length) {
-                console.log("SelectedSlots :", searchTerms.selectedTimeSlots)
-                query.preferredSchedule = { $in: searchTerms.selectedTimeSlots };
             }
 
             if (searchTerms.minRating && searchTerms.minRating > 0) {
