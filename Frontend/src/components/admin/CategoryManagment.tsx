@@ -9,6 +9,7 @@ import { useFormik } from 'formik';
 import AddingCategorySection from './CategoriesAddingSection';
 import { uploadToCloud } from '../../utilities/uploadToCloud';
 import ConfirmModal from '../common/ConfirmToogle';
+import { formatId } from '../../utilities/RwapId';
 
 type ConfirmActionType = "toggle" | "delete";
 
@@ -25,13 +26,11 @@ const CategoryManagment = () => {
     const [confirmType, setConfirmType] = useState<ConfirmActionType | null>(null);
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
-
     const openConfirm = (id: string, type: ConfirmActionType) => {
         setSelectedId(id);
         setConfirmType(type);
         setConfirmOpen(true);
     };
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -147,11 +146,12 @@ const CategoryManagment = () => {
     });
 
     const columns: Column<ICategory>[] = [
-        { key: 'name', label: 'Name' },
-        { key: 'description', label: 'Description', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
+        { key: 'id', label: 'ID', render: (u) => formatId("CAT", u.id) },
+        { key: 'name', label: 'NAME' },
+        { key: 'description', label: 'DESCRIPTION', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
         {
             key: 'imageUrl',
-            label: 'Icon',
+            label: 'ICON',
             render: (u) => (
                 <img
                     loading='lazy'
@@ -163,7 +163,7 @@ const CategoryManagment = () => {
         },
         {
             key: "isActive",
-            label: "Active",
+            label: "ACTIVE",
             render: (u) => (
                 <div
                     onClick={() => openConfirm(u.id, "toggle")}
@@ -179,7 +179,7 @@ const CategoryManagment = () => {
         },
         {
             key: 'actions' as keyof ICategory,
-            label: 'Actions',
+            label: 'ACTIONS',
             render: (u) => (
                 <div className="flex gap-3">
                     <button

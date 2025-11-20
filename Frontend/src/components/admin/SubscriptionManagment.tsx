@@ -8,6 +8,7 @@ import type { ISubscription } from '../../types/ISubscription';
 import { deleteSubscription, fetchSubscriptionPlans, toggleStatus, updateSubscription } from '../../services/adminService';
 import SubscriptionPlansAddingSection from './SubscriptionPlanAddingSection';
 import ConfirmModal from '../common/ConfirmToogle';
+import { formatId } from '../../utilities/RwapId';
 
 const SubscriptionManagment = () => {
     const [subscription, setSubscription] = useState<ISubscription[]>([]);
@@ -131,14 +132,15 @@ const SubscriptionManagment = () => {
     });
 
     const columns: Column<ISubscription>[] = [
-        { key: 'planName', label: 'Name' },
-        { key: 'amount', label: 'Amount', render: (u) => `₹${u.amount}` },
-        { key: 'comission', label: 'Comission', render: (u) => `${u.comission}%` },
-        { key: 'durationInDays', label: 'Duration', render: (u) => `${u.durationInDays}(days)` },
-        { key: 'description', label: 'Description', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
+        { key: 'id', label: 'ID', render: (u) => formatId("SUB", u.id) },
+        { key: 'planName', label: 'NAME' },
+        { key: 'amount', label: 'AMOUNT', render: (u) => `₹${u.amount}` },
+        { key: 'comission', label: 'COMMISSION', render: (u) => `${u.comission}%` },
+        { key: 'durationInDays', label: 'DURATION', render: (u) => `${u.durationInDays}(days)` },
+        { key: 'description', label: 'DESCRIPTION', render: (u) => u.description?.split(' ').slice(0, 5).join(' ') },
         {
             key: "isActive",
-            label: "Active",
+            label: "ACTIVE",
             render: (u) => (
                 <div
                     onClick={() => openConfirm(u.id, "toggle")}
@@ -154,7 +156,7 @@ const SubscriptionManagment = () => {
         },
         {
             key: 'actions' as keyof ISubscription,
-            label: 'Actions',
+            label: 'ACTIONS',
             render: (u) => (
                 <div className="flex gap-3">
                     <button

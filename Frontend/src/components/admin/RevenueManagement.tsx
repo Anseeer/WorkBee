@@ -5,6 +5,7 @@ import type { ITransactions } from '../../types/ITransaction';
 import { DataTable, type Column } from '../common/Table';
 import PayoutModal from '../common/PayoutForm';
 import AnimatedNumber from '../../utilities/AnimatedNumber';
+import { formatId } from '../../utilities/RwapId';
 
 const RevenueManagement = () => {
     const [payoutModal, setPayoutModal] = useState<boolean>(false);
@@ -77,18 +78,19 @@ const RevenueManagement = () => {
     };
 
     const columns: Column<ITransactions>[] = [
-        { key: 'createdAt', label: 'Date', render: (u) => formatDate(u.createdAt) },
+        { key: 'transactionId', label: 'ID', render: (u) => formatId("", u.transactionId) },
+        { key: 'createdAt', label: 'DATE', render: (u) => formatDate(u.createdAt) },
         {
             key: 'amount',
-            label: 'Amount',
+            label: 'AMOUNT',
             render: (txn: ITransactions) => (
                 <span className={txn.type === "CREDIT" ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
                     ₹{txn.amount.toFixed(2)}
                 </span>
             )
         },
-        { key: 'type', label: 'Type' },
-        { key: 'description', label: 'Description' },
+        { key: 'type', label: 'TYPE' },
+        { key: 'description', label: 'DESCRIPTION' },
     ];
 
     return (

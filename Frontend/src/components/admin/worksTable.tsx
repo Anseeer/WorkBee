@@ -4,6 +4,7 @@ import type { IWork } from '../../types/IWork';
 import { fetchWorks } from '../../services/adminService';
 import { StatusBadge } from '../../utilities/StatusBadge';
 import WorkInfoModal from '../common/WorkInfo';
+import { formatId } from '../../utilities/RwapId';
 
 const WorksTable = () => {
     const [works, setWorks] = useState<(IWork & { id: string })[]>([]);
@@ -37,16 +38,17 @@ const WorksTable = () => {
     }
 
     const columns: Column<IWork>[] = [
-        { key: 'service', label: 'Work', render: (u) => u.service.split(' ').slice(0, 3).join(' ') },
-        { key: 'userName', label: 'User' },
-        { key: 'workerName', label: 'Worker' },
-        { key: 'status', label: 'Status', render: (u) => <StatusBadge status={u.status} /> },
-        { key: 'platformFee', label: 'Fee', render: (u) => <span className="text-green-700 font-semibold">₹{u.platformFee}</span> },
-        { key: 'commission', label: 'Comission', render: (u) => <span className="text-green-700 font-semibold">₹{u.commission || 0}</span> },
-        { key: 'sheduleDate', label: 'Date' },
+        { key: 'id', label: 'ID', render: (u) => formatId("WORK", u?._id as string) },
+        { key: 'service', label: 'WORK', render: (u) => u.service.split(' ').slice(0, 3).join(' ') },
+        { key: 'userName', label: 'CUSTOMER' },
+        { key: 'workerName', label: 'WORKER' },
+        { key: 'status', label: 'STATUS', render: (u) => <StatusBadge status={u.status} /> },
+        { key: 'platformFee', label: 'FEE', render: (u) => <span className="text-green-700 font-semibold">₹{u.platformFee}</span> },
+        { key: 'commission', label: 'COMMISSION', render: (u) => <span className="text-green-700 font-semibold">₹{u.commission || 0}</span> },
+        { key: 'sheduleDate', label: 'DATE' },
         {
             key: 'id',
-            label: 'Info',
+            label: 'INFO',
             render: (u) => (
                 <button
                     onClick={() => HandleSelectedWork(u.id as string)}

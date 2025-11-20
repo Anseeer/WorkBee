@@ -3,6 +3,7 @@ import { fetchUsers, setIsActiveUsers } from '../../services/adminService';
 import type { Iuser } from '../../types/IUser';
 import { DataTable, type Column } from '../common/Table';
 import ConfirmModal from '../common/ConfirmToogle.tsx';
+import { formatId } from '../../utilities/RwapId.ts';
 
 const UserTable = () => {
     const [users, setUsers] = useState<Iuser[]>([]);
@@ -45,17 +46,18 @@ const UserTable = () => {
     };
 
     const columns: Column<Iuser>[] = [
-        { key: 'name', label: 'Name' },
-        { key: 'email', label: 'Email' },
-        { key: 'phone', label: 'Phone' },
+        { key: 'id', label: 'ID', render: (u) => formatId("USER", u.id) },
+        { key: 'name', label: 'NAME' },
+        { key: 'email', label: 'EMAIL' },
+        { key: 'phone', label: 'PHONE' },
         {
             key: 'location',
-            label: 'Location',
+            label: 'LOCATION',
             render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
         },
         {
             key: "isActive",
-            label: "Active",
+            label: "ACTIVE",
             render: (u) => (
                 <div
                     onClick={() => openConfirm(u.id, "toggle")}

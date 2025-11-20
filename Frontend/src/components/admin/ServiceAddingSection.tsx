@@ -37,20 +37,17 @@ const AddingServiceSection = ({ setAdded }: Props) => {
     const formik = useFormik({
         initialValues: {
             name: "",
-            wage: "",
             category: "",
             image: null as File | null,
         },
         validate: (values) => {
             const errors: {
                 name?: string;
-                wage?: string;
                 image?: string;
                 category?: string;
             } = {};
 
             if (!values.name) errors.name = "Service name is required";
-            if (!values.wage) errors.wage = "Wage is required";
             if (!values.category) errors.category = "Category is required";
 
             if (!values.image) {
@@ -63,7 +60,6 @@ const AddingServiceSection = ({ setAdded }: Props) => {
             }
             return errors;
         },
-
         onSubmit: async (values, { resetForm }) => {
             setLoading(true);
             try {
@@ -122,15 +118,15 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                         <input
                             type="file"
                             accept="image/png, image/jpeg, image/jpg"
-                            name="imageFile"
+                            name="image"
                             onChange={(e) => {
                                 const file = e.currentTarget.files?.[0] || null;
                                 formik.setFieldValue("image", file);
                                 if (file) setPreview(URL.createObjectURL(file));
                             }}
                             className={`px-3 py-2 border rounded-md w-full focus:outline-none focus:ring-2 ${formik.touched.image && formik.errors.image
-                                ? "border-red-500 focus:ring-red-400"
-                                : "border-gray-300 focus:ring-green-400"
+                                    ? "border-red-500 focus:ring-red-400"
+                                    : "border-gray-300 focus:ring-green-400"
                                 }`}
                         />
                         {preview && (
@@ -187,7 +183,6 @@ const AddingServiceSection = ({ setAdded }: Props) => {
             </form>
         </div>
     );
-
 };
 
 export default AddingServiceSection;

@@ -8,6 +8,7 @@ import type { IWorker } from '../../types/IWorker';
 import { FaRupeeSign } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { StatusBadge } from '../../utilities/StatusBadge';
+import MapView from './MapView';
 
 interface props {
     closeModal: () => void;
@@ -247,6 +248,22 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Map Location */}
+                    <div className="mt-4 sm:mt-6 md:mt-8 bg-gray-50 rounded-lg p-3 sm:p-4 md:p-6">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
+                            Job Location Map
+                        </h3>
+
+                        {workDetails?.location?.lat && workDetails?.location?.lng ? (
+                            <MapView
+                                lat={workDetails.location.lat}
+                                lng={workDetails.location.lng}
+                            />
+                        ) : (
+                            <p className="text-sm text-gray-600">No map data available</p>
+                        )}
                     </div>
 
                     {/* Description */}

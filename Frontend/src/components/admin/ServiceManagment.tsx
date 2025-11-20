@@ -10,7 +10,9 @@ import { deleteService, fetchCategory, fetchService, setIsActiveService, updateS
 import AddingServiceSection from './ServiceAddingSection';
 import { uploadToCloud } from '../../utilities/uploadToCloud';
 import ConfirmModal from '../common/ConfirmToogle';
+import { formatId } from '../../utilities/RwapId';
 
+type ConfirmActionType = "toggle" | "delete";
 
 const ServiceManagment = () => {
     const [isLoading, setLoading] = useState(false);
@@ -24,16 +26,14 @@ const ServiceManagment = () => {
     const [currrentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(10);
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [confirmType, setConfirmType] = useState<"toggle" | "delete" | null>(null);
+    const [confirmType, setConfirmType] = useState<ConfirmActionType | null>(null);
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
-
-    const openConfirm = (id: string, type: "toggle" | "delete") => {
+    const openConfirm = (id: string, type: ConfirmActionType) => {
         setSelectedId(id);
         setConfirmType(type);
         setConfirmOpen(true);
     };
-
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -198,11 +198,12 @@ const ServiceManagment = () => {
     });
 
     const columns: Column<IService>[] = [
-        { key: 'name', label: 'Name' },
-        { key: 'categoryName', label: 'Category' },
+        { key: 'id', label: 'ID', render: (u) => formatId("SERV", u.id) },
+        { key: 'name', label: 'NAME' },
+        { key: 'categoryName', label: 'SERVICE' },
         {
             key: 'image',
-            label: 'Icon',
+            label: 'ICON',
             render: (u) => (
                 <img
                     loading="lazy"
@@ -216,7 +217,7 @@ const ServiceManagment = () => {
         },
         {
             key: "isActive",
-            label: "Active",
+            label: "ACTIVE",
             render: (u) => (
                 <div
                     onClick={() => openConfirm(u.id, "toggle")}
@@ -232,7 +233,7 @@ const ServiceManagment = () => {
         },
         {
             key: 'actions' as keyof IService,
-            label: 'Actions',
+            label: 'ACTIONS',
             render: u => (
                 <div className="flex gap-3">
                     <button
@@ -243,7 +244,7 @@ const ServiceManagment = () => {
                         <Edit className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => handleDelete(u.id)}
+                        onClick={() => openConfirm(u.id, "delete")}
                         className="text-red-500 hover:text-red-700"
                         title="Delete"
                     >

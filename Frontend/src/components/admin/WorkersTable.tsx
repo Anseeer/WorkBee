@@ -5,6 +5,7 @@ import type { IWorker } from '../../types/IWorker';
 import { useWorkerDetails } from '../context/WorkerDetailContext';
 import type { IAvailability } from '../../types/IAvailability';
 import ConfirmModal from '../common/ConfirmToogle';
+import { formatId } from '../../utilities/RwapId';
 
 const WorkersTable = () => {
     const [workers, setWorkers] = useState<IWorker[]>([]);
@@ -56,17 +57,18 @@ const WorkersTable = () => {
     };
 
     const columns: Column<IWorker>[] = [
-        { key: 'name', label: 'Name' },
-        { key: 'email', label: 'Email' },
-        { key: 'phone', label: 'Phone' },
+        { key: 'id', label: 'ID', render: (u) => formatId("WORKER", u.id) },
+        { key: 'name', label: 'NAME' },
+        { key: 'email', label: 'EMAIL' },
+        { key: 'phone', label: 'PHONE' },
         {
             key: 'location',
-            label: 'Location',
+            label: 'LOCATION',
             render: (u) => u.location.address.split(' ').slice(0, 3).join(' ')
         },
         {
             key: "isActive",
-            label: "Active",
+            label: "ACTIVE",
             render: (u) => (
                 <div
                     onClick={(e) => {
