@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "react-toastify";
-import { fetchWorkHistory, logoutUser } from "../../services/userService";
+import { ChangePassword, fetchWorkHistory, logoutUser } from "../../services/userService";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { fetchUserDataThunk, logout } from "../../slice/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ import Wallet from "../common/Wallet";
 import AddMoneyModal from "./AddMoneyModal";
 import WorkInfoModal from "../common/WorkInfo";
 import { WorkerRatingModal } from "./WorkerRatingModal";
+import ChangePasswordModal from "../common/ChangePasswordModal";
 
 const ProfileSection = () => {
 
@@ -22,6 +24,7 @@ const ProfileSection = () => {
     const navigate = useNavigate();
     const [isActiveTab, setIsActiveTab] = useState('Profile');
     const [isEdit, setIsEdit] = useState(false);
+    const [changePass, setChangePass] = useState(false);
     const [reloadWallet, setReloadWallet] = useState(false);
     const [isPaymentModal, setIsPaymentModal] = useState(false);
     const [isWorkerRatingModal, setWorkerRatingModal] = useState(false);
@@ -34,8 +37,8 @@ const ProfileSection = () => {
     const [userId, setUserId] = useState<string | null>(null);
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
     const [selectedImg, setSelectedImg] = useState<File | null | string>(null);
-    const user = useSelector((state: RootState) => state.user?.user);
-    const wallet = useSelector((state: RootState) => state.user?.wallet);
+    const user = useSelector((state: RootState) => state?.user?.user);
+    const wallet = useSelector((state: RootState) => state?.user?.wallet);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
 
@@ -118,6 +121,24 @@ const ProfileSection = () => {
         setTotalHours(Number(totalHours));
         setWorkId(workId);
     }
+
+    const HandleChangePassword = async (data: { currentPassword: string; newPassword: string; }) => {
+        try {
+            await ChangePassword(data.currentPassword, data.newPassword, user?.id as string);
+            toast.success("Password changed successfully");
+            setChangePass(false)
+        } catch (error: any) {
+            console.error("Error in HandleChangePassword:", error);
+
+            const backendMsg =
+                error?.response?.data?.data ||
+                error?.response?.data?.message ||
+                "Error in Change Password";
+
+            toast.error(backendMsg);
+        }
+    };
+
 
     return (
         <>
@@ -225,6 +246,21 @@ const ProfileSection = () => {
                                             </svg>
                                         </div>
                                         <span className="text-black break-words">{user?.phone}</span>
+                                    </div>
+
+                                    <div className="flex items-center space-x-2 sm:space-x-3 animate-fadeInUp delay-200 underline cursor-pointer">
+                                        <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex items-center justify-center flex-shrink-0">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                                className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
+                                                <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                        </div>
+                                        <span
+                                            onClick={() => setChangePass(true)}
+                                            className="text-green-900 break-words">
+                                            Change password
+                                        </span>
                                     </div>
 
                                     <div className="pt-2 sm:pt-3 md:pt-4 animate-fadeInUp delay-250">
@@ -344,9 +380,9 @@ const ProfileSection = () => {
                     ) : isWorkerRatingModal ? (
                         <WorkerRatingModal workId={workId as string} onClose={() => setWorkerRatingModal(false)} />
                     ) : null}
-
                 </div>
             </div >
+            {changePass && <ChangePasswordModal onClose={() => setChangePass(false)} onSave={HandleChangePassword} />}
             {isWorkInfoModal && <WorkInfoModal workId={workId as string} closeModal={closeModal} />}
         </>
     );

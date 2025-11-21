@@ -11,7 +11,8 @@ export interface IUserService {
     getUserById(userId: string): Promise<IUserDTO | null>;
     getUserByEmail(email: string): Promise<IUserDTO | null>;
     verifyOtp(email: string, otp: string): Promise<boolean>;
-    resetPass(email: string, password: string): Promise<void>;
+    resetPass(userId: string, password: string): Promise<void>;
+    changePass(userId: string, currentPass: string, newPass: string): Promise<void>;
     googleLogin(credential: string): Promise<{ user: IUserDTO, accessToken: string, refreshToken: string, wallet: IWalletDTO | null }>;
     fetchAvailability(workerId: string): Promise<IAvailabilityDTO | null>;
     fetchData(userId: string): Promise<{ user: IUserDTO, wallet: IWalletDTO | null }>;

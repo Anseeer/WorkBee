@@ -1,7 +1,7 @@
 
 export interface Iwrite<T> {
     create(item: Partial<T>): Promise<T>;
-    resetPassword(email: string, hashedPass: string): Promise<boolean>;
+    resetPassword(userId: string, hashedPass: string): Promise<boolean>;
     delete(id: string): Promise<boolean>;
 }
 

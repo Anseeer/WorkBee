@@ -11,6 +11,7 @@ export interface IUserController {
     reVerifyRegister(req: Request, res: Response, next: NextFunction): Promise<void>;
     verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
     resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
+    changePassword(req: Request, res: Response, next: NextFunction): Promise<void>;
     fetchAvailability(req: Request, res: Response, next: NextFunction): Promise<void>;
     fetchData(req: Request, res: Response, next: NextFunction): Promise<void>;
     update(req: Request, res: Response, next: NextFunction): Promise<void>;

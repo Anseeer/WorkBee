@@ -5,7 +5,7 @@ export interface IUserRepository {
     create(user: IUserEntity): Promise<Iuser>;
     findById(userId: string): Promise<Iuser | null>;
     findByEmail(email: string): Promise<Iuser | null>;
-    resetPassword(email: string, hashedPass: string): Promise<boolean>;
+    resetPassword(userId: string, hashedPass: string): Promise<boolean>;
     delete(userId: string): Promise<boolean>;
     getAllUsers(): Promise<Iuser[] | null>;
     setIsActive(userId: string): Promise<boolean>;

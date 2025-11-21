@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import WorkerSidebar from "../../components/worker/WorkerSidebar";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Store";
@@ -21,6 +22,9 @@ import PayoutModal from "../../components/common/PayoutForm";
 import ReApplyModal from "../../components/worker/ReApprovalComponent";
 import Loader from "../../components/common/Loader";
 import PendingApprovalMessage from "../../components/worker/PendingApprovalMessage";
+import ChangePasswordModal from "../../components/common/ChangePasswordModal";
+import { toast } from "react-toastify";
+import { ChangePassword } from "../../services/workerService";
 
 const Dashboard = () => {
     const [initialLoading, setInitialLoading] = useState(true);
@@ -31,10 +35,27 @@ const Dashboard = () => {
     const [payoutMoneyModal, setPayoutMoneyModal] = useState(false);
     const [reApplyModal, setReApplyModal] = useState(false);
     const [reload, setReloadWallet] = useState(false);
+    const [changePassword, setChangePassword] = useState(false);
     const dispatch = useAppDispatch();
     const { setSelectedDetails } = useWorkerDetails();
     const workerData = useSelector((state: RootState) => state.worker);
     const wallet = workerData.wallet;
+
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     useEffect(() => {
         const fetchData = async () => {
             const workerID = localStorage.getItem("workerId");
@@ -93,6 +114,23 @@ const Dashboard = () => {
         setReApplyModal(true)
     }
 
+    const HandleChangePassword = async (data: { currentPassword: string; newPassword: string; }) => {
+        try {
+            await ChangePassword(data.currentPassword, data.newPassword, workerData?.worker?._id as string);
+            toast.success("Password changed successfully");
+            setChangePassword(false)
+        } catch (error: any) {
+            console.error("Error in HandleChangePassword:", error);
+
+            const backendMsg =
+                error?.response?.data?.data ||
+                error?.response?.data?.message ||
+                "Error in Change Password";
+
+            toast.error(backendMsg);
+        }
+    };
+
     return (
         <div className="w-full h-screen flex">
             {initialLoading ? (
@@ -118,12 +156,52 @@ const Dashboard = () => {
                                             Re-Approval
                                         </button>
                                     )}
-                                    <button
-                                        className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white"
-                                        onClick={handleEdit}
-                                    >
-                                        Edit
-                                    </button>
+                                    <div className="relative" ref={dropdownRef}>
+                                        <button
+                                            className="px-4 py-1 text-black border border-black rounded font-semibold hover:bg-green-900 hover:text-white transition-colors"
+                                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                            onMouseEnter={() => setIsDropdownOpen(true)}
+                                        >
+                                            Actions
+                                        </button>
+
+                                        {isDropdownOpen && (
+                                            <div
+                                                className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-100"
+                                                onMouseLeave={() => setIsDropdownOpen(false)}
+                                            >
+                                                <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-t-lg flex items-center gap-2 transition-colors"
+                                                    onClick={() => {
+                                                        handleEdit();
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
+                                                        <path d="M12 20h9" />
+                                                        <path d="M16.5 3.5l4 4-11 11H5v-4l11.5-11z" />
+                                                    </svg>
+                                                    Edit Profile
+                                                </button>
+
+                                                <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-lg flex items-center gap-2 transition-colors border-t"
+                                                    onClick={() => {
+                                                        setChangePassword(true)
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
+                                                        <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                    </svg>
+                                                    Change Password
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </>
                             )}
 
@@ -203,6 +281,11 @@ const Dashboard = () => {
                         {reApplyModal && (
                             <ReApplyModal close={handleCloseReApplyModal} workerID={userId as string} handleEdit={handleEdit} />
                         )}
+
+                        {changePassword && (
+                            <ChangePasswordModal onClose={() => setChangePassword(false)} onSave={HandleChangePassword} />
+                        )}
+
                     </div>
                 </div>
             </>

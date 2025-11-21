@@ -15,7 +15,8 @@ export interface IWorkerService {
     getUserById(userId: string): Promise<IWorkerDTO | null>;
     getUserByEmail(email: string): Promise<IWorkerDTO | null>;
     verifyOtp(email: string, otp: string): Promise<boolean>;
-    resetPass(email: string, password: string): Promise<void>;
+    resetPass(workerId: string, password: string): Promise<void>;
+    changePass(workerId: string, currentPass: string, newPass: string): Promise<void>;
     updateWorker(workerData: IWorker): Promise<boolean>;
     searchWorker(serachTerm: ISearchTerm): Promise<IWorkerDTO[]>;
     findWorkersByIds(workerIds: string[]): Promise<IWorkerDTO[]>;

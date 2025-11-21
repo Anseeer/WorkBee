@@ -8,7 +8,7 @@ export interface IWorkerRepository {
     create(user: Partial<IWorker | IWorkerEntity>): Promise<IWorker>;
     findByEmail(email: string): Promise<IWorker | null>;
     findWorkerById(workerId: string): Promise<IWorker | null>;
-    resetPassword(email: string, hashedPass: string): Promise<boolean>;
+    resetPassword(userId: string, hashedPass: string): Promise<boolean>;
     findByIdAndUpdate(workerId: string, updatedFields: Partial<IWorker>): Promise<IWorker | null>;
     getAllWorkers(): Promise<IWorker[]>;
     getAllNonVerifiedWorkers(): Promise<IWorker[]>;

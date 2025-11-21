@@ -208,14 +208,47 @@ export class UserService implements IUserService {
         }
     }
 
-    async resetPass(email: string, password: string): Promise<void> {
+    async resetPass(userId: string, password: string): Promise<void> {
         try {
             const hashedPass = await bcrypt.hash(password, 10);
-            await this._userRepository.resetPassword(email, hashedPass);
+            await this._userRepository.resetPassword(userId, hashedPass);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
             throw error;
+        }
+    }
+
+    async changePass(userId: string, currentPass: string, newPass: string): Promise<void> {
+        try {
+            if (!userId || !currentPass || !newPass) {
+                throw new Error(USERS_MESSAGE.MISSING_CHANGE_PASSWORD_DATA);
+            }
+
+            const user = await this._userRepository.findById(userId);
+            if (!user) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
+
+            const isMatch = await bcrypt.compare(currentPass, user?.password);
+            if (!isMatch) {
+                throw new Error(USERS_MESSAGE.CURRENT_PASS_WRONG);
+            }
+
+            const hashedPass = await bcrypt.hash(newPass, 10);
+
+            const updated = await this._userRepository.resetPassword(userId, hashedPass);
+            console.log("Update result:", updated);
+
+            if (!updated) {
+                throw new Error(USERS_MESSAGE.PASSWORD_RESET_FAILED);
+            }
+
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            console.log(errMsg);
+            throw new Error(errMsg);
         }
     }
 

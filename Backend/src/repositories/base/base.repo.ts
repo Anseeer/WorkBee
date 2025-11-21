@@ -37,10 +37,10 @@ export default class BaseRepository<T extends Document> implements Iread<T>, Iwr
         }
     }
 
-    async resetPassword(email: string, hashedPass: string): Promise<boolean> {
+    async resetPassword(userId: string, hashedPass: string): Promise<boolean> {
         try {
             const result = await this.model.updateOne(
-                { email },
+                { _id: userId },
                 { $set: { password: hashedPass } }
             );
             return result.modifiedCount > 0;

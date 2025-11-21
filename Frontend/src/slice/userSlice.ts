@@ -6,6 +6,7 @@ import type { IWallet } from "../types/IWallet";
 import { API_ROUTES } from "../constant/api.routes";
 
 interface userState {
+    wallet: IWallet | null;
     user: Iuser | null,
     error: string | null;
     wallet: IWallet | null;

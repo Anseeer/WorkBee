@@ -238,8 +238,23 @@ export class WorkerController implements IWorkerController {
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.PASSWORD_RESET_FAILD, errMsg));
         }
-
     };
+
+    changePassword = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { currentPass, newPass, workerId } = req.body;
+            if (!currentPass || !newPass || !workerId) {
+                throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
+            }
+            await this._workerService.changePass(workerId, currentPass, newPass);
+            const response = new successResponse(StatusCode.CREATED, WORKER_MESSAGE.PASSWORD_RESET_SUCCESSFULLY, {});
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, WORKER_MESSAGE.PASSWORD_RESET_FAILD, errMsg));
+        }
+    }
 
     fetchDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const workerId = req.query.workerId;

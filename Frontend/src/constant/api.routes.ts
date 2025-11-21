@@ -83,6 +83,7 @@ export const API_ROUTES = {
     RESEND_OTP: "users/resend-otp",
     VERIFY_OTP: "users/verify-otp",
     RESET_PASSWORD: "users/reset-password",
+    CHANGE_PASSWORD: "users/change-password",
 
     FETCH_DATA: "users/fetch-data",
     UPDATE: "users/update",
@@ -137,6 +138,7 @@ export const API_ROUTES = {
     FETCH_SUBSCRIPTIONS: "subscription/fetch-all",
     ACTIVATE_SUBSCRIPTION: "subscription/activate-plan",
     REAPPROVal: "/workers/re-approval",
+    CHANGE_PASSWORD: "/workers/change-password",
   },
 
 };

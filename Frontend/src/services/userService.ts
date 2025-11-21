@@ -146,3 +146,8 @@ export const clearNotification = async (userId: string) => {
     const response = await axios.delete(`${API_ROUTES.USER_SERVICE.CLEAR_NOTIFICATION}?userId=${userId}`);
     return response.data.data;
 };
+
+export const ChangePassword = async (currentPass: string, newPass: string, userId: string) => {
+    const response = await axios.post(`${API_ROUTES.USER_SERVICE.CHANGE_PASSWORD}`, { currentPass, newPass, userId });
+    return response.data.data;
+};

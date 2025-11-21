@@ -184,12 +184,31 @@ export class UserController implements IUserController {
             if (!user) {
                 throw new Error(USERS_MESSAGE.CANT_FIND_USER);
             }
-            await this._userService.resetPass(email, password);
+            await this._userService.resetPass(user.id, password);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.PASSWORD_RESET_SUCCESSFULLY, {});
             logger.info(response)
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
+            next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.PASSWORD_RESET_FAILED, errMsg));
+        }
+
+    };
+
+    changePassword = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { currentPass, newPass, userId } = req.body;
+            if (!currentPass || !newPass || !userId) {
+                throw new Error(USERS_MESSAGE.CREDENTIALS_ARE_REQUIRED);
+            }
+            await this._userService.changePass(userId, currentPass, newPass);
+            const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.PASSWORD_RESET_SUCCESSFULLY, {});
+            logger.info(response)
+            res.status(response.status).json(response);
+        } catch (error: unknown) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.log("Err,", errMsg)
+            console.log("Error :", error)
             next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.PASSWORD_RESET_FAILED, errMsg));
         }
 

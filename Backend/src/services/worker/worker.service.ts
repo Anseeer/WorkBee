@@ -282,13 +282,45 @@ export class WorkerService implements IWorkerService {
         }
     }
 
-    async resetPass(email: string, password: string): Promise<void> {
+    async resetPass(workerId: string, password: string): Promise<void> {
         try {
             const hashedPass = await bcrypt.hash(password, 10);
-            await this._workerRepository.resetPassword(email, hashedPass);
+            await this._workerRepository.resetPassword(workerId, hashedPass);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
+            throw new Error(errMsg);
+        }
+    }
+
+    async changePass(workerId: string, currentPass: string, newPass: string): Promise<void> {
+        try {
+            if (!workerId || !currentPass || !newPass) {
+                throw new Error(WORKER_MESSAGE.MISSING_CHANGE_PASSWORD_DATA);
+            }
+
+            const worker = await this._workerRepository.findWorkerById(workerId);
+            if (!worker) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+            }
+
+            const isMatch = await bcrypt.compare(currentPass, worker?.password);
+            if (!isMatch) {
+                throw new Error(WORKER_MESSAGE.CURRENT_PASS_WRONG);
+            }
+
+            const hashedPass = await bcrypt.hash(newPass, 10);
+
+            const updated = await this._workerRepository.resetPassword(workerId, hashedPass);
+
+            if (!updated) {
+                throw new Error(WORKER_MESSAGE.PASSWORD_RESET_FAILD);
+            }
+
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            console.log(errMsg);
             throw new Error(errMsg);
         }
     }

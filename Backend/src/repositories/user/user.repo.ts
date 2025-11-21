@@ -12,6 +12,7 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
     constructor() {
         super(User);
     }
+
     async getAllUsers(): Promise<Iuser[] | null> {
         try {
             return await User.find({ role: "User" }).sort({ createdAt: -1 });

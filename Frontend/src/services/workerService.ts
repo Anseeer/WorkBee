@@ -194,3 +194,8 @@ export const reApplyWorker = async (workerId: string) => {
   const response = await axios.get(`${API_ROUTES.WORKER_SERVICE.REAPPROVal}?workerId=${workerId}`);
   return response.data.data;
 };
+
+export const ChangePassword = async (currentPass: string, newPass: string, workerId: string) => {
+  const response = await axios.post(`${API_ROUTES.WORKER_SERVICE.CHANGE_PASSWORD}`, { currentPass, newPass, workerId });
+  return response.data.data;
+};

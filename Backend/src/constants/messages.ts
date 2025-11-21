@@ -68,6 +68,8 @@ export const SERVICE_MESSAGE = {
 };
 
 export const USERS_MESSAGE = {
+    CURRENT_PASS_WRONG: "Current password is wrong.",
+    MISSING_CHANGE_PASSWORD_DATA: "Not get all data to changepassword.",
     REGISTER_TEMP_USER_SUCCESSFULLY: "successfully regiter tempUser.",
     REGISTER_TEMP_USER_FAILD: "faild to regiter tempUser.",
     FETCH_CHAT_SUCCESS: "User chat fetched successfull.",
@@ -109,7 +111,9 @@ export const USERS_MESSAGE = {
 };
 
 export const WORKER_MESSAGE = {
+    CURRENT_PASS_WRONG: "Current password wrong",
     GET_WORKERS_SUCCESSFULL: "Workers get successfull",
+    MISSING_CHANGE_PASSWORD_DATA: "Missing chnage password data ",
     GET_WORKERS_FAILD: "Workers get faild",
     WORKER_ID_OR_OTP_NOT_GET: "WorkerId or Otp not get",
     EMAIL_AND_PASS_REQUIRED: "Email and password are required.",

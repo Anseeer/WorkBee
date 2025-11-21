@@ -11,6 +11,7 @@ export interface IWorkerController {
     resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
     verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
     resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
+    changePassword(req: Request, res: Response, next: NextFunction): Promise<void>;
     buildAccount(req: Request, res: Response, next: NextFunction): Promise<void>;
     fetchDetails(req: Request, res: Response, next: NextFunction): Promise<void>;
     updateWorker(req: Request, res: Response, next: NextFunction): Promise<void>;
