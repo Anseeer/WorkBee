@@ -18,7 +18,7 @@ import { fetchCategory } from "../../services/adminService";
 import type { ICategory } from "../../types/ICategory";
 import { getServiceByCategory } from "../../services/workerService";
 import type { IWorker } from "../../types/IWorker";
-import type { IAvailability } from "../../types/IAvailability";
+import type { IAvailability, ISlot } from "../../types/IAvailability";
 import { uploadToCloud } from "../../utilities/uploadToCloud";
 import { startOfDay } from "date-fns";
 import type { AxiosResponse } from "axios";
@@ -33,7 +33,6 @@ interface WorkerFormData {
     bio: string;
     profileImage: string;
     radius: string | number;
-    preferredSchedule: string[];
     location: {
         address: string;
         pincode: string;
@@ -44,7 +43,7 @@ interface WorkerFormData {
     govIdBack: string;
     services: ISelectedService[];
     categories: string[];
-    availability: Date[];
+    availability: ISlot[];
 }
 
 interface WorkerEditFormProps {
@@ -77,6 +76,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     const [servicePriceErrors, setServicePriceErrors] = useState<{ [key: string]: string }>({});
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [locationError, setLocationError] = useState("");
+    const allSlots = ["morning", "afternoon", "evening", "full-day"];
 
     const formik = useFormik<WorkerFormData>({
         initialValues: {
@@ -86,7 +86,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             bio: "",
             profileImage: "",
             radius: "",
-            preferredSchedule: [],
             location: {
                 address: "",
                 pincode: "",
@@ -97,7 +96,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             govIdBack: "",
             services: [],
             categories: [],
-            availability: [],
+            availability: workerData?.availability?.availableDates || [],
         },
         validate: (values) => {
             const errors: any = {};
@@ -129,10 +128,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 errors.radius = "Radius is required";
             }
 
-            if (!values.preferredSchedule.length) {
-                errors.preferredSchedule = "PreferredSchedule is required";
-            }
-
             if (!values.location.address.trim()) {
                 errors.location = { address: "Location is required" };
             }
@@ -161,6 +156,15 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
 
             if (!values.availability || values.availability.length === 0) {
                 errors.availability = "Please select at least one available date";
+            } else {
+                // Check if each selected date has at least one slot (booked or available)
+                const datesWithNoSlots = values.availability.filter(dateEntry => {
+                    return !dateEntry.availableSlots || dateEntry.availableSlots.length === 0;
+                });
+
+                if (datesWithNoSlots.length > 0) {
+                    errors.availability = "Each selected date must have at least one slot selected";
+                }
             }
 
             return errors;
@@ -176,17 +180,35 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             const availabilityPayload: IAvailability = {
                 _id: workerData?.availability?._id || "",
                 workerId: workerData?.worker?._id || "",
-                availableDates: values.availability.map((date, index) => {
-                    const existingDate = workerData?.availability?.availableDates?.[index];
+
+                availableDates: values.availability.map((day) => {
+                    const existing = workerData?.availability?.availableDates?.find(
+                        (d) => new Date(d.date).toDateString() === new Date(day.date).toDateString()
+                    );
+
                     return {
-                        ...(existingDate?._id ? { _id: existingDate._id } : {}),
-                        date: date.toISOString(),
-                        bookedSlots: existingDate?.bookedSlots || [],
+                        ...(existing?._id ? { _id: existing._id } : {}),
+
+                        date: new Date(day.date).toISOString(),
+
+                        availableSlots: day.availableSlots.map((slot, index) => {
+                            const existingSlot = existing?.availableSlots?.[index];
+
+                            return {
+                                ...(existingSlot?._id ? { _id: existingSlot._id } : {}),
+                                slot: slot.slot,
+                                booked: slot.booked ?? false,
+                                jobId: slot.jobId || null
+                            };
+                        }),
                     };
                 }),
+
                 createdAt: workerData?.availability?.createdAt || new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             };
+
+
 
             const workerPayload: Partial<IWorker> = {
                 _id: workerData?.worker?._id || "",
@@ -199,7 +221,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                     typeof values.radius === "string"
                         ? parseInt(values.radius)
                         : values.radius,
-                preferredSchedule: values.preferredSchedule,
                 location: {
                     address: values.location.address,
                     pincode: values.location.pincode,
@@ -257,7 +278,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 bio: worker.bio || "",
                 profileImage: typeof worker.profileImage === "string" ? worker.profileImage : "",
                 radius: worker.radius?.toString() || "2",
-                preferredSchedule: worker.preferredSchedule || [],
                 location: {
                     address: worker.location?.address || "",
                     pincode: worker.location?.pincode || "",
@@ -270,10 +290,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 govIdBack: Array.isArray(worker.govId) ? worker.govId[1] || "" : "",
                 services: worker.services || [],
                 categories: worker.categories || [],
-                availability:
-                    workerData.availability?.availableDates.map(
-                        (slot) => new Date(slot.date)
-                    ) || [],
+                availability: workerData?.availability?.availableDates?.map((entry) => ({
+                    _id: entry._id,
+                    date: new Date(entry.date),
+                    availableSlots: entry.availableSlots || []
+                })) || [],
             };
             formik.setValues((currentValues) => {
                 if (JSON.stringify(currentValues) !== JSON.stringify(newValues)) {
@@ -284,18 +305,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         }
     }, [workerData]);
 
-    const workingHours = [
-        { id: "morning", label: "Morning (9am - 1pm)" },
-        { id: "afternoon", label: "Afternoon (1pm - 5pm)" },
-        { id: "evening", label: "Evening (5pm - 9pm)" },
-        { id: "full-day", label: "Full Day (9am - 5pm)" },
-    ];
-
     const handleArrayToggle = (
-        field: "categories" | "preferredSchedule",
+        field: "categories",
         value: string
     ) => {
-        const updated = formik.values[field].includes(value)
+        const updated = formik.values[field]?.includes(value)
             ? formik.values[field].filter((item) => item !== value)
             : [...formik.values[field], value];
         formik.setFieldValue(field, updated);
@@ -305,18 +319,15 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         const isSelected = formik.values.services.some(s => s.serviceId === service.id);
 
         if (isSelected) {
-            // Remove service
             const updated = formik.values.services.filter(s => s.serviceId !== service.id);
             formik.setFieldValue("services", updated);
 
-            // Clear price error for this service
             setServicePriceErrors(prev => {
                 const updated = { ...prev };
                 delete updated[service.id];
                 return updated;
             });
         } else {
-            // Add service with default price 0 - user must enter price
             const newService: ISelectedService = {
                 serviceId: service.id,
                 name: service.name,
@@ -328,7 +339,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     };
 
     const handleServicePriceChange = (serviceId: string, price: string) => {
-        // Only allow numbers and decimal
         if (price && !/^\d*\.?\d*$/.test(price)) return;
 
         const updated = formik.values.services.map(s =>
@@ -336,7 +346,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
         );
         formik.setFieldValue("services", updated);
 
-        // Validate price
         const priceNum = Number(price);
         if (priceNum <= 0) {
             setServicePriceErrors(prev => ({
@@ -350,6 +359,104 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                 return updated;
             });
         }
+    };
+
+    const handleDateSelection = (dates: Date[] | undefined) => {
+        if (!dates) {
+            dates = [];
+        }
+
+        // Check if user is trying to remove a date that has booked slots
+        const removedDates = formik.values.availability.filter(existingDate => {
+            const stillSelected = dates?.some(
+                d => new Date(d).toDateString() === new Date(existingDate.date).toDateString()
+            );
+            return !stillSelected;
+        });
+
+        // Prevent removal of dates with booked slots
+        const hasBookedSlots = removedDates.some(dateEntry =>
+            dateEntry.availableSlots.some(slot => slot.booked)
+        );
+
+        if (hasBookedSlots) {
+            toast.error("Cannot remove dates that have booked slots");
+            // Keep the dates with booked slots
+            const datesWithBookedSlots = removedDates.filter(dateEntry =>
+                dateEntry.availableSlots.some(slot => slot.booked)
+            );
+            dates = [
+                ...dates,
+                ...datesWithBookedSlots.map(d => new Date(d.date))
+            ];
+        }
+
+        const updated = dates.map((date) => {
+            const existing = formik.values.availability.find(
+                (a) => new Date(a.date).toDateString() === date.toDateString()
+            );
+
+            if (existing) {
+                return existing;
+            }
+
+            return {
+                date,
+                availableSlots: []
+            };
+        });
+
+        formik.setFieldValue("availability", updated);
+    };
+
+    const toggleSlot = (dateKey: string, slotName: string) => {
+        const updated = formik.values.availability.map((item) => {
+            const dKey = new Date(item.date).toDateString();
+            if (dKey !== dateKey) return item;
+
+            const targetSlot = item.availableSlots.find(s => s.slot === slotName);
+
+            // If slot is booked, don't allow toggling
+            if (targetSlot?.booked) {
+                return item;
+            }
+
+            const slotExists = item.availableSlots.some(s => s.slot === slotName);
+
+            if (slotExists) {
+                // Remove the slot (unselect it)
+                return {
+                    ...item,
+                    availableSlots: item.availableSlots.filter(s => s.slot !== slotName)
+                };
+            } else {
+                // Add the slot (select it)
+                return {
+                    ...item,
+                    availableSlots: [
+                        ...item.availableSlots,
+                        { slot: slotName, booked: false, jobId: null }
+                    ]
+                };
+            }
+        });
+
+        formik.setFieldValue("availability", updated);
+    };
+
+    const isSlotSelected = (dateKey: string, slotName: string): boolean => {
+        const dateEntry = formik.values.availability.find(
+            (a) => new Date(a.date).toDateString() === dateKey
+        );
+        return dateEntry?.availableSlots.some(s => s.slot === slotName) || false;
+    };
+
+    const isSlotBooked = (dateKey: string, slotName: string): boolean => {
+        const dateEntry = formik.values.availability.find(
+            (a) => new Date(a.date).toDateString() === dateKey
+        );
+        const slot = dateEntry?.availableSlots.find(s => s.slot === slotName);
+        return slot?.booked || false;
     };
 
     const getServicePrice = (serviceId: string): number => {
@@ -553,57 +660,131 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                     )}
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Work Schedule
-                                    </label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {workingHours.map((slot) => (
-                                            <label
-                                                key={slot.id}
-                                                className={`flex items-center justify-between px-3 py-2 border rounded-lg cursor-pointer ${formik.values.preferredSchedule.includes(slot.id)
-                                                    ? "bg-green-100 border-green-400"
-                                                    : "hover:bg-green-50"
-                                                    }`}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={formik.values.preferredSchedule.includes(slot.id)}
-                                                        onChange={() => handleArrayToggle("preferredSchedule", slot.id)}
-                                                        className="hidden"
-                                                    />
-                                                    <span className="text-sm">{slot.label}</span>
-                                                </div>
-                                                {formik.values.preferredSchedule.includes(slot.id) && (
-                                                    <Check className="w-4 h-4 text-green-600" />
-                                                )}
-                                            </label>
-                                        ))}
-                                        {formik.errors.preferredSchedule && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {formik.errors.preferredSchedule}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
+
                             </div>
 
-                            <DayPicker
-                                mode="multiple"
-                                selected={formik.values.availability}
-                                onSelect={(dates) => formik.setFieldValue("availability", dates)}
-                                fromMonth={today}
-                                disabled={[
-                                    { before: today },
-                                ]}
-                                modifiersClassNames={{
-                                    selected: "bg-green-700 text-white rounded-full",
-                                }}
-                            />
-                            {formik.errors.availability && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {formik.errors.availability as string[]}
+                            {formik.values.availability.length > 0 && (
+                                <div className="bg-white p-4 rounded-xl border-2 border-gray-300 space-y-4 mt-4">
+                                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                                        <Clock className="w-5 h-5 text-green-600" /> Availability Calendar
+                                    </h3>
+
+                                    <DayPicker
+                                        mode="multiple"
+                                        selected={formik.values.availability.map(a => new Date(a.date))}
+                                        onSelect={(dates) => handleDateSelection(dates as Date[])}
+                                        fromMonth={today}
+                                        disabled={[
+                                            { before: today },
+                                            (day: Date) => {
+                                                const entry = formik.values.availability.find(
+                                                    (a) => new Date(a.date).toDateString() === day.toDateString()
+                                                );
+
+                                                if (!entry) return false;
+
+                                                if (!entry.availableSlots || entry.availableSlots.length === 0) {
+                                                    return false;
+                                                }
+
+                                                return entry.availableSlots.every((s) => s.booked);
+                                            }
+                                        ]}
+                                    />
+
+                                    <div className="border-t-2 border-gray-200 pt-4">
+                                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <Clock className="w-5 h-5 text-green-600" />
+                                            Time Slots for Selected Dates
+                                        </h4>
+
+                                        <div className="space-y-3">
+                                            {formik.values.availability.map(item => {
+                                                const dateKey = new Date(item.date).toDateString();
+                                                const hasBookedSlots = item.availableSlots.some(s => s.booked);
+                                                const allSlotsBooked = item.availableSlots.every(s => s.booked);
+
+                                                return (
+                                                    <div
+                                                        key={dateKey}
+                                                        className={`border-2 p-4 rounded-xl transition-all ${allSlotsBooked
+                                                            ? 'border-green-300 bg-green-50'
+                                                            : 'border-gray-200 bg-gray-50 hover:border-blue-300'
+                                                            }`}
+                                                    >
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <p className="font-semibold text-gray-800 flex items-center gap-2">
+                                                                <Clock className="w-4 h-4 text-blue-600" />
+                                                                {new Date(item.date).toLocaleDateString('en-US', {
+                                                                    weekday: 'short',
+                                                                    year: 'numeric',
+                                                                    month: 'short',
+                                                                    day: 'numeric'
+                                                                })}
+                                                            </p>
+                                                            {hasBookedSlots && (
+                                                                <span className="text-xs bg-green-500 text-white px-3 py-1 rounded-full font-semibold flex items-center gap-1">
+                                                                    <Check className="w-3 h-3" />
+                                                                    Has Bookings
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            {allSlots.map((slotName) => {
+                                                                const selected = isSlotSelected(dateKey, slotName);
+                                                                const booked = isSlotBooked(dateKey, slotName);
+
+                                                                return (
+                                                                    <label
+                                                                        key={slotName}
+                                                                        className={`flex items-center gap-2.5 p-3 rounded-lg border-2 transition-all ${booked
+                                                                            ? 'bg-gradient-to-r from-green-50 to-green-100 border-green-500 cursor-not-allowed shadow-sm'
+                                                                            : selected
+                                                                                ? 'bg-gradient-to-r from-blue-50 to-blue-100 border-blue-500 hover:border-blue-600 cursor-pointer shadow-sm'
+                                                                                : 'bg-white border-gray-300 hover:border-blue-400 hover:bg-blue-50 cursor-pointer'
+                                                                            }`}
+                                                                    >
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            disabled={booked}
+                                                                            checked={selected}
+                                                                            onChange={() => toggleSlot(dateKey, slotName)}
+                                                                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                                                        />
+                                                                        <span className={`flex-1 capitalize font-medium ${booked
+                                                                            ? 'text-green-700'
+                                                                            : selected
+                                                                                ? 'text-blue-700'
+                                                                                : 'text-gray-700'
+                                                                            }`}>
+                                                                            {slotName.replace('-', ' ')}
+                                                                        </span>
+                                                                        {booked && (
+                                                                            <span className="text-xs bg-green-600 text-white px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                                                                                <Check className="w-3 h-3" />
+                                                                                Booked
+                                                                            </span>
+                                                                        )}
+                                                                        {selected && !booked && (
+                                                                            <Check className="w-5 h-5 text-blue-600 font-bold" />
+                                                                        )}
+                                                                    </label>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {formik.touched.availability && formik.errors.availability && (
+                                <p className="text-red-500 text-sm mt-2 font-medium flex items-center gap-1">
+                                    <X className="w-4 h-4" />
+                                    {formik.errors.availability as string}
                                 </p>
                             )}
                         </div>
@@ -716,7 +897,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         <label key={cat._id} className="flex items-center gap-2">
                                             <input
                                                 type="checkbox"
-                                                checked={formik.values.categories.includes(cat._id)}
+                                                checked={formik.values?.categories?.includes(cat._id)}
                                                 onChange={() => handleArrayToggle("categories", cat._id)}
                                             />
                                             {cat.name}

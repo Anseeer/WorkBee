@@ -16,8 +16,7 @@ export const verifyRegister = async (verifyData: { userId: string, otp: string }
     const response = await axios.post(API_ROUTES.USER_SERVICE.VERIFY_REGISTRATION, verifyData, {
         withCredentials: true,
     });
-    console.log("VerifyRegisteration requested")
-    return response;
+    return response.data.data;
 };
 
 export const login = async (credentials: { email: string; password: string }) => {

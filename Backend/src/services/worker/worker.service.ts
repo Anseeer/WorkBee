@@ -181,7 +181,6 @@ export class WorkerService implements IWorkerService {
                 age: workerData.age,
                 services: workerData.services,
                 radius: workerData.radius,
-                preferredSchedule: workerData.preferredSchedule,
                 govId: workerData.govId,
                 isAccountBuilt: true
             };
@@ -317,13 +316,12 @@ export class WorkerService implements IWorkerService {
 
             console.log("Terms :", searchTerm)
 
-            const { location, serviceId, categoryId, selectedTimeSlots, minCompletedWorks, minRating, maxPrice } = searchTerm;
+            const { location, serviceId, categoryId, minCompletedWorks, minRating, maxPrice } = searchTerm;
             if (
                 !location?.lat ||
                 !location?.lng ||
                 !serviceId ||
                 !categoryId ||
-                !selectedTimeSlots ||
                 minCompletedWorks === undefined ||
                 minRating === undefined ||
                 maxPrice === undefined

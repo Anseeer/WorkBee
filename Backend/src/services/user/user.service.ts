@@ -51,7 +51,7 @@ export class UserService implements IUserService {
                 throw new Error(USERS_MESSAGE.INVALID_CREDENTIALS_IN_VERIFY_REGISTER);
             }
 
-            const userExist = await this._tempUserRepository.findById(verifyData.userId);
+            const userExist = await this._tempUserRepository.findUserById(verifyData.userId);
             if (!userExist) {
                 throw new Error(USERS_MESSAGE.CANT_FIND_USER_REGISTER_FIRST);
             }

@@ -30,7 +30,7 @@ export const VerifyRegistration = () => {
 
     const handleVerify = async (otp: string) => {
         try {
-            if (!userId) throw new Error("Email Not Received");
+            if (!userId) throw new Error("UserId Not Received");
             if (!otp) throw new Error("OTP Not Received");
             if (!otpRegex.test(otp)) throw new Error("Valid OTP required");
 

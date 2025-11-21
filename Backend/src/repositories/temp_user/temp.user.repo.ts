@@ -13,14 +13,9 @@ export class TempUserRepository extends BaseRepository<ITempUser> implements ITe
         super(TempUser);
     }
 
-    async findById(userId: string): Promise<ITempUser> {
+    async findUserById(id: string): Promise<ITempUser | null> {
         try {
-            const user = await this.model.findById(userId);
-            if (!user) {
-                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
-            }
-
-            return user;
+            return await this.model.findById(id);
         } catch (error) {
             logger.error('Error in findById:', error);
             throw new Error('Error in findById');
