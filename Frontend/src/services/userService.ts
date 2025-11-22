@@ -16,7 +16,7 @@ export const verifyRegister = async (verifyData: { userId: string, otp: string }
     const response = await axios.post(API_ROUTES.USER_SERVICE.VERIFY_REGISTRATION, verifyData, {
         withCredentials: true,
     });
-    return response.data.data;
+    return response;
 };
 
 export const login = async (credentials: { email: string; password: string }) => {
@@ -120,11 +120,11 @@ export const fetchWorkHistory = async (
     return response;
 };
 
-export const cancelWork = async (workId: string, id: string) => {
-    if (!workId || !id) {
+export const cancelWork = async (workId: string, workerId: string) => {
+    if (!workId || !workerId) {
         throw new Error("WorkID or userID missing !");
     }
-    await axios.patch(`${API_ROUTES.USER_SERVICE.CANCEL_WORK}?workId=${workId}&id=${id}`);
+    await axios.patch(`${API_ROUTES.USER_SERVICE.CANCEL_WORK}?workId=${workId}&workerId=${workerId}`);
 };
 
 export const fetchChat = async (userId: string) => {

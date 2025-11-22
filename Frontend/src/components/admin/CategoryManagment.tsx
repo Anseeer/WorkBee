@@ -102,13 +102,13 @@ const CategoryManagment = () => {
         validate: (values) => {
             const errors: { name?: string; description?: string; imageFile?: string } = {};
             if (!values.name) errors.name = "Category name is required";
-            if (!values.imageFile) errors.name = "Category Icone is required";
-            else if (values.imageFile) {
+            if (values.imageFile) {
                 const validTypes = ["image/png", "image/jpeg", "image/jpg"];
                 if (!validTypes.includes(values.imageFile.type)) {
                     errors.imageFile = "Only PNG or JPG images are allowed";
                 }
             }
+
             if (!values.description) {
                 errors.description = "Description is required";
             } else {
@@ -122,6 +122,7 @@ const CategoryManagment = () => {
         },
         onSubmit: async (values) => {
             if (!editData?.id) return;
+
             try {
                 let imageUrl = existingImageUrl;
 
@@ -138,11 +139,13 @@ const CategoryManagment = () => {
                 toast.success("Category updated successfully");
                 setAdded(true);
                 handleEditClose();
+
             } catch (err: any) {
                 const message = err.response?.data?.data || err.response?.data?.message || err.message;
                 toast.error(`Failed to update category: ${message}`);
             }
         }
+
     });
 
     const columns: Column<ICategory>[] = [

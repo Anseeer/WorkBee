@@ -74,7 +74,6 @@ const NotificationSection = ({ user }: props) => {
     const handleClearNotifications = async () => {
         try {
             await clearNotification(user.id)
-            toast.success("Notifications cleared");
             setNotifications([]);
         } catch (error) {
             console.log("Error in clear notification", error)

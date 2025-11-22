@@ -83,8 +83,6 @@ const PaymentModal = ({
                 workId,
                 platformFee
             });
-
-            toast.success("Wallet payment completed successfully!");
             onClose()
             setRatingModal(true);
         } catch (err: any) {
@@ -126,67 +124,6 @@ const PaymentModal = ({
         }
     });
 
-    // return (
-    //     <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-3">
-    //         <form
-    //             onSubmit={formik.handleSubmit}
-    //             className="bg-white border-2 border-green-700 rounded-lg shadow-lg p-5 w-full max-w-sm relative"
-    //         >
-    //             <button
-    //                 type="button"
-    //                 onClick={onClose}
-    //                 className="absolute top-3 right-3 text-gray-500 hover:text-red-700"
-    //             >
-    //                 ✕
-    //             </button>
-
-    //             <h2 className="text-lg font-semibold text-center mb-1">
-    //                 Complete Your Payment
-    //             </h2>
-
-    //             <p className="text-xs text-gray-600 text-center mb-3">
-    //                 Review your service summary before you pay.
-    //             </p>
-
-    //             <div className="bg-gray-50 rounded-lg border p-4 mb-4 text-sm space-y-2">
-    //                 <div className="flex justify-between">
-    //                     <span>Wage Per Hour</span>
-    //                     <span className="font-semibold">₹{wagePerHour}</span>
-    //                 </div>
-
-    //                 <div className="flex justify-between">
-    //                     <span>Hours Worked</span>
-    //                     <span className="font-semibold">{hoursWorked} hrs</span>
-    //                 </div>
-
-    //                 <div className="flex justify-between">
-    //                     <span>Subtotal</span>
-    //                     <span className="font-semibold">₹{subtotal}</span>
-    //                 </div>
-
-    //                 <div className="flex justify-between">
-    //                     <span>Platform Fee</span>
-    //                     <span className="font-semibold text-blue-700">+ ₹{platformFee}</span>
-    //                 </div>
-
-    //                 <hr />
-
-    //                 <div className="flex justify-between text-base">
-    //                     <span className="font-semibold">Total Amount</span>
-    //                     <span className="font-bold text-green-700">₹{totalAmount}</span>
-    //                 </div>
-    //             </div>
-
-    //             <button
-    //                 type="submit"
-    //                 className="w-full py-2 bg-green-700 text-white rounded-md font-medium hover:bg-green-600"
-    //             >
-    //                 Pay Now
-    //             </button>
-    //             {<span className="font-semibold align-center text-red-800">{formik.errors.amount}</span>}
-    //         </form>
-    //     </div>
-    // );
     return (
         <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-3">
             <form

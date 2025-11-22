@@ -75,7 +75,7 @@ export const API_ROUTES = {
 
   USER_SERVICE: {
     REGISTER: "users/register",
-    REVERIFY_REGISTER: "/re-verifyRegister",
+    REVERIFY_REGISTER: "users/re-verifyRegister",
     VERIFY_REGISTRATION: "users/verify-register",
     LOGIN: "users/login",
     LOGOUT: "users/logout",

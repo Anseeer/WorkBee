@@ -64,7 +64,7 @@ export class TempUserService implements ITempUserService {
                 throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
             }
 
-            const userExist = await this._tempUserRepository.findById(userId);
+            const userExist = await this._tempUserRepository.findUserById(userId);
             if (!userExist) {
                 throw new Error(USERS_MESSAGE.CANT_FIND_USER_REGISTER_FIRST);
             }
@@ -82,6 +82,7 @@ export class TempUserService implements ITempUserService {
             return userId;
 
         } catch (error) {
+            console.log("Error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error("Error in resendOtp", errMsg);
             throw error;

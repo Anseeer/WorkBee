@@ -19,7 +19,7 @@ export default class BaseRepository<T extends Document> implements Iread<T>, Iwr
         }
     }
 
-    async findById(id: string): Promise<T> {
+    async findById(id: string): Promise<T | null> {
         try {
             return await this.model.findById(id) as T;
         } catch (error) {

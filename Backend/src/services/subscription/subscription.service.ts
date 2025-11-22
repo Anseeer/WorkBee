@@ -59,7 +59,8 @@ export class SubscriptionService implements ISubscriptionService {
     async create(item: ISubscription): Promise<boolean> {
         try {
             if (!item) throw new Error("Subscription data missing");
-            let subData = await this._subscriptionRepository.find();
+            const subData = await this._subscriptionRepository.find();
+
             if (subData.length >= 3) {
                 throw SUBSCRIPTION_MESSAGE.LIMIT_WARNING;
             }
@@ -76,7 +77,7 @@ export class SubscriptionService implements ISubscriptionService {
             throw error;
         }
     }
-    
+
     async delete(subscriptionId: string): Promise<boolean> {
         try {
             if (!subscriptionId) throw new Error(SUBSCRIPTION_MESSAGE.ID_NOT_FOUND);
@@ -122,6 +123,10 @@ export class SubscriptionService implements ISubscriptionService {
                 throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA);
             }
             const planData = await this._subscriptionRepository.findById(planId);
+
+            if (!planData) {
+                throw new Error(SUBSCRIPTION_MESSAGE.CANT_FIND)
+            }
 
             if (!transactionId) {
                 transactionId = null

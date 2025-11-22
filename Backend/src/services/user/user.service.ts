@@ -52,6 +52,7 @@ export class UserService implements IUserService {
             }
 
             const userExist = await this._tempUserRepository.findUserById(verifyData.userId);
+            console.log("tempuser :", userExist)
             if (!userExist) {
                 throw new Error(USERS_MESSAGE.CANT_FIND_USER_REGISTER_FIRST);
             }
@@ -101,6 +102,7 @@ export class UserService implements IUserService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
+            console.log("Error :",error);
             throw new Error(errMsg);
         }
     }

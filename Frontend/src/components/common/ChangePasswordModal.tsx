@@ -97,7 +97,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                             >
-                                {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                {showCurrentPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                             </button>
                         </div>
                         {formik.touched.currentPassword && formik.errors.currentPassword && (
@@ -128,7 +128,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                                 onClick={() => setShowNewPassword(!showNewPassword)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                             >
-                                {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                {showNewPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                             </button>
                         </div>
 
@@ -171,7 +171,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                             >
-                                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                {showConfirmPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                             </button>
                         </div>
                         {formik.touched.confirmPassword && formik.errors.confirmPassword && (

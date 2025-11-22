@@ -366,7 +366,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             dates = [];
         }
 
-        // Check if user is trying to remove a date that has booked slots
         const removedDates = formik.values.availability.filter(existingDate => {
             const stillSelected = dates?.some(
                 d => new Date(d).toDateString() === new Date(existingDate.date).toDateString()
@@ -374,14 +373,12 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             return !stillSelected;
         });
 
-        // Prevent removal of dates with booked slots
         const hasBookedSlots = removedDates.some(dateEntry =>
             dateEntry.availableSlots.some(slot => slot.booked)
         );
 
         if (hasBookedSlots) {
             toast.error("Cannot remove dates that have booked slots");
-            // Keep the dates with booked slots
             const datesWithBookedSlots = removedDates.filter(dateEntry =>
                 dateEntry.availableSlots.some(slot => slot.booked)
             );
@@ -416,7 +413,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
 
             const targetSlot = item.availableSlots.find(s => s.slot === slotName);
 
-            // If slot is booked, don't allow toggling
             if (targetSlot?.booked) {
                 return item;
             }
@@ -424,13 +420,11 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
             const slotExists = item.availableSlots.some(s => s.slot === slotName);
 
             if (slotExists) {
-                // Remove the slot (unselect it)
                 return {
                     ...item,
                     availableSlots: item.availableSlots.filter(s => s.slot !== slotName)
                 };
             } else {
-                // Add the slot (select it)
                 return {
                     ...item,
                     availableSlots: [
@@ -471,18 +465,18 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
     const today = startOfDay(new Date());
 
     return (
-        <div className="fixed inset-0 bg-transparent backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <User className="w-6 h-6 text-blue-600" />
+                <div className="sticky  z-10 top-0 bg-gradient-to-r from-green-600 to-green-700 border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                        <User className="w-6 h-6 text-white-600" />
                         Edit Worker Profile
                     </h2>
                     <button
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 hover:bg-gray-500  rounded-full transition-colors"
                         onClick={onClose}
                     >
-                        <X className="w-5 h-5 text-gray-500" />
+                        <X className="w-5 h-5 text-white" />
                     </button>
                 </div>
 
@@ -632,12 +626,6 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         </p>
                                     )}
                                 </div>
-                            </div>
-
-                            <div className="bg-white p-4 rounded-xl border-2 border-gray-300 space-y-4">
-                                <h3 className="text-lg font-semibold flex items-center gap-2">
-                                    <Clock className="w-5 h-5 text-green-600" /> Work Details
-                                </h3>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Enter radius (in km)
@@ -659,9 +647,8 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                         </p>
                                     )}
                                 </div>
-
-
                             </div>
+
 
                             {formik.values.availability.length > 0 && (
                                 <div className="bg-white p-4 rounded-xl border-2 border-gray-300 space-y-4 mt-4">
@@ -698,7 +685,7 @@ const WorkerEditForm: React.FC<WorkerEditFormProps> = ({
                                             Time Slots for Selected Dates
                                         </h4>
 
-                                        <div className="space-y-3">
+                                        <div className="max-h-[130px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
                                             {formik.values.availability.map(item => {
                                                 const dateKey = new Date(item.date).toDateString();
                                                 const hasBookedSlots = item.availableSlots.some(s => s.booked);

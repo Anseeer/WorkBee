@@ -9,7 +9,7 @@ import WorkDetailsModal from "./WorkDetailsModal";
 
 const WorkHistory = () => {
 
-    const worker = useSelector((state: RootState) => state?.worker.worker);
+    const worker = useSelector((state: RootState) => state?.worker?.worker);
     const [workHistory, setWorkHistory] = useState<IWork[]>([])
     const [workId, setWorkId] = useState('')
     const [isModal, setIsModalOpen] = useState(false)

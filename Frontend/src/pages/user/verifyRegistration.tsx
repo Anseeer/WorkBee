@@ -22,9 +22,15 @@ export const VerifyRegistration = () => {
 
             await dispatch(reVerifyRegister(userId))
             toast.success("OTP Resend successfully ")
-        } catch (error) {
+        } catch (error: any) {
             console.log("HANDLE RESEND ERROR:", error);
-            toast.error("Faild to resend otp");
+
+            const msg =
+                error?.data ||
+                error?.message ||
+                "Error in resend otp";
+
+            toast.error(msg);
         }
     }
 

@@ -53,14 +53,10 @@ export class UserRepository extends BaseRepository<Iuser> implements IUserReposi
         }
     }
 
-    async findById(userId: string): Promise<Iuser> {
+    async findById(userId: string): Promise<Iuser | null> {
         try {
             const user = await this.model.findById(userId);
-            if (!user) {
-                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
-            }
-
-            return user;
+            return user ?? null;
         } catch (error) {
             logger.error('Error in findById:', error);
             throw new Error('Error in findById');

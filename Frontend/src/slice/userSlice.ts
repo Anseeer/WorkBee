@@ -9,7 +9,6 @@ interface userState {
     wallet: IWallet | null;
     user: Iuser | null,
     error: string | null;
-    wallet: IWallet | null;
     resetEmail: string | null;
 }
 
@@ -172,7 +171,7 @@ const userSlice = createSlice({
                 state.error = null;
             })
             .addCase(verifyRegisterUserThunk.fulfilled, (state, action) => {
-                state.user = action.payload.newUser;
+                state.user = action.payload.user;
                 state.wallet = action.payload.wallet;
                 state.error = null;
             })

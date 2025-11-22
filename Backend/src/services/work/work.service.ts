@@ -223,6 +223,7 @@ export class WorkService implements IWorkService {
 
             return await this._workRepositoy.cancel(workId);
         } catch (error) {
+            console.log("Error :", error);
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
             throw error;

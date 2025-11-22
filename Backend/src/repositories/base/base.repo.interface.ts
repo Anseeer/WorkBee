@@ -6,6 +6,6 @@ export interface Iwrite<T> {
 }
 
 export interface Iread<T> {
-    findById(id: string): Promise<T>;
+    findById(id: string): Promise<T | null>;
     findByEmail(email: string): Promise<T>;
 }

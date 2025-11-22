@@ -39,8 +39,8 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
     },
   });
 
-  const [showPassword, setShowPassword] = useState(true);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
@@ -78,7 +78,7 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
                 onClick={togglePasswordVisibility}
                 className="absolute right-2 top-3 cursor-pointer text-gray-500"
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </span>
             </div>
 
@@ -100,7 +100,7 @@ const ResetPasswordForm = ({ handleSubmit }: ResetPasswordFormProps) => {
                 onClick={toggleConfirmPasswordVisibility}
                 className="absolute right-2 top-3 cursor-pointer text-gray-500"
               >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </span>
             </div>
 

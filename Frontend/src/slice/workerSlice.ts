@@ -41,7 +41,6 @@ export const registerWorkerThunk = createAsyncThunk(
     }
 );
 
-
 export const verifyRegisterWorkerThunk = createAsyncThunk(
     API_ROUTES.USER_SERVICE.VERIFY_REGISTRATION,
     async (verifyData: { tempWorkerId: string, otp: string }, { rejectWithValue }) => {
@@ -63,7 +62,7 @@ export const reVerifyRegister = createAsyncThunk(
     async (tempWorkerId: string, { rejectWithValue }) => {
         try {
             const response = await reVerify(tempWorkerId);
-            console.log("response :", response);
+            console.log("response reverify-worker-register:", response);
             return response.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
@@ -117,7 +116,7 @@ export const verifyOtpUserThunk = createAsyncThunk(
     async (verifyData: { email: string; otp: string }, { rejectWithValue }) => {
         try {
             const response = await verifyOtp(verifyData.email, verifyData.otp);
-            return response.data;
+            return response.data.data;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
             return rejectWithValue(error.response?.data?.data || "Something went wrong");
@@ -195,7 +194,7 @@ const workerSlice = createSlice({
 
                 state.worker = {
                     ...worker,
-                    id: worker._id || worker.id
+                    id: worker?._id || worker?.id
                 };
                 state.error = null;
                 state.wallet = wallet;
@@ -211,7 +210,7 @@ const workerSlice = createSlice({
                 const wallet = action.payload.wallet;
                 state.worker = {
                     ...worker,
-                    id: worker.id || worker._id
+                    id: worker?.id || worker?._id
                 };
                 state.wallet = wallet;
                 state.error = null;

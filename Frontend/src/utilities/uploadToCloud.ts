@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const uploadToCloud = async (file: File): Promise<string> => {
+export const uploadToCloud = async (file: File | string): Promise<string> => {
   if (!file) throw new Error("No file selected");
 
   const formData = new FormData();

@@ -233,7 +233,7 @@ const SubscriptionManagment = () => {
                                 <label className="block text-sm mb-1">Plan Name</label>
                                 <input
                                     type="text"
-                                    name="name"
+                                    name="planName"
                                     value={formik.values.planName}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
