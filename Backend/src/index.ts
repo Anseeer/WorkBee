@@ -23,7 +23,8 @@ import { initializeSocket } from "./socket/socketHandler";
 import { initCronJobs } from "./utilities/cronJobs";
 import { initSocket } from "./socket/socket";
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+// dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+dotenv.config()
 MongooseConnection();
 
 const app = express();
