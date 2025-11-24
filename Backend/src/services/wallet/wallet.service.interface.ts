@@ -1,6 +1,6 @@
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
-import { EarningResultDTO } from "../../utilities/earningsType";
+import { EarningResultDTO } from "../../utilities/Types";
 
 export interface IWalletService {
     findByUser(userId: string): Promise<IWalletDTO | null>;

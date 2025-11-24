@@ -5,8 +5,8 @@ import BaseRepository from "../base/base.repo";
 import { IWalletRepository } from "./wallet.repo.interface";
 import { Wallet } from "../../model/wallet/wallet.model";
 import mongoose, { isValidObjectId } from "mongoose";
-import { EarningResult } from "../../utilities/earningsType";
 import logger from "../../utilities/logger";
+import { EarningResult } from "../../utilities/Types";
 
 @injectable()
 export class WalletRepository extends BaseRepository<IWallet> implements IWalletRepository {

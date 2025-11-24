@@ -5,8 +5,8 @@ import TYPES from "../../inversify/inversify.types";
 import { IWallet } from "../../model/wallet/wallet.interface.model";
 import { IWalletDTO } from "../../mappers/wallet/map.wallet.DTO.interface";
 import { mapWalletToDTO } from "../../mappers/wallet/map.wallet.DTO";
-import { EarningResultDTO } from "../../utilities/earningsType";
 import logger from "../../utilities/logger";
+import { EarningResultDTO } from "../../utilities/Types";
 
 @injectable()
 export class WalletService implements IWalletService {

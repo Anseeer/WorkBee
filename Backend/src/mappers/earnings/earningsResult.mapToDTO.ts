@@ -1,4 +1,4 @@
-import { EarningResult } from "../../utilities/earningsType";
+import { EarningResult } from "../../utilities/Types";
 import { MappedEarningDTO } from "./earnigsResult.DTO.interface";
 
 export const mapEarningsToDTO = (earnings: EarningResult): MappedEarningDTO => {

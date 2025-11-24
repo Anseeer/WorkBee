@@ -1,5 +1,5 @@
 import { IWallet } from "../../model/wallet/wallet.interface.model";
-import { EarningResult } from "../../utilities/earningsType";
+import { EarningResult } from "../../utilities/Types";
 
 export interface IWalletRepository {
     create(walletDetails: Partial<IWallet>): Promise<IWallet>;
