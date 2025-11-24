@@ -36,7 +36,7 @@ app.use(express.urlencoded({ extended: true }))
 const allowedOrigins = [
   process.env.CLIENT_URL_DOCKER,
   process.env.CLIENT_URL_HOST,
-  process.env.CLIENT_URL_CLOUD,
+  process.env.CLIENT_URL_DEPLOY,
   process.env.CLIENT_URL_DOMAIN,
 ].filter(Boolean);
 

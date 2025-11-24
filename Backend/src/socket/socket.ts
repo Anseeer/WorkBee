@@ -10,7 +10,7 @@ export const initSocket = (server: any) => {
     const allowedOrigins = [
         process.env.CLIENT_URL_DOCKER,
         process.env.CLIENT_URL_HOST,
-        process.env.CLIENT_URL_CLOUD,
+        process.env.CLIENT_URL_DEPLOY,
         process.env.CLIENT_URL_DOMAIN,
     ].filter((url): url is string => Boolean(url));
 
