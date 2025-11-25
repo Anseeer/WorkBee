@@ -27,16 +27,21 @@ export class TempUserRepository extends BaseRepository<ITempUser> implements ITe
             return await this.model.findOne({ email });
         } catch (error) {
             logger.error("Error in findByEmail:", error);
-            return null;
+            throw new Error('Error in findByEmail');
         }
     }
 
     async updateById(userId: string, updateData: Partial<ITempUser>): Promise<ITempUser | null> {
-        const updatedUser = await this.model.findByIdAndUpdate(userId, updateData, { new: true }).exec();
-        if (!updatedUser) {
-            throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+        try {
+            const updatedUser = await this.model.findByIdAndUpdate(userId, updateData, { new: true }).exec();
+            if (!updatedUser) {
+                throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+            }
+            return updatedUser;
+        } catch (error) {
+            logger.error("Error in updateById:", error);
+            throw new Error('Error in updateById');
         }
-        return updatedUser;
     }
 
 }

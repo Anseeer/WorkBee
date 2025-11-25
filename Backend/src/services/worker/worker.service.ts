@@ -366,7 +366,7 @@ export class WorkerService implements IWorkerService {
         } catch (error) {
             console.log("error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to search workers: ${errMsg}`);
+            throw new Error(errMsg);
         }
     }
 
@@ -380,7 +380,7 @@ export class WorkerService implements IWorkerService {
             return workers.map(mapWorkerToDTO);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to find workers by IDs: ${errMsg}`);
+            throw new Error(errMsg);
         }
     }
 
@@ -499,7 +499,7 @@ export class WorkerService implements IWorkerService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw new Error(`Failed to rate worker: ${errMsg}`);
+            throw new Error(errMsg);
         }
     }
 
@@ -512,7 +512,7 @@ export class WorkerService implements IWorkerService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw new Error(`Failed to rate worker: ${errMsg}`);
+            throw new Error(errMsg);
         }
     }
 
@@ -525,7 +525,7 @@ export class WorkerService implements IWorkerService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw new Error(`Failed to reApprovalRequest: ${errMsg}`);
+            throw new Error(errMsg);
         }
     }
 

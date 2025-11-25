@@ -117,7 +117,6 @@ export class SubscriptionController implements ISubscriptionController {
             logger.info(response);
             res.status(response.status).json(response);
         } catch (error) {
-            logger.error("Error:", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, SUBSCRIPTION_MESSAGE.ACTIVE_PLAN_FAILD, errMsg));
         }

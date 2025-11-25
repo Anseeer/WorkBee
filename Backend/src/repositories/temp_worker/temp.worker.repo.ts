@@ -17,16 +17,21 @@ export class TempWorkerRepository extends BaseRepository<ITempWorker> implements
             return await this.model.findOne({ email });
         } catch (error) {
             logger.error("Error in findByEmail:", error);
-            return null;
+            throw new Error('Error in findByEmail');
         }
     }
 
     async updateById(workerId: string, updateData: Partial<ITempWorker>): Promise<ITempWorker | null> {
-        const updatedWorker = await this.model.findByIdAndUpdate(workerId, updateData, { new: true }).exec();
-        if (!updatedWorker) {
-            throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+        try {
+            const updatedWorker = await this.model.findByIdAndUpdate(workerId, updateData, { new: true }).exec();
+            if (!updatedWorker) {
+                throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+            }
+            return updatedWorker;
+        } catch (error) {
+            logger.error("Error in updateById:", error);
+            throw new Error('Error in updateById');
         }
-        return updatedWorker;
     }
 
 }

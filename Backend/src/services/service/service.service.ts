@@ -27,7 +27,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -45,7 +45,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -56,7 +56,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -72,7 +72,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -87,7 +87,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -98,7 +98,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -109,7 +109,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -131,8 +131,7 @@ export class ServiceService implements IServiceService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
-
 }

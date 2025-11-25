@@ -27,6 +27,4 @@ export class MessageRepository extends BaseRepository<IMessage> implements IMess
             throw new Error('Error in findLastMessage');
         }
     }
-
-
 }

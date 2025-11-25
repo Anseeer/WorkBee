@@ -207,8 +207,6 @@ export class UserController implements IUserController {
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log("Err,", errMsg)
-            console.log("Error :", error)
             next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.PASSWORD_RESET_FAILED, errMsg));
         }
 

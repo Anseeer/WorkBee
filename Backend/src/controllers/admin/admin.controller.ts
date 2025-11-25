@@ -8,7 +8,6 @@ import { IAdminService } from "../../services/admin/admin.services.interface";
 import { ADMIN_MESSAGES, WALLET_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
-import { query } from "winston";
 
 @injectable()
 export class AdminController implements IAdminController {

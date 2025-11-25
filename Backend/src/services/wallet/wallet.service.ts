@@ -15,7 +15,6 @@ export class WalletService implements IWalletService {
         this._walletRepository = walletRepo;
     }
 
-
     async findByUser(userId: string): Promise<IWalletDTO | null> {
         try {
             const findWallet = await this._walletRepository.findByUser(userId);

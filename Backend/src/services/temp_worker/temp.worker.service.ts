@@ -56,7 +56,7 @@ export class TempWorkerService implements ITempWorkerService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error("Error in the temp_worker creating", errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -86,7 +86,7 @@ export class TempWorkerService implements ITempWorkerService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error("Error in resendOtp", errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 

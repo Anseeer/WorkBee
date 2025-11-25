@@ -38,7 +38,7 @@ export class ChatService implements IChatService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -53,7 +53,7 @@ export class ChatService implements IChatService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -66,7 +66,7 @@ export class ChatService implements IChatService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -81,7 +81,7 @@ export class ChatService implements IChatService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -96,7 +96,7 @@ export class ChatService implements IChatService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 
@@ -117,7 +117,7 @@ export class ChatService implements IChatService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     }
 

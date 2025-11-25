@@ -45,7 +45,7 @@ export class ServiceRepository extends BaseRepository<IServices> implements ISer
             return service as IServices;
         } catch (error) {
             logger.error('Error in findById:', error);
-            throw error;
+            throw new Error('Error in findById');
         }
     }
 

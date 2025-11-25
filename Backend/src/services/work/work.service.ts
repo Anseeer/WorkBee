@@ -114,7 +114,7 @@ export class WorkService implements IWorkService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 
@@ -142,7 +142,7 @@ export class WorkService implements IWorkService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 
@@ -170,7 +170,7 @@ export class WorkService implements IWorkService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 
@@ -226,7 +226,7 @@ export class WorkService implements IWorkService {
             console.log("Error :", error);
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 
@@ -314,7 +314,7 @@ export class WorkService implements IWorkService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 
@@ -356,7 +356,7 @@ export class WorkService implements IWorkService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 
@@ -372,7 +372,7 @@ export class WorkService implements IWorkService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 
@@ -391,7 +391,7 @@ export class WorkService implements IWorkService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            throw error;
+            throw new Error(errMsg);
         }
     };
 

@@ -62,7 +62,6 @@ export class ServiceController implements IServiceController {
         try {
             const { serviceId, currentPage, pageSize } = req.query;
             const service = req.body;
-            logger.error("Body :", service);
             if (!serviceId) {
                 throw new Error(SERVICE_MESSAGE.ID_NOT_RECEIVED);
             }
