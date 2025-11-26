@@ -3,14 +3,24 @@ import nodemailer from 'nodemailer';
 type EmailType = "RESET_PASSWORD" | "VERIFY_EMAIL";
 
 export const emailService = async (email: string, otp: string, type: EmailType) => {
+  // const transporter = nodemailer.createTransport({
+  //   service: 'gmail',
+  //   auth: {
+  //     user: process.env.NODE_EMAIL,
+  //     pass: process.env.NODE_EMAIL_PASS,
+  //   },
+  // });
+
   const transporter = nodemailer.createTransport({
-    // service: 'gmail',
-    host: "smtp.gmail.com",
+    host: "smtp-relay.brevo.com",
+    port: 587,
+    secure: false,
     auth: {
-      user: process.env.NODE_EMAIL,
-      pass: process.env.NODE_EMAIL_PASS,
+      user: process.env.BREVO_USER,
+      pass: process.env.BREVO_PASS,
     },
   });
+
 
   const templates = {
     RESET_PASSWORD: {
