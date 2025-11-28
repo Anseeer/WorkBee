@@ -10,13 +10,12 @@ const servers = {
     iceServers: [
         { urls: "stun:stun.l.google.com:19302" },
         {
-            urls: "turn:global.relay.twilio.com:3478?transport=udp",
-            username: "your_twilio_username",
-            credential: "your_twilio_password"
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject"
         }
     ]
 };
-
 
 export function isCallConnected() {
     return isConnected;
