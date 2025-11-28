@@ -7,8 +7,16 @@ let isConnected = false;
 let isCallInitiated = false;
 
 const servers = {
-    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+            urls: "turn:global.relay.twilio.com:3478?transport=udp",
+            username: "your_twilio_username",
+            credential: "your_twilio_password"
+        }
+    ]
 };
+
 
 export function isCallConnected() {
     return isConnected;
