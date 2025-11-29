@@ -33,7 +33,9 @@ export class ChatService implements IChatService {
             const res = await this._chatRepository.findChatByUsers(userId);
             if (!res) return null;
 
-            const chat = res.map((chat) => mapChatToDTO(chat));
+            const chat = res
+                .filter((c) => c !== null)          
+                .map((c) => mapChatToDTO(c));
             return chat;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
