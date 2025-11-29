@@ -37,7 +37,7 @@ export async function initiateCall(selectedUserId: string, currentUserId: string
             const remoteAudio = document.getElementById('remote-audio') as HTMLAudioElement;
             if (remoteAudio) {
                 remoteAudio.srcObject = e.streams[0];
-                remoteAudio.play().catch(error => console.error('Caller: Failed to play audio:', error));
+                // remoteAudio.play().catch(error => console.error('Caller: Failed to play audio:', error));
             } else {
                 console.error('Caller: Remote audio element not found');
             }
@@ -85,7 +85,7 @@ export async function acceptCall(callerId: string, offer: RTCSessionDescriptionI
             const remoteAudio = document.getElementById('remote-audio') as HTMLAudioElement;
             if (remoteAudio) {
                 remoteAudio.srcObject = e.streams[0];
-                remoteAudio.play().catch(error => console.error('Callee: Failed to play audio:', error));
+                // remoteAudio.play().catch(error => console.error('Callee: Failed to play audio:', error));
             } else {
                 console.error('Callee: Remote audio element not found');
             }
