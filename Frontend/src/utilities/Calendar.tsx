@@ -9,6 +9,7 @@ interface CalendarProps {
 }
 
 export const Calendar = ({ availability }: CalendarProps) => {
+    console.log("Availability ::::", availability);
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [calendarDays, setCalendarDays] = useState<(number | null)[]>([]);
 
@@ -17,18 +18,36 @@ export const Calendar = ({ availability }: CalendarProps) => {
     const getAvailableDaysForMonth = (date: dayjs.Dayjs): number[] => {
         const month = date.month();
         const year = date.year();
-        const today = dayjs().startOf('day');
+        const today = dayjs().startOf("day");
+        const viewingMonth = date.startOf("month");
 
         return (availability?.availableDates || [])
             .filter(d => {
-                const availableDate = dayjs(d.date).startOf('day');
-                return (
-                    availableDate.year() === year &&
-                    availableDate.month() === month &&
-                    availableDate.isSameOrAfter(today)
-                );
+                const isoDateString =
+                    typeof d.date === "string"
+                        ? d.date.split("T")[0]
+                        : dayjs(d.date).format("YYYY-MM-DD");
+
+                const availableDate = dayjs(isoDateString).startOf("day");
+
+                if (availableDate.year() !== year || availableDate.month() !== month) {
+                    return false;
+                }
+
+                if (viewingMonth.isSame(today.startOf("month"))) {
+                    return availableDate.isSameOrAfter(today);
+                }
+
+                return true;
             })
-            .map(d => dayjs(d.date).date());
+            .map(d => {
+                const isoDateString =
+                    typeof d.date === "string"
+                        ? d.date.split("T")[0]
+                        : dayjs(d.date).format("YYYY-MM-DD");
+
+                return dayjs(isoDateString).date();
+            });
     };
 
     useEffect(() => {

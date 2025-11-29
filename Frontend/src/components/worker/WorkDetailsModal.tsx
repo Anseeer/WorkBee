@@ -101,6 +101,8 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
         }
     };
 
+    const subTotal = Number(workDetails?.wagePerHour) * Number(workDetails?.totalHours);
+
     return (
         <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 md:p-6">
             <div
@@ -304,7 +306,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
                                         <span className="text-gray-600 font-medium text-xs sm:text-sm md:text-base">Total Amount:</span>
                                         <span className="text-gray-900 font-bold text-sm sm:text-base md:text-lg text-green-600 flex items-center gap-1">
                                             <FaRupeeSign size={14} className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
-                                            {workDetails?.totalAmount}
+                                            {subTotal}
                                         </span>                                    </div>
                                 }
                             </div>

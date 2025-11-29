@@ -9,6 +9,7 @@ interface VerifyOtpFormProps {
 const VerifyOtpForm = ({ onResend, onSubmit }: VerifyOtpFormProps) => {
   const [timeLeft, setTimeLeft] = useState<number>(60);
   const [expired, setExpired] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -43,7 +44,11 @@ const VerifyOtpForm = ({ onResend, onSubmit }: VerifyOtpFormProps) => {
       return errors;
     },
     onSubmit: (values) => {
+      setLoading(true);
       onSubmit(values.otp);
+      setTimeout(() => {
+        setLoading(false)
+      }, 5000);
     },
   });
 
@@ -105,7 +110,7 @@ const VerifyOtpForm = ({ onResend, onSubmit }: VerifyOtpFormProps) => {
                 type="submit"
                 className="w-full bg-green-900 py-2 sm:py-3 mt-2 sm:mt-4 text-white font-semibold rounded-full text-sm sm:text-base"
               >
-                Verify ({formatTime(timeLeft)})
+                {loading ? `Verifying...` : `Verify (${formatTime(timeLeft)})`}
               </button>
             )}
           </form>

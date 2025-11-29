@@ -21,7 +21,6 @@ interface FilterState {
     sortBy: string,
 }
 
-
 const WorkerListing = () => {
     const workDetails = useSelector((state: RootState) => state?.work);
     const userDetails = useSelector((state: RootState) => state?.user?.user);
@@ -139,7 +138,6 @@ const WorkerListing = () => {
                 <div className="w-full md:w-80 flex-shrink-0 animate-slideInRight">
                     <div className="bg-white border-2 border-green-600 rounded-3xl p-4 sm:p-6 animate-fadeInScale">
                         {/* Price Range Filter */}
-                        <div className="my-6 border-t border-gray-200" />
                         <div>
                             <h3 className="text-lg font-semibold text-green-700 mb-3">Max Price</h3>
                             <div className="space-y-3">
