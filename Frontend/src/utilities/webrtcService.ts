@@ -37,7 +37,7 @@ export async function initiateCall(selectedUserId: string, currentUserId: string
             const remoteAudio = document.getElementById('remote-audio') as HTMLAudioElement;
             if (remoteAudio) {
                 remoteAudio.srcObject = e.streams[0];
-                // remoteAudio.play().catch(error => console.error('Caller: Failed to play audio:', error));
+                remoteAudio.play().catch(error => console.error('Caller: Failed to play audio:', error));
             } else {
                 console.error('Caller: Remote audio element not found');
             }
@@ -53,11 +53,9 @@ export async function initiateCall(selectedUserId: string, currentUserId: string
         peerConnection.onconnectionstatechange = () => {
             if (peerConnection?.connectionState === 'connected') {
                 isConnected = true;
-            } else if (peerConnection?.connectionState === 'disconnected' || peerConnection?.connectionState === 'failed') {
-                isConnected = false;
-                socket.emit('webrtc-end-call', { targetUserId: selectedUserId });
             }
         };
+
         peerConnection.oniceconnectionstatechange = () => {
             console.log('Caller: ICE connection state:', peerConnection?.iceConnectionState);
         };
@@ -85,7 +83,7 @@ export async function acceptCall(callerId: string, offer: RTCSessionDescriptionI
             const remoteAudio = document.getElementById('remote-audio') as HTMLAudioElement;
             if (remoteAudio) {
                 remoteAudio.srcObject = e.streams[0];
-                // remoteAudio.play().catch(error => console.error('Callee: Failed to play audio:', error));
+                remoteAudio.play().catch(error => console.error('Callee: Failed to play audio:', error));
             } else {
                 console.error('Callee: Remote audio element not found');
             }
@@ -101,11 +99,9 @@ export async function acceptCall(callerId: string, offer: RTCSessionDescriptionI
         peerConnection.onconnectionstatechange = () => {
             if (peerConnection?.connectionState === 'connected') {
                 isConnected = true;
-            } else if (peerConnection?.connectionState === 'disconnected' || peerConnection?.connectionState === 'failed') {
-                isConnected = false;
-                socket.emit('webrtc-end-call', { targetUserId: callerId });
             }
         };
+
         peerConnection.oniceconnectionstatechange = () => {
             console.log('Callee: ICE connection state:', peerConnection?.iceConnectionState);
         };
