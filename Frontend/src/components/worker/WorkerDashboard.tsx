@@ -16,7 +16,6 @@ interface props {
 const WorkerDashboard = ({ worker, wallet, availability }: props) => {
     const [jobRequest, setJobRequest] = useState<number | undefined>();
     const [availabilities, setAvailabilities] = useState<IAvailability>();
-    const [workerId, setWorkerId] = useState('');
     const [assignedWorks, setAssignedWorks] = useState<IWork[]>([]);
     const [filter, setFilter] = useState<'monthly' | 'yearly'>('monthly');
     const [earningsData, setEarningsData] = useState<[]>([]);
@@ -30,11 +29,10 @@ const WorkerDashboard = ({ worker, wallet, availability }: props) => {
     useEffect(() => {
         const fetchData = async () => {
             if (!worker?._id) return;
-            setWorkerId(worker._id as string);
             try {
-                const pendings = await fetchRequestedWorks(workerId);
-                const assigned = await fetchAssignedWorks(workerId);
-                const earningsDate = await fetchWorkerEarnings(filter, workerId);
+                const pendings = await fetchRequestedWorks(worker._id);
+                const assigned = await fetchAssignedWorks(worker._id);
+                const earningsDate = await fetchWorkerEarnings(filter, worker._id);
                 setEarningsData(earningsDate.earnings);
                 setAssignedWorks(assigned.assignedWorks);
                 setJobRequest(pendings.pendingWorks.length);
@@ -44,7 +42,7 @@ const WorkerDashboard = ({ worker, wallet, availability }: props) => {
         };
 
         fetchData();
-    }, [filter, worker._id, workerId]);
+    }, [filter, worker._id]);
 
     return (
         <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
