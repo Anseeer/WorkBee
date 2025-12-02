@@ -190,340 +190,259 @@
 
 
 
+import { socket } from "./socket";
 
-    import { socket } from "./socket";
+let localStream: MediaStream | null = null;
+let remoteStream: MediaStream | null = null;
+let peerConnection: RTCPeerConnection | null = null;
+export let iceCandidateBuffer: RTCIceCandidateInit[] = [];
+let isConnected = false;
+let isCallInitiated = false;
 
-    let localStream: MediaStream | null = null;
-    let remoteStream: MediaStream | null = null;
-    let peerConnection: RTCPeerConnection | null = null;
-    export let iceCandidateBuffer: RTCIceCandidateInit[] = [];
-    let isConnected = false;
-    let isCallInitiated = false;
+const servers = {
+    iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+        },
+        {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+        }
+    ],
+    iceCandidatePoolSize: 10
+};
 
-    const servers = {
-        iceServers: [
-            { urls: "stun:stun.l.google.com:19302" },
-            { urls: "stun:stun1.l.google.com:19302" },
-            {
-                urls: "turn:openrelay.metered.ca:80",
-                username: "openrelayproject",
-                credential: "openrelayproject"
-            },
-            {
-                urls: "turn:openrelay.metered.ca:443",
-                username: "openrelayproject",
-                credential: "openrelayproject"
+export function isCallConnected() {
+    return isConnected;
+}
+
+async function getLocalStream() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+                sampleRate: 48000
             }
-        ],
-        iceCandidatePoolSize: 10
+        });
+
+        stream.getTracks().forEach(track => {
+            console.log("Track obtained:", track.kind, track.enabled, track.readyState);
+
+            track.onended = () => console.error("Track ended unexpectedly:", track.kind);
+            track.onmute = () => console.warn("Track muted:", track.kind);
+            track.onunmute = () => console.log("Track unmuted:", track.kind);
+        });
+
+        return stream;
+    } catch (error) {
+        console.error("Failed to get microphone:", error);
+        throw error;
+    }
+}
+
+/* ------------------------- AUDIO AUTOPLAY HANDLER ------------------------- */
+function ensureRemoteAudioPlayback(stream: MediaStream) {
+    const remoteAudio = document.getElementById("remote-audio") as HTMLAudioElement | null;
+    if (!remoteAudio) return;
+
+    remoteAudio.srcObject = stream;
+    remoteAudio.volume = 1.0;
+
+    const playPromise = remoteAudio.play();
+    if (!playPromise) return;
+
+    playPromise
+        .then(() => {
+            console.log("Audio playing successfully");
+        })
+        .catch(error => {
+            console.error("Audio autoplay blocked:", error);
+
+            // try playing audio after user interaction
+            const retryPlay = () => {
+                remoteAudio.play()
+                    .then(() => {
+                        console.log("Audio playback succeeded after user interaction");
+                        document.removeEventListener("click", retryPlay);
+                        document.removeEventListener("touchstart", retryPlay);
+                    })
+                    .catch(err => {
+                        console.error("Retry audio playback failed:", err);
+                    });
+            };
+
+            document.addEventListener("click", retryPlay);
+            document.addEventListener("touchstart", retryPlay);
+        });
+}
+
+/* ------------------------- PEER CONNECTION SETUP ------------------------- */
+function setupPeerConnection(_isInitiator: boolean, targetUserId: string) {
+    const pc = new RTCPeerConnection(servers);
+
+    pc.onicecandidate = (e) => {
+        if (e.candidate) {
+            socket.emit("webrtc-ice-candidate", {
+                targetUserId,
+                candidate: e.candidate
+            });
+        }
     };
 
-    export function isCallConnected() {
-        return isConnected;
-    }
+    pc.ontrack = (e) => {
+        console.log("Received remote track:", e.track.kind);
+        remoteStream = e.streams[0];
+        ensureRemoteAudioPlayback(e.streams[0]);
+    };
 
-    async function getLocalStream() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true,
-                    sampleRate: 48000
-                }
-            });
+    pc.onconnectionstatechange = () => {
+        console.log("connectionState:", pc.connectionState);
 
-            stream.getTracks().forEach(track => {
-                console.log('Track obtained:', track.kind, 'enabled:', track.enabled, 'readyState:', track.readyState);
-
-                track.onended = () => {
-                    console.error('Track ended unexpectedly:', track.kind);
-                };
-                track.onmute = () => {
-                    console.warn('Track muted:', track.kind);
-                };
-                track.onunmute = () => {
-                    console.log('Track unmuted:', track.kind);
-                };
-            });
-
-            return stream;
-        } catch (error) {
-            console.error('Failed to get user media:', error);
-            throw error;
-        }
-    }
-
-    function setupPeerConnection(isInitiator: boolean, targetUserId: string) {
-        const pc = new RTCPeerConnection(servers);
-
-        pc.onicecandidate = (e) => {
-            if (e.candidate) {
-                console.log(`${isInitiator ? 'Caller' : 'Callee'}: Sending ICE candidate`);
-                socket.emit('webrtc-ice-candidate', {
-                    targetUserId: targetUserId,
-                    candidate: e.candidate
-                });
-            }
-        };
-
-        pc.ontrack = (e) => {
-            console.log(`${isInitiator ? 'Caller' : 'Callee'}: Received remote track:`, e.track.kind);
-            console.log('Track state:', e.track.readyState, 'enabled:', e.track.enabled);
-
-            remoteStream = e.streams[0];
-
-            const remoteAudio = document.getElementById('remote-audio') as HTMLAudioElement;
-            if (remoteAudio) {
-                remoteAudio.srcObject = e.streams[0];
-                remoteAudio.volume = 1.0;
-
-                const playPromise = remoteAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .then(() => {
-                            console.log('Audio playing successfully');
-                        })
-                        .catch(error => {
-                            console.error('Failed to play audio:', error);
-                            const retryPlay = () => {
-                                remoteAudio.play();
-                                document.removeEventListener('click', retryPlay);
-                                document.removeEventListener('touchstart', retryPlay);
-                            };
-                            document.addEventListener('click', retryPlay);
-                            document.addEventListener('touchstart', retryPlay);
-                        });
-                }
-            }
-
-            e.track.onended = () => {
-                console.error('Remote track ended');
-            };
-            e.track.onmute = () => {
-                console.warn('Remote track muted');
-            };
-            e.track.onunmute = () => {
-                console.log('Remote track unmuted');
-            };
-        };
-
-        pc.onconnectionstatechange = () => {
-            console.log(`${isInitiator ? 'Caller' : 'Callee'}: Connection state:`, pc.connectionState);
-            if (pc.connectionState === 'connected') {
-                isConnected = true;
-                if (localStream) {
-                    localStream.getTracks().forEach(track => {
-                        console.log('Local track status:', track.kind, 'enabled:', track.enabled, 'readyState:', track.readyState);
-                    });
-                }
-            } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-                console.error('Connection failed');
-                isConnected = false;
-            }
-        };
-
-        pc.oniceconnectionstatechange = () => {
-            console.log(`${isInitiator ? 'Caller' : 'Callee'}: ICE state:`, pc.iceConnectionState);
-            if (pc.iceConnectionState === 'failed') {
-                console.log('ICE failed, restarting...');
-                pc.restartIce();
-            }
-        };
-
-        pc.onsignalingstatechange = () => {
-            console.log(`${isInitiator ? 'Caller' : 'Callee'}: Signaling state:`, pc.signalingState);
-        };
-
-        return pc;
-    }
-
-    export async function initiateCall(selectedUserId: string, currentUserId: string) {
-        if (isCallInitiated) {
-            console.log('Call already initiated');
-            return;
-        }
-        isCallInitiated = true;
-
-        try {
-            console.log('Caller: Initiating call');
-
-            localStream = await getLocalStream();
-            peerConnection = setupPeerConnection(true, selectedUserId);
-
-            localStream.getTracks().forEach((track) => {
-                console.log('Caller: Adding track to peer connection:', track.kind, track.id);
-                const sender = peerConnection?.addTrack(track, localStream!);
-                console.log('Caller: Track added, sender:', sender);
-            });
-
-            setTimeout(() => {
-                const senders = peerConnection?.getSenders();
-                console.log('Caller: Current senders:', senders?.length);
-                senders?.forEach(sender => {
-                    if (sender.track) {
-                        console.log('Sender track:', sender.track.kind, 'enabled:', sender.track.enabled, 'readyState:', sender.track.readyState);
-                    }
-                });
-            }, 1000);
-
-            const offer = await peerConnection.createOffer({
-                offerToReceiveAudio: true
-            });
-
-            await peerConnection.setLocalDescription(offer);
-            console.log('Caller: Local description set');
-
-            socket.emit('webrtc-offer', {
-                targetUserId: selectedUserId,
-                offer: offer,
-                callerId: currentUserId
-            });
-
-            console.log('Caller: Offer sent');
-
-        } catch (error) {
-            console.error('Caller: Failed to initiate call:', error);
-            isCallInitiated = false;
-            endCall();
-            throw error;
-        }
-    }
-
-    export async function acceptCall(callerId: string, offer: RTCSessionDescriptionInit) {
-        try {
-            console.log('Callee: Accepting call');
-
-            localStream = await getLocalStream();
-            peerConnection = setupPeerConnection(false, callerId);
-
-            localStream.getTracks().forEach((track) => {
-                console.log('Callee: Adding track to peer connection:', track.kind, track.id);
-                const sender = peerConnection?.addTrack(track, localStream!);
-                console.log('Callee: Track added, sender:', sender);
-            });
-
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-            console.log('Callee: Remote description set');
-
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            console.log('Callee: Local description set');
-
-            socket.emit('webrtc-answer', {
-                targetUserId: callerId,
-                answer: answer
-            });
-
-            console.log('Callee: Answer sent');
-
-            console.log('Callee: Processing', iceCandidateBuffer.length, 'buffered candidates');
-            const candidatesToProcess = [...iceCandidateBuffer];
-            iceCandidateBuffer = [];
-
-            for (const candidate of candidatesToProcess) {
-                try {
-                    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                    console.log('Callee: Buffered candidate added');
-                } catch (error) {
-                    console.error('Callee: Failed to add buffered candidate:', error);
-                }
-            }
-
-            setTimeout(() => {
-                const senders = peerConnection?.getSenders();
-                console.log('Callee: Current senders:', senders?.length);
-                senders?.forEach(sender => {
-                    if (sender.track) {
-                        console.log('Sender track:', sender.track.kind, 'enabled:', sender.track.enabled, 'readyState:', sender.track.readyState);
-                    }
-                });
-            }, 1000);
-
-        } catch (error) {
-            console.error('Callee: Error accepting call:', error);
-            endCall();
-            throw error;
-        }
-    }
-
-    export async function handleAnswerCall({ answer }: { answer: RTCSessionDescriptionInit }) {
-        if (!peerConnection) {
-            console.error('Caller: No peer connection exists');
-            return;
+        if (pc.connectionState === "connected") {
+            isConnected = true;
         }
 
-        try {
-            console.log('Caller: Received answer');
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-            console.log('Caller: Remote description set');
-
-            console.log('Caller: Processing', iceCandidateBuffer.length, 'buffered candidates');
-            const candidatesToProcess = [...iceCandidateBuffer];
-            iceCandidateBuffer = [];
-
-            for (const candidate of candidatesToProcess) {
-                try {
-                    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                    console.log('Caller: Buffered candidate added');
-                } catch (error) {
-                    console.error('Caller: Failed to add buffered candidate:', error);
-                }
-            }
-
-            setTimeout(() => {
-                if (localStream) {
-                    localStream.getTracks().forEach(track => {
-                        console.log('Caller: Local track after answer:', track.kind, 'enabled:', track.enabled, 'readyState:', track.readyState);
-                    });
-                }
-            }, 2000);
-
-        } catch (error) {
-            console.error('Caller: Failed to handle answer:', error);
+        if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
+            console.warn("Peer disconnected or failed");
+            isConnected = false;
         }
+    };
+
+    pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState === "failed") {
+            console.warn("ICE failed — restarting");
+            pc.restartIce();
+        }
+    };
+
+    return pc;
+}
+
+/* ------------------------------ CALLER SIDE ------------------------------ */
+export async function initiateCall(selectedUserId: string, currentUserId: string) {
+    if (isCallInitiated) {
+        console.log("Call already initiated");
+        return;
     }
 
-    export async function handleIncomingIceCandidates({ candidate }: { candidate: RTCIceCandidateInit }) {
-        try {
-            if (!peerConnection) {
-                console.log('No peer connection, buffering candidate');
-                iceCandidateBuffer.push(candidate);
-                return;
-            }
+    isCallInitiated = true;
 
-            if (!candidate) {
-                return;
-            }
+    try {
+        localStream = await getLocalStream();
+        peerConnection = setupPeerConnection(true, selectedUserId);
 
-            if (peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
+        localStream.getTracks().forEach(track => peerConnection!.addTrack(track, localStream!));
+
+        const offer = await peerConnection.createOffer({ offerToReceiveAudio: true });
+        await peerConnection.setLocalDescription(offer);
+
+        socket.emit("webrtc-offer", {
+            targetUserId: selectedUserId,
+            offer,
+            callerId: currentUserId
+        });
+
+    } catch (error) {
+        console.error("Caller error:", error);
+        isCallInitiated = false;
+        endCall();
+    }
+}
+
+/* ------------------------------ CALLEE SIDE ------------------------------ */
+export async function acceptCall(callerId: string, offer: RTCSessionDescriptionInit) {
+    try {
+        localStream = await getLocalStream();
+        peerConnection = setupPeerConnection(false, callerId);
+
+        localStream.getTracks().forEach(track => peerConnection!.addTrack(track, localStream!));
+
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        socket.emit("webrtc-answer", {
+            targetUserId: callerId,
+            answer
+        });
+
+        const pending = [...iceCandidateBuffer];
+        iceCandidateBuffer = [];
+
+        for (const candidate of pending) {
+            try {
                 await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                console.log('ICE candidate added');
-            } else {
-                console.log('Remote description not set, buffering candidate');
-                iceCandidateBuffer.push(candidate);
+            } catch (err) {
+                console.error("Failed adding buffered ICE:", err);
             }
-        } catch (error) {
-            console.error('Failed to process ICE candidate:', error);
         }
+
+    } catch (error) {
+        console.error("Callee error:", error);
+        endCall();
+    }
+}
+
+/* ------------------------------ ANSWER HANDLER ------------------------------ */
+export async function handleAnswerCall({ answer }: { answer: RTCSessionDescriptionInit }) {
+    if (!peerConnection) return;
+
+    try {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+
+        const pending = [...iceCandidateBuffer];
+        iceCandidateBuffer = [];
+
+        for (const candidate of pending) {
+            try {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (err) {
+                console.error("Error adding ICE:", err);
+            }
+        }
+    } catch (error) {
+        console.error("handleAnswer error:", error);
+    }
+}
+
+/* ----------------------------- ICE HANDLER ----------------------------- */
+export async function handleIncomingIceCandidates({ candidate }: { candidate: RTCIceCandidateInit }) {
+    if (!peerConnection) {
+        iceCandidateBuffer.push(candidate);
+        return;
     }
 
-    export function endCall() {
-        console.log('Ending call, cleaning up resources');
+    try {
+        if (peerConnection.remoteDescription) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        } else {
+            iceCandidateBuffer.push(candidate);
+        }
+    } catch (error) {
+        console.error("ICE candidate error:", error);
+    }
+}
 
+/* ------------------------------ END CALL ------------------------------ */
+export function endCall() {
+    console.log("Ending call…");
+
+    try {
         if (localStream) {
-            localStream.getTracks().forEach(track => {
-                console.log('Stopping local track:', track.kind);
-                track.stop();
-            });
+            localStream.getTracks().forEach(track => track.stop());
             localStream = null;
         }
 
         if (remoteStream) {
-            remoteStream.getTracks().forEach(track => {
-                console.log('Stopping remote track:', track.kind);
-                track.stop();
-            });
+            remoteStream.getTracks().forEach(track => track.stop());
             remoteStream = null;
         }
 
@@ -532,7 +451,7 @@
             peerConnection = null;
         }
 
-        const remoteAudio = document.getElementById('remote-audio') as HTMLAudioElement;
+        const remoteAudio = document.getElementById("remote-audio") as HTMLAudioElement;
         if (remoteAudio) {
             remoteAudio.srcObject = null;
             remoteAudio.pause();
@@ -541,46 +460,33 @@
         iceCandidateBuffer = [];
         isConnected = false;
         isCallInitiated = false;
-
-        console.log('Call ended, all resources cleaned up');
+    } catch (error) {
+        console.error("Error during endCall:", error);
     }
 
-    export function debugTrackStatus() {
-        console.log('=== DEBUG TRACK STATUS ===');
-        console.log('isCallInitiated:', isCallInitiated);
-        console.log('isConnected:', isConnected);
+    console.log("Call fully cleaned up.");
+}
 
-        if (localStream) {
-            console.log('Local stream tracks:');
-            localStream.getTracks().forEach(track => {
-                console.log(`  ${track.kind}: enabled=${track.enabled}, readyState=${track.readyState}, id=${track.id}`);
-            });
-        } else {
-            console.log('No local stream');
-        }
+/* ------------------------------ DEBUG ------------------------------ */
+export function debugTrackStatus() {
+    console.log("isCallInitiated:", isCallInitiated);
+    console.log("isConnected:", isConnected);
 
-        if (peerConnection) {
-            console.log('Peer connection state:', peerConnection.connectionState);
-            console.log('ICE connection state:', peerConnection.iceConnectionState);
-            console.log('Signaling state:', peerConnection.signalingState);
-
-            const senders = peerConnection.getSenders();
-            console.log('Senders:', senders.length);
-            senders.forEach((sender, i) => {
-                if (sender.track) {
-                    console.log(`  Sender ${i}: ${sender.track.kind}, enabled=${sender.track.enabled}, readyState=${sender.track.readyState}`);
-                }
-            });
-
-            const receivers = peerConnection.getReceivers();
-            console.log('Receivers:', receivers.length);
-            receivers.forEach((receiver, i) => {
-                if (receiver.track) {
-                    console.log(`  Receiver ${i}: ${receiver.track.kind}, enabled=${receiver.track.enabled}, readyState=${receiver.track.readyState}`);
-                }
-            });
-        } else {
-            console.log('No peer connection');
-        }
-        console.log('========================');
+    if (localStream) {
+        console.log("Local tracks:", localStream.getTracks());
+    } else {
+        console.log("No local stream");
     }
+
+    if (peerConnection) {
+        console.log("PeerConnection:", {
+            connection: peerConnection.connectionState,
+            ice: peerConnection.iceConnectionState,
+            signal: peerConnection.signalingState,
+            senders: peerConnection.getSenders(),
+            receivers: peerConnection.getReceivers()
+        });
+    } else {
+        console.log("No peerConnection");
+    }
+}
