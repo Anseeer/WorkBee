@@ -227,6 +227,44 @@ export default function MessageSection({ chats, me }: Props) {
     return bTime - aTime;
   });
 
+  // Add this useEffect in your MessageSection component after the existing useEffects
+  useEffect(() => {
+    if (!isCall) return;
+
+    // Monitor track status every 2 seconds during call
+    const intervalId = setInterval(() => {
+      console.log('=== Periodic Track Check ===');
+      console.log('Call active:', isCall);
+
+      // Import and call debug function
+      import('../../utilities/webrtcService').then(module => {
+        module.debugTrackStatus();
+      });
+    }, 2000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isCall]);
+
+  useEffect(() => {
+    const remoteAudio = document.getElementById('remote-audio') as HTMLAudioElement;
+
+    if (remoteAudio) {
+      remoteAudio.addEventListener('pause', () => {
+        console.warn('Remote audio paused');
+      });
+
+      remoteAudio.addEventListener('play', () => {
+        console.log('Remote audio playing');
+      });
+
+      remoteAudio.addEventListener('volumechange', () => {
+        console.log('Volume changed:', remoteAudio.volume);
+      });
+    }
+  }, []);
+
   return (
     <div className="border-2 h-screen border-green-700 rounded-xl mx-4 sm:mx-6 md:mx-8 lg:mx-8 my-4 sm:my-6 md:my-8 lg:my-8 p-4 sm:p-5 flex flex-col md:flex-row min-h-screen md:h-[calc(100vh-4rem)] gap-0 md:gap-4">
       <audio id="remote-audio" autoPlay playsInline />
