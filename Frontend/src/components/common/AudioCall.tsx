@@ -14,54 +14,38 @@ interface Props {
     me: string;
 }
 const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
-    // const [isAnimating, setIsAnimating] = useState(false);
     const [isCallActive, setIsCallActive] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [seconds, setSeconds] = useState(0);
-
-    // refs for intervals & mounted flag
     const animationIntervalRef = useRef<number | null>(null);
     const connectionCheckRef = useRef<number | null>(null);
     const mountedRef = useRef(true);
 
-    // Start/stop animation and connection check on mount only.
     useEffect(() => {
         mountedRef.current = true;
-
-        // animation
-        // animationIntervalRef.current = window.setInterval(() => {
-        //     setIsAnimating((prev) => !prev);
-        // }, 1000);
-
-        // connection check interval
         connectionCheckRef.current = window.setInterval(() => {
             try {
                 if (isCallConnected()) {
                     setIsCallActive(true);
                 }
             } catch (err) {
-                // defensive
                 console.warn("connection check error:", err);
             }
         }, 500);
 
-        // If this is an outgoing call, initiate it once (modal controls isOutgoing)
         if (isOutgoing && user._id) {
             (async () => {
                 try {
                     await initiateCall(user._id as string, me);
                 } catch (err) {
                     console.error("Failed to initiate call:", err);
-                    // inform parent to close modal
                     onCallEnd();
                 }
             })();
         }
 
-        // Socket handlers (named so we can remove reliably)
         const handleReject = () => {
             toast.error(`Call rejected by ${user.name || "User"}`);
-            // socket notified us — ensure cleanup + notify parent
             try {
                 endCall();
             } catch (e) {
@@ -84,11 +68,9 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
         socket.on("webrtc-reject", handleReject);
         socket.on("webrtc-end-call", handleEnd);
 
-        // CLEANUP: remove listeners + clear intervals only (do NOT call endCall here)
         return () => {
             mountedRef.current = false;
 
-            // clear intervals
             if (animationIntervalRef.current) {
                 window.clearInterval(animationIntervalRef.current);
                 animationIntervalRef.current = null;
@@ -97,18 +79,11 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
                 window.clearInterval(connectionCheckRef.current);
                 connectionCheckRef.current = null;
             }
-
-            // remove socket listeners
             socket.off("webrtc-reject", handleReject);
             socket.off("webrtc-end-call", handleEnd);
-
-            // do NOT call endCall() here — parent should explicitly call onCallEnd() when closing modal
-            // This prevents accidental teardown when `isCallActive` changes or when effect re-runs.
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user._id, isOutgoing, me, onCallEnd]); // note: removed isCallActive and user.name to avoid repeated cleanup runs
+    }, [user._id, isOutgoing, me, onCallEnd, user.name]);
 
-    // handle user pressing "End Call"
     const handleEndCall = () => {
         if (user._id) {
             socket.emit("webrtc-end-call", { targetUserId: user._id });
@@ -118,12 +93,10 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
         } catch (err) {
             console.warn("endCall error:", err);
         }
-        // setIsAnimating(false);
         setIsCallActive(false);
         onCallEnd();
     };
 
-    // Mute / unmute toggle — acts on audio element
     const toggleMute = () => {
         const remoteAudio = document.getElementById("remote-audio") as HTMLAudioElement | null;
         if (remoteAudio) {
@@ -137,7 +110,6 @@ const CallComponent = ({ user, onCallEnd, isOutgoing, me }: Props) => {
         }
     };
 
-    // Call duration timer
     useEffect(() => {
         if (!isCallActive) {
             setSeconds(0);
