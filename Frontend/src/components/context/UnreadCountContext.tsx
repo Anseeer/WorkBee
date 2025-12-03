@@ -25,7 +25,7 @@ export function UnreadMessageCountProvider({ children }: Props) {
             if (!user?.id) return;
 
             try {
-                const chatResponse = await fetchChat(user.id);
+                const chatResponse = await fetchChat();
                 setChats(chatResponse);
             } catch (err) {
                 console.error("Error fetching chats:", err);

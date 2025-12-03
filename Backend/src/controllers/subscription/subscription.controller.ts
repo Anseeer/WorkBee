@@ -7,6 +7,7 @@ import { errorResponse, successResponse } from "../../utilities/response";
 import { StatusCode } from "../../constants/status.code";
 import { COMMON_MESSAGE, SUBSCRIPTION_MESSAGE } from "../../constants/messages";
 import logger from "../../utilities/logger";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class SubscriptionController implements ISubscriptionController {
@@ -105,9 +106,10 @@ export class SubscriptionController implements ISubscriptionController {
         }
     }
 
-    activateSubscriptionPlan = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    activateSubscriptionPlan = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workerId, planId } = req.query;
+            const { planId } = req.query;
+            const workerId = req?.user?.id;
 
             if (!workerId || !planId) {
                 throw new Error(SUBSCRIPTION_MESSAGE.MISSING_DATA)

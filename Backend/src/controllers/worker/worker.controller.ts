@@ -11,6 +11,7 @@ import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
 import { IWalletService } from "../../services/wallet/wallet.service.interface";
 import { ITempWorkerService } from "../../services/temp_worker/temp.worker.service.interface";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class WorkerController implements IWorkerController {
@@ -145,9 +146,8 @@ export class WorkerController implements IWorkerController {
         }
     };
 
-    buildAccount = async (req: Request, res: Response, next: NextFunction) => {
-        const { workerId } = req.query;
-
+    buildAccount = async (req: AuthRequest, res: Response, next: NextFunction) => {
+        const workerId = req?.user?.id;
         try {
             if (!workerId || typeof workerId !== "string") {
                 throw new Error(WORKER_MESSAGE.Availability_or_WorkerID_In_Availability_Not_Get);
@@ -240,9 +240,10 @@ export class WorkerController implements IWorkerController {
         }
     };
 
-    changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    changePassword = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const { currentPass, newPass, workerId } = req.body;
+            const { currentPass, newPass } = req.body;
+            const workerId = req?.user?.id;
             if (!currentPass || !newPass || !workerId) {
                 throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
             }
@@ -256,8 +257,8 @@ export class WorkerController implements IWorkerController {
         }
     }
 
-    fetchDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const workerId = req.query.workerId;
+    fetchDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        const workerId = req?.user?.id;
         try {
             if (!workerId || typeof workerId !== "string") {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
@@ -367,9 +368,9 @@ export class WorkerController implements IWorkerController {
         }
     }
 
-    findWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    findWallet = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const workerId = req.query.workerId;
+            const workerId = req?.user?.id;
             if (!workerId || typeof workerId !== 'string') {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);
             }
@@ -384,9 +385,9 @@ export class WorkerController implements IWorkerController {
         }
     }
 
-    getEarnings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getEarnings = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const workerId = req.query.workerId;
+            const workerId = req?.user?.id;
             const filter = req.query.filter;
 
             if (!workerId || !filter) {
@@ -424,9 +425,9 @@ export class WorkerController implements IWorkerController {
         }
     }
 
-    reApprovalRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    reApprovalRequest = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const workerId = req.query.workerId;
+            const workerId = req?.user?.id;
 
             if (!workerId) {
                 throw new Error(WORKER_MESSAGE.WORKER_ID_MISSING_OR_INVALID);

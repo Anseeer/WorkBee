@@ -55,8 +55,8 @@ export const resetPass = async (email: string, password: string) => {
     return response;
 };
 
-export const fetchUser = async (userId?: string) => {
-    const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_DATA}?userId=${userId}`);
+export const fetchUser = async () => {
+    const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_DATA}`);
     return response.data;
 };
 
@@ -65,15 +65,15 @@ export const getUserDetails = async (userId: string) => {
     return response.data.data;
 };
 
-export const update = async (userDetails: Partial<Iuser>, userId: string) => {
-    const response = await axios.put(API_ROUTES.USER_SERVICE.UPDATE, { userDetails, userId });
+export const update = async (userDetails: Partial<Iuser>) => {
+    const response = await axios.put(API_ROUTES.USER_SERVICE.UPDATE, { userDetails });
     return response;
 };
 
-export const findUsersByIds = async (userIds: string[]) => {
-    const response = await axios.post(API_ROUTES.USER_SERVICE.FIND_BY_IDS, { userIds });
-    return response.data.data;
-};
+// export const findUsersByIds = async (userIds: string[]) => {
+//     const response = await axios.post(API_ROUTES.USER_SERVICE.FIND_BY_IDS, { userIds });
+//     return response.data.data;
+// };
 
 export const fetchAvailability = async (workerId: string | null) => {
     if (!workerId) throw new Error('Worker Id not provided');
@@ -110,25 +110,24 @@ export const DraftWork = async (workDetails: IWork) => {
 };
 
 export const fetchWorkHistory = async (
-    userId: string,
     currentPage: number,
     pageSize: number
 ) => {
     const response = await axios.get(
-        `${API_ROUTES.USER_SERVICE.FETCH_WORK_HISTORY}?userId=${userId}&currentPage=${currentPage}&pageSize=${pageSize}`
+        `${API_ROUTES.USER_SERVICE.FETCH_WORK_HISTORY}?currentPage=${currentPage}&pageSize=${pageSize}`
     );
     return response;
 };
 
-export const cancelWork = async (workId: string, workerId: string) => {
-    if (!workId || !workerId) {
-        throw new Error("WorkID or userID missing !");
+export const cancelWork = async (workId: string) => {
+    if (!workId) {
+        throw new Error("WorkID not get ");
     }
-    await axios.patch(`${API_ROUTES.USER_SERVICE.CANCEL_WORK}?workId=${workId}&workerId=${workerId}`);
+    await axios.patch(`${API_ROUTES.USER_SERVICE.CANCEL_WORK}?workId=${workId}`);
 };
 
-export const fetchChat = async (userId: string) => {
-    const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_CHAT}?userId=${userId}`);
+export const fetchChat = async () => {
+    const response = await axios.get(`${API_ROUTES.USER_SERVICE.FETCH_CHAT}`);
     return response.data.data;
 };
 
@@ -142,12 +141,12 @@ export const fetchTopService = async (limit: number) => {
     return response.data.data.getTopService;
 };
 
-export const clearNotification = async (userId: string) => {
-    const response = await axios.delete(`${API_ROUTES.USER_SERVICE.CLEAR_NOTIFICATION}?userId=${userId}`);
+export const clearNotification = async () => {
+    const response = await axios.delete(`${API_ROUTES.USER_SERVICE.CLEAR_NOTIFICATION}`);
     return response.data.data;
 };
 
-export const ChangePassword = async (currentPass: string, newPass: string, userId: string) => {
-    const response = await axios.post(`${API_ROUTES.USER_SERVICE.CHANGE_PASSWORD}`, { currentPass, newPass, userId });
+export const ChangePassword = async (currentPass: string, newPass: string) => {
+    const response = await axios.post(`${API_ROUTES.USER_SERVICE.CHANGE_PASSWORD}`, { currentPass, newPass });
     return response.data.data;
 };

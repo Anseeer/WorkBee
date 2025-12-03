@@ -261,8 +261,6 @@ export default function MessageSection({ chats, me }: Props) {
                   hour12: true,
                 })
                 : "";
-
-
               return (
                 <div
                   onClick={() => {

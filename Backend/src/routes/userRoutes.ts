@@ -20,7 +20,7 @@ router.post('/forgot-password', userController.forgotPass);
 router.post('/resend-otp', userController.resendOtp);
 router.post('/verify-otp', userController.verifyOtp);
 router.post('/reset-password', userController.resetPassword);
-router.post('/change-password', userController.changePassword);
+router.post('/change-password',auth, userController.changePassword);
 router.get('/fetch-availability', auth, userController.fetchAvailability);
 router.put('/update', auth, userController.update);
 router.post('/find-users-byId', auth, userController.findUsersByIds);

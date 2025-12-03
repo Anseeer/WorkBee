@@ -2,11 +2,12 @@ import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { errorResponse, successResponse } from "../../utilities/response";
 import logger from "../../utilities/logger";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { NOTIFICATION_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { INotificationController } from "./notificatinos.controller.interface";
 import { INotificationService } from "../../services/notification/notification.service.interface";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class NotificationController implements INotificationController {
@@ -16,9 +17,9 @@ export class NotificationController implements INotificationController {
         this._notificationService = notificationService;
     }
 
-    clearNotification = async (req: Request, res: Response, next: NextFunction) => {
+    clearNotification = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const userId = req.query.userId;
+            const userId = req?.user?.id;
             await this._notificationService.clearNotification(userId as string);
             const response = new successResponse(StatusCode.CREATED, NOTIFICATION_MESSAGE.CLEAT_NOTIFICATION_SUCCESSFULL, {});
             logger.info(response);

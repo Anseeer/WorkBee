@@ -11,8 +11,9 @@ import logger from '../utilities/logger';
 import { Role } from '../constants/role';
 
 export interface AuthRequest extends Request {
-  user?: JwtPayload & { role?: string };
+  user?: JwtPayload & { id: string; role: string };
 }
+
 export const auth = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;

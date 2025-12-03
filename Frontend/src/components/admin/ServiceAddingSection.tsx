@@ -125,8 +125,8 @@ const AddingServiceSection = ({ setAdded }: Props) => {
                                 if (file) setPreview(URL.createObjectURL(file));
                             }}
                             className={`px-3 py-2 border rounded-md w-full focus:outline-none focus:ring-2 ${formik.touched.image && formik.errors.image
-                                    ? "border-red-500 focus:ring-red-400"
-                                    : "border-gray-300 focus:ring-green-400"
+                                ? "border-red-500 focus:ring-red-400"
+                                : "border-gray-300 focus:ring-green-400"
                                 }`}
                         />
                         {preview && (

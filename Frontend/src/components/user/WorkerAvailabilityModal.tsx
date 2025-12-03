@@ -13,7 +13,6 @@ interface WorkerModalProps {
     onConfirm: (date: string, slot: string, PlatformFee: string, commissionAmount: string) => void;
 }
 
-
 const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     work,
     worker,
@@ -29,7 +28,6 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     const PlatformFee = wage * 0.05;
     const commissionPercentage = Number(worker.subscription?.commission) || 0;
     const commissionAmount = (wage * commissionPercentage) / 100;
-
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString("en-CA");
@@ -114,7 +112,6 @@ const WorkerAvailabilityModal: React.FC<WorkerModalProps> = ({
     };
 
     const days = getDaysInMonth();
-
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-70 z-50 p-4">

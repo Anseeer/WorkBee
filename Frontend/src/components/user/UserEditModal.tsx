@@ -8,6 +8,7 @@ import { uploadToCloud } from "../../utilities/uploadToCloud";
 import { update } from "../../services/userService";
 import { toast } from "react-toastify";
 import { fetchLocationSuggestions } from "../../utilities/fetchLocation";
+import { phoneRegex } from "../../constant/regexs";
 
 interface props {
   onClose: () => void;
@@ -54,18 +55,17 @@ export default function EditUserModal({ onClose, setEdit }: props) {
 
       if (!values.name.trim()) errors.name = "Full Name is required";
       if (!values.phone.trim()) errors.phone = "Phone is required";
-      else if (!/^[0-9]{10}$/.test(values.phone))
+      else if (!phoneRegex.test(values.phone))
         errors.phone = "Enter a valid 10-digit phone number";
 
       if (!values.location.address.trim())
         errors.location = { address: "Location is required" };
-
       return errors;
     },
 
     onSubmit: async (values) => {
       try {
-        await update(values, user?.id as string);
+        await update(values);
         toast.success("Updated successfully");
         setEdit(prev => !prev);
         onClose();

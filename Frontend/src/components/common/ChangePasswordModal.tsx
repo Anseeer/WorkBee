@@ -2,13 +2,12 @@
 import React, { useState } from "react";
 import { X, Eye, EyeOff, Lock } from "lucide-react";
 import { useFormik } from "formik";
+import { passRegex } from "../../constant/regexs";
 
 interface ChangePasswordModalProps {
     onClose: () => void;
     onSave: (data: { currentPassword: string; newPassword: string }) => void;
 }
-
-const passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@_.!#$%^&*?])[A-Za-z\d@_.!#$%^&*?]{6,}$/;
 
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
     onClose,

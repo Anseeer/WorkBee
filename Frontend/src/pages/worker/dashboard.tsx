@@ -116,7 +116,7 @@ const Dashboard = () => {
 
     const HandleChangePassword = async (data: { currentPassword: string; newPassword: string; }) => {
         try {
-            await ChangePassword(data.currentPassword, data.newPassword, workerData?.worker?._id as string);
+            await ChangePassword(data.currentPassword, data.newPassword);
             toast.success("Password changed successfully");
             setChangePassword(false)
         } catch (error: any) {
@@ -279,7 +279,7 @@ const Dashboard = () => {
                         )}
 
                         {reApplyModal && (
-                            <ReApplyModal close={handleCloseReApplyModal} workerID={userId as string} handleEdit={handleEdit} />
+                            <ReApplyModal close={handleCloseReApplyModal} handleEdit={handleEdit} />
                         )}
 
                         {changePassword && (

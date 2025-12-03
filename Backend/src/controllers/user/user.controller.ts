@@ -8,8 +8,8 @@ import { IUserService } from "../../services/user/user.service.interface";
 import { USERS_MESSAGE } from "../../constants/messages";
 import { StatusCode } from "../../constants/status.code";
 import { COOKIE_CONFIG } from "../../config/Cookie";
-import { AuthRequest } from "../../middlewares/authMiddleware";
 import { ITempUserService } from "../../services/temp_user/temp.user.service.interface";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class UserController implements IUserController {
@@ -195,9 +195,10 @@ export class UserController implements IUserController {
 
     };
 
-    changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    changePassword = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const { currentPass, newPass, userId } = req.body;
+            const { currentPass, newPass } = req.body;
+            const userId = req?.user?.id;
             if (!currentPass || !newPass || !userId) {
                 throw new Error(USERS_MESSAGE.CREDENTIALS_ARE_REQUIRED);
             }
@@ -209,7 +210,6 @@ export class UserController implements IUserController {
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.PASSWORD_RESET_FAILED, errMsg));
         }
-
     };
 
     fetchAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -253,21 +253,9 @@ export class UserController implements IUserController {
         }
     }
 
-    fetchData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    fetchData = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            let userId: string | undefined = undefined;
-
-            if (
-                req.query.userId !== undefined &&
-                req.query.userId !== "undefined" &&
-                req.query.userId !== ""
-            ) {
-                userId = String(req.query.userId);
-            }
-
-            if (!userId && (req as AuthRequest)?.user?.id) {
-                userId = String((req as AuthRequest).user?.id);
-            }
+            const userId = req?.user?.id;
 
             if (!userId) {
                 throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
@@ -289,11 +277,13 @@ export class UserController implements IUserController {
         }
     };
 
-
-    update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    update = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { userDetails, userId } = req.body
-            const result = await this._userService.update(userDetails, userId);
+            const { userDetails } = req.body
+            const userId = req?.user?.id;
+            if (!userId) {
+                throw new Error(USERS_MESSAGE.USER_ID_NOT_GET);
+            } const result = await this._userService.update(userDetails, userId);
             const response = new successResponse(StatusCode.CREATED, USERS_MESSAGE.USER_UPDATE_SUCCESS, { result });
             logger.info(response)
             res.status(response.status).json(response);

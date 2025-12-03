@@ -28,7 +28,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
             setWorkDetails(workDetails.data);
             const workerId = workDetails.data?.workerId;
             if (workerId) {
-                const workerDetails = await getWorkerDetails(workerId);
+                const workerDetails = await getWorkerDetails();
                 setWorkerDetails(workerDetails.data.data.worker);
             } else {
                 console.error("No workerId found in workDetails");
@@ -77,7 +77,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
     };
 
     const HandleRejected = async () => {
-        await cancelWork(workDetails?._id as string, workerDetails?.id as string);
+        await cancelWork(workDetails?._id as string);
         const work = await fetchWorkDetails(workId);
         setWorkDetails(work.data);
         toast.success("Cancelation successfull")
@@ -88,9 +88,8 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
             toast.error("Please enter valid hours worked");
             return;
         }
-
         try {
-            await isCompletWork(workDetails?._id as string, workDetails?.workerId as string, hoursWorked);
+            await isCompletWork(workDetails?._id as string, hoursWorked);
             const work = await fetchWorkDetails(workId);
             setWorkDetails(work.data);
             toast.success("Work completed successfully!");

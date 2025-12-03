@@ -142,7 +142,7 @@ export const buildAccountWorkerThunk = createAsyncThunk(
     async (accountData: Partial<IWorker>, { rejectWithValue }) => {
         try {
             console.log("WorkerId :", accountData._id)
-            const response = await buildAccount(accountData._id, accountData);
+            const response = await buildAccount(accountData);
             return response.data.data as BuildAccountResponse;
         } catch (err: unknown) {
             const error = err as AxiosError<{ data: string }>;
@@ -156,7 +156,7 @@ export const fetchWorkerDetails = createAsyncThunk(
     async (workerId: string, { rejectWithValue }) => {
         try {
             console.log("Getting the worker id from localStorage:", workerId);
-            const response = await getWorkerDetails(workerId);
+            const response = await getWorkerDetails();
             return response.data.data as BuildAccountResponse;
         } catch (error: unknown) {
             const err = error as AxiosError<{ data: string }>;

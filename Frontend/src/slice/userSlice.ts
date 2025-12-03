@@ -197,7 +197,6 @@ const userSlice = createSlice({
             .addCase(fetchUserDataThunk.rejected, (state) => {
                 state.user = null;
             })
-
     }
 })
 

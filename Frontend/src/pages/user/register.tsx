@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -10,7 +9,6 @@ import { useFormik } from "formik";
 import { Eye, EyeOff } from "lucide-react";
 import { API_ROUTES } from "../../constant/api.routes";
 import { fetchLocationSuggestions } from "../../utilities/fetchLocation";
-
 
 interface Suggestion {
   address: string;

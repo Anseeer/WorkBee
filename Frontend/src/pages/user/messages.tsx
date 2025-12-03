@@ -15,7 +15,7 @@ const Message = () => {
             if (!user?.id) return;
 
             try {
-                const chatResponse = await fetchChat(user.id);
+                const chatResponse = await fetchChat();
                 console.log("ChatResponse :", chatResponse)
                 setChats(chatResponse);
             } catch (err) {

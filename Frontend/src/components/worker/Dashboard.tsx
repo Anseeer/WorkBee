@@ -33,9 +33,9 @@ const WorkerDashboard = ({ worker, availability, wallet }: props) => {
                 throw new Error(`WorkerId not get`)
             }
             setWorkerId(worker?.id);
-            const assigned = await fetchAssignedWorks(workerId as string || worker?.id);
-            const requested = await fetchRequestedWorks(workerId as string || worker?.id);
-            const earningsRes = await fetchWorkerEarnings(workerId as string || worker?.id, filter as string);
+            const assigned = await fetchAssignedWorks();
+            const requested = await fetchRequestedWorks();
+            const earningsRes = await fetchWorkerEarnings(filter as string);
             setEarnings(earningsRes.earnings);
             setAssignedWorks(assigned.assignedWorks)
             setRequestedWorks(requested.requestedWorks)

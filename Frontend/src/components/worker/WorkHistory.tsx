@@ -18,7 +18,7 @@ const WorkHistory = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const history = await fetchWorkHistory(worker?._id as string, currentPage, 5);
+            const history = await fetchWorkHistory(currentPage, 5);
             setWorkHistory(history.data.paginatedWorkHistory)
             setTotalPage(history.data.totalPage)
         }

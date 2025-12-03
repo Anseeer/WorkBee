@@ -2,11 +2,12 @@ import { inject, injectable } from "inversify";
 import TYPES from "../../inversify/inversify.types";
 import { IChatService } from "../../services/chatMessage/chatMessage.service.interface";
 import { IChatController } from "./chatMessage.controller.interface";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { errorResponse, successResponse } from "../../utilities/response";
 import { StatusCode } from "../../constants/status.code";
 import { CHAT_MESSAGE, USERS_MESSAGE } from "../../constants/messages";
 import logger from "../../utilities/logger";
+import { AuthRequest } from "../../middlewares/authMiddleware";
 
 @injectable()
 export class ChatController implements IChatController {
@@ -15,9 +16,9 @@ export class ChatController implements IChatController {
         this._chatService = chatService;
     }
 
-    findUsersInChat = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    findUsersInChat = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.query.userId;
+            const userId = req?.user?.id;
             if (!userId) {
                 throw new Error(USERS_MESSAGE.USER_ID_NOT_GET)
             }

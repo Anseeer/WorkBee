@@ -28,7 +28,7 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
             setWorkDetails(workDetails.data);
             const workerId = workDetails.data?.workerId;
             if (workerId) {
-                const workerDetails = await getWorkerDetails(workerId);
+                const workerDetails = await getWorkerDetails();
                 setWorkerDetails(workerDetails.data.data.worker);
             } else {
                 console.error("No workerId found in workDetails");
@@ -65,12 +65,11 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
     };
 
     const HandleRejected = async () => {
-        await cancelWork(workDetails?._id as string, userDetails?.id as string);
+        await cancelWork(workDetails?._id as string);
         const work = await fetchWorkDetails(workId);
         setWorkDetails(work.data);
         toast.success("Cancelation successfull")
     }
-
 
     return (
         <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4">

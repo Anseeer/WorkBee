@@ -162,7 +162,7 @@ export const SubscriptionPlans = () => {
                     setIsLoading(false);
                 });
             } else {
-                await activateSubscriptionPlan(worker?.id as string, selectedPlan);
+                await activateSubscriptionPlan(selectedPlan);
                 await dispatch(fetchWorkerDetails(worker?.id as string));
                 toast.success("Free plan activated successfully!");
                 setIsLoading(false);

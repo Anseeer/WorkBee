@@ -73,7 +73,7 @@ const NotificationSection = ({ user }: props) => {
 
     const handleClearNotifications = async () => {
         try {
-            await clearNotification(user.id)
+            await clearNotification()
             setNotifications([]);
         } catch (error) {
             console.log("Error in clear notification", error)

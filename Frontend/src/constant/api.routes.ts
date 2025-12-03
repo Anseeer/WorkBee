@@ -137,7 +137,7 @@ export const API_ROUTES = {
     FETCH_WORKER_SERVICE: "services/by-worker",
     FETCH_SUBSCRIPTIONS: "subscription/fetch-all",
     ACTIVATE_SUBSCRIPTION: "subscription/activate-plan",
-    REAPPROVal: "/workers/re-approval",
+    REAPPROVAl: "/workers/re-approval",
     CHANGE_PASSWORD: "/workers/change-password",
   },
 

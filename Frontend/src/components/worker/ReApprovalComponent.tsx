@@ -5,14 +5,13 @@ import { reApplyWorker } from '../../services/workerService';
 interface props {
     close: () => void;
     handleEdit: () => void;
-    workerID: string;
 }
 
-export default function ReApplyModal({ close, handleEdit, workerID }: props) {
+export default function ReApplyModal({ close, handleEdit }: props) {
 
     const handleReapply = async () => {
         try {
-            await reApplyWorker(workerID);
+            await reApplyWorker();
             toast.success("Re approval sent..!")
             close()
         } catch (error) {

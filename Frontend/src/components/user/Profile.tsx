@@ -60,7 +60,7 @@ const ProfileSection = () => {
     useEffect(() => {
         const fetchData = async () => {
             await dispatch(fetchUserDataThunk());
-            const workHistory = await fetchWorkHistory(user?.id as string, currentPage, 4);
+            const workHistory = await fetchWorkHistory(currentPage, 4);
             setWorkHistory(workHistory.data.data.paginatedWorks);
             setTotalPage(workHistory.data.data.totalPages)
         }
@@ -81,8 +81,6 @@ const ProfileSection = () => {
     const handleEdit = () => {
         setIsActiveTab('Edit')
     };
-
-
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPage) {
@@ -124,7 +122,7 @@ const ProfileSection = () => {
 
     const HandleChangePassword = async (data: { currentPassword: string; newPassword: string; }) => {
         try {
-            await ChangePassword(data.currentPassword, data.newPassword, user?.id as string);
+            await ChangePassword(data.currentPassword, data.newPassword);
             toast.success("Password changed successfully");
             setChangePass(false)
         } catch (error: any) {

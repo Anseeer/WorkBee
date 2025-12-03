@@ -54,9 +54,10 @@ export class WorkController implements IWorkController {
         }
     }
 
-    fetchWorkHistoryByWorker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    fetchWorkHistoryByWorker = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workerId, currentPage, pageSize } = req.query;
+            const { currentPage, pageSize } = req.query;
+            const workerId = req?.user?.id;
             if (!workerId) {
                 throw new Error(WORK_MESSAGE.WORKER_ID_NOT_GET);
             }
@@ -71,9 +72,10 @@ export class WorkController implements IWorkController {
         }
     }
 
-    cancelWork = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    cancelWork = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workId, workerId } = req.query;
+            const { workId } = req.query;
+            const workerId = req?.user?.id;
             if (!workId) {
                 throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             } else if (!workerId) {
@@ -90,9 +92,10 @@ export class WorkController implements IWorkController {
         }
     }
 
-    completedWork = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    completedWork = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workId, workerId, hoursWorked } = req.query;
+            const { workId, hoursWorked } = req.query;
+            const workerId = req?.user?.id;
             if (!workId) {
                 throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
             } else if (!workerId) {
@@ -157,9 +160,9 @@ export class WorkController implements IWorkController {
         }
     }
 
-    getAssignedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getAssignedWorks = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workerId } = req.query;
+            const workerId = req?.user?.id;
             const assignedWorks = await this._workService.getAssignedWorks(workerId as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { assignedWorks });
             logger.info(response);
@@ -170,9 +173,9 @@ export class WorkController implements IWorkController {
         }
     }
 
-    getRequestedWorks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getRequestedWorks = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { workerId } = req.query;
+            const workerId  = req?.user?.id;
             const requestedWorks = await this._workService.getRequestedWorks(workerId as string);
             const response = new successResponse(StatusCode.OK, WORK_MESSAGE.WORK_DETAILS_GET_SUCCESS, { requestedWorks });
             logger.info(response);
