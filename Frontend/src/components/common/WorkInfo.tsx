@@ -1,7 +1,7 @@
 import { X, Calendar, Clock, User, Briefcase, Phone } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { fetchWorkDetails, getWorkerDetails } from '../../services/workerService';
-import { cancelWork, getUserDetails } from '../../services/userService';
+import { fetchWorkDetails } from '../../services/workerService';
+import { cancelWork } from '../../services/userService';
 import type { IWork } from '../../types/IWork';
 import type { Iuser } from '../../types/IUser';
 import type { IWorker } from '../../types/IWorker';
@@ -21,28 +21,16 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
     const [userDetails, setUserDetails] = useState<Iuser | null>(null);
     const [workerDetails, setWorkerDetails] = useState<IWorker | null>(null);
 
+    const reloadWork = async () => {
+        const details = await fetchWorkDetails(workId);
+        setWorkDetails(details?.workDetails);
+        setWorkerDetails(details?.workerDetails);
+        setUserDetails(details?.userDetails);
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const workDetails = await fetchWorkDetails(workId);
-            setWorkDetails(workDetails.data);
-            const workerId = workDetails.data?.workerId;
-            if (workerId) {
-                const workerDetails = await getWorkerDetails();
-                setWorkerDetails(workerDetails.data.data.worker);
-            } else {
-                console.error("No workerId found in workDetails");
-            }
-
-            const userId = workDetails.data?.userId;
-            if (userId) {
-                const userDetails = await getUserDetails(userId);
-                setUserDetails(userDetails.user);
-            } else {
-                console.error("No workerId found in workDetails");
-            }
-        }
-        fetchData();
+        reloadWork();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [workId])
 
     const getStatusColor = (status: string) => {
@@ -66,8 +54,7 @@ const WorkInfoModal = ({ closeModal, workId }: props) => {
 
     const HandleRejected = async () => {
         await cancelWork(workDetails?._id as string);
-        const work = await fetchWorkDetails(workId);
-        setWorkDetails(work.data);
+        reloadWork()
         toast.success("Cancelation successfull")
     }
 

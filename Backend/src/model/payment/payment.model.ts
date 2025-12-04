@@ -5,17 +5,17 @@ const paymentSchema = new mongoose.Schema<IPayment>({
   workId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Work",
-    required: true
+    required: false
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: false
   },
   workerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Worker",
-    required: true
+    required: false
   },
   amount: {
     type: Number,

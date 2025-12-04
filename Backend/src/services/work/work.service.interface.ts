@@ -1,12 +1,14 @@
 import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
+import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
 import { IWorkDTO } from "../../mappers/work/work.map.DTO.interface";
+import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
 import { IWork } from "../../model/work/work.interface";
 import { TopThreeResultDTO } from "../../utilities/Types";
 
 export interface IWorkService {
     createWork(workDetails: IWork): Promise<IWorkDTO>;
     findById(workId: string): Promise<IWorkDTO | null>;
-    workDetails(workId: string): Promise<IWorkDTO>;
+    workDetails(workId: string): Promise<{ workDetails: IWorkDTO, workerDetails: IWorkerDTO, userDetails: IUserDTO }>;
     fetchWorkHistoryByUser(userId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorks: IWorkDTO[], totalPages: number }>;
     fetchWorkHistoryByWorker(workerId: string, currentPage: string, pageSize: string): Promise<{ paginatedWorkHistory: IWorkDTO[], totalPage: number }>;
     cancel(workId: string, userId: string): Promise<boolean>;

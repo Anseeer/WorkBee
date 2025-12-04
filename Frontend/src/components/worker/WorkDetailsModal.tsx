@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { X, Clock, User, Briefcase, Phone, CheckCircle2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { acceptWork, fetchWorkDetails, getWorkerDetails, isCompletWork } from '../../services/workerService';
-import { cancelWork, getUserDetails } from '../../services/userService';
+import { acceptWork, fetchWorkDetails, isCompletWork } from '../../services/workerService';
+import { cancelWork } from '../../services/userService';
 import type { IWork } from '../../types/IWork';
 import type { Iuser } from '../../types/IUser';
 import type { IWorker } from '../../types/IWorker';
@@ -23,27 +23,16 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
     const [hoursWorked, setHoursWorked] = useState('');
 
     useEffect(() => {
-        const fetchData = async () => {
-            const workDetails = await fetchWorkDetails(workId);
-            setWorkDetails(workDetails.data);
-            const workerId = workDetails.data?.workerId;
-            if (workerId) {
-                const workerDetails = await getWorkerDetails();
-                setWorkerDetails(workerDetails.data.data.worker);
-            } else {
-                console.error("No workerId found in workDetails");
-            }
-
-            const userId = workDetails.data?.userId;
-            if (userId) {
-                const userDetails = await getUserDetails(userId);
-                setUserDetails(userDetails.user);
-            } else {
-                console.error("No workerId found in workDetails");
-            }
-        }
-        fetchData();
+        reloadWork()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [workId])
+
+    const reloadWork = async () => {
+        const details = await fetchWorkDetails(workId);
+        setWorkDetails(details?.workDetails);
+        setWorkerDetails(details?.workerDetails);
+        setUserDetails(details?.userDetails);
+    };
 
     const getStatusColor = (status: string) => {
         switch (status?.toLowerCase()) {
@@ -67,8 +56,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
     const HandleAccepted = async () => {
         try {
             await acceptWork(workDetails?._id as string);
-            const work = await fetchWorkDetails(workId);
-            setWorkDetails(work.data);
+            reloadWork()
             toast.success("Accepted successfully");
         } catch (err: any) {
             const message = err?.response?.data?.data || "Failed to accept work";
@@ -78,8 +66,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
 
     const HandleRejected = async () => {
         await cancelWork(workDetails?._id as string);
-        const work = await fetchWorkDetails(workId);
-        setWorkDetails(work.data);
+        reloadWork()
         toast.success("Cancelation successfull")
     }
 
@@ -90,8 +77,7 @@ const WorkDetailsModal = ({ closeModal, workId }: props) => {
         }
         try {
             await isCompletWork(workDetails?._id as string, hoursWorked);
-            const work = await fetchWorkDetails(workId);
-            setWorkDetails(work.data);
+            reloadWork()
             toast.success("Work completed successfully!");
             setHoursWorked('');
         } catch (err: any) {

@@ -244,6 +244,9 @@ export class WorkerController implements IWorkerController {
         try {
             const { currentPass, newPass } = req.body;
             const workerId = req?.user?.id;
+            console.log("WorkerId :", workerId)
+            console.log("newPass :", newPass)
+            console.log("currentPass :", currentPass)
             if (!currentPass || !newPass || !workerId) {
                 throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
             }

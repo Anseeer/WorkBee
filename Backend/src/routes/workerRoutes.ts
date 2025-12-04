@@ -19,7 +19,7 @@ Router.post("/forgot-password", workerController.forgotPass);
 Router.post("/resend-otp", workerController.resendOtp);
 Router.post("/verify-otp", workerController.verifyOtp);
 Router.post("/reset-password", workerController.resetPassword);
-Router.post("/change-password", workerController.changePassword);
+Router.post("/change-password",auth, workerController.changePassword);
 Router.put("/update", auth, authorize(["Worker"]), workerController.updateWorker);
 Router.post("/search", auth, workerController.searchWorker);
 Router.post("/find-workers-byId", auth, workerController.findWorkersByIds);

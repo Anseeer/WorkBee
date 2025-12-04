@@ -127,6 +127,17 @@ export const SubscriptionPlans = () => {
                             toast.error("Payment verification failed");
                         }
                     },
+                    modal: {
+                        ondismiss: async () => {
+                            try {
+                                await axios.delete(`/rzp/cancel-subscription-payment`);
+                                toast.success("Cancelled !")
+                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                            } catch (err) {
+                                console.error("Cancel update failed");
+                            }
+                        }
+                    },
                     prefill: {
                         name: "Ansi",
                         email: "ansi@example.com",

@@ -126,7 +126,7 @@ export const fetchWorkHistory = async (
 
 export const fetchWorkDetails = async (workId: string) => {
   const response = await axios.get(`${API_ROUTES.WORKER_SERVICE.FETCH_WORK_DETAILS}?workId=${workId}`);
-  return response.data;
+  return response.data.data;
 };
 
 export const acceptWork = async (workId: string) => {

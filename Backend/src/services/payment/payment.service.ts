@@ -44,6 +44,21 @@ export class PaymentService implements IPaymentService {
         }
     }
 
+    async findPaymentByUserId(userId: string): Promise<IPaymentDTO | null> {
+        try {
+            if (!userId) {
+                throw new Error('Cant get the userId ')
+            }
+            const payment = await this._paymentRepository.findPaymentByUserId(userId);
+            if (!payment) return null;
+            return mapPaymentToDTO(payment);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            throw new Error(errMsg);
+        }
+    }
+
     async create(paymentData: Partial<IPayment>): Promise<IPaymentDTO | null> {
         try {
             if (!paymentData) {
@@ -65,6 +80,38 @@ export class PaymentService implements IPaymentService {
             }
             const payment = await this._paymentRepository.update(paymentId, updateData);
             return mapPaymentToDTO(payment as IPayment);
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            throw new Error(errMsg);
+        }
+    }
+
+    async cancelPaymentByWorkId(workId: string): Promise<boolean> {
+        try {
+            if (!workId) throw new Error('workId not provided');
+
+            const payment = await this._paymentRepository.findPaymentByWorkId(workId);
+
+            if (!payment) return false;
+
+            return await this._paymentRepository.delete(payment?.id.toString());
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            logger.error(errMsg);
+            throw new Error(errMsg);
+        }
+    }
+
+    async cancelPaymentByUserId(userId: string): Promise<boolean> {
+        try {
+            if (!userId) throw new Error('userId not provided');
+
+            const payment = await this._paymentRepository.findPaymentByUserId(userId);
+
+            if (!payment) return false;
+
+            return await this._paymentRepository.delete(payment?.id.toString());
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);

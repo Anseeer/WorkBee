@@ -21,27 +21,34 @@ type Filter = "monthly" | "yearly";
 
 const WorkerDashboard = ({ worker, availability, wallet }: props) => {
 
-    const [workerId, setWorkerId] = useState('');
     const [assignedworks, setAssignedWorks] = useState<IWork[]>([]);
     const [requestedWorks, setRequestedWorks] = useState<IWork[]>([]);
     const [earnings, setEarnings] = useState<any[]>([]);
     const [filter, setFilter] = useState<Filter>("monthly");
 
     useEffect(() => {
-        const fetchData = async () => {
-            if (!worker) {
-                throw new Error(`WorkerId not get`)
-            }
-            setWorkerId(worker?.id);
+        if (!worker) return;
+
+        const fetchInitial = async () => {
             const assigned = await fetchAssignedWorks();
             const requested = await fetchRequestedWorks();
-            const earningsRes = await fetchWorkerEarnings(filter as string);
-            setEarnings(earningsRes.earnings);
-            setAssignedWorks(assigned.assignedWorks)
-            setRequestedWorks(requested.requestedWorks)
-        }
-        fetchData();
-    }, [filter, worker, worker?.id, workerId])
+
+            setAssignedWorks(assigned.assignedWorks);
+            setRequestedWorks(requested.requestedWorks);
+        };
+
+        fetchInitial();
+    }, [worker]);
+
+    useEffect(() => {
+        const fetchEarnings = async () => {
+            const res = await fetchWorkerEarnings(filter);
+            setEarnings(res.earnings);
+        };
+
+        fetchEarnings();
+    }, [filter]);
+
 
     const StatCard = ({ icon: Icon, label, value, bgColor, textColor }: any) => (
         <div className={`${bgColor} rounded-xl p-6 shadow-sm border border-gray-100`}>

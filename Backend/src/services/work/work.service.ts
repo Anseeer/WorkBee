@@ -26,6 +26,10 @@ import { IServiceDTO } from "../../mappers/service/service.map.DTO.interface";
 import { mapServiceToDTO } from "../../mappers/service/service.map.DTO";
 import { IServices } from "../../model/service/service.interface";
 import logger from "../../utilities/logger";
+import { mapUserToDTO } from "../../mappers/user/user.map.DTO";
+import mapWorkerToDTO from "../../mappers/worker/worker.map.DTO";
+import { IWorkerDTO } from "../../mappers/worker/worker.map.DTO.interface";
+import { IUserDTO } from "../../mappers/user/user.map.DTO.interface";
 
 
 @injectable()
@@ -360,15 +364,25 @@ export class WorkService implements IWorkService {
         }
     };
 
-    workDetails = async (workId: string): Promise<IWorkDTO> => {
+    workDetails = async (workId: string): Promise<{ workDetails: IWorkDTO, workerDetails: IWorkerDTO, userDetails: IUserDTO }> => {
         try {
             if (!workId) throw new Error(WORK_MESSAGE.WORK_ID_NOT_GET);
 
-            const work = await this._workRepositoy.findById(workId as string);
-            const workDetails = mapWorkToDTO(work as IWork);
-            if (!workDetails) throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
+            const work = await this._workRepositoy.findById(workId);
+            if (!work) throw new Error(WORK_MESSAGE.CANT_GET_WORK_DETAILS);
 
-            return workDetails;
+            const user = await this._userRepositoy.findById(work.userId.toString());
+            if (!user) throw new Error(USERS_MESSAGE.CANT_FIND_USER);
+
+            const worker = await this._workerRepositoy.findWorkerById(work.workerId.toString());
+            if (!worker) throw new Error(WORKER_MESSAGE.CANT_FIND_WORKER);
+
+            const workDetails = mapWorkToDTO(work);
+            const userDetails = mapUserToDTO(user);
+            const workerDetails = mapWorkerToDTO(worker);
+
+            return { workDetails, workerDetails, userDetails };
+
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);

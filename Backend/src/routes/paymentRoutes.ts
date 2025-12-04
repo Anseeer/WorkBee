@@ -15,6 +15,7 @@ import { ISubscriptionService } from "../services/subscription/subscription.serv
 import { getIO } from "../socket/socket";
 import { mapNotificationToEntity } from "../mappers/notification/mapNotificationToEntity";
 import { INotificationService } from "../services/notification/notification.service.interface";
+import { auth, AuthRequest } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
@@ -29,8 +30,6 @@ router.post("/create-order", async (req: Request, res: Response) => {
     try {
         const { amount, workId, platformFee } = req.body;
 
-        const wage = amount - platformFee;
-
         const options = {
             amount: amount * 100,
             currency: "INR",
@@ -43,22 +42,48 @@ router.post("/create-order", async (req: Request, res: Response) => {
             throw new Error("Work not found");
         }
 
-        const payment = await paymentService.findOne(workId, order.id);
-        if (!payment) {
-            await paymentService.create({
-                workId,
-                userId: work.userId,
-                workerId: work.workerId,
-                amount: wage,
-                platformFee: platformFee,
-                transactionId: order.id,
-                status: "Pending"
+        const exisingPyment = await paymentService.findPaymentByWorkId(workId);
+
+        if (exisingPyment) {
+            res.status(400).json({
+                success: false,
+                message: "Payment already in progress. Please complete or cancel the previous attempt."
             });
+            return;
         }
+
+        await paymentService.create({
+            workId,
+            userId: work.userId,
+            workerId: work.workerId,
+            amount: amount - platformFee,
+            platformFee,
+            transactionId: order.id,
+            status: "Pending"
+        });
 
         res.json(order);
     } catch (err) {
         res.status(500).json({ error: "Unable to create order", err });
+    }
+});
+
+router.delete("/cancel-payment", async (req: Request, res: Response) => {
+    try {
+        const workId = req?.query?.workId;
+
+        const work = await workService.findById(workId as string);
+        if (!work) {
+            throw new Error("Work not found");
+        }
+
+        const exisingPyment = await paymentService.findPaymentByWorkId(workId as string);
+        if (!exisingPyment) throw new Error("Payment not exisit")
+        await paymentService.cancelPaymentByWorkId(workId as string);
+        res.json({ success: true, message: "Payment successfully cancelled" });
+    } catch (err) {
+        console.log("Err :", err)
+        res.status(500).json({ error: "Unable to cancel payment", err });
     }
 });
 
@@ -209,19 +234,25 @@ router.post("/pay-with-wallet", async (req: Request, res: Response): Promise<voi
 
         const transactionId = await generateTransactionId("WALLET");
 
-        let payment = await paymentService.findPaymentByWorkId(workId);
+        let exisingPyment = await paymentService.findPaymentByWorkId(workId);
 
-        if (!payment) {
-            payment = await paymentService.create({
-                workId,
-                userId: work.userId,
-                workerId: work.workerId,
-                amount: wage,
-                platformFee,
-                transactionId,
-                status: "Pending"
+        if (exisingPyment) {
+            res.status(400).json({
+                success: false,
+                message: "Payment already in progress. Please complete or cancel the previous attempt."
             });
+            return;
         }
+
+        const payment = await paymentService.create({
+            workId,
+            userId: work.userId,
+            workerId: work.workerId,
+            amount: wage,
+            platformFee,
+            transactionId,
+            status: "Pending"
+        });
 
         const userWallet = await walletService.findByUser(work.userId.toString());
         if (!userWallet) throw new Error("User wallet not found");
@@ -329,10 +360,10 @@ router.post("/pay-with-wallet", async (req: Request, res: Response): Promise<voi
     }
 });
 
-
-router.post("/create-wallet-order", async (req: Request, res: Response): Promise<void> => {
+router.post("/create-wallet-order", auth, async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const { amount } = req.body;
+
         if (!amount || amount < 1) {
             res.status(400).json({ error: "Invalid Amount" });
             return;
@@ -345,6 +376,7 @@ router.post("/create-wallet-order", async (req: Request, res: Response): Promise
         };
 
         const order = await razorpay.orders.create(options);
+
         res.json(order);
     } catch (err) {
         res.status(500).json({ error: "Something went wrong", err });
@@ -390,7 +422,6 @@ router.post("/verify-wallet-payment", async (req: Request, res: Response): Promi
             ],
         };
 
-
         const updatedWallet = await walletService.update(walletUpdate, userId);
 
         res.json({ success: true, wallet: updatedWallet });
@@ -399,7 +430,7 @@ router.post("/verify-wallet-payment", async (req: Request, res: Response): Promi
     }
 });
 
-router.post("/create-subscription-order", async (req: Request, res: Response): Promise<void> => {
+router.post("/create-subscription-order", async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const { amount } = req.body;
 
@@ -410,6 +441,7 @@ router.post("/create-subscription-order", async (req: Request, res: Response): P
         };
 
         const order = await razorpay.orders.create(options);
+
         res.json(order);
     } catch (err) {
         res.status(500).json({ error: "Something went wrong with creating subscription order", err });

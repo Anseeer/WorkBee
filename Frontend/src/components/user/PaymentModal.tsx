@@ -24,14 +24,17 @@ const PaymentModal = ({
 }: Props) => {
 
     const wallet = useSelector((state: RootState) => state.user.wallet);
-
-    // Calculations
     const subtotal = wagePerHour * hoursWorked;
     const totalAmount = subtotal + platformFee;
 
     const handleRazorpayPayment = async (amount: number, paymentMethod: string) => {
         try {
-            const { data } = await axios.post("rzp/create-order", { amount, workId, platformFee, paymentMethod });
+            const { data } = await axios.post("rzp/create-order", {
+                amount,
+                workId,
+                platformFee,
+                paymentMethod
+            });
 
             const script = document.createElement("script");
             script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -41,24 +44,37 @@ const PaymentModal = ({
             script.onload = () => {
                 const options = {
                     key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                    amount: amount,
+                    amount,
                     currency: data.currency,
                     name: "WorkBee",
                     description: "Service Payment",
                     order_id: data.id,
                     handler: async function (response: { razorpay_order_id: any; razorpay_payment_id: any; razorpay_signature: any; }) {
-                        await axios.post("/rzp/verify-payment", {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            workId
-                        })
-                            .then((res) => {
-                                onClose();
-                                setRatingModal(true);
-                                console.log(res);
-                            })
-                            .catch((err) => console.log(err))
+                        try {
+                            await axios.post("/rzp/verify-payment", {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                workId
+                            });
+
+                            onClose();
+                            setRatingModal(true);
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        } catch (err) {
+                            toast.error("Payment verification failed!");
+                        }
+                    },
+                    modal: {
+                        ondismiss: async () => {
+                            try {
+                                await axios.delete(`/rzp/cancel-payment?workId=${workId}`);
+                                toast.success("Cancelled !")
+                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                            } catch (err) {
+                                console.error("Cancel update failed");
+                            }
+                        }
                     },
                     prefill: {
                         name: "Ansi",
@@ -68,11 +84,18 @@ const PaymentModal = ({
                     theme: { color: "#399e6f" },
                 };
 
-                const rzp = new (window as any).Razorpay(options);
-                rzp.open();
+                new (window as any).Razorpay(options).open();
             };
-        } catch (err) {
-            console.error(err);
+
+        } catch (err: any) {
+            console.error("Payment Error:", err);
+
+            const message =
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
+                "Payment failed. Please try again.";
+
+            toast.error(message);
         }
     };
 
@@ -83,6 +106,7 @@ const PaymentModal = ({
                 workId,
                 platformFee
             });
+            toast.success("Wallet payment successfull")
             onClose()
             setRatingModal(true);
         } catch (err: any) {

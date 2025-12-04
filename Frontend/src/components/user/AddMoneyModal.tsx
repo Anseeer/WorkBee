@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormik } from "formik";
 import axios from "../../services/axios";
+import { toast } from "react-toastify";
 
 interface Props {
     onClose: () => void;
@@ -38,6 +39,17 @@ const AddMoneyModal = ({ onClose, userId }: Props) => {
                             })
                             .catch((err) => console.log("Verification error:", err));
                     },
+                    modal: {
+                        ondismiss: async () => {
+                            try {
+                                await axios.delete(`/rzp/cancel-wallet-payment`);
+                                toast.success("Cancelled !")
+                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                            } catch (err) {
+                                console.error("Cancel update failed");
+                            }
+                        }
+                    },
                     prefill: {
                         name: "Ansi",
                         email: "ansi@example.com",
@@ -49,9 +61,17 @@ const AddMoneyModal = ({ onClose, userId }: Props) => {
                 const rzp = new (window as any).Razorpay(options);
                 rzp.open();
             };
-        } catch (err) {
+        } catch (err: any) {
             console.error("Payment init failed:", err);
+
+            const msg =
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
+                "Something went wrong. Try again.";
+
+            toast.error(msg); 
         }
+
     };
 
     const formik = useFormik({

@@ -132,6 +132,11 @@ export const fetchChat = async () => {
 };
 
 export const rateWorker = async (workerId: string, rating: number) => {
+    if(!workerId || !rating){
+        console.log("WorkerID :",workerId)
+        console.log("ratings :",rating)
+        throw new Error("WorkerID or the ratings are null")
+    }
     const response = await axios.get(`${API_ROUTES.USER_SERVICE.RATE_WORKER}?workerId=${workerId}&rating=${rating}`);
     return response.data.data;
 };

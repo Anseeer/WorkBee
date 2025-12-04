@@ -13,7 +13,7 @@ export const WorkerRatingModal = ({ onClose, workId }: props) => {
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [work, setWork] = useState<IWork>();
-
+console.log("Work",work)
     const handleRating = (rate: number) => {
         setRating(rate);
     };
@@ -31,7 +31,7 @@ export const WorkerRatingModal = ({ onClose, workId }: props) => {
     useEffect(() => {
         const fetchData = async () => {
             const work = await fetchWorkDetails(workId);
-            setWork(work.data);
+            setWork(work.workDetails);
         }
         fetchData();
     }, [workId])

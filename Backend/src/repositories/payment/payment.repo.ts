@@ -32,6 +32,17 @@ export class PaymentRepository extends BaseRepository<IPayment> implements IPaym
         }
     }
 
+    async findPaymentByUserId(userId: string): Promise<IPayment | null> {
+        try {
+            const payment = await this.model.findOne({ userId });
+            if (!payment) return null;
+            return payment;
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to find payment : ${errMsg}`);
+        }
+    }
+
     async update(paymentId: string, updateData: Partial<IPayment>): Promise<IPayment | null> {
         try {
             if (!paymentId) {
