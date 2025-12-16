@@ -227,7 +227,6 @@ export class WorkService implements IWorkService {
 
             return await this._workRepositoy.cancel(workId);
         } catch (error) {
-            console.log("Error :", error);
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
             throw new Error(errMsg);
@@ -356,7 +355,8 @@ export class WorkService implements IWorkService {
             if (!newNotification) throw new Error("Failed to create notification");
             io.to(work.userId.toString()).emit("new-notification", newNotification);
 
-            return await this._workRepositoy.setIsWorkCompleted(workId, hoursWorked);
+            const commisionPercentage = worker?.subscription?.commission
+            return await this._workRepositoy.setIsWorkCompleted(workId, hoursWorked,commisionPercentage as string);
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);

@@ -9,7 +9,7 @@ export interface IWorkRepository {
     cancel(workId: string): Promise<boolean>;
     accept(workId: string): Promise<boolean>;
     findById(workId: string): Promise<IWork | null>;
-    setIsWorkCompleted(workId: string, hoursWorked: string): Promise<boolean>;
+    setIsWorkCompleted(workId: string, hoursWorked: string, commisionPercentage: string): Promise<boolean>;
     getAllWorks(): Promise<IWork[]>;
     getAssignedWorks(workerId: string): Promise<IWork[]>;
     getRequestedWorks(workerId: string): Promise<IWork[]>;

@@ -81,7 +81,7 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
         }
     }
 
-    async setIsWorkCompleted(workId: string, hoursWorked: string): Promise<boolean> {
+    async setIsWorkCompleted(workId: string, hoursWorked: string, commisionPercentage: string): Promise<boolean> {
         try {
             const work = await this.model.findById(workId);
             if (!work) {
@@ -101,6 +101,10 @@ export class WorkRepository extends BaseRepository<IWork> implements IWorkReposi
                 const hours = Number(hoursWorked);
                 const fee = Number(work.platformFee);
                 const total = (wage * hours) + fee;
+                const commission = Math.round(
+                    (total * Number(commisionPercentage)) / 100
+                );
+                work.commission = commission.toString();
                 work.totalAmount = total.toString();
             }
 

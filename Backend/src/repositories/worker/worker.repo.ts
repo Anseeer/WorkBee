@@ -101,8 +101,6 @@ export class WorkerRepository extends BaseRepository<IWorker> implements IWorker
                 throw new Error(WORKER_MESSAGE.WORKER_NOT_EXIST);
             }
 
-            console.log("RESon ::::::::", reason)
-
             await this.model.updateOne(
                 { _id: workerId },
                 { $set: { isVerified: false, status: "Rejected", rejectionReason: reason } }

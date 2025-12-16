@@ -40,8 +40,8 @@ const PopularProjects = () => {
     return (
         <>
             {services && services?.length > 0 &&
-                (<div className="max-w-7xl mx-auto px-4 py-8">
-                    <h2 className="text-2xl font-bold text-gray-900 p-10 mb-10">Popular Projects</h2>
+                (<div className="min-h-screen max-w-7xl mx-auto px-4 py-4">
+                    <h2 className="text-2xl font-bold text-gray-900 p-4 mb-5">Popular Projects</h2>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {isLoading ? (

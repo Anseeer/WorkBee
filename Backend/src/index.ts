@@ -40,8 +40,6 @@ const allowedOrigins = [
   process.env.CLIENT_URL_DOMAIN,
 ].filter(Boolean);
 
-console.log("Allowed origin :",allowedOrigins);
-
 app.use(
   cors({
     origin: function (origin, callback) {

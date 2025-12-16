@@ -4,9 +4,9 @@ import { IPaymentDTO, PaymentStatus } from "./payment.mapToDTO.interface";
 export const mapPaymentToDTO = (payment: IPayment): IPaymentDTO => {
     return {
         id: payment.id,
-        workId: payment.workId.toString(),
-        userId: payment.userId.toString(),
-        workerId: payment.workerId.toString(),
+        workId: payment?.workId?.toString() as string,
+        userId: payment?.userId?.toString() as string,
+        workerId: payment?.workerId?.toString() as string,
         amount: payment.amount,
         platformFee: payment.platformFee,
         status: payment.status as PaymentStatus,

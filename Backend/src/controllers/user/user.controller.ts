@@ -57,7 +57,6 @@ export class UserController implements IUserController {
             res.status(response.status).json(response);
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.log("Error :", errMsg)
             next(new errorResponse(StatusCode.BAD_REQUEST, USERS_MESSAGE.REGISTRATION_FAILED, errMsg));
         }
     }
@@ -247,7 +246,6 @@ export class UserController implements IUserController {
             });
             res.status(response.status).json(response);
         } catch (error) {
-            console.log(error)
             const errMsg = error instanceof Error ? error.message : String(error);
             next(new errorResponse(StatusCode.BAD_REQUEST, errMsg || USERS_MESSAGE.GOOGLE_LOGIN_FAILED, errMsg));
         }

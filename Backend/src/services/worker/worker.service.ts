@@ -320,7 +320,6 @@ export class WorkerService implements IWorkerService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            console.log(errMsg);
             throw new Error(errMsg);
         }
     }
@@ -346,8 +345,6 @@ export class WorkerService implements IWorkerService {
                 throw new Error("Search term not provided");
             }
 
-            console.log("Terms :", searchTerm)
-
             const { location, serviceId, categoryId, minCompletedWorks, minRating, maxPrice } = searchTerm;
             if (
                 !location?.lat ||
@@ -364,7 +361,6 @@ export class WorkerService implements IWorkerService {
             const filteredWorkers = await this._workerRepository.search(searchTerm);
             return filteredWorkers.map(mapWorkerToDTO);
         } catch (error) {
-            console.log("error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             throw new Error(errMsg);
         }

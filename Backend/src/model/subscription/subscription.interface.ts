@@ -8,5 +8,6 @@ export interface ISubscription extends Document {
     amount: number,
     isActive: boolean,
     durationInDays: number,
-    paymentId: mongoose.Schema.Types.ObjectId
+    paymentId: mongoose.Schema.Types.ObjectId,
+    paymentStatus: string
 }

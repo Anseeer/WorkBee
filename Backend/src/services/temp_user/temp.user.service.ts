@@ -82,7 +82,6 @@ export class TempUserService implements ITempUserService {
             return userId;
 
         } catch (error) {
-            console.log("Error :", error)
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error("Error in resendOtp", errMsg);
             throw new Error(errMsg);

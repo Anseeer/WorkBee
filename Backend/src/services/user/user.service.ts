@@ -101,7 +101,6 @@ export class UserService implements IUserService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            console.log("Error :", error);
             throw new Error(errMsg);
         }
     }
@@ -239,7 +238,6 @@ export class UserService implements IUserService {
             const hashedPass = await bcrypt.hash(newPass, 10);
 
             const updated = await this._userRepository.resetPassword(userId, hashedPass);
-            console.log("Update result:", updated);
 
             if (!updated) {
                 throw new Error(USERS_MESSAGE.PASSWORD_RESET_FAILED);
@@ -248,7 +246,6 @@ export class UserService implements IUserService {
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             logger.error(errMsg);
-            console.log(errMsg);
             throw new Error(errMsg);
         }
     }
