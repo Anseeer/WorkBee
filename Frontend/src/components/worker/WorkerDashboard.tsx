@@ -30,9 +30,9 @@ const WorkerDashboard = ({ worker, wallet, availability }: props) => {
         const fetchData = async () => {
             if (!worker?._id) return;
             try {
-                const pendings = await fetchRequestedWorks(worker._id);
-                const assigned = await fetchAssignedWorks(worker._id);
-                const earningsDate = await fetchWorkerEarnings(filter, worker._id);
+                const pendings = await fetchRequestedWorks();
+                const assigned = await fetchAssignedWorks();
+                const earningsDate = await fetchWorkerEarnings(filter);
                 setEarningsData(earningsDate.earnings);
                 setAssignedWorks(assigned.assignedWorks);
                 setJobRequest(pendings.pendingWorks.length);

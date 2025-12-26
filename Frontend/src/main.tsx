@@ -7,7 +7,7 @@ import App from './App.tsx'
 import Store from './Store.ts'
 import { Provider } from 'react-redux'
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { UnreadMessageCountProvider } from './components/context/UnreadCountContext.tsx';
+import { UnreadMessageCountProvider, UnreadNotificationCountProvider } from './components/context/UnreadCountContext.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
@@ -15,7 +15,9 @@ createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Provider store={Store} >
         <UnreadMessageCountProvider>
-          <App />
+          <UnreadNotificationCountProvider>
+            <App />
+          </UnreadNotificationCountProvider>
         </UnreadMessageCountProvider>
         <ToastContainer />
       </Provider >

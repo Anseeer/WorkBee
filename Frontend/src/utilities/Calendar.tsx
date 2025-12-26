@@ -2,14 +2,14 @@
 import { useEffect, useState } from "react";
 import type { IAvailability } from "../types/IAvailability";
 import dayjs from "dayjs";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+dayjs.extend(isSameOrAfter); import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CalendarProps {
     availability: IAvailability;
 }
 
 export const Calendar = ({ availability }: CalendarProps) => {
-    console.log("Availability ::::", availability);
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [calendarDays, setCalendarDays] = useState<(number | null)[]>([]);
 
@@ -19,35 +19,22 @@ export const Calendar = ({ availability }: CalendarProps) => {
         const month = date.month();
         const year = date.year();
         const today = dayjs().startOf("day");
-        const viewingMonth = date.startOf("month");
 
         return (availability?.availableDates || [])
             .filter(d => {
-                const isoDateString =
-                    typeof d.date === "string"
-                        ? d.date.split("T")[0]
-                        : dayjs(d.date).format("YYYY-MM-DD");
-
-                const availableDate = dayjs(isoDateString).startOf("day");
+                const availableDate = dayjs(d.date).startOf("day");
 
                 if (availableDate.year() !== year || availableDate.month() !== month) {
                     return false;
                 }
 
-                if (viewingMonth.isSame(today.startOf("month"))) {
+                if (date.isSame(today, 'month')) {
                     return availableDate.isSameOrAfter(today);
                 }
 
                 return true;
             })
-            .map(d => {
-                const isoDateString =
-                    typeof d.date === "string"
-                        ? d.date.split("T")[0]
-                        : dayjs(d.date).format("YYYY-MM-DD");
-
-                return dayjs(isoDateString).date();
-            });
+            .map(d => dayjs(d.date).date());
     };
 
     useEffect(() => {

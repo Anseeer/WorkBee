@@ -14,55 +14,93 @@ import GuestRoute from "../components/common/GuestRoute";
 import { ROLE } from "../constant/roles";
 import { API_ROUTES } from "../constant/api.routes";
 import { VerifyRegistration } from "../pages/user/verifyRegistration";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "../components/common/ErrorFallback";
 
 export const userRoutes = [
+
     {
         path: API_ROUTES.USER.LANDING,
         element: (
             <GuestRoute role={ROLE.USER}>
-                <LandingPage />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <LandingPage />
+                </ErrorBoundary>
             </GuestRoute>
         ),
     },
     {
         path: API_ROUTES.USER.REGISTER, element: (
             <GuestRoute role={ROLE.USER}>
-                <RegistrationPage />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <RegistrationPage />
+                </ErrorBoundary>
             </GuestRoute>
         )
     },
     {
         path: API_ROUTES.USER.VERIFY_REGISTERATION, element: (
             <GuestRoute role={ROLE.USER}>
-                <VerifyRegistration />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <VerifyRegistration />
+                </ErrorBoundary>
             </GuestRoute>
         )
     },
     {
         path: API_ROUTES.USER.LOGIN, element: (
             <GuestRoute role={ROLE.USER}>
-                <LoginPage />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <LoginPage />
+                </ErrorBoundary>
             </GuestRoute>
         )
     },
     {
         path: API_ROUTES.USER.FORGOT_PASS, element: (
             <GuestRoute role={ROLE.USER}>
-                <ForgotPAss />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <ForgotPAss />
+                </ErrorBoundary>
             </GuestRoute>
         )
     },
     {
         path: API_ROUTES.USER.VERIFY_OTP, element: (
             <GuestRoute role={ROLE.USER}>
-                <OtpVerification />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <OtpVerification />
+                </ErrorBoundary>
             </GuestRoute>
         )
     },
     {
         path: API_ROUTES.USER.RESET_PASS, element: (
             <GuestRoute role={ROLE.USER}>
-                <ResetPassword />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <ResetPassword />
+                </ErrorBoundary>
             </GuestRoute>
         )
     },
@@ -70,7 +108,12 @@ export const userRoutes = [
         path: API_ROUTES.USER.WORK_DETAILS,
         element: (
             <ProtectedRoute role={ROLE.USER}>
-                <WorkDetails />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <WorkDetails />
+                </ErrorBoundary>
             </ProtectedRoute>
         ),
     },
@@ -78,7 +121,12 @@ export const userRoutes = [
         path: API_ROUTES.USER.HOME,
         element: (
             <ProtectedRoute role={ROLE.USER}>
-                <Dashboard />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <Dashboard />
+                </ErrorBoundary>
             </ProtectedRoute>
         ),
     },
@@ -86,7 +134,12 @@ export const userRoutes = [
         path: API_ROUTES.USER.PROFILE,
         element: (
             <ProtectedRoute role={ROLE.USER}>
-                <Profile />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <Profile />
+                </ErrorBoundary>
             </ProtectedRoute>
         ),
     },
@@ -94,7 +147,12 @@ export const userRoutes = [
         path: API_ROUTES.USER.NOTIFICATIONS,
         element: (
             <ProtectedRoute role={ROLE.USER}>
-                <Notifications />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <Notifications />
+                </ErrorBoundary>
             </ProtectedRoute>
         ),
     },
@@ -102,7 +160,12 @@ export const userRoutes = [
         path: API_ROUTES.USER.MESSAGE,
         element: (
             <ProtectedRoute role={ROLE.USER}>
-                <Message />
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => window.location.reload()}
+                >
+                    <Message />
+                </ErrorBoundary>
             </ProtectedRoute>
         ),
     },

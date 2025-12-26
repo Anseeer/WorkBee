@@ -1,4 +1,5 @@
-import AboutPage from "../../components/common/About"
+import { lazy } from "react"
+const AboutPage = lazy(() => import("../../components/common/About"));
 
 export const About = () => {
     return (

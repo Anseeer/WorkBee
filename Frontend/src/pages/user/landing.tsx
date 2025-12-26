@@ -1,19 +1,23 @@
-import Footer from "../../components/common/Footer";
-import CategorySection from "../../components/user/CategorySection";
+import { lazy, Suspense } from "react";
 import { GuideSection } from "../../components/user/GiudeSection";
 import Header from "../../components/user/Header";
 import HeroSection from "../../components/user/LandingHeroSection";
-import PopularServices from "../../components/user/PopularServices";
+const CategorySection = lazy(() => import("../../components/user/CategorySection"));
+const PopularServices = lazy(() => import("../../components/user/PopularServices"));
+const Footer = lazy(() => import("../../components/common/Footer"));
+import Loader from "../../components/common/Loader";
 
 const LandingPage = () => {
     return (
         <>
-            <Header />
-            <HeroSection />
-            <CategorySection />
-            <PopularServices />
-            <GuideSection />
-            <Footer />
+            <Suspense fallback={<Loader />}>
+                <Header />
+                <HeroSection />
+                <CategorySection />
+                <PopularServices />
+                <GuideSection />
+                <Footer />
+            </Suspense>
         </>
     );
 };

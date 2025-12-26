@@ -13,6 +13,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { logout } from "../../slice/workerSlice";
 import { API_ROUTES } from "../../constant/api.routes";
 import { FaArrowRight } from "react-icons/fa";
+import { useUnreadMessageCount, useUnreadNotificationCount } from "../context/UnreadCountContext";
 
 interface prop {
   handleTab: (tab: string) => void;
@@ -24,6 +25,8 @@ export default function WorkerSidebar({ handleTab }: prop) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const { unreadCounts } = useUnreadMessageCount();
+  const { unreadNotificationCount } = useUnreadNotificationCount();
 
   const handleClick = useCallback((tab: string) => {
     setActiveTab(tab);
@@ -33,7 +36,6 @@ export default function WorkerSidebar({ handleTab }: prop) {
   useEffect(() => {
     handleClick(activeTab);
   }, [activeTab, handleClick]);
-
 
   const handleLogout = async () => {
     try {
@@ -60,23 +62,23 @@ export default function WorkerSidebar({ handleTab }: prop) {
   return (
     <div
       ref={sidebarRef}
-
       className={`bg-[#10451D] text-white h-full flex flex-col justify-between rounded-r-2xl shadow-lg flex-shrink-0
-    transition-all duration-300 ease-in-out
-   ${isExpanded ? 'w-56 animate-fadeInLeft' : 'w-16 animate-fadeOutLeft'} md:w-[225px]`}
+        transition-all duration-300 ease-in-out
+        ${isExpanded ? 'w-56 animate-fadeInLeft' : 'w-16 animate-fadeOutLeft'} md:w-[225px]`}
     >
       {/* Top Section: Logo + Navigation */}
-      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y-auto">        {!isExpanded && (
-        <button
-          className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsExpanded(true);
-          }}
-        >
-          <FaArrowRight />
-        </button>
-      )}
+      <div className="p-4 flex flex-col items-center md:items-start flex-1 min-h-0 overflow-y-auto">
+        {!isExpanded && (
+          <button
+            className="md:hidden mb-4 p-2 bg-gray-700 rounded text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
+          >
+            <FaArrowRight />
+          </button>
+        )}
 
         <h1 className={`merienda-text text-3xl text-white animate-fadeIn mb-5 ${isExpanded ? 'block' : 'hidden'} md:block`}>
           WorkBee
@@ -86,24 +88,42 @@ export default function WorkerSidebar({ handleTab }: prop) {
         {[
           { icon: dashboardIcon, label: 'Dashboard', tab: 'dashboard' },
           { icon: accountIcon, label: 'Account', tab: 'account' },
-          { icon: messageIcon, label: 'Message', tab: 'message' },
+          { icon: messageIcon, label: 'Message', tab: 'message', badge: unreadCounts },
           { icon: historyIcon, label: 'History', tab: 'history' },
-          { icon: notificationIcon, label: 'Notifications', tab: 'notification' },
+          { icon: notificationIcon, label: 'Notifications', tab: 'notification', Badge: unreadNotificationCount },
           { icon: walletIcon, label: 'Wallet', tab: 'wallet' }
-        ].map(({ icon, label, tab }) => (
+        ].map(({ icon, label, tab, badge }) => (
           <div
             key={tab}
             onClick={() => handleClick(tab)}
-            className={`flex items-center space-x-3 py-3 px-2 rounded-md cursor-pointer mt-2 transition duration-150
+            className={`flex items-center justify-between space-x-3 py-3 px-2 rounded-md cursor-pointer mt-2 transition duration-150 w-full
               ${activeTab === tab
-                ? 'bg-gray-500 bg-opacity-70 w-full text-white'
-                : 'text-gray-300 hover:bg-gray-500 w-full hover:bg-opacity-50'}
+                ? 'bg-gray-500 bg-opacity-70 text-white'
+                : 'text-gray-300 hover:bg-gray-500 hover:bg-opacity-50'}
             `}
           >
-            <img src={icon} alt={label} className="w-5 h-5" />
-            <span className={`text-md font-medium ${isExpanded ? 'block' : 'hidden'} md:block`}>
-              {label}
-            </span>
+            {/* Left side: Icon + Label */}
+            <div className="flex items-center space-x-3 flex-1 min-w-0">
+              <div className="relative flex-shrink-0">
+                <img src={icon} alt={label} className="w-5 h-5" />
+                {/* Badge for collapsed state (show on icon) */}
+                {badge !== undefined && badge > 0 && !isExpanded && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center md:hidden">
+                    {badge > 9 ? '9+' : badge}
+                  </span>
+                )}
+              </div>
+              <span className={`text-md font-medium truncate ${isExpanded ? 'block' : 'hidden'} md:block`}>
+                {label}
+              </span>
+            </div>
+
+            {/* Right side: Badge for expanded state */}
+            {badge !== undefined && badge > 0 && (
+              <span className={`bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 flex-shrink-0 ${isExpanded ? 'block' : 'hidden'} md:block`}>
+                {badge > 99 ? '99+' : badge}
+              </span>
+            )}
           </div>
         ))}
       </div>
@@ -112,18 +132,14 @@ export default function WorkerSidebar({ handleTab }: prop) {
       <div className="p-4 border-t border-gray-600">
         <div
           onClick={handleLogout}
-          className="flex items-center space-x-3 p-3  rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-200 transition duration-150 cursor-pointer w-full"
+          className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-500 hover:bg-opacity-50 text-gray-200 transition duration-150 cursor-pointer w-full"
         >
           <img src={logoutIcon} alt="Logout" className="w-5 h-5 flex-shrink-0" />
-          <span
-            className={`text-md font-medium ${isExpanded ? 'block' : 'hidden'
-              } md:block truncate`}
-          >
+          <span className={`text-md font-medium ${isExpanded ? 'block' : 'hidden'} md:block truncate`}>
             Logout
           </span>
         </div>
       </div>
     </div>
   );
-
 }

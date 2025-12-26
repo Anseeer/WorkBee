@@ -126,9 +126,9 @@ const WorkerListing = () => {
         return worker.services.find(s => s.serviceId === serviceId)?.price ?? null;
     };
 
-    const totalPages = Math.ceil(workers.length / itemsPerPage);
+    const totalPages = Math.ceil(workers?.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedWorkers = workers.slice(startIndex, startIndex + itemsPerPage);
+    const paginatedWorkers = workers?.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <div className="min-h-screen p-4 sm:p-6 md:p-10 animate-fadeInUp">
@@ -200,8 +200,8 @@ const WorkerListing = () => {
                 {/* Worker List */}
                 <div className="flex-1 animate-fadeInUp">
                     <div className="max-w-full space-y-4">
-                        {paginatedWorkers.length > 0 ? (
-                            paginatedWorkers.map((worker, index) => {
+                        {paginatedWorkers?.length > 0 ? (
+                            paginatedWorkers?.map((worker, index) => {
                                 const price = getWorkerServicePrice(worker, workDetails.serviceId);
 
                                 return (

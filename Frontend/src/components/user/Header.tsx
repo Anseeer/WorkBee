@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../../services/axios';
 import { API_ROUTES } from '../../constant/api.routes';
 import Loader from '../common/Loader';
+import { useUnreadMessageCount } from '../context/UnreadCountContext';
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -11,6 +12,7 @@ export default function Header() {
     const [isMessageOpen, setIsMessageOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [isLogged, setIsLogged] = useState<boolean | null>(null);
+    const { unreadCounts } = useUnreadMessageCount();
 
     const navigate = useNavigate();
 
@@ -97,9 +99,16 @@ export default function Header() {
                                 </button>
                                 <button
                                     onClick={handleMessage}
-                                    className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                                    className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
                                 >
                                     <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 cursor-pointer" />
+
+                                    {/* Badge */}
+                                    {unreadCounts > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                                            {unreadCounts > 99 ? '99+' : unreadCounts}
+                                        </span>
+                                    )}
                                 </button>
                                 <button
                                     onClick={handleProfile}
@@ -153,8 +162,16 @@ export default function Header() {
                                     </button>
                                     <button
                                         onClick={handleMessage}
-                                        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
-                                        <MessageSquare className="h-5 w-5" />
+                                        className="relative flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
+                                        <div className="relative">
+                                            <MessageSquare className="h-5 w-5" />
+                                            {/* Badge on icon */}
+                                            {unreadCounts > 0 && (
+                                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
+                                                    {unreadCounts > 99 ? '99+' : unreadCounts}
+                                                </span>
+                                            )}
+                                        </div>
                                         <span>Messages</span>
                                     </button>
                                     <button

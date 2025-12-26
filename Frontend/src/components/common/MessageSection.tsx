@@ -455,6 +455,5 @@ export default function MessageSection({ chats, me }: Props) {
       ) : null}
     </div>
   );
-
 }
 
