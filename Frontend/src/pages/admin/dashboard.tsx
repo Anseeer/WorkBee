@@ -14,6 +14,8 @@ const RevenueManagement = lazy(() => import("../../components/admin/RevenueManag
 
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
 import Loader from "../../components/common/Loader";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "../../components/common/ErrorFallback";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -35,33 +37,37 @@ const AdminDashboard = () => {
   );
 
   return (
-
     <div className="w-full h-screen flex">
-      <Suspense fallback={<Loader />}>
-        <AdminSidebar handleTab={handleTab} />
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex items-center justify-between py-2 px-2">
-            <h3 className="text-2xl font-semibold">
-              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + ` Management`}
-            </h3>
-          </div>
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        onReset={() => window.location.reload()}
+      >
+        <Suspense fallback={<Loader />}>
+          <AdminSidebar handleTab={handleTab} />
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            <div className="flex items-center justify-between py-2 px-2">
+              <h3 className="text-2xl font-semibold">
+                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + ` Management`}
+              </h3>
+            </div>
 
-          <hr className="border border-green-900" />
+            <hr className="border border-green-900" />
 
-          <div className="flex-1 min-h-0 overflow-auto">
-            {activeTab === "dashboard" && <Dashboard />}
-            {activeTab === "users" && <UserTable />}
-            {activeTab === "workers" && renderWorkersAndVerfyingTab()}
-            {activeTab === "categories" && <CategoryManagment />}
-            {activeTab === "services" && <ServiceManagment />}
-            {activeTab === "subscription" && <SubscriptionManagment />}
-            {activeTab === "jobs" && <WorksTable />}
-            {activeTab === "workerRequest" && <WorkerApprovalComponent />}
-            {activeTab === "revenue" && <RevenueManagement />}
+            <div className="flex-1 min-h-0 overflow-auto">
+              {activeTab === "dashboard" && <Dashboard />}
+              {activeTab === "users" && <UserTable />}
+              {activeTab === "workers" && renderWorkersAndVerfyingTab()}
+              {activeTab === "categories" && <CategoryManagment />}
+              {activeTab === "services" && <ServiceManagment />}
+              {activeTab === "subscription" && <SubscriptionManagment />}
+              {activeTab === "jobs" && <WorksTable />}
+              {activeTab === "workerRequest" && <WorkerApprovalComponent />}
+              {activeTab === "revenue" && <RevenueManagement />}
+            </div>
           </div>
-        </div>
-      </Suspense>
-    </div>
+        </Suspense>
+      </ErrorBoundary>
+    </div >
   );
 };
 
