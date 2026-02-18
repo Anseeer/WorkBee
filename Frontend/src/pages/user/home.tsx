@@ -15,7 +15,6 @@ const Home = () => {
     <>
       <ErrorBoundary
         FallbackComponent={ErrorFallback}
-        onReset={() => window.location.reload()}
       >
         <Suspense fallback={<Loader />}>
           <Header />

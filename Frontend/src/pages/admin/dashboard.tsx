@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, useState } from "react";
 
 const AdminSidebar = lazy(() => import("../../components/admin/AdminSidebar"));
 const UserTable = lazy(() => import("../../components/admin/UsersTable"));
@@ -13,7 +13,6 @@ const SubscriptionManagment = lazy(() => import("../../components/admin/Subscrip
 const RevenueManagement = lazy(() => import("../../components/admin/RevenueManagement"));
 
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
-import Loader from "../../components/common/Loader";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "../../components/common/ErrorFallback";
 
@@ -40,9 +39,7 @@ const AdminDashboard = () => {
     <div className="w-full h-screen flex">
       <ErrorBoundary
         FallbackComponent={ErrorFallback}
-        onReset={() => window.location.reload()}
       >
-        <Suspense fallback={<Loader />}>
           <AdminSidebar handleTab={handleTab} />
           <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             <div className="flex items-center justify-between py-2 px-2">
@@ -50,9 +47,7 @@ const AdminDashboard = () => {
                 {activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + ` Management`}
               </h3>
             </div>
-
             <hr className="border border-green-900" />
-
             <div className="flex-1 min-h-0 overflow-auto">
               {activeTab === "dashboard" && <Dashboard />}
               {activeTab === "users" && <UserTable />}
@@ -65,7 +60,6 @@ const AdminDashboard = () => {
               {activeTab === "revenue" && <RevenueManagement />}
             </div>
           </div>
-        </Suspense>
       </ErrorBoundary>
     </div >
   );

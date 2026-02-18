@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, lazy } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Store";
 import { useWorkerDetails } from "../../components/context/WorkerDetailContext";
@@ -144,7 +144,6 @@ const Dashboard = () => {
             ) : workerData.worker?.isAccountBuilt ? (<>
                 <ErrorBoundary
                     FallbackComponent={ErrorFallback}
-                    onReset={() => window.location.reload()}
                 >
                     <WorkerSidebar handleTab={handleTab} />
                 </ErrorBoundary>
@@ -238,80 +237,74 @@ const Dashboard = () => {
                     <div className="flex-1 min-h-0 overflow-auto">
                         <ErrorBoundary
                             FallbackComponent={ErrorFallback}
-                            onReset={() => window.location.reload()}
                         >
-                            <Suspense fallback={<Loader />}>
-                                {activeTab === "dashboard" ? (
-                                    <>
-                                        {workerData.worker?.isVerified && workerData.worker.status != "Rejected" && workerData.worker.subscription == null ? (
-                                            <SubscriptionPlans />
-                                        ) : !workerData.worker.isVerified || workerData.worker.status == "Rejected" && workerData.worker.subscription == null ? (
+                            {activeTab === "dashboard" ? (
+                                <>
+                                    {workerData.worker?.isVerified && workerData.worker.status != "Rejected" && workerData.worker.subscription == null ? (
+                                        <SubscriptionPlans />
+                                    ) : !workerData.worker.isVerified || workerData.worker.status == "Rejected" && workerData.worker.subscription == null ? (
 
-                                            <PendingApprovalMessage
-                                                status={workerData.worker.status}
-                                                message={workerData.worker.rejectionReason}
-                                                estimatedTime="42hrs" />
-                                        ) : (
+                                        <PendingApprovalMessage
+                                            status={workerData.worker.status}
+                                            message={workerData.worker.rejectionReason}
+                                            estimatedTime="42hrs" />
+                                    ) : (
 
-                                            <WorkerDashboard
-                                                worker={workerData.worker}
-                                                wallet={workerData.wallet as IWallet}
-                                                availability={workerData.availability as IAvailability}
-                                            />
-
-                                        )}
-                                    </>
-                                ) : activeTab === "account" ? (
-
-                                    <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
-                                ) : activeTab === "history" ? (
-                                    <WorkHistory />
-                                ) : activeTab === "wallet" ? (
-                                    <div className="border-2 rounded-xl p-2 m-10 border-green-700 h-full">
-                                        <Wallet
-                                            workerId={workerData.worker?._id as string}
-                                            historyPrev={wallet?.transactions}
-                                            balancePrev={wallet?.balance}
+                                        <WorkerDashboard
+                                            worker={workerData.worker}
+                                            wallet={workerData.wallet as IWallet}
+                                            availability={workerData.availability as IAvailability}
                                         />
-                                    </div>
-                                ) : activeTab === "message" ? (
-                                    <Message />
-                                ) : activeTab === "notification" ? (
-                                    <Notifications />
-                                ) : null}
-                            </Suspense>
+
+                                    )}
+                                </>
+                            ) : activeTab === "account" ? (
+
+                                <WorkerDetails isEdit={isEdit} setEdit={handleEdit} />
+                            ) : activeTab === "history" ? (
+                                <WorkHistory />
+                            ) : activeTab === "wallet" ? (
+                                <div className="border-2 rounded-xl p-2 m-10 border-green-700 h-full">
+                                    <Wallet
+                                        workerId={workerData.worker?._id as string}
+                                        historyPrev={wallet?.transactions}
+                                        balancePrev={wallet?.balance}
+                                    />
+                                </div>
+                            ) : activeTab === "message" ? (
+                                <Message />
+                            ) : activeTab === "notification" ? (
+                                <Notifications />
+                            ) : null}
                         </ErrorBoundary>
 
                         <ErrorBoundary
                             FallbackComponent={ErrorFallback}
-                            onReset={() => window.location.reload()}
                         >
-                            <Suspense fallback={<Loader />}>
 
-                                {addMoneyModal && (
-                                    <AddMoneyModal
-                                        userId={userId as string}
-                                        onClose={closeAddMoneyModal}
-                                        handleReload={handleReload}
-                                    />
-                                )}
+                            {addMoneyModal && (
+                                <AddMoneyModal
+                                    userId={userId as string}
+                                    onClose={closeAddMoneyModal}
+                                    handleReload={handleReload}
+                                />
+                            )}
 
-                                {payoutMoneyModal && (
-                                    <PayoutModal
-                                        balance={wallet?.balance as number}
-                                        closeModal={closePayoutMoneyModal}
-                                        workerID={userId}
-                                    />
-                                )}
+                            {payoutMoneyModal && (
+                                <PayoutModal
+                                    balance={wallet?.balance as number}
+                                    closeModal={closePayoutMoneyModal}
+                                    workerID={userId}
+                                />
+                            )}
 
-                                {reApplyModal && (
-                                    <ReApplyModal close={handleCloseReApplyModal} handleEdit={handleEdit} />
-                                )}
+                            {reApplyModal && (
+                                <ReApplyModal close={handleCloseReApplyModal} handleEdit={handleEdit} />
+                            )}
 
-                                {changePassword && (
-                                    <ChangePasswordModal onClose={() => setChangePassword(false)} onSave={HandleChangePassword} />
-                                )}
-                            </Suspense>
+                            {changePassword && (
+                                <ChangePasswordModal onClose={() => setChangePassword(false)} onSave={HandleChangePassword} />
+                            )}
                         </ErrorBoundary>
 
                     </div>
@@ -323,11 +316,8 @@ const Dashboard = () => {
                         <>
                             <ErrorBoundary
                                 FallbackComponent={ErrorFallback}
-                                onReset={() => window.location.reload()}
                             >
-                                <Suspense fallback={<Loader />}>
-                                    <BuildAccount />
-                                </Suspense>
+                                <BuildAccount />
                             </ErrorBoundary>
                         </>
                     ) : null}
