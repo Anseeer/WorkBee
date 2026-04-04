@@ -54,7 +54,7 @@ export class TempWorkerService implements ITempWorkerService {
             console.log("5",otp)
 
             saveOtp(workerData.email, otp);
-            await emailService(workerData.email, otp, "VERIFY_EMAIL");
+            // await emailService(workerData.email, otp, "VERIFY_EMAIL");
             workerData.password = hashedPass;
             workerData.otp = otp;
             const workerEntity = await mapToTempWorkerEntity(workerData);
