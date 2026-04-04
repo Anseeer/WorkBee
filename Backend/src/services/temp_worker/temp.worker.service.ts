@@ -28,10 +28,11 @@ export class TempWorkerService implements ITempWorkerService {
 
     async register(workerData: Partial<ITempWorker>): Promise<string> {
         try {
-
+            console.log("1")
             if (!workerData.email || !workerData.password || !workerData.name || !workerData.location || !workerData.phone || !workerData.categories) {
                 throw new Error(WORKER_MESSAGE.ALL_FIELDS_ARE_REQUIRED);
             }
+            console.log("2")
 
             const workerExist = await this._workerRepository.findByEmail(workerData?.email);
             if (workerExist) {
@@ -39,18 +40,25 @@ export class TempWorkerService implements ITempWorkerService {
             }
 
             const existInTemp = await this._tempWorkerRepository.findTempWorkerByEmail(workerData?.email)
+            console.log("3")
+
 
             if (existInTemp) {
                 await this._tempWorkerRepository.delete(existInTemp.id)
             }
+            console.log("4")
+
 
             const hashedPass = await bcrypt.hash(workerData.password, 10);
             const otp = await generateOTP();
+            console.log("5",otp)
+
             saveOtp(workerData.email, otp);
             await emailService(workerData.email, otp, "VERIFY_EMAIL");
             workerData.password = hashedPass;
             workerData.otp = otp;
             const workerEntity = await mapToTempWorkerEntity(workerData);
+            console.log("6",workerEntity);
             const newWorker = await this._tempWorkerRepository.create(workerEntity);
             return newWorker.id;
         } catch (error) {
