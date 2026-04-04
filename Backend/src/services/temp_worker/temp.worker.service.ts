@@ -54,7 +54,7 @@ export class TempWorkerService implements ITempWorkerService {
             console.log("5", otp)
 
             saveOtp(workerData.email, otp);
-            emailService(workerData.email, otp, "VERIFY_EMAIL")
+            await emailService(workerData.email, otp, "VERIFY_EMAIL")
                 .then(() => logger.info("Email sent"))
                 .catch((err) => logger.error("Email failed:", err));
             workerData.password = hashedPass;
