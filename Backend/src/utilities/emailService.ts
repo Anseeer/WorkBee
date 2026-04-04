@@ -8,12 +8,17 @@ type EmailType = "RESET_PASSWORD" | "VERIFY_EMAIL";
 
 export const emailService = async (email: string, otp: string, type: EmailType) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.NODE_EMAIL,
       pass: process.env.NODE_EMAIL_PASS,
     },
+    connectionTimeout: 10000,
+    socketTimeout: 10000,
   });
+  await transporter.verify();
 
   const templates = {
     RESET_PASSWORD: {
