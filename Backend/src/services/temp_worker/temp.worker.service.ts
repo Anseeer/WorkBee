@@ -51,14 +51,16 @@ export class TempWorkerService implements ITempWorkerService {
 
             const hashedPass = await bcrypt.hash(workerData.password, 10);
             const otp = await generateOTP();
-            console.log("5",otp)
+            console.log("5", otp)
 
             saveOtp(workerData.email, otp);
-            // await emailService(workerData.email, otp, "VERIFY_EMAIL");
+            emailService(workerData.email, otp, "VERIFY_EMAIL")
+                .then(() => logger.info("Email sent"))
+                .catch((err) => logger.error("Email failed:", err));
             workerData.password = hashedPass;
             workerData.otp = otp;
             const workerEntity = await mapToTempWorkerEntity(workerData);
-            console.log("6",workerEntity);
+            console.log("6", workerEntity);
             const newWorker = await this._tempWorkerRepository.create(workerEntity);
             return newWorker.id;
         } catch (error) {
