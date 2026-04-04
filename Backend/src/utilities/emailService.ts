@@ -117,7 +117,7 @@ export const emailService = async (email: string, otp: string, type: EmailType) 
   const selected = templates[type];
 
   await resend.emails.send({
-    from: "onboarding@resend.dev",
+    from: "WorkBee@resend.dev",
     to: email,
     subject,
     html: `
